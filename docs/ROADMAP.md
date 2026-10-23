@@ -2,14 +2,17 @@
 
 Every requested feature is mandatory backlog scope. Ordering is not permission to omit features. Full parity will require multiple milestones.
 
-## M0 — foundation and initial audit (this delivery)
+## M0 — foundation and initial audit (delivered in 0.1)
 Build scripts/wrapper, Kotlin client entrypoint, module lifecycle, persistence, diagnostics, core tests, source locks and complete requested-feature/attachment inventory. Validate compiler/test results separately from in-game testing.
 
-## M1 — usable settings + input/commands
+## M1 — usable settings + input/commands (implemented/build-tested in 0.2; in-game acceptance pending)
+
+See M1.md for delivered behavior and differences. Alias completion/help nodes remain a follow-up. No M1 runtime compatibility claim is made yet.
+
 YACL + Mod Menu integration, typed settings, translation keys, input focus routing, command keybinds and shortcuts. Keep fixed command boundaries/loop prevention. Acceptance: bind, execute, persist, reopen, restart, no triggering while typing.
 
 ## M2 — shared context and low-risk information
-SkyBlock/location/item parsing, chat event adapter, basic Chat Tweaks + Info Tooltips; pricing provider contract/cache/error handling before full Price Tooltips. License gate before importing NoFrills code.
+SkyBlock/location/item parsing, chat event adapter, basic Chat Tweaks + Info Tooltips; pricing provider contract/cache/error handling before full Price Tooltips. GPLv3 project decision is now recorded; retain attribution/source and inspect additional file/asset provenance before each port.
 
 ## M3 — dungeon state + first overlays
 Room/map model, coordinate rotation fixtures, room enter/exit and secret/run events, renderer adapter. Port door highlight, mimic/chests and map info; then both waypoint implementations/codec/editor, SecretCounter and Player Display. Acceptance: rotated rooms, reconnect/world changes, collection/reset, import/export parity.

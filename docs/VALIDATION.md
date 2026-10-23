@@ -1,17 +1,19 @@
-# Validation result — foundation milestone
+# Validation — 0.2.0-dev (M1)
 
-- Target: Minecraft **26.2**, Fabric, Kotlin, Java 25.
-- Command: `./gradlew clean build --no-daemon`
-- Result: **BUILD SUCCESSFUL**, 18 seconds, 9 executed tasks.
-- Unit tests: **13 passed, 0 failed, 0 errors, 0 skipped** (7 lifecycle + 6 persistence).
-- Packaged client entrypoint and core/config classes: present.
-- Packaged metadata: `minecraft =26.2`, client-only environment, Kotlin adapter, Java >=25.
-- No Odin/NoFrills/Stray/eppopkaaddons implementation classes in the JAR.
-- JAR SHA-256: `1ee8bf80f493384c9f522cc73fe1612ac108de58fbaaeba088fa4a0867fba1bd`.
-- Gradle emitted deprecation warnings concerning future Gradle 10 compatibility. No Gradle 10 compatibility is claimed.
+- Exact target: Minecraft **26.2**, Fabric, Kotlin, JVM 25.
+- Command: `./gradlew clean build --no-daemon`.
+- Result: **BUILD SUCCESSFUL**.
+- **50 tests passed; 0 failures, 0 errors, 0 skipped.**
+- Suites: 7 lifecycle, 6 foundation config, 20 command resolver/validation, 11 input/context policy and 6 profile/transaction/migration tests.
+- JAR metadata, required YACL dependency, optional Mod Menu entrypoint and packaged LICENSE/NOTICE verified.
+- Both compiled input injection descriptors/annotations match Minecraft 26.2 target descriptors statically.
+- Resolved Mixin compatibility enum includes JAVA_25.
+- No third-party mod implementation classes or YACL/Mod Menu artifacts are bundled.
+- Ordinary JAR SHA-256: `eb5e8db2412e1f578a083a0df1c8f304f16a931a692c5f6628c80935f0c341d0`.
+- Gradle emits deprecation warnings about future Gradle 10 compatibility; no Gradle 10 support is claimed.
 
 ## Not validated
 
-Client startup, Minecraft account login, actual world/session callbacks, UI command behavior in-game, game performance, Sodium/Iris/shader integration and all upstream feature behavior. These require the user checklist in TESTING.md. There is no complete feature implementation in this milestone.
+A real Minecraft launch, actual Mixin transformation/application, YACL navigation/capture/save/cancel in-game, signed chat or server command behavior, nonstandard tab layouts, mod ordering and Sodium/Iris compatibility. Static descriptor checks are not a substitute for runtime mixin testing. See TESTING.md.
 
-Build log and JUnit XML reports are retained in `validation/`. Toolchain metadata/source locks are in `audit/`.
+The companion source ZIP contains GPLv3 project source/build scripts, tests, source references, audit and validation evidence. External runtime mods are separate dependencies. M0 historical reports are retained under validation/history/m0.

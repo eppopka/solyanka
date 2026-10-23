@@ -1,6 +1,18 @@
-solyanka — foundation milestone
-No upstream feature implementation or artwork is incorporated in this milestone.
-Source audit documents identify third-party repositories and their licenses.
-The project owner's license decision is pending. No permission to redistribute
-third-party assets is implied by the presence of an audit record.
-Gradle wrapper files originate from FabricMC/fabric-example-mod (CC0-1.0).
+solyanka — Minecraft 26.2 utility mod
+Original solyanka source is distributed under GPL-3.0-only. See LICENSE.
+No warranty; source is included in the companion source distribution.
+
+Command behavior was adapted/reimplemented after reviewing NoFrills:
+https://github.com/WhatYouThing/NoFrills
+Pinned source: 74e9317c1a7b8484a575b2f177479f5e3f2bfb9a
+Author: WhatYouThing and NoFrills contributors.
+License: GNU General Public License version 3 (repository grant: GPL-3.0).
+Changed for solyanka: Kotlin models, YACL UI, typed persistence, exact device
+matching, focus safety, conservative context filters, live alias resolution,
+cycle/length validation and bounded synchronous dispatch. No owo/Orbit code
+or NoFrills runtime is bundled. See docs/M1.md for differences and limits.
+
+YACL (LGPL-3.0-or-later), Mod Menu (MIT), Fabric and Fabric Language Kotlin
+remain external dependencies; not bundled in this mod JAR.
+Gradle wrapper bootstrap files originate from FabricMC/fabric-example-mod (CC0).
+Other upstream implementations and artwork are not included in this milestone.

@@ -1,6 +1,6 @@
 # Source audit — initial pass
 
-This milestone is a source/dependency audit and original infrastructure, not a completed feature port or a comprehensive security review.
+The findings below describe the initial M0 source audit. M1 now implements command keybind/shortcut behavior; see M1.md. This remains an initial dependency/provenance audit, not a comprehensive security or correctness review.
 
 ## Source locks and versions
 
@@ -31,7 +31,7 @@ The audited default branches target Odin 26.3, NoFrills 26.1, Stray 26.1.2 and n
 - NoFrills: repository GPLv3 text. Before incorporating code, check source headers for exact grant and plan compliant distribution of the combined derivative work, including corresponding source. A closed-source combined distribution cannot simply be assumed permissible.
 - Stray and noammaddons: repository CC0-1.0; inspect bundled assets and third-party notices separately, especially knife models/textures and cosmetic content.
 - impl.zip has no standalone license. User-supplied authorship context does not resolve all third-party provenance. Confirm rights/permissions before redistribution.
-- No upstream implementation/assets are compiled or bundled at this stage. A project-wide license is not selected on the owner's behalf; metadata is conservative until a decision is made.
+- M1: project code is now GPL-3.0-only following user approval to continue under the stated GPL distribution terms. Command/input behavior adaptations are attributed in NOTICE and complete project source is delivered. Other upstream implementation/assets remain unported; their notices/provenance must be handled at their port.
 
 ## Inventory limits
 

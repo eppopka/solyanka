@@ -1,0 +1,51 @@
+{
+  "game_versions": [
+    "26.2"
+  ],
+  "loaders": [
+    "fabric",
+    "quilt"
+  ],
+  "environment": "client_only",
+  "id": "iRo7AZXf",
+  "project_id": "mOgUt4GM",
+  "author_id": "uF4fzWRt",
+  "featured": false,
+  "name": "v20.0.3 for 26.2",
+  "version_number": "20.0.3",
+  "changelog": "- Translation backports and fixes\n- Update Polish translations, thanks lumiscosity\n- Update Belarusian translation, thanks The518thGuy\n- Updated Spanish (Argentina) translations, thanks Texaliuz\n- Update Estonian translation, thanks Madis0\n- Use a better word for \"Credits\" in the Russian translation (resolves #1098)",
+  "changelog_url": null,
+  "date_published": "2026-09-24T19:34:19.274511Z",
+  "downloads": 1686803,
+  "version_type": "release",
+  "status": "listed",
+  "requested_status": null,
+  "files": [
+    {
+      "id": "3bVQn0O9",
+      "hashes": {
+        "sha1": "9fc381627b471c18d67156e846228f51ff2ea5b4",
+        "sha512": "c8224aa7a460d0c56ccb9978a112e4ad0d3eb17e2796e0c468a2392d220749f4f602838a11b3666145462c26078a879ab8a2fc177aa440f58e189c92a0088d6e"
+      },
+      "url": "https://cdn.modrinth.com/data/mOgUt4GM/versions/iRo7AZXf/modmenu-20.0.3.jar",
+      "filename": "modmenu-20.0.3.jar",
+      "primary": true,
+      "size": 616919,
+      "file_type": null
+    }
+  ],
+  "dependencies": [
+    {
+      "version_id": null,
+      "project_id": "P7dR8mSH",
+      "file_name": null,
+      "dependency_type": "required"
+    },
+    {
+      "version_id": null,
+      "project_id": "eXts2L7r",
+      "file_name": null,
+      "dependency_type": "required"
+    }
+  ]
+}

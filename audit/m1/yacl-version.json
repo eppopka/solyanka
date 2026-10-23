@@ -1,0 +1,44 @@
+{
+  "game_versions": [
+    "26.2"
+  ],
+  "loaders": [
+    "fabric"
+  ],
+  "environment": "client_or_server",
+  "id": "DoR7RYgi",
+  "project_id": "1eAoo2KR",
+  "author_id": "nyx2i4fB",
+  "featured": false,
+  "name": "3.9.7 for fabric 26.2",
+  "version_number": "3.9.7+26.2-fabric",
+  "changelog": "# YetAnotherConfigLib 3.9.7\n\n### 3.9.7 targets\n\n|               | Fabric | NeoForge | Forge |\n|---------------|--------|----------|-------|\n| 26.1          | \u2705     | \u2705       | \u274c    |\n| 26.2          | \u2705     | \u2705       | \u274c    |\n| 26.3          | \u2705     | \u2705       | \u274c    |\n\n### Changes\n\n- Port to 26.3\n- Fix reset button being small\n",
+  "changelog_url": null,
+  "date_published": "2026-09-20T23:11:40.291025Z",
+  "downloads": 1079210,
+  "version_type": "release",
+  "status": "listed",
+  "requested_status": null,
+  "files": [
+    {
+      "id": "Iyzh7qzX",
+      "hashes": {
+        "sha1": "79c8ee7f8a0e775190dfff59be1e505e2f432998",
+        "sha512": "f36d91a9506ad9addbaaeecaea01d2b0cb5b060f52486b17688746cb597f0f3b23a80f8441f7a73a9cb8cde85af8809fe54825984b56345325359d505a80e7f2"
+      },
+      "url": "https://cdn.modrinth.com/data/1eAoo2KR/versions/DoR7RYgi/yet_another_config_lib_v3-3.9.7%2B26.2-fabric.jar",
+      "filename": "yet_another_config_lib_v3-3.9.7+26.2-fabric.jar",
+      "primary": true,
+      "size": 1125271,
+      "file_type": null
+    }
+  ],
+  "dependencies": [
+    {
+      "version_id": null,
+      "project_id": "P7dR8mSH",
+      "file_name": null,
+      "dependency_type": "required"
+    }
+  ]
+}

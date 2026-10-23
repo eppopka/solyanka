@@ -114,7 +114,8 @@
     ],
     "module": "utility.command_keybinds",
     "risk": "Input focus and server command dispatch",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_BUILD_TESTED_INGAME_PENDING",
+    "implementation_notes": "See docs/M1.md; alias completion nodes pending; conservative unknown-context filtering."
   },
   {
     "source": "NoFrills",
@@ -124,7 +125,8 @@
     ],
     "module": "utility.command_shortcuts",
     "risk": "Parsing, command precedence and recursion",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_BUILD_TESTED_INGAME_PENDING",
+    "implementation_notes": "See docs/M1.md; alias completion nodes pending; conservative unknown-context filtering."
   },
   {
     "source": "NoFrills",

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="dev.solyanka.config.ConfigStoreTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-23T20:25:48.388Z" hostname="f413c0a7-73b" time="0.104">
+<testsuite name="dev.solyanka.config.ConfigStoreTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-23T20:49:27.497Z" hostname="f413c0a7-73b" time="0.119">
   <properties/>
-  <testcase name="missing file yields disabled defaults and can be saved()" classname="dev.solyanka.config.ConfigStoreTest" time="0.063"/>
-  <testcase name="corrupt config is not overwritten()" classname="dev.solyanka.config.ConfigStoreTest" time="0.003"/>
-  <testcase name="non boolean module state disables writes()" classname="dev.solyanka.config.ConfigStoreTest" time="0.002"/>
-  <testcase name="successful save leaves no temporary files()" classname="dev.solyanka.config.ConfigStoreTest" time="0.007"/>
-  <testcase name="unknown config settings and modules survive save()" classname="dev.solyanka.config.ConfigStoreTest" time="0.005"/>
+  <testcase name="missing file yields disabled defaults and can be saved()" classname="dev.solyanka.config.ConfigStoreTest" time="0.073"/>
+  <testcase name="corrupt config is not overwritten()" classname="dev.solyanka.config.ConfigStoreTest" time="0.007"/>
+  <testcase name="non boolean module state disables writes()" classname="dev.solyanka.config.ConfigStoreTest" time="0.003"/>
+  <testcase name="successful save leaves no temporary files()" classname="dev.solyanka.config.ConfigStoreTest" time="0.003"/>
+  <testcase name="unknown config settings and modules survive save()" classname="dev.solyanka.config.ConfigStoreTest" time="0.003"/>
   <testcase name="future schema is left untouched()" classname="dev.solyanka.config.ConfigStoreTest" time="0.002"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0-dev",
+  "minecraft": "26.2",
+  "build": "SUCCESS",
+  "tests": {
+    "tests": 50,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "static_mixin_abi": "MATCH",
+  "in_game_tested": false,
+  "jar_sha256": "eb5e8db2412e1f578a083a0df1c8f304f16a931a692c5f6628c80935f0c341d0"
+}

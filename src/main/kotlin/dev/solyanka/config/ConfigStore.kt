@@ -1,5 +1,7 @@
+/* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.config
 
+import dev.solyanka.utility.*
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -23,6 +25,7 @@ class ConfigStore(private val path: Path, private val report: (String, Exception
             modules?.asJsonObject?.entrySet()?.forEach { (_, value) ->
                 require(value.isJsonPrimitive && value.asJsonPrimitive.isBoolean) { "Module values must be booleans" }
             }
+            loaded.get("commandUtilities")?.let { ProfileCodec.decode(it.asJsonObject) }
             root = loaded
         } catch (e: Exception) {
             writable = false
@@ -30,22 +33,27 @@ class ConfigStore(private val path: Path, private val report: (String, Exception
         }
     }
     fun enabled(id: String): Boolean = root.getAsJsonObject("modules")?.get(id)?.asBoolean ?: false
-    fun save(states: Map<String, Boolean>) {
-        if (!writable) return
+    fun profile(): CommandProfile = ProfileCodec.decode(root.getAsJsonObject("commandUtilities"))
+    fun save(states: Map<String, Boolean>, profile: CommandProfile? = null): Boolean {
+        if (!writable) return false
         var temp: Path? = null
         try {
             Files.createDirectories(path.parent)
-            root.addProperty("schemaVersion", 1)
-            val modules = root.getAsJsonObject("modules") ?: JsonObject().also { root.add("modules", it) }
+            val candidate = root.deepCopy()
+            candidate.addProperty("schemaVersion", 1)
+            if (profile != null) candidate.add("commandUtilities", ProfileCodec.encode(profile, candidate.getAsJsonObject("commandUtilities")))
+            val modules = candidate.getAsJsonObject("modules") ?: JsonObject().also { candidate.add("modules", it) }
             states.forEach { (id, enabled) -> modules.addProperty(id, enabled) }
             temp = Files.createTempFile(path.parent, "solyanka-", ".tmp")
-            Files.newBufferedWriter(temp).use { GsonBuilder().setPrettyPrinting().create().toJson(root, it) }
+            Files.newBufferedWriter(temp).use { GsonBuilder().setPrettyPrinting().create().toJson(candidate, it) }
             try {
                 Files.move(temp, path, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
             } catch (_: AtomicMoveNotSupportedException) {
                 Files.move(temp, path, StandardCopyOption.REPLACE_EXISTING)
             }
-        } catch (e: Exception) { report("Cannot save config", e) }
+            root = candidate
+            return true
+        } catch (e: Exception) { report("Cannot save config", e); return false }
         finally {
             temp?.let {
                 try { Files.deleteIfExists(it) } catch (e: Exception) { report("Cannot remove temporary config", e) }

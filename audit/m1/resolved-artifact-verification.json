@@ -1,0 +1,14 @@
+[
+  {
+    "dependency": "yacl",
+    "version": "3.9.7+26.2-fabric",
+    "sha512": "f36d91a9506ad9addbaaeecaea01d2b0cb5b060f52486b17688746cb597f0f3b23a80f8441f7a73a9cb8cde85af8809fe54825984b56345325359d505a80e7f2",
+    "resolved_matches_primary": true
+  },
+  {
+    "dependency": "modmenu",
+    "version": "20.0.3",
+    "sha512": "c8224aa7a460d0c56ccb9978a112e4ad0d3eb17e2796e0c468a2392d220749f4f602838a11b3666145462c26078a879ab8a2fc177aa440f58e189c92a0088d6e",
+    "resolved_matches_primary": true
+  }
+]

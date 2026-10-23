@@ -1,8 +1,10 @@
 # Feature matrix
 
-**Status: all upstream features below are backlog items, not functional modules in this milestone.**
+**Status (0.2): Command Keybinds and Command Shortcuts are implemented/build-tested, with in-game acceptance and documented follow-ups pending. Every other upstream feature remains a backlog item.**
 
-The audit locates implementations and major dependencies; it does not certify behavior on Minecraft 26.2. Every requested feature is retained. Supporting files, mixins and assets must be traced before each port.
+See M1.md for behavior differences and alias-completion limitations. No feature is certified in-game yet.
+
+The initial audit locates implementations and major dependencies; it does not certify behavior on Minecraft 26.2. Every requested feature is retained. Supporting files, mixins and assets must be traced before each port.
 
 | Source | Feature | Proposed module | Integration concerns |
 |---|---|---|---|

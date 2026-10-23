@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "modules": {
+    "core.diagnostics": false,
+    "utility.command_keybinds": false,
+    "utility.command_shortcuts": false
+  },
+  "commandUtilities": {
+    "allowAllInGui": false,
+    "binds": [
+      {
+        "id": "example-dungeon-hub",
+        "name": "Dungeon Hub",
+        "device": "KEYBOARD",
+        "key": 71,
+        "command": "/dh",
+        "enabled": false,
+        "allowInGui": false,
+        "modifier": "CTRL",
+        "classFilters": [],
+        "islandFilters": []
+      }
+    ],
+    "shortcuts": [
+      {
+        "id": "example-dh",
+        "alias": "dh",
+        "message": "/warp dungeon_hub",
+        "enabled": false
+      }
+    ]
+  }
+}

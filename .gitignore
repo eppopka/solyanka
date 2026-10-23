@@ -5,5 +5,3 @@ run/
 .idea/
 *.iml
 .DS_Store
-*.env
-*.patch

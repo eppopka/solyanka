@@ -8,7 +8,12 @@ plugins {
 group = property("maven_group")!!
 version = property("mod_version")!!
 base { archivesName.set("solyanka") }
-repositories { mavenCentral() }
+repositories {
+    mavenCentral()
+    maven("https://api.modrinth.com/maven") {
+        content { includeGroup("maven.modrinth") }
+    }
+}
 
 loom {
     splitEnvironmentSourceSets()
@@ -26,6 +31,9 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${property("loader_version")}")
     implementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_api_version")}")
     implementation("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
+    "clientImplementation"("maven.modrinth:yacl:${property("yacl_version")}")
+    "clientCompileOnly"("maven.modrinth:modmenu:${property("modmenu_version")}")
+    "clientRuntimeOnly"("maven.modrinth:modmenu:${property("modmenu_version")}")
     testImplementation(platform("org.junit:junit-bom:5.12.2"))
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -47,5 +55,7 @@ tasks.processResources {
     filesMatching("fabric.mod.json") { expand("version" to project.version) }
 }
 tasks.jar {
-    from("NOTICE")
+    from("NOTICE", "LICENSE")
 }
+
+tasks.named<Jar>("sourcesJar") { from("NOTICE", "LICENSE") }
