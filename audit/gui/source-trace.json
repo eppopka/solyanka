@@ -1,0 +1,18 @@
+{
+  "repository": "https://github.com/WhatYouThing/NoFrills",
+  "commit": "74e9317c1a7b8484a575b2f177479f5e3f2bfb9a",
+  "license": "GPLv3 (repository grant)",
+  "sources": [
+    "src/main/java/nofrills/hud/clickgui/ClickGui.java",
+    "src/main/java/nofrills/hud/clickgui/Category.java",
+    "src/main/java/nofrills/hud/clickgui/Module.java",
+    "src/main/java/nofrills/hud/clickgui/Settings.java",
+    "src/main/java/nofrills/hud/InnerSettingsScreen.java",
+    "src/main/java/nofrills/hud/clickgui/components/FlatTextbox.java",
+    "src/main/java/nofrills/hud/clickgui/components/PlainLabel.java",
+    "src/main/java/nofrills/hud/clickgui/components/ToggleButton.java",
+    "src/main/java/nofrills/hud/clickgui/components/KeybindButton.java",
+    "src/main/java/nofrills/misc/Rendering.java"
+  ],
+  "scope": "Kotlin adaptation of GUI/control/layout code to solyanka and Minecraft 26.2; not the entire upstream runtime."
+}

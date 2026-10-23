@@ -1,33 +1,31 @@
-# Architecture — 0.2.0-dev
+# Architecture — 0.2.1-dev
+
+The game-independent lifecycle, command resolver, input policy and transactional JSON persistence remain as in M1. The UI layer is now an actual adapted NoFrills/owo port rather than YACL.
 
 ## Layers
 
-1. **Pure core:** Module/ModuleRegistry lifecycle and failure isolation; no Minecraft imports.
-2. **Pure utility domain:** immutable CommandProfile/CommandBinding/Shortcut, validators, resolver, InputContext policy and TabContextParser. No Fabric/GLFW references; fixtures run under JUnit.
-3. **Persistence:** ConfigStore + ProfileCodec. Validate a candidate, atomically replace disk, then update in-memory root. Retain unrelated config and stable-ID row extensions. A corrupt/future-schema load disables writes for that session.
-4. **Client adapter:** client entrypoint owns runtime profile, lifecycle, tab data extraction, command event handler and raw input ownership. All mutation/dispatch is on the client thread.
-5. **UI:** required external YACL. Screens edit a local draft; commits validate/persist before activating the runtime profile. Structural actions explicitly commit all edits before rebuilding. Key capture returns pending values to the same YACL option instances. Mod Menu is optional.
-6. **Mixins:** two client-only Kotlin hooks at KeyboardHandler.keyPress and MouseHandler.onButton HEAD, cancellable. They forward into the guarded adapter, not separate upstream event buses. Target ABI evidence is retained; runtime application remains untested.
+1. Pure core: Module/ModuleRegistry lifecycle and failure isolation.
+2. Pure command domain: immutable profiles, validation, bounded resolver, input context/policy and stateless tab parser.
+3. Pure GUI model: only implemented FeatureCardInfo entries, normalized search and CommandGuiDraft. Row updates are stable-ID based; original live profiles are not mutated by draft editing.
+4. Persistence: typed candidate validation, atomic replacement, then in-memory commit. Preserve unrelated data and stable-ID row fields; corrupt/future-schema data disables writes rather than overwriting it.
+5. Client adapter: runtime module state, world reset, raw input ownership, outgoing-command event, deferred GUI-open requests and vanilla command/chat dispatch.
+6. GUI: NoFrillsClickGui + GuiKit + SettingsPanel using external owo. ConfigUi binds screens to solyanka. Main toggles commit immediately; nested list/editor drafts commit only through Save & back. Inline capture is screen-owned and blocks navigation while waiting for a key/mouse input.
+7. Mixins: existing two Kotlin client-only input hooks. No new Minecraft mixin is needed to open this GUI.
 
-## Lifecycle and ownership
+Everything runs on the client thread. Active module dispatch faults are quarantined; fatal JVM Errors are not swallowed. Owned input repeats/releases stay consumed until release/reset. Gameplay bindings do not run in settings or search screens.
 
-Only enabled modules receive tick/reset callbacks. Failed module dispatch is quarantined; fatal JVM Errors are not swallowed. Modules must clear transient state/release resources in onDisable and active world state in onReset. The key adapter owns consumed press tokens so repeats/releases cannot accidentally trigger vanilla after a command bind consumed its press. World changes clear those tokens.
+## Screen ownership
 
-All modules default off. Only diagnostics, utility.command_keybinds and utility.command_shortcuts are registered. Backlog descriptors are not executable fake modules.
+Internal navigation returns fresh screen factories carrying the same explicit draft, not stale row-index listeners. Back from an editor discards local row edits unless Done (stage) was used. Back from a root list abandons its uncommitted draft. Error screens return to a fresh retry view with draft values intact. Stable IDs keep row update/delete safe.
 
-Alias expansion uses a snapshot of currently enabled entries, excludes roots already registered by client mods, validates bounded output, and guards synchronous retransmission. It does not use raw packets or bypass vanilla signed message dispatch. Input keybinds must pass focused/connected/screen/text/modifier/filter policy before dispatch. Command configuration never sends a message on its own.
+Each owo screen releases its native cursor adapter when removed. If a parent screen instance is reused by external navigation, its disposed adapter is cleared so it can initialize afresh. Draft data lives outside those widget objects.
 
-The tab adapter is intentionally small and stateless. The future shared SkyBlock/dungeon context layer must own authoritative run/room/item/player state and broaden parsing using real fixtures. Do not duplicate this context per feature.
+## Dependencies / status
 
-## Future modules (all retained)
+- Required external UI dependency: owo-lib 0.13.1+26.2 (MIT).
+- Optional Mod Menu 20.0.3 factory.
+- No YACL imports/dependency remain in current runtime source or Gradle pins; historical M1 audit records are preserved.
+- Only diagnostics, command keybinds and command shortcuts are registered. All other requested features remain tracked, not fake modules.
+- Full Minecraft launch, visual layout, cursor lifecycle, GUI scaling and mod compatibility remain user acceptance work.
 
-- context: SkyBlock location, dungeon run/room/player state, item metadata and session generation tokens.
-- dungeon: map scan, coordinate transforms, both waypoint sources/codecs, doors, mimic, map info and boss timers.
-- solver: pure algorithms separated from game extraction and overlay output.
-- utility: chat, screen/mouse fixes, tooltips and pricing cache/providers.
-- render: extraction/drawing, environment, outlines/glow, post-processing and optional renderer adapters.
-- hud: editor/layout, progress, inventory, scoreboard/chat, counters and timers.
-- cosmetic: held item/knife, layers, badges/wings/text replacements.
-- hunting: common entity/block trackers for Bestiary/Invisibug/Tiki/Titanium.
-
-Future async work must be cancellable/world-generation scoped and post results to the client thread. Future GPU adapters must own resource lifetime and restore state. Sodium/Iris hooks need optional-mod guards and actual version-specific tests; compatibility is not assumed.
+Future context, dungeon, solver, utility, renderer, HUD, cosmetic and hunting modules retain their roadmap scope. Share adapters/settings/context rather than importing whole independent upstream frameworks per feature. Async work must be session scoped and game-thread applied; future GPU code must own resources and restore state.

@@ -1,100 +1,132 @@
-/* SPDX-License-Identifier: GPL-3.0-only */
+/* SPDX-License-Identifier: GPL-3.0-only
+ * Adapted from NoFrills command settings, ClickGui and InnerSettingsScreen.
+ * Original: WhatYouThing and NoFrills contributors; see NOTICE. */
 package dev.solyanka.client.ui
 
-import dev.isxander.yacl3.api.*
-import dev.isxander.yacl3.api.controller.*
 import dev.solyanka.client.SolyankaClient
+import dev.solyanka.client.ui.nofrills.*
+import dev.solyanka.ui.CommandGuiDraft
 import dev.solyanka.utility.*
+import io.wispforest.owo.ui.container.*
+import io.wispforest.owo.ui.core.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.gui.screens.AlertScreen
 import net.minecraft.network.chat.Component
 
 object ConfigUi {
-    private fun t(key: String) = Component.translatable("solyanka.config.$key")
-    private fun desc(text: String) = OptionDescription.of(Component.literal(text))
-
-    fun create(parent: Screen?): Screen {
-        var profile = SolyankaClient.currentProfile()
-        val enabled = SolyankaClient.states().toMutableMap()
-        val tracked = mutableListOf<Option<*>>()
-        fun <T> track(option: Option<T>): Option<T> = option.also { tracked.add(it) }
-        fun bool(key: String, get: () -> Boolean, set: (Boolean) -> Unit, help: String = "") = track(
-            Option.createBuilder<Boolean>().name(t(key)).description(desc(help))
-                .binding(false,get,set).controller { BooleanControllerBuilder.create(it).yesNoFormatter() }.build())
-        fun string(key: String, get: () -> String, set: (String) -> Unit, help: String = "") = track(
-            Option.createBuilder<String>().name(t(key)).description(desc(help))
-                .binding("",get,set).controller { StringControllerBuilder.create(it) }.build())
-        lateinit var screen: Screen
-        fun flush() { tracked.forEach { it.applyValue() } }
-        fun apply(rebuild: Boolean = false): Boolean {
-            val error = SolyankaClient.applySettings(profile,enabled)
-            val mc = Minecraft.getInstance()
-            if (error != null) mc.setScreenAndShow(AlertScreen({ mc.setScreenAndShow(screen) },t("error"),Component.literal(error)))
-            else if (rebuild) mc.setScreenAndShow(create(parent))
-            return error == null
-        }
-        fun mutate(change: (CommandProfile) -> CommandProfile) {
-            flush()
-            val previous = profile
-            profile = change(profile)
-            if (!apply(true)) profile = previous
-        }
-        val general = ConfigCategory.createBuilder().name(t("general"))
-            .option(bool("keybinds", { enabled[SolyankaClient.KEYBINDS] == true }, { enabled[SolyankaClient.KEYBINDS] = it }))
-            .option(bool("shortcuts", { enabled[SolyankaClient.SHORTCUTS] == true }, { enabled[SolyankaClient.SHORTCUTS] = it }))
-            .option(bool("diagnostics", { enabled["core.diagnostics"] == true }, { enabled["core.diagnostics"] = it }))
-            .option(bool("all_gui", { profile.allowAllInGui }, { profile = profile.copy(allowAllInGui = it) },
-                "Container screens only. Never chat, anvils, settings or focused text fields."))
-            .option(LabelOption.create(Component.literal("Commands and messages may be sent to the server. All modules and new entries default off.")))
-            .option(LabelOption.create(Component.literal("Save & add/remove applies all pending edits. Filters use current tab-list Area/Dungeon and your class; unknown context blocks filtered binds.")))
-        val bindings = ConfigCategory.createBuilder().name(t("bindings"))
-            .option(ButtonOption.createBuilder().name(t("add_bind")).text(t("add"))
-                .action { _, _ -> mutate { it.copy(binds = it.binds + CommandBinding()) } }.build())
-        profile.binds.forEachIndexed { index, bind ->
-            fun row() = profile.binds[index]
-            fun update(change: (CommandBinding) -> CommandBinding) { profile = profile.copy(binds = profile.binds.mapIndexed { i,b -> if (i == index) change(b) else b }) }
-            val key = track(Option.createBuilder<Int>().name(t("keycode"))
-                .description(desc("Use Capture input, or -1 to unbind. GLFW keyboard codes / mouse buttons 0–7."))
-                .binding(-1,{ row().key },{ v -> update { it.copy(key=v) } })
-                .controller { IntegerFieldControllerBuilder.create(it).range(-1,348) }.build())
-            val device = track(Option.createBuilder<InputDevice>().name(t("device"))
-                .binding(InputDevice.KEYBOARD,{ row().device },{ v -> update { it.copy(device=v) } })
-                .controller { EnumControllerBuilder.create(it).enumClass(InputDevice::class.java) }.build())
-            val group = OptionGroup.createBuilder().name(Component.literal(bind.name)).collapsed(true)
-                .option(bool("enabled",{ row().enabled },{ v -> update { it.copy(enabled=v) } }))
-                .option(string("name",{ row().name },{ v -> update { it.copy(name=v) } }))
-                .option(string("message",{ row().command },{ v -> update { it.copy(command=v) } },"Use / for a command; otherwise sends ordinary chat. Maximum 256 characters."))
-                .option(device).option(key)
-                .option(ButtonOption.createBuilder().name(t("capture")).text(t("capture"))
-                    .action { _, _ -> Minecraft.getInstance().setScreenAndShow(KeyCaptureScreen(screen) { d,k -> device.requestSet(d); key.requestSet(k) }) }.build())
-                .option(track(Option.createBuilder<Modifier>().name(t("modifier"))
-                    .binding(Modifier.ANY,{ row().modifier },{ v -> update { it.copy(modifier=v) } })
-                    .controller { EnumControllerBuilder.create(it).enumClass(Modifier::class.java) }.build()))
-                .option(bool("gui",{ row().allowInGui },{ v -> update { it.copy(allowInGui=v) } }))
-                .option(string("classes",{ row().classFilters.joinToString(", ") },{ v -> update { it.copy(classFilters=filters(v)) } },"Comma-separated Healer, Mage, Berserk, Archer, Tank. Empty = unrestricted."))
-                .option(string("islands",{ row().islandFilters.joinToString(", ") },{ v -> update { it.copy(islandFilters=filters(v)) } },"Comma-separated tab-list area names. Empty = unrestricted."))
-                .option(ButtonOption.createBuilder().name(t("remove")).text(t("remove"))
-                    .action { _, _ -> mutate { it.copy(binds=it.binds.filterIndexed { i,_ -> i != index }) } }.build())
-            bindings.group(group.build())
-        }
-        val shortcuts = ConfigCategory.createBuilder().name(t("shortcuts"))
-            .option(ButtonOption.createBuilder().name(t("add_shortcut")).text(t("add"))
-                .action { _, _ -> mutate { it.copy(shortcuts=it.shortcuts + Shortcut()) } }.build())
-        profile.shortcuts.forEachIndexed { index, shortcut ->
-            fun row() = profile.shortcuts[index]
-            fun update(change: (Shortcut) -> Shortcut) { profile=profile.copy(shortcuts=profile.shortcuts.mapIndexed { i,s -> if (i == index) change(s) else s }) }
-            shortcuts.group(OptionGroup.createBuilder().name(Component.literal(shortcut.alias.ifBlank { "New shortcut" })).collapsed(true)
-                .option(bool("enabled",{ row().enabled },{ v -> update { it.copy(enabled=v) } }))
-                .option(string("alias",{ row().alias },{ v -> update { it.copy(alias=v) } },"Single token, optional leading /. /solyanka is reserved. Example: dh"))
-                .option(string("message",{ row().message },{ v -> update { it.copy(message=v) } },"Example: /warp dungeon_hub. Invocation arguments are appended. Plain chat is also supported."))
-                .option(ButtonOption.createBuilder().name(t("remove")).text(t("remove"))
-                    .action { _, _ -> mutate { it.copy(shortcuts=it.shortcuts.filterIndexed { i,_ -> i != index }) } }.build()).build())
-        }
-        screen = YetAnotherConfigLib.createBuilder().title(Component.literal("solyanka • Minecraft 26.2"))
-            .category(general.build()).category(bindings.build()).category(shortcuts.build())
-            .save { apply() }.build().generateScreen(parent)
-        return screen
+    fun create(parent:Screen?):Screen=NoFrillsClickGui(parent)
+    private fun open(screen:Screen) { Minecraft.getInstance().setScreenAndShow(screen) }
+    fun error(back:()->Screen,message:String) {
+        open(AlertScreen({ open(back()) },Component.literal("solyanka — not saved"),Component.literal(message)))
     }
-    private fun filters(s: String) = s.split(',').map { it.trim() }.filter { it.isNotEmpty() }.distinct()
+    fun openSettings(id:String,back:()->Screen) {
+        val draft=CommandGuiDraft(SolyankaClient.currentProfile())
+        when(id) {
+            SolyankaClient.KEYBINDS -> open(bindings(draft,back))
+            SolyankaClient.SHORTCUTS -> open(shortcuts(draft,back))
+        }
+    }
+    private fun save(draft:CommandGuiDraft,retry:()->Screen,back:()->Screen) {
+        val failure=try { SolyankaClient.applySettings(draft.validated(),SolyankaClient.states()) }
+            catch(e:IllegalArgumentException) { e.message ?: "Invalid settings" }
+        if(failure==null) open(back()) else error(retry,failure)
+    }
+    private fun guarded(retry:()->Screen,action:()->Unit) {
+        try { action() } catch(e:IllegalArgumentException) { error(retry,e.message ?: "Invalid settings") }
+    }
+    private fun bindings(draft:CommandGuiDraft,back:()->Screen):Screen {
+        fun again():Screen=bindings(draft,back)
+        return SettingsPanel("Command Keybinds",back,"Save & back",{ save(draft,{ again() },back) }) { _,w ->
+            val rows=mutableListOf<UIComponent>()
+            rows+=GuiKit.description(w,"Edits are staged until Save & back. Use Edit for command, capture, modifiers and filters.")
+            rows+=GuiKit.toggleRow(w,"Allow All in GUI",draft.profile.allowAllInGui,
+                "Container GUIs only; never chat, anvils, settings or focused text fields.") { draft.allowAllInGui(it) }
+            rows+=GuiKit.row(w).apply { child(GuiKit.button("Add New Keybind",140) {
+                guarded({ again() }) { draft.addBind();open(again()) }
+            }) }
+            if(draft.profile.binds.isEmpty()) rows+=GuiKit.description(w,"No keybinds. New entries and module toggles default off.")
+            draft.profile.binds.forEach { bind ->
+                rows+=GuiKit.row(w).apply {
+                    val nameWidth=(w-10-58-44-50-15).coerceAtLeast(30)
+                    child(FlatTextbox(Sizing.fixed(nameWidth-4)).apply {
+                        text(bind.name);tooltip(Component.literal("Keybind name"));onChanged().subscribe { value -> draft.updateBind(bind.id) { it.copy(name=value) } }
+                    })
+                    child(GuiKit.toggle(bind.enabled) { value -> draft.updateBind(bind.id) { it.copy(enabled=value) } })
+                    child(GuiKit.button("Edit",44) {
+                        val latest=draft.profile.binds.first { it.id==bind.id }
+                        open(bindingEditor(draft,BindEdit(latest),back))
+                    })
+                    child(GuiKit.button("Delete",50,true) { draft.removeBind(bind.id);open(again()) })
+                }
+            }
+            rows
+        }
+    }
+    private data class BindEdit(var value:CommandBinding)
+    private fun bindingEditor(draft:CommandGuiDraft,edit:BindEdit,back:()->Screen):Screen {
+        fun list():Screen=bindings(draft,back)
+        return SettingsPanel("Command Keybind: ${edit.value.name}",{ list() },"Done (stage)",{
+            draft.updateBind(edit.value.id) { edit.value };open(list())
+        }) { panel,w ->
+            listOf(
+                GuiKit.textRow(w,"Name",edit.value.name) { edit.value=edit.value.copy(name=it) },
+                GuiKit.textRow(w,"Command / message",edit.value.command,
+                    "Use / for commands; otherwise sends chat. Max 256 characters.") { edit.value=edit.value.copy(command=it) },
+                panel.inputRow(w,edit.value.device,edit.value.key) { d,k -> edit.value=edit.value.copy(device=d,key=k) },
+                GuiKit.description(w,"Click keybind, then press a main key or mouse button. Escape cancels capture; Backspace unbinds. Set modifiers separately."),
+                GuiKit.row(w).apply {
+                    child(GuiKit.label("Modifier"))
+                    child(GuiKit.button(edit.value.modifier.name,80) {}.apply {
+                        onPress {
+                            val values=Modifier.entries
+                            edit.value=edit.value.copy(modifier=values[(edit.value.modifier.ordinal+1)%values.size])
+                            message=Component.literal(edit.value.modifier.name)
+                        }
+                    })
+                },
+                GuiKit.toggleRow(w,"Enabled",edit.value.enabled) { edit.value=edit.value.copy(enabled=it) },
+                GuiKit.toggleRow(w,"Allow in GUI",edit.value.allowInGui) { edit.value=edit.value.copy(allowInGui=it) },
+                GuiKit.textRow(w,"Class Filter",edit.value.classFilters.joinToString(", "),
+                    "Comma-separated Healer, Mage, Berserk, Archer, Tank. Empty = unrestricted; unknown context blocks filtered binds.") { edit.value=edit.value.copy(classFilters=filters(it)) },
+                GuiKit.textRow(w,"Island Filter",edit.value.islandFilters.joinToString(", "),
+                    "Comma-separated tab-list Area/Dungeon labels. Empty = unrestricted.") { edit.value=edit.value.copy(islandFilters=filters(it)) },
+                GuiKit.description(w,"Done stages this row. Save & back on the list persists it. Cancel / back discards this editor's un-staged edits.")
+            )
+        }
+    }
+    private fun shortcuts(draft:CommandGuiDraft,back:()->Screen):Screen {
+        fun again():Screen=shortcuts(draft,back)
+        return SettingsPanel("Command Shortcuts",back,"Save & back",{ save(draft,{ again() },back) }) { _,w ->
+            val rows=mutableListOf<UIComponent>()
+            rows+=GuiKit.description(w,"Exact alias names, optional leading /. Arguments are appended. Changes apply live after Save & back.")
+            rows+=GuiKit.row(w).apply { child(GuiKit.button("Add New Shortcut",145) {
+                guarded({ again() }) { draft.addShortcut();open(again()) }
+            }) }
+            if(draft.profile.shortcuts.isEmpty()) rows+=GuiKit.description(w,"No shortcuts. The module and each new entry default off.")
+            draft.profile.shortcuts.forEach { shortcut ->
+                val block=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content()).apply {
+                    surface(Surface.flat(0x55101010))
+                    child(GuiKit.row(w).apply {
+                        child(FlatTextbox(Sizing.fixed((w-18)/2-4)).apply {
+                            text(shortcut.alias);setSuggestion("Shortcut /alias");tooltip(Component.literal("Shortcut name"))
+                            onChanged().subscribe { v -> draft.updateShortcut(shortcut.id) { it.copy(alias=v) } }
+                        })
+                        child(FlatTextbox(Sizing.fixed((w-18)/2-4)).apply {
+                            text(shortcut.message);setSuggestion("Command / chat");tooltip(Component.literal("Message / command"))
+                            onChanged().subscribe { v -> draft.updateShortcut(shortcut.id) { it.copy(message=v) } }
+                        })
+                    })
+                    child(GuiKit.row(w).apply {
+                        child(GuiKit.toggle(shortcut.enabled) { v -> draft.updateShortcut(shortcut.id) { it.copy(enabled=v) } })
+                        child(GuiKit.button("Delete",50,true) { draft.removeShortcut(shortcut.id);open(again()) })
+                    })
+                }
+                rows+=block
+            }
+            rows+=GuiKit.description(w,"/solyanka and registered client commands keep priority. Cycles and overlong expansions are rejected. Alias completion nodes remain pending.")
+            rows
+        }
+    }
+    private fun filters(s:String)=s.split(',').map { it.trim() }.filter { it.isNotEmpty() }.distinct()
 }

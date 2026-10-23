@@ -1,0 +1,57 @@
+{
+  "game_versions": [
+    "26.2"
+  ],
+  "loaders": [
+    "fabric",
+    "quilt"
+  ],
+  "environment": "client_and_server",
+  "id": "1h9g10ru",
+  "project_id": "ccKDOlHs",
+  "author_id": "qGOpk8Hs",
+  "featured": false,
+  "name": "[26.2] o\u03c9o - 0.13.1",
+  "version_number": "0.13.1+26.2",
+  "changelog": "This is a straightforward port to 26.2",
+  "changelog_url": null,
+  "date_published": "2026-08-19T00:17:32.471039Z",
+  "downloads": 352717,
+  "version_type": "release",
+  "status": "listed",
+  "requested_status": null,
+  "files": [
+    {
+      "id": "2NAnau0r",
+      "hashes": {
+        "sha1": "3111139453af67f14cb32e572bde7ae93126477b",
+        "sha512": "d7393129fa9d8c42c244b96fa66bdbbbcd23967fc6d393a689fbf1b0ee11f6da297c2ddcde3c3e476d2d07b73b600ad3d68c739786c729a4dc13a03e72ac0f82"
+      },
+      "url": "https://cdn.modrinth.com/data/ccKDOlHs/versions/1h9g10ru/owo-lib-0.13.1%2B26.2.jar",
+      "filename": "owo-lib-0.13.1+26.2.jar",
+      "primary": true,
+      "size": 2269252,
+      "file_type": null
+    },
+    {
+      "id": "Xz7yiBsd",
+      "hashes": {
+        "sha512": "e741f7c217dcd51e7c8a5252f56550cfc4e3ed2f82f10e6f1a8637191a9271df0da820a1fc7b4353316b95c9d7d1df22b6a3817a20df1f9a8951c66301403d57",
+        "sha1": "054f19883365411ebf2a54bfe5027a1da90536dc"
+      },
+      "url": "https://cdn.modrinth.com/data/ccKDOlHs/versions/1h9g10ru/owo-lib-0.13.1%2B26.2-sources.jar",
+      "filename": "owo-lib-0.13.1+26.2-sources.jar",
+      "primary": false,
+      "size": 750198,
+      "file_type": null
+    }
+  ],
+  "dependencies": [
+    {
+      "version_id": null,
+      "project_id": "P7dR8mSH",
+      "file_name": null,
+      "dependency_type": "required"
+    }
+  ]
+}

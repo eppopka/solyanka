@@ -7,9 +7,9 @@ Build scripts/wrapper, Kotlin client entrypoint, module lifecycle, persistence, 
 
 ## M1 — usable settings + input/commands (implemented/build-tested in 0.2; in-game acceptance pending)
 
-See M1.md for delivered behavior and differences. Alias completion/help nodes remain a follow-up. No M1 runtime compatibility claim is made yet.
+The initial YACL GUI was replaced in 0.2.1 by the adapted NoFrills/owo GUI; /solyanka opens it directly. See GUI_PORT.md and historical M1.md for delivered behavior and differences. Alias completion/help nodes remain a follow-up. No M1 runtime compatibility claim is made yet.
 
-YACL + Mod Menu integration, typed settings, translation keys, input focus routing, command keybinds and shortcuts. Keep fixed command boundaries/loop prevention. Acceptance: bind, execute, persist, reopen, restart, no triggering while typing.
+NoFrills/owo + optional Mod Menu integration, typed settings, translation keys, input focus routing, command keybinds and shortcuts. Keep fixed command boundaries/loop prevention. Acceptance: bind, execute, persist, reopen, restart, no triggering while typing.
 
 ## M2 — shared context and low-risk information
 SkyBlock/location/item parsing, chat event adapter, basic Chat Tweaks + Info Tooltips; pricing provider contract/cache/error handling before full Price Tooltips. GPLv3 project decision is now recorded; retain attribution/source and inspect additional file/asset provenance before each port.

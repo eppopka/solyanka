@@ -1,18 +1,27 @@
 solyanka — Minecraft 26.2 utility mod
-Original solyanka source is distributed under GPL-3.0-only. See LICENSE.
-No warranty; source is included in the companion source distribution.
+Project source is distributed under GPL-3.0-only. See LICENSE.
+No warranty; corresponding project source is included in the companion ZIP.
 
-Command behavior was adapted/reimplemented after reviewing NoFrills:
+GUI and command behavior adapted from NoFrills:
 https://github.com/WhatYouThing/NoFrills
 Pinned source: 74e9317c1a7b8484a575b2f177479f5e3f2bfb9a
 Author: WhatYouThing and NoFrills contributors.
 License: GNU General Public License version 3 (repository grant: GPL-3.0).
-Changed for solyanka: Kotlin models, YACL UI, typed persistence, exact device
-matching, focus safety, conservative context filters, live alias resolution,
-cycle/length validation and bounded synchronous dispatch. No owo/Orbit code
-or NoFrills runtime is bundled. See docs/M1.md for differences and limits.
 
-YACL (LGPL-3.0-or-later), Mod Menu (MIT), Fabric and Fabric Language Kotlin
-remain external dependencies; not bundled in this mod JAR.
+GUI derivatives include ClickGui/Category/Module, Settings/InnerSettingsScreen,
+FlatTextbox, PlainLabel, ToggleButton, KeybindButton and Rendering.drawBorder.
+Changed for solyanka: Kotlin port, Minecraft 26.2 screen/navigation APIs,
+solyanka module adapter, staged/validated command-profile editors, typed input
+device capture, known-feature-only catalog and explicit screen cleanup.
+The original NoFrills module/config/event runtime is not bundled.
+See docs/GUI_PORT.md and docs/M1.md for source paths and behavior differences.
+
+Command adaptations retain typed persistence, device separation, focus guards,
+conservative context filters, live aliases and cycle/length checks.
+
+owo-lib (MIT), Mod Menu (MIT), Fabric and Fabric Language Kotlin are separate
+external runtime dependencies, not bundled into this mod JAR. YACL is no
+longer a solyanka dependency as of 0.2.1.
 Gradle wrapper bootstrap files originate from FabricMC/fabric-example-mod (CC0).
-Other upstream implementations and artwork are not included in this milestone.
+Other requested upstream gameplay/render implementations and artwork are not
+included yet; their separate license/provenance checks remain pending.

@@ -101,8 +101,9 @@ object SolyankaClient : ClientModInitializer {
         }
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             dispatcher.register(literal("solyanka")
-                .executes { ctx ->
-                    ctx.source.sendFeedback(Component.literal("solyanka 0.2 — /solyanka config, /solyanka status")); 1
+                .executes {
+                    // Open next tick, after vanilla has finished closing the chat screen.
+                    openSettingsRequested = true; 1
                 }
                 .then(literal("config").executes {
                     // Defer opening until after chat submission has finished closing ChatScreen.
@@ -125,7 +126,7 @@ object SolyankaClient : ClientModInitializer {
                 })))
         }
         initialized = true
-        logger.info("solyanka 0.2 initialized for Minecraft 26.2")
+        logger.info("solyanka 0.2.1 initialized for Minecraft 26.2")
     }
 
     /** Validate and persist first; do not activate an invalid or unwritable UI draft. */

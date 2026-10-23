@@ -1,0 +1,16 @@
+[
+  {
+    "target": "net.minecraft.client.KeyboardHandler",
+    "method": "keyPress",
+    "descriptor": "(JILnet/minecraft/client/input/KeyEvent;)V",
+    "compiled_injection_descriptor": "(JILnet/minecraft/client/input/KeyEvent;Lorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V",
+    "check": "static descriptor/annotation match only; runtime application not tested"
+  },
+  {
+    "target": "net.minecraft.client.MouseHandler",
+    "method": "onButton",
+    "descriptor": "(JLnet/minecraft/client/input/MouseButtonInfo;I)V",
+    "compiled_injection_descriptor": "(JLnet/minecraft/client/input/MouseButtonInfo;ILorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V",
+    "check": "static descriptor/annotation match only; runtime application not tested"
+  }
+]

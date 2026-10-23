@@ -3,7 +3,7 @@
   "id": "solyanka",
   "version": "${version}",
   "name": "solyanka",
-  "description": "Client utility mod: settings, command keybinds and shortcuts; remaining ports in progress.",
+  "description": "Client utility mod with adapted NoFrills GUI, command keybinds and shortcuts; remaining ports in progress.",
   "environment": "client",
   "license": "GPL-3.0-only",
   "entrypoints": {
@@ -23,7 +23,7 @@
     "java": ">=25",
     "fabric-api": "*",
     "fabric-language-kotlin": ">=1.14.2+kotlin.2.4.21",
-    "yet_another_config_lib_v3": ">=3.9.7"
+    "owo": ">=0.13.1+26.2"
   },
   "suggests": {
     "modmenu": ">=20.0.3"

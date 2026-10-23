@@ -1,8 +1,8 @@
 # Feature matrix
 
-**Status (0.2): Command Keybinds and Command Shortcuts are implemented/build-tested, with in-game acceptance and documented follow-ups pending. Every other upstream feature remains a backlog item.**
+**Status (0.2.1): Command Keybinds and Command Shortcuts are implemented/build-tested, with in-game acceptance and documented follow-ups pending. Every other upstream feature remains a backlog item.**
 
-See M1.md for behavior differences and alias-completion limitations. No feature is certified in-game yet.
+See GUI_PORT.md for the NoFrills GUI replacement and M1.md for command behavior differences/alias-completion limitations. No feature is certified in-game yet.
 
 The initial audit locates implementations and major dependencies; it does not certify behavior on Minecraft 26.2. Every requested feature is retained. Supporting files, mixins and assets must be traced before each port.
 

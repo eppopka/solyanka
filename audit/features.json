@@ -115,7 +115,7 @@
     "module": "utility.command_keybinds",
     "risk": "Input focus and server command dispatch",
     "status": "IMPLEMENTED_BUILD_TESTED_INGAME_PENDING",
-    "implementation_notes": "See docs/M1.md; alias completion nodes pending; conservative unknown-context filtering."
+    "implementation_notes": "NoFrills/owo GUI port in docs/GUI_PORT.md; commands build-tested, in-game acceptance and alias completion pending."
   },
   {
     "source": "NoFrills",
@@ -126,7 +126,7 @@
     "module": "utility.command_shortcuts",
     "risk": "Parsing, command precedence and recursion",
     "status": "IMPLEMENTED_BUILD_TESTED_INGAME_PENDING",
-    "implementation_notes": "See docs/M1.md; alias completion nodes pending; conservative unknown-context filtering."
+    "implementation_notes": "NoFrills/owo GUI port in docs/GUI_PORT.md; commands build-tested, in-game acceptance and alias completion pending."
   },
   {
     "source": "NoFrills",

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="dev.solyanka.utility.ProfileCodecTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-23T20:49:27.710Z" hostname="f413c0a7-73b" time="0.048">
+<testsuite name="dev.solyanka.utility.ProfileCodecTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-23T21:14:22.970Z" hostname="f413c0a7-73b" time="0.061">
   <properties/>
-  <testcase name="unknown profile and row fields are retained by stable ID()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.013"/>
-  <testcase name="typed profile round trips()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.021"/>
-  <testcase name="v1 foundation config migrates additively()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.005"/>
+  <testcase name="unknown profile and row fields are retained by stable ID()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.017"/>
+  <testcase name="typed profile round trips()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.031"/>
+  <testcase name="v1 foundation config migrates additively()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.004"/>
   <testcase name="malformed profile preserves original file and denies writes()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.001"/>
   <testcase name="wrong types and fractional keys are rejected()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.001"/>
   <testcase name="failed validation cannot mutate file or in memory settings()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.002"/>

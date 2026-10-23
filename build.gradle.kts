@@ -31,7 +31,7 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${property("loader_version")}")
     implementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_api_version")}")
     implementation("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
-    "clientImplementation"("maven.modrinth:yacl:${property("yacl_version")}")
+    implementation("maven.modrinth:owo-lib:${property("owo_version")}")
     "clientCompileOnly"("maven.modrinth:modmenu:${property("modmenu_version")}")
     "clientRuntimeOnly"("maven.modrinth:modmenu:${property("modmenu_version")}")
     testImplementation(platform("org.junit:junit-bom:5.12.2"))
