@@ -1,0 +1,9 @@
+.gradle/
+.kotlin/
+build/
+run/
+.idea/
+*.iml
+.DS_Store
+*.env
+*.patch

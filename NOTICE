@@ -1,0 +1,6 @@
+solyanka — foundation milestone
+No upstream feature implementation or artwork is incorporated in this milestone.
+Source audit documents identify third-party repositories and their licenses.
+The project owner's license decision is pending. No permission to redistribute
+third-party assets is implied by the presence of an audit record.
+Gradle wrapper files originate from FabricMC/fabric-example-mod (CC0-1.0).

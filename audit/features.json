@@ -1,0 +1,448 @@
+[
+  {
+    "source": "Odin",
+    "feature": "Dungeon Waypoints",
+    "files": [
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/dungeonwaypoints/DialogComponents.kt",
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/dungeonwaypoints/DungeonWaypointEditor.kt",
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/dungeonwaypoints/DungeonWaypointHud.kt",
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/dungeonwaypoints/DungeonWaypointPacks.kt",
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/dungeonwaypoints/DungeonWaypoints.kt",
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/dungeonwaypoints/SecretWaypoints.kt",
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/dungeonwaypoints/TextPromtScreen.kt",
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/dungeonwaypoints/WaypointPackSelectorScreen.kt"
+    ],
+    "module": "dungeon.waypoints",
+    "risk": "Room transforms, secrets, persistence, route packs and editor",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Odin",
+    "feature": "Ice Fill",
+    "files": [
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/puzzlesolvers/IceFillSolver.kt"
+    ],
+    "module": "solver.ice_fill",
+    "risk": "Room coordinates, block updates and route resets",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Odin",
+    "feature": "Blaze",
+    "files": [
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/puzzlesolvers/BlazeSolver.kt"
+    ],
+    "module": "solver.blaze",
+    "risk": "Entity health ordering and room lifecycle",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Odin",
+    "feature": "Creeper Beams",
+    "files": [
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/puzzlesolvers/BeamsSolver.kt"
+    ],
+    "module": "solver.creeper_beams",
+    "risk": "Requires solution JSON and room-to-world transform",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Odin",
+    "feature": "Door Highlight",
+    "files": [
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/DoorHighlight.kt"
+    ],
+    "module": "dungeon.doors",
+    "risk": "Map scanner and world rendering",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Odin",
+    "feature": "Map Info",
+    "files": [
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/MapInfo.kt"
+    ],
+    "module": "dungeon.map_info",
+    "risk": "Dungeon map model and HUD",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Odin",
+    "feature": "Mimic detection/highlight",
+    "files": [
+      "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/Mimic.kt"
+    ],
+    "module": "dungeon.mimic",
+    "risk": "Entity/block evidence and run-state reset",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Odin",
+    "feature": "Tick Timers",
+    "files": [
+      "src/main/kotlin/com/odtheking/odin/features/impl/boss/TickTimers.kt"
+    ],
+    "module": "dungeon.tick_timers",
+    "risk": "Boss chat triggers, tick timebase, multiple HUD elements",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Odin",
+    "feature": "Player Display",
+    "files": [
+      "src/main/kotlin/com/odtheking/odin/features/impl/skyblock/PlayerDisplay.kt"
+    ],
+    "module": "hud.player_display",
+    "risk": "Inspect source-specific player data and UI options",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "NoFrills",
+    "feature": "Chat Tweaks",
+    "files": [
+      "src/main/java/nofrills/features/general/ChatTweaks.java"
+    ],
+    "module": "utility.chat",
+    "risk": "Chat interception and history semantics",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "NoFrills",
+    "feature": "Command Keybinds",
+    "files": [
+      "src/main/java/nofrills/features/general/CommandKeybinds.java"
+    ],
+    "module": "utility.command_keybinds",
+    "risk": "Input focus and server command dispatch",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "NoFrills",
+    "feature": "Command Shortcuts",
+    "files": [
+      "src/main/java/nofrills/features/general/CommandShortcuts.java"
+    ],
+    "module": "utility.command_shortcuts",
+    "risk": "Parsing, command precedence and recursion",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "NoFrills",
+    "feature": "Info Tooltips",
+    "files": [
+      "src/main/java/nofrills/features/general/InfoTooltips.java"
+    ],
+    "module": "utility.info_tooltips",
+    "risk": "SkyBlock item data and tooltip hooks",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "NoFrills",
+    "feature": "Price Tooltips",
+    "files": [
+      "src/main/java/nofrills/features/general/PriceTooltips.java"
+    ],
+    "module": "utility.price_tooltips",
+    "risk": "Pricing API, recipes, cache and stale-data behavior",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "NoFrills",
+    "feature": "No Render",
+    "files": [
+      "src/main/java/nofrills/features/general/NoRender.java"
+    ],
+    "module": "render.suppression",
+    "risk": "Multiple entity/particle/render hooks",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "NoFrills",
+    "feature": "Animation Fix",
+    "files": [
+      "src/main/java/nofrills/features/tweaks/AnimationFix.java"
+    ],
+    "module": "render.animation_fix",
+    "risk": "Version-specific animation hooks",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "NoFrills",
+    "feature": "Middle Click Fix",
+    "files": [
+      "src/main/java/nofrills/features/tweaks/MiddleClickFix.java"
+    ],
+    "module": "utility.middle_click_fix",
+    "risk": "Screen slot input semantics",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "NoFrills",
+    "feature": "Middle Click Override",
+    "files": [
+      "src/main/java/nofrills/features/tweaks/MiddleClickOverride.java"
+    ],
+    "module": "utility.middle_click_override",
+    "risk": "Must arbitrate with middle-click fix",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "NoFrills",
+    "feature": "No Cursor Reset",
+    "files": [
+      "src/main/java/nofrills/features/tweaks/NoCursorReset.java"
+    ],
+    "module": "utility.cursor",
+    "risk": "Mouse grabbing and screen transitions",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "NoFrills",
+    "feature": "No Loading Screen",
+    "files": [
+      "src/main/java/nofrills/features/tweaks/NoLoadingScreen.java"
+    ],
+    "module": "utility.loading_screen",
+    "risk": "Do not bypass world readiness or disconnect screens",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "NoFrills",
+    "feature": "Experiment Solver",
+    "files": [
+      "src/main/java/nofrills/features/solvers/ExperimentSolver.java"
+    ],
+    "module": "solver.experiments",
+    "risk": "Inventory content, menu identity, slot updates and reset",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Skybox",
+    "files": [
+      "src/client/java/dev/stray/client/mixin/SkyRendererMixin.java",
+      "src/client/java/dev/stray/client/visual/WorldTint.java"
+    ],
+    "module": "render.skybox",
+    "risk": "Sky extraction, tint, textures and shader compatibility",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Ambience",
+    "files": [
+      "src/client/java/dev/stray/client/visual/CustomAmbience.java"
+    ],
+    "module": "render.ambience",
+    "risk": "Lighting/time/weather interactions",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Fog",
+    "files": [
+      "src/client/java/dev/stray/client/mixin/FogRendererMixin.java",
+      "src/client/java/dev/stray/client/mixin/sodium/SodiumChunkFogMixin.java",
+      "src/client/java/dev/stray/client/visual/CustomFog.java"
+    ],
+    "module": "render.fog",
+    "risk": "Optional Sodium-specific mixin must be guarded",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Aspect",
+    "files": [
+      "src/client/java/dev/stray/client/render/AspectFov.java"
+    ],
+    "module": "render.aspect",
+    "risk": "Projection and FOV behavior",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Motion Blur",
+    "files": [
+      "src/client/java/dev/stray/client/visual/motionblur/BlurStrengthCalculator.java",
+      "src/client/java/dev/stray/client/visual/motionblur/CameraState.java",
+      "src/client/java/dev/stray/client/visual/motionblur/FrameBlendingManager.java",
+      "src/client/java/dev/stray/client/visual/motionblur/FrameTimer.java",
+      "src/client/java/dev/stray/client/visual/motionblur/GpuBufferUtil.java",
+      "src/client/java/dev/stray/client/visual/motionblur/ManagedUniformBuffer.java",
+      "src/client/java/dev/stray/client/visual/motionblur/MonitorInfoProvider.java",
+      "src/client/java/dev/stray/client/visual/motionblur/MotionBlurShaders.java"
+    ],
+    "module": "render.motion_blur",
+    "risk": "GPU resources, resize, temporal reset, Iris integration",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Player Glow",
+    "files": [
+      "src/client/java/dev/stray/client/render/MobGlowRenderer.java"
+    ],
+    "module": "render.player_glow",
+    "risk": "Player filtering and shared glow pass",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Nametags",
+    "files": [
+      "src/client/java/dev/stray/client/render/NametagRenderer.java"
+    ],
+    "module": "render.nametags",
+    "risk": "Render extraction and text layout",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Block Outline",
+    "files": [
+      "src/client/java/dev/stray/client/render/BlockOutlineGlow.java"
+    ],
+    "module": "render.block_outline",
+    "risk": "Outline framebuffer and render-state restoration",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Picture in Picture",
+    "files": [
+      "src/client/java/dev/stray/client/pip/PipCapture.java",
+      "src/client/java/dev/stray/client/pip/PipWin32.java",
+      "src/client/java/dev/stray/client/render/PipHudRenderer.java"
+    ],
+    "module": "render.pip",
+    "risk": "Actual feature captures another desktop window; Win32/JNA backend",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Titanium ESP",
+    "files": [
+      "src/client/java/dev/stray/client/mining/TitaniumTracker.java"
+    ],
+    "module": "mining.titanium",
+    "risk": "Block tracking, location context and world renderer",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Skill Progress",
+    "files": [
+      "src/client/java/dev/stray/client/render/SkillProgressHudRenderer.java",
+      "src/client/java/dev/stray/client/skill/SkillProgressTracker.java"
+    ],
+    "module": "hud.skill_progress",
+    "risk": "Chat/state tracking and persistence",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Inventory",
+    "files": [
+      "src/client/java/dev/stray/client/render/InventoryHudRenderer.java"
+    ],
+    "module": "hud.inventory",
+    "risk": "Item renderer and HUD positions",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Scoreboard",
+    "files": [
+      "src/client/java/dev/stray/client/render/ScoreboardHudRenderer.java"
+    ],
+    "module": "hud.scoreboard",
+    "risk": "Vanilla replacement and text layout",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Item Name",
+    "files": [
+      "src/client/java/dev/stray/client/render/HeldItemHudRenderer.java",
+      "src/client/java/dev/stray/client/render/VanillaHud.java"
+    ],
+    "module": "hud.item_name",
+    "risk": "Confirm precise feature toggle semantics before porting",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Themed Chat",
+    "files": [
+      "src/client/java/dev/stray/client/mixin/ChatComponentAccessor.java",
+      "src/client/java/dev/stray/client/mixin/ChatComponentFillMixin.java",
+      "src/client/java/dev/stray/client/mixin/ChatComponentMixin.java",
+      "src/client/java/dev/stray/client/ui/ChatChrome.java"
+    ],
+    "module": "hud.themed_chat",
+    "risk": "Chat layout, clipping, input and history",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "CS2 Knife",
+    "files": [
+      "src/client/java/dev/stray/client/cs2/Cs2Knives.java",
+      "src/client/java/dev/stray/client/cs2/Cs2Library.java",
+      "src/client/java/dev/stray/client/cs2/Cs2Viewmodel.java",
+      "src/client/java/dev/stray/client/cs2/GripDefaults.java",
+      "src/client/java/dev/stray/client/cs2/anim/NmClip.java",
+      "src/client/java/dev/stray/client/cs2/anim/NmSkeleton.java",
+      "src/client/java/dev/stray/client/cs2/anim/Pose.java",
+      "src/client/java/dev/stray/client/cs2/pack/Cs2Pack.java",
+      "src/client/java/dev/stray/client/cs2/pack/Cs2PackBuilder.java",
+      "src/client/java/dev/stray/client/cs2/render/KnifeGpu.java",
+      "src/client/java/dev/stray/client/cs2/render/KnifeRender.java",
+      "src/client/java/dev/stray/client/cs2/render/SoftwareRender.java",
+      "src/client/java/dev/stray/client/cs2/s2/Bcn.java",
+      "src/client/java/dev/stray/client/cs2/s2/Kv1.java",
+      "src/client/java/dev/stray/client/cs2/s2/Kv3.java",
+      "src/client/java/dev/stray/client/cs2/s2/Lz4.java",
+      "src/client/java/dev/stray/client/cs2/s2/Meshopt.java",
+      "src/client/java/dev/stray/client/cs2/s2/Resource.java",
+      "src/client/java/dev/stray/client/cs2/s2/S2Model.java",
+      "src/client/java/dev/stray/client/cs2/s2/Vpk.java",
+      "src/client/java/dev/stray/client/cs2/s2/Vtex.java",
+      "src/client/java/dev/stray/client/cs2/s2/Zstd.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/BitInputStream.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/BitOutputStream.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/Constants.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/FiniteStateEntropy.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/FrameHeader.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/FseCompressionTable.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/FseTableReader.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/Histogram.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/Huffman.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/MalformedInputException.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/UnsafeUtil.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/Util.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/XxHash64.java",
+      "src/client/java/dev/stray/client/cs2/s2/zstd/ZstdFrameDecompressor.java",
+      "src/client/java/dev/stray/client/cs2/skin/Assets.java",
+      "src/client/java/dev/stray/client/cs2/skin/Composer.java",
+      "src/client/java/dev/stray/client/cs2/skin/KnifeMaterial.java",
+      "src/client/java/dev/stray/client/cs2/skin/PaintKit.java",
+      "src/client/java/dev/stray/client/cs2/skin/Tex.java",
+      "src/client/java/dev/stray/client/cs2/skin/ValveRandom.java"
+    ],
+    "module": "cosmetic.cs2_knife",
+    "risk": "Model/material/shader assets and their provenance need separate review",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  },
+  {
+    "source": "Stray",
+    "feature": "Held Item",
+    "files": [
+      "src/client/java/dev/stray/client/render/HeldItemHudRenderer.java",
+      "src/client/java/dev/stray/client/visual/HeldItemShader.java"
+    ],
+    "module": "cosmetic.held_item",
+    "risk": "Separate HUD/shader behavior from knife and item-name features",
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+  }
+]

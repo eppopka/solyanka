@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "solyanka",
+  "version": "${version}",
+  "name": "solyanka",
+  "description": "Client utility mod. Foundation milestone; upstream features are not yet ported.",
+  "environment": "client",
+  "license": "LicenseRef-All-Rights-Reserved",
+  "entrypoints": {
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "dev.solyanka.client.SolyankaClient"
+      }
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.20.1",
+    "minecraft": "=26.2",
+    "java": ">=25",
+    "fabric-api": "*",
+    "fabric-language-kotlin": ">=1.14.2+kotlin.2.4.21"
+  }
+}

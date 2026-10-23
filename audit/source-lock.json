@@ -1,0 +1,32 @@
+{
+  "audited_at_utc": "2026-10-23",
+  "repositories": {
+    "Odin": {
+      "commit": "19118e15bfb57a953c3264373a32b42171c5f281",
+      "url": "https://github.com/odtheking/Odin",
+      "license": "BSD-3-Clause"
+    },
+    "NoFrills": {
+      "commit": "74e9317c1a7b8484a575b2f177479f5e3f2bfb9a",
+      "url": "https://github.com/WhatYouThing/NoFrills",
+      "license": "GPL-3.0 (check file headers for only/or-later before porting)"
+    },
+    "Stray": {
+      "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+      "url": "https://github.com/camberX/Stray",
+      "license": "CC0-1.0"
+    },
+    "noammaddons": {
+      "commit": "b552eb85050c9d12ff3aabf11ab0c793d1565361",
+      "url": "https://github.com/noamm9/noammaddons",
+      "license": "CC0-1.0"
+    }
+  },
+  "archive": {
+    "filename": "impl.zip",
+    "sha256": "94833f79bfeb5a6213ab719f321412848b22ca180ed7e64105ee4d707d39edf3",
+    "kotlin_files": 34,
+    "feature_objects": 23
+  },
+  "scope": "Entry-point, imports and integration audit; not a full correctness or security review."
+}
