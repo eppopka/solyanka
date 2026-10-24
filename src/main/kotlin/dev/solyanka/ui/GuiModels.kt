@@ -8,6 +8,10 @@ import dev.solyanka.utility.*
 data class FeatureCardInfo(val id: String, val name: String, val category: String, val description: String)
 object GuiCatalog {
     val features = listOf(
+        FeatureCardInfo("render.player_glow","Player Glow","Render","Native player silhouette outlines; optional visible-only mode."),
+        FeatureCardInfo("render.nametags","Nametags","Render","Player name, health and distance panels; real-account filter."),
+        FeatureCardInfo("render.block_outline","Block Outline","Render","Selected voxel shape contour and fill; no blur shader."),
+        FeatureCardInfo("mining.titanium","Titanium ESP","Render","Loaded-chunk titanium scanner with commission and region filters."),
         FeatureCardInfo("hud.inventory","Inventory HUD","HUD","Stray: inventory grid, optional armor/offhand and hotbar, filled count; display only."),
         FeatureCardInfo("hud.item_name","Item Name HUD","HUD","Stray: persistent styled held-item name and optional vanilla-name suppression."),
         FeatureCardInfo("hud.skill_progress","Skill Progress HUD","HUD","Stray: SkyBlock skill gains, ratio/percent/MAXED and observed level hints; no network requests."),

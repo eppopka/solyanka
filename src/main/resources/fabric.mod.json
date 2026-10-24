@@ -3,7 +3,7 @@
   "id": "solyanka",
   "version": "${version}",
   "name": "solyanka",
-  "description": "Minecraft 26.2 utility mod: Odin dungeon/HUD adapters, NoFrills utilities/experiments, Stray environment controls and instant-save GUI. Full feature backlog remains in progress.",
+  "description": "Minecraft 26.2 utility mod: Odin dungeon/HUD adapters, NoFrills utilities/experiments, Stray HUD/environment/world visuals and instant-save GUI. Full feature backlog remains in progress.",
   "environment": "client",
   "license": "GPL-3.0-only",
   "entrypoints": {

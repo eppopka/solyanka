@@ -128,3 +128,11 @@ The XP table source comment cites the Hypixel SkyBlock Skills wiki; these are
 source-derived game data, not an independent current-server accuracy guarantee.
 Vanilla item icons are requested from the installed game; no game assets are bundled.
 AetherOSSettings is excluded by user request and has not been implemented.
+
+World visuals batch 0.7.0: Stray CC0 commit d91fcd4515b4eda647ee8fd7fa99408f473e5718.
+Audited MobGlowRenderer.java, NametagRenderer.java, BlockOutlineGlow.java,
+TitaniumTracker.java, MiningTracker.java, MiningAreas.java, EntityRendererMixin.java
+and MinecraftMixin.java. Native 26.2 outlines replace source glow shaders; block
+selection uses contour/fill without source blur. Nametags are player-only.
+MiningAreas marker coordinates retain upstream SkyHanni graph-node attribution.
+See audit/stray-world-source-manifest.json and docs/M6.md for scope/limitations.

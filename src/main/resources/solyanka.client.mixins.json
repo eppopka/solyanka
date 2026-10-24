@@ -33,7 +33,10 @@
     "AmbiencePrecipitationMixin",
     "AspectProjectionMixin",
     "AspectCameraMixin",
-    "ExperienceBarMixin"
+    "ExperienceBarMixin",
+    "PlayerGlowMinecraftMixin",
+    "VisualEntityStateMixin",
+    "VisualEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

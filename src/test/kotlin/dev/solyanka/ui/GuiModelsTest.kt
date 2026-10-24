@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test
 class GuiModelsTest {
     @Test fun `catalog only contains implemented unique module cards`() {
         val cards=GuiCatalog.search("").values.flatten()
-        assertEquals(setOf("hud.inventory","hud.item_name","hud.skill_progress","render.ambience","render.aspect","render.fog","dungeon.waypoints","dungeon.door_highlight","dungeon.map_info","solver.ice_fill","solver.blaze","solver.creeper_beams","dungeon.mimic","custom.mimic_chest","utility.price_tooltips","solver.experiments","render.suppression","utility.command_keybinds","utility.command_shortcuts","core.diagnostics","utility.chat","utility.info_tooltips","dungeon.tick_timers","hud.player_display","render.animation_fix","utility.middle_click_fix","utility.middle_click_override","utility.cursor","utility.loading_screen"),cards.map { it.id }.toSet())
-        assertEquals(29,cards.size)
+        assertEquals(setOf("render.player_glow","render.nametags","render.block_outline","mining.titanium","hud.inventory","hud.item_name","hud.skill_progress","render.ambience","render.aspect","render.fog","dungeon.waypoints","dungeon.door_highlight","dungeon.map_info","solver.ice_fill","solver.blaze","solver.creeper_beams","dungeon.mimic","custom.mimic_chest","utility.price_tooltips","solver.experiments","render.suppression","utility.command_keybinds","utility.command_shortcuts","core.diagnostics","utility.chat","utility.info_tooltips","dungeon.tick_timers","hud.player_display","render.animation_fix","utility.middle_click_fix","utility.middle_click_override","utility.cursor","utility.loading_screen"),cards.map { it.id }.toSet())
+        assertEquals(33,cards.size)
     }
     @Test fun `search ignores case and whitespace and includes descriptions`() {
         assertEquals("utility.command_keybinds",GuiCatalog.search("  COMMAND   keyBINDS ").values.flatten().single().id)

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.ui.GuiModelsTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-24T11:25:13.250Z" hostname="2d8e288e-7a4" time="0.042">
+  <properties/>
+  <testcase name="invalid IDs and stale editor updates cannot mutate profile()" classname="dev.solyanka.ui.GuiModelsTest" time="0.006"/>
+  <testcase name="catalog only contains implemented unique module cards()" classname="dev.solyanka.ui.GuiModelsTest" time="0.007"/>
+  <testcase name="new entries are disabled and removing them restores draft()" classname="dev.solyanka.ui.GuiModelsTest" time="0.001"/>
+  <testcase name="global GUI option is staged()" classname="dev.solyanka.ui.GuiModelsTest" time="0.001"/>
+  <testcase name="list limit enforced before add()" classname="dev.solyanka.ui.GuiModelsTest" time="0.006"/>
+  <testcase name="invalid staged entries fail validation without changing source()" classname="dev.solyanka.ui.GuiModelsTest" time="0.003"/>
+  <testcase name="search ignores case and whitespace and includes descriptions()" classname="dev.solyanka.ui.GuiModelsTest" time="0.005"/>
+  <testcase name="stable IDs survive editor changes()" classname="dev.solyanka.ui.GuiModelsTest" time="0.001"/>
+  <testcase name="cards are sorted within categories()" classname="dev.solyanka.ui.GuiModelsTest" time="0.003"/>
+  <testcase name="draft stages bind changes without mutating initial profile()" classname="dev.solyanka.ui.GuiModelsTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

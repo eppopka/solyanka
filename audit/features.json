@@ -321,7 +321,9 @@
     ],
     "module": "render.player_glow",
     "risk": "Player filtering and shared glow pass",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.7.0-dev",
+    "notes": "Native opaque silhouette; source blur styles not ported. See docs/M6.md. In-game/GPU acceptance pending."
   },
   {
     "source": "Stray",
@@ -331,7 +333,9 @@
     ],
     "module": "render.nametags",
     "risk": "Render extraction and text layout",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.7.0-dev",
+    "notes": "Player-only projection; source mob/badge/cosmetic systems not ported. See docs/M6.md. In-game/GPU acceptance pending."
   },
   {
     "source": "Stray",
@@ -341,7 +345,9 @@
     ],
     "module": "render.block_outline",
     "risk": "Outline framebuffer and render-state restoration",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.7.0-dev",
+    "notes": "Voxel contour/fill adapted; source glow blur remains pending. See docs/M6.md. In-game/GPU acceptance pending."
   },
   {
     "source": "Stray",
@@ -363,7 +369,9 @@
     ],
     "module": "mining.titanium",
     "risk": "Block tracking, location context and world renderer",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.7.0-dev",
+    "notes": "Loaded-only bounded scanner; commission/approximate node-region filter. See docs/M6.md. In-game/GPU acceptance pending."
   },
   {
     "source": "Stray",
@@ -374,7 +382,9 @@
     ],
     "module": "hud.skill_progress",
     "risk": "Chat/state tracking and persistence",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.6.0-dev",
+    "notes": "Prior release adaptation; see README 0.6.0 and audit/stray-hud-source-manifest.json. In-game acceptance pending."
   },
   {
     "source": "Stray",
@@ -384,7 +394,9 @@
     ],
     "module": "hud.inventory",
     "risk": "Item renderer and HUD positions",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.6.0-dev",
+    "notes": "Prior release adaptation; see README 0.6.0 and audit/stray-hud-source-manifest.json. In-game acceptance pending."
   },
   {
     "source": "Stray",
@@ -405,7 +417,9 @@
     ],
     "module": "hud.item_name",
     "risk": "Confirm precise feature toggle semantics before porting",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.6.0-dev",
+    "notes": "Prior release adaptation; see README 0.6.0 and audit/stray-hud-source-manifest.json. In-game acceptance pending."
   },
   {
     "source": "Stray",

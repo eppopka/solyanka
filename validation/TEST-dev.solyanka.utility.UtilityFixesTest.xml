@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="dev.solyanka.utility.UtilityFixesTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-10-24T11:25:13.746Z" hostname="2d8e288e-7a4" time="0.019">
+<testsuite name="dev.solyanka.utility.UtilityFixesTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-10-24T11:43:31.877Z" hostname="2d8e288e-7a4" time="0.01">
   <properties/>
-  <testcase name="all transaction lore lines qualify but substrings do not()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.002"/>
+  <testcase name="all transaction lore lines qualify but substrings do not()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.001"/>
   <testcase name="loadout edit prevents override even in whitelist()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
-  <testcase name="paginated exact blacklist and whitelist match source()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.001"/>
-  <testcase name="only manual left pickup and real SkyBlock context qualify()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.001"/>
-  <testcase name="cursor starts empty and captures finite positions()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
-  <testcase name="cursor clamps stored position on resize and rejects zero windows()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.001"/>
+  <testcase name="paginated exact blacklist and whitelist match source()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
+  <testcase name="only manual left pickup and real SkyBlock context qualify()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
+  <testcase name="cursor starts empty and captures finite positions()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.002"/>
+  <testcase name="cursor clamps stored position on resize and rejects zero windows()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
   <testcase name="generic menu icons without SkyBlock ID qualify()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.001"/>
-  <testcase name="loading disabled and all server opt in modes()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
+  <testcase name="loading disabled and all server opt in modes()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.001"/>
   <testcase name="loading guard leaves singleplayer and LAN intact by default()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
-  <testcase name="ordinary real item does not override unless whitelisted or transaction()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.004"/>
-  <testcase name="cursor expires only in world without GUI()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
+  <testcase name="ordinary real item does not override unless whitelisted or transaction()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
+  <testcase name="cursor expires only in world without GUI()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.001"/>
   <testcase name="bingo phone and all source menu fragments remain excluded()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
   <testcase name="cursor screen changes restart timeout()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
-  <testcase name="blacklist wins over transactions and absent IDs()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
+  <testcase name="blacklist wins over transactions and absent IDs()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.001"/>
   <testcase name="cursor zero expiry retains until explicit reset()" classname="dev.solyanka.utility.UtilityFixesTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

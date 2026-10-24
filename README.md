@@ -1,17 +1,17 @@
-# solyanka — 0.6.0-dev
+# solyanka — 0.7.0-dev
 
 **Minecraft 26.2 exactly · Fabric · Kotlin · Java 25 · GPL-3.0-only**
 
-This development build has **29 real registered modules (3 new HUDs in this batch)**. `/solyanka` opens the NoFrills-style GUI directly. Right-click settings remain embedded in the same Screen; every valid setting change saves immediately. There is no Save / Save & back button. All master modules default off.
+This development build has **33 real registered modules (4 new world-visual modules in this batch)**. `/solyanka` opens the NoFrills-style GUI directly. Right-click settings remain embedded in the same Screen; every valid setting change saves immediately. There is no Save / Save & back button. All master modules default off.
 
-**The whole requested mod is NOT complete.** Every requested Odin/NoFrills feature category now has an implementation or explicit adaptation, but this is not full upstream option/behavior parity. Ambience, Aspect, Fog, Inventory HUD, Item Name HUD and Skill Progress HUD are adapted from Stray; only Mimic Chest is implemented from impl.zip. AetherOSSettings is explicitly excluded at the user’s request. The rest of Stray and the archive remain tracked in `docs/FEATURE_MATRIX.md` and `audit/archive-inventory.json`. No placeholder toggles are advertised as working.
+**The whole requested mod is NOT complete.** Every requested Odin/NoFrills feature category now has an implementation or explicit adaptation, but this is not full upstream option/behavior parity. Ambience, Aspect, Fog, Inventory HUD, Item Name HUD, Skill Progress HUD, Player Glow, Nametags, Block Outline contour/fill and Titanium ESP are adapted from Stray; only Mimic Chest is implemented from impl.zip. AetherOSSettings is explicitly excluded at the user’s request. The rest of Stray and the archive remain tracked in `docs/FEATURE_MATRIX.md` and `audit/archive-inventory.json`. No placeholder toggles are advertised as working.
 
 ## Install / upgrade
 
 1. Back up `config/solyanka.json` and any existing local market/waypoint files. Remove older solyanka JARs.
 2. Use **Minecraft 26.2**, **Java 25**, **Fabric Loader 0.20.1+**.
 3. Install **Fabric API 0.161.0+26.2**, **Fabric Language Kotlin 1.14.2+kotlin.2.4.21**, and **owo-lib 0.13.1+26.2**.
-4. Install the ordinary **solyanka-0.6.0-dev.jar**, not the sources JAR. Optional: **Mod Menu 20.0.3**.
+4. Install the ordinary **solyanka-0.7.0-dev.jar**, not the sources JAR. Optional: **Mod Menu 20.0.3**.
 
 YACL is not required by solyanka. Odin/NoFrills/Stray themselves are not dependencies. Do not install multiple solyanka builds. Existing solyanka settings/unknown config fields are preserved.
 
@@ -23,7 +23,17 @@ YACL is not required by solyanka. Odin/NoFrills/Stray themselves are not depende
 - GUI input, scrolling, key capture and tooltips remain modal; underlying cards/search cannot be activated through settings.
 - Commands: `/solyanka status`, `/solyanka toggle <module-id>`, `/solyanka gui` (HUD editor). The timed preview commands were removed in 0.5.2.
 
-## New in 0.6.0 — XP bar and three Stray HUDs
+## New in 0.7.0 — world visuals
+
+- **Player Glow:** native silhouette outlines, range/color and visible-only mode; preserves server glow. Not source blur-style parity.
+- **Nametags:** player-only labels with health/distance, background/scale, optional third-person self and real-account filter.
+- **Block Outline:** actual selected voxel-shape contour and fill, width/color/depth controls. **Source glow blur is still pending.**
+- **Titanium ESP:** bounded loaded-chunk scanner, commission/approximate regional filtering, optional All, labels/fill/tracers. SkyBlock mining-area guard remains required.
+- Every new master defaults off. Settings use the same embedded instant-save panels, sliders and color palette.
+
+Read `docs/M6.md` for exact limitations, budgets and manual acceptance steps. No in-game or GPU compatibility claim.
+
+## Previous: 0.6.0 — XP bar and three Stray HUDs
 
 - **Player Display → Hide XP Bar:** independent from Hide XP Level. SkyBlock and Player Display master gates apply. Only ExperienceBar background/progress extraction is cancelled; INFO_BAR/mount/locator bars are not cancelled.
 - **Inventory HUD:** live 27-slot inventory grid; optional hotbar with selected-slot outline, armor/offhand, filled /41 count, minimal style and background. Item counts/durability use vanilla decorations. Display only: no click, pickup, swap or item automation.

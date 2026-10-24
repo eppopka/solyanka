@@ -30,6 +30,7 @@ object FeatureUi {
     fun open(id:String,host:NoFrillsClickGui,model:InstantSettings) {
         val v=View(host,model)
         when(id) {
+            SolyankaClient.PLAYER_GLOW,SolyankaClient.NAMETAGS,SolyankaClient.BLOCK_OUTLINE,SolyankaClient.TITANIUM->WorldVisualUi.open(id,host,model)
             SolyankaClient.INVENTORY_HUD,SolyankaClient.ITEM_NAME_HUD,SolyankaClient.SKILL_HUD->ExtraHudUi.open(id,host,model)
             SolyankaClient.WAYPOINTS->WaypointUi.open(host,model)
             SolyankaClient.AMBIENCE,SolyankaClient.ASPECT,SolyankaClient.FOG,SolyankaClient.DOORS,SolyankaClient.MAP_INFO,SolyankaClient.ICE,SolyankaClient.BLAZE,SolyankaClient.BEAMS,SolyankaClient.MIMIC,SolyankaClient.MIMIC_CHEST,SolyankaClient.PRICES,SolyankaClient.EXPERIMENTS,SolyankaClient.SUPPRESSION -> AdvancedUi.open(id,host,model)

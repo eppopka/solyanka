@@ -1,0 +1,50 @@
+[
+  {
+    "file": "BlockOutlineGlow.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "1d4dbe86b747faccfe70d18f2a3af8cf8849e870a03ff4b4d255340ce8b809f4",
+    "status": "audited; adapted subset only; see docs/M6.md"
+  },
+  {
+    "file": "EntityRendererMixin.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "e211e1e21e12b94f6882c46ecaf6e77a6b9ef289c94feb7dcee74bff20046cb4",
+    "status": "audited; adapted subset only; see docs/M6.md"
+  },
+  {
+    "file": "MinecraftMixin.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "d6930e010d58be7821f3a14b8b5d864e4b9780c8c03f1560ce20100c193e69f7",
+    "status": "audited; adapted subset only; see docs/M6.md"
+  },
+  {
+    "file": "MiningAreas.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "8af71ecfc8c60d4a2a7207007a1c7e13a4eb66ad8b15b25104d7965d30e08453",
+    "status": "audited; adapted subset only; see docs/M6.md"
+  },
+  {
+    "file": "MiningTracker.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "df29cca555639954522df9efc5509a8f1247a67ec425c34651ba4c315fe954f2",
+    "status": "audited; adapted subset only; see docs/M6.md"
+  },
+  {
+    "file": "MobGlowRenderer.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "bf00b60b039ea8b02666819d5616afa5ac850ced13e24a44d3a0d2573944de60",
+    "status": "audited; adapted subset only; see docs/M6.md"
+  },
+  {
+    "file": "NametagRenderer.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "b201e3e2c9005fe056204883fa068a12f88500981b393d69e8b2be513df5e70c",
+    "status": "audited; adapted subset only; see docs/M6.md"
+  },
+  {
+    "file": "TitaniumTracker.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "70c06d879671831084fbf92c0ff0f202a3226138fc1db29114d0716249eb95c1",
+    "status": "audited; adapted subset only; see docs/M6.md"
+  }
+]

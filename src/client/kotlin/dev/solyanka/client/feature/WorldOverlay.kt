@@ -10,17 +10,17 @@ import com.mojang.blaze3d.platform.CompareOp
 import net.minecraft.world.phys.*
 
 object WorldOverlay {
- data class Segment(val a:Vec3,val b:Vec3,val color:Int,val depth:Boolean=true)
+ data class Segment(val a:Vec3,val b:Vec3,val color:Int,val depth:Boolean=true,val width:Float=3f)
  data class Fill(val box:AABB,val color:Int,val depth:Boolean=true)
  data class Label(val pos:Vec3,val text:String,val color:Int=-1,val depth:Boolean=true,val scale:Float=1f)
- private var fills:List<Fill> = emptyList()
- private var labels:List<Label> = emptyList()
+ private data class Snapshot(val segments:List<Segment>,val fills:List<Fill>,val labels:List<Label>)
+ @Volatile private var channels:Map<String,Snapshot> = emptyMap()
  private fun fillType(depth:Boolean)=RenderType.create("solyanka_fills_$depth",RenderSetup.builder(RenderPipelines.register(RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET).withLocation("solyanka/fills_$depth").withCull(false).withDepthStencilState(DepthStencilState(if(depth) CompareOp.LESS_THAN_OR_EQUAL else CompareOp.ALWAYS_PASS,false)).withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT)).build())).createRenderSetup())
  private val fillDepth by lazy {fillType(true)}
  private val fillEsp by lazy {fillType(false)}
- private var segments:List<Segment> = emptyList()
  private val esp by lazy { RenderType.create("solyanka_lines_esp",RenderSetup.builder(RenderPipelines.register(RenderPipeline.builder(RenderPipelines.LINES_SNIPPET).withLocation("solyanka/lines_esp").withDepthStencilState(DepthStencilState(CompareOp.ALWAYS_PASS,false)).withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT)).build())).createRenderSetup()) }
- fun publish(value:List<Segment>,filled:List<Fill> = emptyList(),text:List<Label> = emptyList()) { segments=value.toList();fills=filled.toList();labels=text.toList() }
+ fun publish(value:List<Segment>,filled:List<Fill> = emptyList(),text:List<Label> = emptyList(),owner:String="dungeon") { channels=channels+(owner to Snapshot(value.toList(),filled.toList(),text.toList())) }
+ fun clear(owner:String) { channels=channels-owner }
  fun box(out:MutableList<Segment>,b:AABB,color:Int,depth:Boolean=true) {
   val v=listOf(Vec3(b.minX,b.minY,b.minZ),Vec3(b.maxX,b.minY,b.minZ),Vec3(b.maxX,b.maxY,b.minZ),Vec3(b.minX,b.maxY,b.minZ),Vec3(b.minX,b.minY,b.maxZ),Vec3(b.maxX,b.minY,b.maxZ),Vec3(b.maxX,b.maxY,b.maxZ),Vec3(b.minX,b.maxY,b.maxZ))
   listOf(0 to 1,1 to 2,2 to 3,3 to 0,4 to 5,5 to 6,6 to 7,7 to 4,0 to 4,1 to 5,2 to 6,3 to 7).forEach { (a,z)->out.add(Segment(v[a],v[z],color,depth)) }
@@ -28,8 +28,9 @@ object WorldOverlay {
  fun register() { LevelRenderEvents.COLLECT_SUBMITS.register { c -> render(c) } }
  private fun render(c:LevelRenderContext) {
   if(net.minecraft.client.Minecraft.getInstance().gui.hud.isHidden) return
-  val snapshot=segments;val camera=c.levelState().cameraRenderState.pos
-  val filled=fills;val text=labels
+  val values=channels.values.toList();val snapshot=values.flatMap {it.segments}.toMutableList();val camera=c.levelState().cameraRenderState.pos
+  val filled=values.flatMap {it.fills}.toMutableList();val text=values.flatMap {it.labels}
+  BlockSelection.collect(c,snapshot,filled)
   val pose=c.poseStack();pose.pushPose()
   try { pose.translate(-camera.x,-camera.y,-camera.z)
    filled.groupBy {it.depth}.forEach { (depth,list) ->
@@ -51,8 +52,8 @@ object WorldOverlay {
    snapshot.groupBy { it.depth }.forEach { (depth,list) ->
     c.submitNodeCollector().submitCustomGeometry(pose,if(depth) RenderTypes.LINES else esp) { matrix,buffer ->
      list.forEach { s -> val dx=(s.b.x-s.a.x).toFloat();val dy=(s.b.y-s.a.y).toFloat();val dz=(s.b.z-s.a.z).toFloat()
-      buffer.addVertex(matrix,s.a.x.toFloat(),s.a.y.toFloat(),s.a.z.toFloat()).setColor(s.color).setNormal(matrix,dx,dy,dz).setLineWidth(3f)
-      buffer.addVertex(matrix,s.b.x.toFloat(),s.b.y.toFloat(),s.b.z.toFloat()).setColor(s.color).setNormal(matrix,dx,dy,dz).setLineWidth(3f)
+      buffer.addVertex(matrix,s.a.x.toFloat(),s.a.y.toFloat(),s.a.z.toFloat()).setColor(s.color).setNormal(matrix,dx,dy,dz).setLineWidth(s.width)
+      buffer.addVertex(matrix,s.b.x.toFloat(),s.b.y.toFloat(),s.b.z.toFloat()).setColor(s.color).setNormal(matrix,dx,dy,dz).setLineWidth(s.width)
      }
     }
    }

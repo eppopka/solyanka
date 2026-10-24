@@ -8,6 +8,8 @@ import dev.solyanka.client.ui.ConfigUi
 import dev.solyanka.client.feature.ChatTweaks
 import dev.solyanka.client.feature.InfoTooltips
 import dev.solyanka.client.feature.FeatureRuntime
+import dev.solyanka.client.feature.WorldVisuals
+import dev.solyanka.client.feature.TitaniumScanner
 import dev.solyanka.client.feature.ExtraHuds
 import dev.solyanka.client.feature.Experiments
 import dev.solyanka.client.feature.PriceTooltips
@@ -57,6 +59,10 @@ object SolyankaClient : ClientModInitializer {
     const val KEYBINDS = "utility.command_keybinds"
     const val SHORTCUTS = "utility.command_shortcuts"
 
+    const val PLAYER_GLOW="render.player_glow"
+    const val NAMETAGS="render.nametags"
+    const val BLOCK_OUTLINE="render.block_outline"
+    const val TITANIUM="mining.titanium"
     const val CHAT = "utility.chat"
     const val TOOLTIPS = "utility.info_tooltips"
     const val TICK_TIMERS = "dungeon.tick_timers"
@@ -119,12 +125,13 @@ object SolyankaClient : ClientModInitializer {
         modules.register(object : Module(ModuleInfo(SUPPRESSION,"No render",Category.RENDER)) {})
         listOf(WAYPOINTS to "Dungeon Waypoints",DOORS to "Door Highlight",MAP_INFO to "Map Info",ICE to "Ice Fill",BLAZE to "Blaze",BEAMS to "Creeper Beams",MIMIC to "Mimic detection",MIMIC_CHEST to "Mimic Chest (archive)").forEach { (id,name) -> modules.register(object : Module(ModuleInfo(id,name,if(id.startsWith("solver.")) Category.SOLVER else Category.DUNGEON)) {override fun onDisable() {DungeonPuzzles.invalidate()}}) }
         listOf(AMBIENCE to "Ambience",ASPECT to "Aspect",FOG to "Fog").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {})}
+        listOf(PLAYER_GLOW to "Player Glow",NAMETAGS to "Nametags",BLOCK_OUTLINE to "Block Outline",TITANIUM to "Titanium ESP").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {override fun onDisable() {WorldVisuals.reset();if(id==TITANIUM) TitaniumScanner.reset()}})}
         config.load()
         profile = config.profile()
         general = config.general()
         InfoTooltips.register()
         FeatureRuntime.register()
-        ExtraHuds.register()
+        ExtraHuds.register();WorldVisuals.register()
         PriceTooltips.register()
         Suppression.register()
         DungeonPuzzles.register();DungeonMap.register();DungeonWaypoints.register()
@@ -139,7 +146,7 @@ object SolyankaClient : ClientModInitializer {
             if (world !== previousWorld) {
                 modules.reset(if (world == null) ResetReason.DISCONNECTED else ResetReason.WORLD_CHANGED)
                 ownedInputs.clear()
-                FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset()
+                FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset();WorldVisuals.reset();TitaniumScanner.reset()
                 previousWorld = world
             }
             while (settingsKey.consumeClick()) {
@@ -153,7 +160,7 @@ object SolyankaClient : ClientModInitializer {
                 openSettingsRequested = false
                 client.setScreenAndShow(ConfigUi.create(null))
             }
-            if (world != null && client.player != null) { FeatureRuntime.tick(client); ExtraHuds.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
+            if (world != null && client.player != null) { FeatureRuntime.tick(client); ExtraHuds.tick(client);WorldVisuals.reset();TitaniumScanner.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
         }
         ClientSendMessageEvents.ALLOW_COMMAND.register { command ->
             if (bypassExpansion || !isEnabled(SHORTCUTS)) true
@@ -168,7 +175,7 @@ object SolyankaClient : ClientModInitializer {
         }
         ClientLifecycleEvents.CLIENT_STOPPING.register {
             config.save(states(), profile, general)
-            modules.shutdown(); FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset(); ownedInputs.clear(); previousWorld = null; initialized = false
+            modules.shutdown(); FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset();WorldVisuals.reset();TitaniumScanner.reset(); ownedInputs.clear(); previousWorld = null; initialized = false
         }
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             dispatcher.register(literal("solyanka")
@@ -199,7 +206,7 @@ object SolyankaClient : ClientModInitializer {
                 })))
         }
         initialized = true
-        logger.info("solyanka 0.6.0 initialized for Minecraft 26.2")
+        logger.info("solyanka 0.7.0 initialized for Minecraft 26.2")
     }
 
     /** Validate and persist first; do not activate an invalid or unwritable UI draft. */
