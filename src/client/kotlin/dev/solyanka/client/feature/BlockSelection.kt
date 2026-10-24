@@ -13,7 +13,11 @@ object BlockSelection {
   val shape=outline.shape();if(shape.isEmpty) return
   val pos=outline.pos();val s=S.currentGeneral().features.worldVisuals.blockOutline
   var edges=0
-  shape.forAllEdges {x,y,z,a,b,d->if(edges++<1024) lines.add(WorldOverlay.Segment(Vec3(x+pos.x,y+pos.y,z+pos.z),Vec3(a+pos.x,b+pos.y,d+pos.z),s.color,!s.throughWalls,s.width.toFloat()))}
+  shape.forAllEdges {x,y,z,a,b,d->if(edges++<1024) {
+   val from=Vec3(x+pos.x,y+pos.y,z+pos.z);val to=Vec3(a+pos.x,b+pos.y,d+pos.z)
+   if(s.glow) dev.solyanka.utility.VisualChrome.halo(s.color,s.width,s.glowRadius,s.glowStrength).forEach {(width,color)->lines.add(WorldOverlay.Segment(from,to,color,!s.throughWalls,width))}
+   lines.add(WorldOverlay.Segment(from,to,s.color,!s.throughWalls,s.width.toFloat()))
+  }}
   if(s.filled) shape.toAabbs().take(128).forEach {fills.add(WorldOverlay.Fill(it.move(pos),s.fillColor,!s.throughWalls))}
  }
 }

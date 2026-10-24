@@ -136,3 +136,10 @@ and MinecraftMixin.java. Native 26.2 outlines replace source glow shaders; block
 selection uses contour/fill without source blur. Nametags are player-only.
 MiningAreas marker coordinates retain upstream SkyHanni graph-node attribution.
 See audit/stray-world-source-manifest.json and docs/M6.md for scope/limitations.
+
+HUD-style batch 0.8.0, Stray CC0 commit d91fcd4515b4eda647ee8fd7fa99408f473e5718:
+ScoreboardHudRenderer.java, ChatChrome.java, ChatComponentFillMixin.java and
+ChatComponentMixin.java audited. NametagRenderer.java and BlockOutlineGlow.java
+reviewed for visual refinement. Rounded styling retains vanilla text/fonts;
+no source remote badges, frost blur or chat animation. Block halo is layered
+geometry, not framebuffer blur. See docs/M7.md and source manifest.

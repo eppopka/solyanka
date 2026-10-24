@@ -1,35 +1,31 @@
 {
-  "version": "0.7.0-dev",
+  "version": "0.8.0-dev",
   "minecraft": "26.2",
   "build": "SUCCESS",
   "tests": {
-    "tests": 296,
+    "tests": 311,
     "failures": 0,
     "errors": 0,
     "skipped": 0
   },
-  "registered_modules": 33,
+  "registered_modules": 35,
   "new_modules": [
-    "render.player_glow",
-    "render.nametags",
-    "render.block_outline",
-    "mining.titanium"
+    "hud.scoreboard",
+    "hud.themed_chat"
   ],
-  "mixin_classes": 34,
-  "unique_target_methods_rechecked": 39,
+  "mixin_classes": 37,
+  "unique_target_methods_rechecked": 46,
   "world_target_methods_checked": 4,
   "compiled_nullable_outline_guard": true,
   "instant_save": true,
   "settings_embedded_in_same_screen": true,
-  "hud_editor_elements": 17,
+  "hud_editor_elements": 18,
   "hide_xp_level_and_bar_independent": true,
   "aetheros_settings_excluded": true,
   "remaining_stray_features": [
     "Skybox",
     "Motion Blur",
     "Picture in Picture",
-    "Scoreboard",
-    "Themed Chat",
     "CS2 Knife",
     "Held Item"
   ],
@@ -39,7 +35,11 @@
   "gpu_sodium_iris_tested_here": false,
   "full_requested_feature_set_complete": false,
   "source_blur_parity": false,
-  "jar_sha256": "7783152351c935d67cd4f7251952e519a8be666d6972f2aecfdaff32c7e70a24",
-  "sources_jar_sha256": "b793758531be8d19dc370326460d604133afa0ae0c4a60d99ac41ac2134b73d6",
-  "baseline_note": "Older unchanged ABI/AW evidence retained; clean Gradle AW check and current descriptor checks. Static checks do not establish Mixin application or rendering compatibility. See docs/M6.md."
+  "chat_animation_ported": false,
+  "chat_security_handlers_preserved": true,
+  "nametags_preserve_styled_components": true,
+  "block_outline_layered_halo": true,
+  "jar_sha256": "573fd8c1dc0a162c4f511949a72961cfb2edd6012e8efd3e8ae55659fd05f841",
+  "sources_jar_sha256": "5dd6c19c31380cd11cf3ae6edfcfef097339f3d5a49644ae0a13061e9a99a29e",
+  "baseline_note": "Older unchanged ABI/AW evidence retained; clean Gradle AW check and current descriptor checks. Static checks do not establish Mixin application or rendering compatibility. See docs/M6.md and docs/M7.md."
 }

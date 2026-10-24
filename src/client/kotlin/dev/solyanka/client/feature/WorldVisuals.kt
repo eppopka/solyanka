@@ -38,7 +38,7 @@ object WorldVisuals {
         BlockSelection.register()
         HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT,Identifier.fromNamespaceAndPath("solyanka","nametags")) {g,d->
             val c=Minecraft.getInstance();val level=c.level
-            if(level!=null && !c.gui.hud.isHidden && S.isEnabled(S.NAMETAGS)) {
+            if(level!=null && c.gameRenderer.mainCamera().isInitialized && !c.gui.hud.isHidden && S.isEnabled(S.NAMETAGS)) {
                 val s=S.currentGeneral().features.worldVisuals.nametags;val camera=c.gameRenderer.mainCamera();val origin=camera.position()
                 level.players().filter {hideName(it)}.sortedByDescending {origin.distanceToSqr(it.position())}.forEach {e->
                     val pos=e.getPosition(d.getGameTimeDeltaPartialTick(true)).add(0.0,e.bbHeight.toDouble()+.35,0.0)
@@ -46,10 +46,23 @@ object WorldVisuals {
                     if(delta.x*forward.x()+delta.y*forward.y()+delta.z*forward.z()<=.1) return@forEach
                     val p=c.gameRenderer.projectPointToScreen(pos)
                     if(!p.x.isFinite() || !p.y.isFinite() || p.x !in -1.2..1.2 || p.y !in -1.2..1.2) return@forEach
-                    val text=Policy.tag(e.displayName.string,origin.distanceToSqr(e.position()),e.health.toDouble(),e.maxHealth.toDouble(),s.distance,s.health)
-                    val width=c.font.width(text);val x=((p.x+1)*c.window.guiScaledWidth/2).toFloat();val y=((1-p.y)*c.window.guiScaledHeight/2).toFloat()
+                    val distance=kotlin.math.sqrt(origin.distanceToSqr(e.position()))
+                    val name=e.displayName.copy();val distanceText=if(s.distance && e!==c.player) "${distance.toInt()}m" else ""
+                    val nameW=c.font.width(name);val distW=if(distanceText.isEmpty()) 0 else c.font.width(distanceText)+5
+                    val healthText=if(s.health) "${e.health.toInt()}/${e.maxHealth.toInt()} HP" else ""
+                    val width=maxOf(nameW+distW,c.font.width(healthText))+14;val height=if(s.health) 29 else 19
+                    val x=((p.x+1)*c.window.guiScaledWidth/2).toFloat();val y=((1-p.y)*c.window.guiScaledHeight/2).toFloat()
+                    val scale=s.scale*(if(s.distanceScaling) dev.solyanka.utility.VisualChrome.distanceScale(distance) else 1.0)
+                    fun alpha(color:Int)=dev.solyanka.utility.VisualChrome.alpha(color,s.opacity)
                     g.pose().pushMatrix()
-                    try {g.pose().translate(x,y);g.pose().scale(s.scale.toFloat(),s.scale.toFloat());if(s.background) g.fill(-width/2-3,-2,width/2+3,10,s.backgroundColor);g.text(c.font,text,-width/2,0,s.color,true)} finally {g.pose().popMatrix()}
+                    try {
+                        g.pose().translate(x,y);g.pose().scale(scale.toFloat(),scale.toFloat())
+                        val left=-width/2;val top=-height-2
+                        if(s.background) ChromeDraw.panel(g,left,top,width,height,alpha(s.backgroundColor),alpha(s.borderColor),if(s.rounded) 5 else 0)
+                        g.text(c.font,name,left+7,top+5,alpha(s.color),false)
+                        if(distanceText.isNotEmpty()) g.text(c.font,distanceText,left+7+nameW+5,top+5,alpha(s.distanceColor),false)
+                        if(s.health) g.text(c.font,healthText,left+7,top+16,alpha(s.distanceColor),false)
+                    } finally {g.pose().popMatrix()}
                 }
             }
         }

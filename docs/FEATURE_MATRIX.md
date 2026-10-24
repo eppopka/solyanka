@@ -1,6 +1,6 @@
-# Feature matrix — 0.7.0-dev
+# Feature matrix — 0.8.0-dev
 
-33 registered modules; `/solyanka gui` edits the existing HUD layouts (not a new gameplay module). IMPLEMENTED means code/build-tested, **not** full upstream parity or in-game acceptance. All requested features except the user-excluded AetherOSSettings remain in scope; no placeholder toggles. Read M4.md for provider, editor, rendering and score adaptations.
+35 registered modules; `/solyanka gui` edits the existing HUD layouts (not a new gameplay module). IMPLEMENTED means code/build-tested, **not** full upstream parity or in-game acceptance. All requested features except the user-excluded AetherOSSettings remain in scope; no placeholder toggles. Read M4.md for provider, editor, rendering and score adaptations.
 
 | Source | Feature | Module | Current status |
 |---|---|---|---|
@@ -31,15 +31,15 @@
 | Stray | Aspect | `render.aspect` | Adapted implementation; in-game pending |
 | Stray | Motion Blur | `render.motion_blur` | Pending implementation |
 | Stray | Player Glow | `render.player_glow` | Native silhouette adaptation; source blur styles pending; in-game pending |
-| Stray | Nametags | `render.nametags` | Player-only adaptation; in-game pending |
-| Stray | Block Outline | `render.block_outline` | Adapted contour/fill; source glow blur pending; in-game pending |
+| Stray | Nametags | `render.nametags` | Rounded styled player plates; in-game pending |
+| Stray | Block Outline | `render.block_outline` | Adapted contour/fill/soft halo; source framebuffer blur pending; in-game pending |
 | Stray | Picture in Picture | `render.pip` | Pending implementation |
 | Stray | Titanium ESP | `mining.titanium` | Loaded-only commission/region adaptation; in-game pending |
 | Stray | Skill Progress | `hud.skill_progress` | Adapted implementation; in-game pending |
 | Stray | Inventory | `hud.inventory` | Adapted implementation; in-game pending |
-| Stray | Scoreboard | `hud.scoreboard` | Pending implementation |
+| Stray | Scoreboard | `hud.scoreboard` | Adapted themed sidebar and editor; in-game pending |
 | Stray | Item Name | `hud.item_name` | Adapted implementation; in-game pending |
-| Stray | Themed Chat | `hud.themed_chat` | Pending implementation |
+| Stray | Themed Chat | `hud.themed_chat` | Adapted pane/input; frost blur/animation pending; in-game pending |
 | Stray | CS2 Knife | `cosmetic.cs2_knife` | Pending implementation |
 | Stray | Held Item | `cosmetic.held_item` | Pending implementation |
 

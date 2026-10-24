@@ -1,0 +1,45 @@
+{
+  "version": "0.7.0-dev",
+  "minecraft": "26.2",
+  "build": "SUCCESS",
+  "tests": {
+    "tests": 296,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "registered_modules": 33,
+  "new_modules": [
+    "render.player_glow",
+    "render.nametags",
+    "render.block_outline",
+    "mining.titanium"
+  ],
+  "mixin_classes": 34,
+  "unique_target_methods_rechecked": 39,
+  "world_target_methods_checked": 4,
+  "compiled_nullable_outline_guard": true,
+  "instant_save": true,
+  "settings_embedded_in_same_screen": true,
+  "hud_editor_elements": 17,
+  "hide_xp_level_and_bar_independent": true,
+  "aetheros_settings_excluded": true,
+  "remaining_stray_features": [
+    "Skybox",
+    "Motion Blur",
+    "Picture in Picture",
+    "Scoreboard",
+    "Themed Chat",
+    "CS2 Knife",
+    "Held Item"
+  ],
+  "remaining_archive_feature_objects": 21,
+  "in_game_tested_here": false,
+  "mixin_application_tested_here": false,
+  "gpu_sodium_iris_tested_here": false,
+  "full_requested_feature_set_complete": false,
+  "source_blur_parity": false,
+  "jar_sha256": "7783152351c935d67cd4f7251952e519a8be666d6972f2aecfdaff32c7e70a24",
+  "sources_jar_sha256": "b793758531be8d19dc370326460d604133afa0ae0c4a60d99ac41ac2134b73d6",
+  "baseline_note": "Older unchanged ABI/AW evidence retained; clean Gradle AW check and current descriptor checks. Static checks do not establish Mixin application or rendering compatibility. See docs/M6.md."
+}

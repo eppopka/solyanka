@@ -1,17 +1,17 @@
-# solyanka — 0.7.0-dev
+# solyanka — 0.8.0-dev
 
 **Minecraft 26.2 exactly · Fabric · Kotlin · Java 25 · GPL-3.0-only**
 
-This development build has **33 real registered modules (4 new world-visual modules in this batch)**. `/solyanka` opens the NoFrills-style GUI directly. Right-click settings remain embedded in the same Screen; every valid setting change saves immediately. There is no Save / Save & back button. All master modules default off.
+This development build has **35 real registered modules (Scoreboard and Themed Chat added in this batch)**. `/solyanka` opens the NoFrills-style GUI directly. Right-click settings remain embedded in the same Screen; every valid setting change saves immediately. There is no Save / Save & back button. All master modules default off.
 
-**The whole requested mod is NOT complete.** Every requested Odin/NoFrills feature category now has an implementation or explicit adaptation, but this is not full upstream option/behavior parity. Ambience, Aspect, Fog, Inventory HUD, Item Name HUD, Skill Progress HUD, Player Glow, Nametags, Block Outline contour/fill and Titanium ESP are adapted from Stray; only Mimic Chest is implemented from impl.zip. AetherOSSettings is explicitly excluded at the user’s request. The rest of Stray and the archive remain tracked in `docs/FEATURE_MATRIX.md` and `audit/archive-inventory.json`. No placeholder toggles are advertised as working.
+**The whole requested mod is NOT complete.** Every requested Odin/NoFrills feature category now has an implementation or explicit adaptation, but this is not full upstream option/behavior parity. Ambience, Aspect, Fog, Inventory HUD, Item Name HUD, Skill Progress HUD, Player Glow, Nametags, Block Outline contour/fill, Titanium ESP, Scoreboard and Themed Chat are adapted from Stray; only Mimic Chest is implemented from impl.zip. AetherOSSettings is explicitly excluded at the user’s request. The rest of Stray and the archive remain tracked in `docs/FEATURE_MATRIX.md` and `audit/archive-inventory.json`. No placeholder toggles are advertised as working.
 
 ## Install / upgrade
 
 1. Back up `config/solyanka.json` and any existing local market/waypoint files. Remove older solyanka JARs.
 2. Use **Minecraft 26.2**, **Java 25**, **Fabric Loader 0.20.1+**.
 3. Install **Fabric API 0.161.0+26.2**, **Fabric Language Kotlin 1.14.2+kotlin.2.4.21**, and **owo-lib 0.13.1+26.2**.
-4. Install the ordinary **solyanka-0.7.0-dev.jar**, not the sources JAR. Optional: **Mod Menu 20.0.3**.
+4. Install the ordinary **solyanka-0.8.0-dev.jar**, not the sources JAR. Optional: **Mod Menu 20.0.3**.
 
 YACL is not required by solyanka. Odin/NoFrills/Stray themselves are not dependencies. Do not install multiple solyanka builds. Existing solyanka settings/unknown config fields are preserved.
 
@@ -23,7 +23,17 @@ YACL is not required by solyanka. Odin/NoFrills/Stray themselves are not depende
 - GUI input, scrolling, key capture and tooltips remain modal; underlying cards/search cannot be activated through settings.
 - Commands: `/solyanka status`, `/solyanka toggle <module-id>`, `/solyanka gui` (HUD editor). The timed preview commands were removed in 0.5.2.
 
-## New in 0.7.0 — world visuals
+## New in 0.8.0 — HUD styling and visual polish
+
+- **Nametags:** rounded bordered plates, preserved server/team formatting, muted distance, separate optional health row, source distance-based scaling, opacity and color controls. No remote developer badges or custom fonts.
+- **Block Outline:** optional three-layer soft-edge halo, adjustable radius/strength. This is a geometry approximation, **not Stray's framebuffer blur**; disable Glow to restore the prior crisp outline.
+- **Scoreboard:** themed sidebar with team-color objective selection, hidden-row filtering, up to 15 sorted entries and original formatted names/scores. Bounded width, clipped long text, optional scores/header/shadow, colors, visibility and position/scale. `/solyanka gui` now has **18 entries**, including a representative scoreboard sample.
+- **Themed Chat:** one rounded message pane and matching input background. Vanilla message text, links, click/hover positions, security indicators, scrollbar, history and command suggestions are retained. No frost blur or slide/bump animation; no input repositioning.
+- Both new masters default off; visual refinements apply when the existing modules are enabled. Existing configuration values are preserved and missing new controls receive validated defaults.
+
+See `docs/M7.md` for scope and manual checks. These are build-tested adaptations, not in-game/GPU acceptance.
+
+## Previous: 0.7.0 — world visuals
 
 - **Player Glow:** native silhouette outlines, range/color and visible-only mode; preserves server glow. Not source blur-style parity.
 - **Nametags:** player-only labels with health/distance, background/scale, optional third-person self and real-account filter.

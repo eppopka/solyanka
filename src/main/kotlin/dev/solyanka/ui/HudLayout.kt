@@ -20,6 +20,7 @@ object HudLayout {
         add(HudEntry("extra.item_name","Item Name HUD",f.itemNameHud.hud,listOf("Sample held item"),baseHeight=18,paddingX=16))
         val skill=(if(f.skillHud.showGain) "+9.2 " else "")+"Farming"+(if(f.skillHud.showLevel) " 14" else "")+" 12,345/20,000"
         add(HudEntry("extra.skill","Skill Progress HUD",f.skillHud.hud,listOf(skill),baseHeight=26,paddingX=10+if(f.skillHud.icon) 20 else 0))
+        add(HudEntry("extra.scoreboard","Scoreboard",f.scoreboardHud.hud,listOf("Scoreboard sample"),baseWidth=f.scoreboardHud.maxWidth,baseHeight=ScoreboardLayout.height(5,f.scoreboardHud.header)))
         add(HudEntry("map","Map Info",HudSpec(x=f.map.x,y=f.map.y),listOf("Secrets: 25/30 | Score~: 295","Deaths: 0 | Crypts: 5","Sample room | 05:00"),false))
     }
     fun update(f:FeatureSettings,key:String,change:(HudSpec)->HudSpec):FeatureSettings {
@@ -30,6 +31,7 @@ object HudLayout {
             key.startsWith("player.")->f.copy(player=f.player.withHud(key.substringAfter('.'),h))
             key=="extra.inventory"->f.copy(inventoryHud=f.inventoryHud.copy(hud=h))
             key=="extra.item_name"->f.copy(itemNameHud=f.itemNameHud.copy(hud=h))
+            key=="extra.scoreboard"->f.copy(scoreboardHud=f.scoreboardHud.copy(hud=h))
             key=="extra.skill"->f.copy(skillHud=f.skillHud.copy(hud=h))
             key=="map"->f.copy(map=f.map.copy(x=h.x,y=h.y))
             else->error("Unknown HUD: $key")

@@ -36,7 +36,10 @@
     "ExperienceBarMixin",
     "PlayerGlowMinecraftMixin",
     "VisualEntityStateMixin",
-    "VisualEntityRendererMixin"
+    "VisualEntityRendererMixin",
+    "ThemedChatMixin",
+    "ThemedChatFillMixin",
+    "ThemedChatScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

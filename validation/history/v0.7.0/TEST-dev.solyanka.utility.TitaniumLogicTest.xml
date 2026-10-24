@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.TitaniumLogicTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-24T11:43:31.842Z" hostname="2d8e288e-7a4" time="0.035">
+  <properties/>
+  <testcase name="generic titanium and all toggle permit unknown region()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.005"/>
+  <testcase name="nearest marker and radius constraint preserve blockers()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.002"/>
+  <testcase name="scanner budgets loaded-only access and own overlay are wired()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.003"/>
+  <testcase name="max scan queue remains bounded and sorted nearest first()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.009"/>
+  <testcase name="commissions parse inline and multiline only inside widget()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.002"/>
+  <testcase name="standalone completion checkmark stays a progress token()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.0"/>
+  <testcase name="sphere distance uses inclusive boundary and long math()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.0"/>
+  <testcase name="invalid progress fails closed()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.001"/>
+  <testcase name="unknown commissions completed titanium and mithril cannot activate scan()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.0"/>
+  <testcase name="progress accepts percentages ratios and done()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.0"/>
+  <testcase name="all source marker names deserialize and preserve 320 nodes()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.005"/>
+  <testcase name="mining areas require SkyBlock and explicit known location()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.0"/>
+  <testcase name="unfinished regional commissions restrict region()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.001"/>
+  <testcase name="negative chunk coordinates and vertical bounds are respected()" classname="dev.solyanka.utility.TitaniumLogicTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

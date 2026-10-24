@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="dev.solyanka.utility.WorldVisualTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-24T11:43:31.887Z" hostname="2d8e288e-7a4" time="0.008">
+<testsuite name="dev.solyanka.utility.WorldVisualTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-24T11:57:30.782Z" hostname="2d8e288e-7a4" time="0.037">
   <properties/>
   <testcase name="distance is finite nonnegative and inclusive()" classname="dev.solyanka.utility.WorldVisualTest" time="0.001"/>
   <testcase name="all range and scale bounds enforced()" classname="dev.solyanka.utility.WorldVisualTest" time="0.0"/>
   <testcase name="worldvisuals have no forced enabled module flags()" classname="dev.solyanka.utility.WorldVisualTest" time="0.001"/>
-  <testcase name="NPC UUID policy supports explicit offline opt out()" classname="dev.solyanka.utility.WorldVisualTest" time="0.0"/>
-  <testcase name="new config types reject strings nulls and fractional integers()" classname="dev.solyanka.utility.WorldVisualTest" time="0.002"/>
-  <testcase name="defaults validate and round trip without changing old settings()" classname="dev.solyanka.utility.WorldVisualTest" time="0.002"/>
+  <testcase name="NPC UUID policy supports explicit offline opt out()" classname="dev.solyanka.utility.WorldVisualTest" time="0.001"/>
+  <testcase name="new config types reject strings nulls and fractional integers()" classname="dev.solyanka.utility.WorldVisualTest" time="0.009"/>
+  <testcase name="defaults validate and round trip without changing old settings()" classname="dev.solyanka.utility.WorldVisualTest" time="0.004"/>
   <testcase name="native silhouette forces opaque alpha()" classname="dev.solyanka.utility.WorldVisualTest" time="0.0"/>
-  <testcase name="tag text removes formatting and unsafe linebreaks()" classname="dev.solyanka.utility.WorldVisualTest" time="0.0"/>
-  <testcase name="overlay channels keep dungeon and mining independent()" classname="dev.solyanka.utility.WorldVisualTest" time="0.001"/>
+  <testcase name="tag text removes formatting and unsafe linebreaks()" classname="dev.solyanka.utility.WorldVisualTest" time="0.001"/>
+  <testcase name="overlay channels keep dungeon and mining independent()" classname="dev.solyanka.utility.WorldVisualTest" time="0.006"/>
   <testcase name="player policy excludes hidden dead NPC and self targets()" classname="dev.solyanka.utility.WorldVisualTest" time="0.0"/>
   <testcase name="outline callback accepts nullable Fabric selection()" classname="dev.solyanka.utility.WorldVisualTest" time="0.0"/>
-  <testcase name="state flag resets unconditionally on every extraction()" classname="dev.solyanka.utility.WorldVisualTest" time="0.001"/>
+  <testcase name="state flag resets unconditionally on every extraction()" classname="dev.solyanka.utility.WorldVisualTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

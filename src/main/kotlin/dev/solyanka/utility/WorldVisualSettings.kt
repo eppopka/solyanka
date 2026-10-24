@@ -9,11 +9,11 @@ import java.util.Locale
 data class PlayerGlowSettings(val color:Int=0xff55ffff.toInt(),val range:Int=128,val throughWalls:Boolean=true,val realAccountsOnly:Boolean=true) {
     fun validate() {require(range in 16..256)}
 }
-data class NametagSettings(val color:Int=-1,val backgroundColor:Int=0xaa101010.toInt(),val range:Int=128,val scale:Double=1.0,val throughWalls:Boolean=true,val background:Boolean=true,val distance:Boolean=true,val health:Boolean=true,val self:Boolean=false,val realAccountsOnly:Boolean=true) {
-    fun validate() {require(range in 16..256);require(scale.isFinite() && scale in .5..3.0)}
+data class NametagSettings(val color:Int=-1,val backgroundColor:Int=0xaa101010.toInt(),val range:Int=128,val scale:Double=1.0,val throughWalls:Boolean=true,val background:Boolean=true,val distance:Boolean=true,val health:Boolean=true,val self:Boolean=false,val realAccountsOnly:Boolean=true,val borderColor:Int=0x665f869f,val distanceColor:Int=0xffa2afbe.toInt(),val opacity:Double=1.0,val distanceScaling:Boolean=true,val rounded:Boolean=true) {
+    fun validate() {require(range in 16..256);require(scale.isFinite() && scale in .5..3.0);require(opacity.isFinite() && opacity in .15..1.0)}
 }
-data class BlockOutlineSettings(val color:Int=0xff55ffff.toInt(),val fillColor:Int=0x4055ffff,val filled:Boolean=true,val throughWalls:Boolean=false,val width:Double=2.0) {
-    fun validate() {require(width.isFinite() && width in 1.0..5.0)}
+data class BlockOutlineSettings(val color:Int=0xff55ffff.toInt(),val fillColor:Int=0x4055ffff,val filled:Boolean=true,val throughWalls:Boolean=false,val width:Double=2.0,val glow:Boolean=true,val glowRadius:Double=4.0,val glowStrength:Double=.6) {
+    fun validate() {require(width.isFinite() && width in 1.0..5.0);require(glowRadius.isFinite() && glowRadius in 1.0..8.0);require(glowStrength.isFinite() && glowStrength in .1..1.0)}
 }
 data class TitaniumSettings(val color:Int=0xff55ffff.toInt(),val fillColor:Int=0x3055ffff,val range:Int=48,val all:Boolean=false,val throughWalls:Boolean=true,val filled:Boolean=true,val distance:Boolean=true,val tracers:Boolean=false,val maxMarkers:Int=128) {
     fun validate() {require(range in 16..96);require(maxMarkers in 1..256)}

@@ -1,0 +1,38 @@
+[
+  {
+    "file": "ScoreboardHudRenderer.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "246aae62531750ea1e5a42ba959283ef9e3ad2351be02c49302161a3a24488b9",
+    "scope": "adapted subset; see docs/M7.md"
+  },
+  {
+    "file": "ChatComponentFillMixin.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "503809d417bb762e0184e9860bcba4fc5aa874cd6b9cb3989b384ae3e8d13962",
+    "scope": "adapted subset; see docs/M7.md"
+  },
+  {
+    "file": "ChatComponentMixin.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "a8ced32d6969806727e83f26bfc847894b2772a923ecde63bafce41043643461",
+    "scope": "adapted subset; see docs/M7.md"
+  },
+  {
+    "file": "ChatChrome.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "cd89cd1536503fc2573e90cb861391018e8529eeb28a0dab076ce4c9f99f7e48",
+    "scope": "adapted subset; see docs/M7.md"
+  },
+  {
+    "file": "NametagRenderer.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "b201e3e2c9005fe056204883fa068a12f88500981b393d69e8b2be513df5e70c",
+    "scope": "adapted subset; see docs/M7.md"
+  },
+  {
+    "file": "BlockOutlineGlow.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "1d4dbe86b747faccfe70d18f2a3af8cf8849e870a03ff4b4d255340ce8b809f4",
+    "scope": "adapted subset; see docs/M7.md"
+  }
+]

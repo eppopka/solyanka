@@ -60,7 +60,7 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
             val b=bounds(entry);val active=entry.hud.enabled
             g.fill(b.x,b.y,b.x+b.width,b.y+b.height,if(entry.key==selected) 0x88213946.toInt() else 0x66101010)
             GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else 0xff666666.toInt())
-            if(dev.solyanka.client.feature.ExtraHuds.editor(g,entry.key,b.x,b.y)) {
+            if(dev.solyanka.client.feature.ExtraHuds.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ScoreboardHud.editor(g,entry.key,b.x,b.y)) {
                 GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else 0xff666666.toInt())
                 return@forEach
             }

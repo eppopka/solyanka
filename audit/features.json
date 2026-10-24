@@ -334,8 +334,8 @@
     "module": "render.nametags",
     "risk": "Render extraction and text layout",
     "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
-    "release": "0.7.0-dev",
-    "notes": "Player-only projection; source mob/badge/cosmetic systems not ported. See docs/M6.md. In-game/GPU acceptance pending."
+    "release": "0.8.0-dev",
+    "notes": "Styled rounded player plates, source distance scaling, muted distance and optional health row; no remote badges, mob plates or special fonts. See docs/M7.md."
   },
   {
     "source": "Stray",
@@ -346,8 +346,8 @@
     "module": "render.block_outline",
     "risk": "Outline framebuffer and render-state restoration",
     "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
-    "release": "0.7.0-dev",
-    "notes": "Voxel contour/fill adapted; source glow blur remains pending. See docs/M6.md. In-game/GPU acceptance pending."
+    "release": "0.8.0-dev",
+    "notes": "Contour/fill plus configurable layered halo; this is NOT source framebuffer blur parity. See docs/M7.md."
   },
   {
     "source": "Stray",
@@ -406,7 +406,9 @@
     ],
     "module": "hud.scoreboard",
     "risk": "Vanilla replacement and text layout",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.8.0-dev",
+    "notes": "Rounded visual adaptation; original text/interaction retained; source frost blur and chat motion not ported. See docs/M7.md."
   },
   {
     "source": "Stray",
@@ -432,7 +434,9 @@
     ],
     "module": "hud.themed_chat",
     "risk": "Chat layout, clipping, input and history",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.8.0-dev",
+    "notes": "Rounded visual adaptation; original text/interaction retained; source frost blur and chat motion not ported. See docs/M7.md."
   },
   {
     "source": "Stray",

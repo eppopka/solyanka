@@ -1,0 +1,47 @@
+# Gradle / Kotlin caches and build output
+.gradle/
+.kotlin/
+build/
+out/
+/dist/
+
+# Local Minecraft development instances
+/run/
+/run-*/
+/logs/
+/crash-reports/
+
+# IDE / editor-local files
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+*.swp
+*.swo
+*~
+
+# Logs, JVM crash reports and heap dumps
+*.log
+*.hprof
+hs_err_pid*
+replay_pid*
+
+# Local credentials / machine-specific settings
+.env
+.env.*
+!.env.example
+!.env.template
+/local.properties
+
+# Operating-system metadata
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+
+# Keep gradle.properties, the Gradle wrapper, source, audit records,
+# documentation and licenses versioned. Do not blanket-ignore *.jar:
+# gradle/wrapper/gradle-wrapper.jar is required to build the project.

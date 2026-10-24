@@ -19,8 +19,8 @@ object WorldVisualUi {
    buildList {
     add(GuiKit.description(w,when(key) {
      "playerGlow"->"Native silhouette outlines, not the source blur shader. Real accounts filter uses UUID v4; disable for offline players. Existing server glow colors are preserved."
-     "nametags"->"Player-only labels with health/distance. Real accounts filter skips most NPCs. Through Walls off uses visual line of sight. F1 hides custom labels."
-     "blockOutline"->"Actual selected voxel-shape contour and optional fill. Source glow blur is not ported to the 26.2 renderer."
+     "nametags"->"Rounded, bordered player plates with styled names, muted distance and source distance scaling. Optional health row. Real accounts filter skips most NPCs. Through Walls off uses visual line of sight. F1 hides custom labels."
+     "blockOutline"->"Voxel contour/fill with a layered soft-edge halo. This is not the source framebuffer blur shader; use Glow off for the previous crisp contour."
      else->"Loaded blocks only, SkyBlock mining areas. Polished diorite marks titanium. All off follows unfinished commissions with approximate source regions; unknown areas fail closed. Scan: 32768 block visits/tick."
     }))
     section.entrySet().forEach {(field,value)->
@@ -28,8 +28,8 @@ object WorldVisualUi {
      if(value.asJsonPrimitive.isBoolean) add(GuiKit.toggleRow(w,label,value.asBoolean) {change(field,JsonPrimitive(it))})
      else if(field.endsWith("Color") || field=="color") add(GuiKit.colorRow(w,label,value.asInt) {change(field,JsonPrimitive(it))})
      else {
-      val range=when(field) {"scale"->NumberRange(.5,3.0,.05);"width"->NumberRange(1.0,5.0,.25);"maxMarkers"->NumberRange(1.0,256.0,1.0);else->NumberRange(16.0,if(key=="titanium") 96.0 else 256.0,1.0)}
-      add(GuiKit.sliderRow(w,label,value.asDouble,range) {change(field,if(field in setOf("scale","width")) JsonPrimitive(it) else JsonPrimitive(it.toInt()))})
+      val range=when(field) {"scale"->NumberRange(.5,3.0,.05);"opacity"->NumberRange(.15,1.0,.05);"glowStrength"->NumberRange(.1,1.0,.05);"glowRadius"->NumberRange(1.0,8.0,.25);"width"->NumberRange(1.0,5.0,.25);"maxMarkers"->NumberRange(1.0,256.0,1.0);else->NumberRange(16.0,if(key=="titanium") 96.0 else 256.0,1.0)}
+      add(GuiKit.sliderRow(w,label,value.asDouble,range) {change(field,if(field in setOf("scale","width","opacity","glowStrength","glowRadius")) JsonPrimitive(it) else JsonPrimitive(it.toInt()))})
      }
     }
    }

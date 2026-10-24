@@ -8,6 +8,7 @@ import dev.solyanka.client.ui.ConfigUi
 import dev.solyanka.client.feature.ChatTweaks
 import dev.solyanka.client.feature.InfoTooltips
 import dev.solyanka.client.feature.FeatureRuntime
+import dev.solyanka.client.feature.ScoreboardHud
 import dev.solyanka.client.feature.WorldVisuals
 import dev.solyanka.client.feature.TitaniumScanner
 import dev.solyanka.client.feature.ExtraHuds
@@ -59,6 +60,8 @@ object SolyankaClient : ClientModInitializer {
     const val KEYBINDS = "utility.command_keybinds"
     const val SHORTCUTS = "utility.command_shortcuts"
 
+    const val SCOREBOARD="hud.scoreboard"
+    const val THEMED_CHAT="hud.themed_chat"
     const val PLAYER_GLOW="render.player_glow"
     const val NAMETAGS="render.nametags"
     const val BLOCK_OUTLINE="render.block_outline"
@@ -126,12 +129,13 @@ object SolyankaClient : ClientModInitializer {
         listOf(WAYPOINTS to "Dungeon Waypoints",DOORS to "Door Highlight",MAP_INFO to "Map Info",ICE to "Ice Fill",BLAZE to "Blaze",BEAMS to "Creeper Beams",MIMIC to "Mimic detection",MIMIC_CHEST to "Mimic Chest (archive)").forEach { (id,name) -> modules.register(object : Module(ModuleInfo(id,name,if(id.startsWith("solver.")) Category.SOLVER else Category.DUNGEON)) {override fun onDisable() {DungeonPuzzles.invalidate()}}) }
         listOf(AMBIENCE to "Ambience",ASPECT to "Aspect",FOG to "Fog").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {})}
         listOf(PLAYER_GLOW to "Player Glow",NAMETAGS to "Nametags",BLOCK_OUTLINE to "Block Outline",TITANIUM to "Titanium ESP").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {override fun onDisable() {WorldVisuals.reset();if(id==TITANIUM) TitaniumScanner.reset()}})}
+        listOf(SCOREBOARD to "Scoreboard",THEMED_CHAT to "Themed Chat").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.HUD)) {})}
         config.load()
         profile = config.profile()
         general = config.general()
         InfoTooltips.register()
         FeatureRuntime.register()
-        ExtraHuds.register();WorldVisuals.register()
+        ExtraHuds.register();WorldVisuals.register();ScoreboardHud.register()
         PriceTooltips.register()
         Suppression.register()
         DungeonPuzzles.register();DungeonMap.register();DungeonWaypoints.register()
@@ -206,7 +210,7 @@ object SolyankaClient : ClientModInitializer {
                 })))
         }
         initialized = true
-        logger.info("solyanka 0.7.0 initialized for Minecraft 26.2")
+        logger.info("solyanka 0.8.0 initialized for Minecraft 26.2")
     }
 
     /** Validate and persist first; do not activate an invalid or unwritable UI draft. */

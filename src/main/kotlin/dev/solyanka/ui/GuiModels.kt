@@ -8,6 +8,8 @@ import dev.solyanka.utility.*
 data class FeatureCardInfo(val id: String, val name: String, val category: String, val description: String)
 object GuiCatalog {
     val features = listOf(
+        FeatureCardInfo("hud.scoreboard","Scoreboard","HUD","Styled sidebar with team objectives, formatted scores and movable layout."),
+        FeatureCardInfo("hud.themed_chat","Themed Chat","HUD","Rounded message pane and input styling; vanilla chat text and interactions retained."),
         FeatureCardInfo("render.player_glow","Player Glow","Render","Native player silhouette outlines; optional visible-only mode."),
         FeatureCardInfo("render.nametags","Nametags","Render","Player name, health and distance panels; real-account filter."),
         FeatureCardInfo("render.block_outline","Block Outline","Render","Selected voxel shape contour and fill; no blur shader."),

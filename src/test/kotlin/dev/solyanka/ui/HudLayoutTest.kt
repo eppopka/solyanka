@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class HudLayoutTest {
     @Test fun `editor covers every implemented movable HUD`() {
         val all=HudLayout.entries(FeatureSettings())
-        assertEquals(17,all.size);assertEquals(17,all.map {it.key}.distinct().size)
+        assertEquals(18,all.size);assertEquals(18,all.map {it.key}.distinct().size)
         assertEquals(6,all.count {it.key.startsWith("timer.")});assertEquals(7,all.count {it.key.startsWith("player.")})
         assertFalse(all.first {it.key=="map"}.resizable)
     }

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="dev.solyanka.core.ModuleTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-24T11:43:31.266Z" hostname="2d8e288e-7a4" time="0.033">
+<testsuite name="dev.solyanka.core.ModuleTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-24T11:57:30.078Z" hostname="2d8e288e-7a4" time="0.023">
   <properties/>
-  <testcase name="failed tick quarantines module without stopping siblings()" classname="dev.solyanka.core.ModuleTest" time="0.006"/>
-  <testcase name="duplicate ids rejected()" classname="dev.solyanka.core.ModuleTest" time="0.014"/>
+  <testcase name="failed tick quarantines module without stopping siblings()" classname="dev.solyanka.core.ModuleTest" time="0.003"/>
+  <testcase name="duplicate ids rejected()" classname="dev.solyanka.core.ModuleTest" time="0.013"/>
   <testcase name="reset preserves enabled state()" classname="dev.solyanka.core.ModuleTest" time="0.002"/>
   <testcase name="transitions are idempotent()" classname="dev.solyanka.core.ModuleTest" time="0.001"/>
-  <testcase name="failed startup is cleaned up()" classname="dev.solyanka.core.ModuleTest" time="0.001"/>
-  <testcase name="shutdown continues after cleanup failure()" classname="dev.solyanka.core.ModuleTest" time="0.002"/>
-  <testcase name="disabled modules never receive ticks or resets()" classname="dev.solyanka.core.ModuleTest" time="0.002"/>
+  <testcase name="failed startup is cleaned up()" classname="dev.solyanka.core.ModuleTest" time="0.0"/>
+  <testcase name="shutdown continues after cleanup failure()" classname="dev.solyanka.core.ModuleTest" time="0.001"/>
+  <testcase name="disabled modules never receive ticks or resets()" classname="dev.solyanka.core.ModuleTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

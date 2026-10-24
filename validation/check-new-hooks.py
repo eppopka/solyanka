@@ -21,5 +21,5 @@ for m,target in [('handleTakeItemEntity','ClientboundTakeItemEntityPacket.getIte
 weather=method('net.minecraft.client.renderer.WeatherEffectRenderer','render');assert weather.count('WeatherRenderState.intensity:F')==2
 snow=method('net.minecraft.client.renderer.WeatherEffectRenderer','extractRenderState');assert snow.count('ClientLevel.getPrecipitationAt:')==1
 aspect=method('net.minecraft.client.Camera','createProjectionMatrixForCulling');assert aspect.count('Matrix4f.perspective:(FFFFZ)')==1
-jar=p/'build/libs/solyanka-0.7.0-dev.jar';reg=json.loads(next((p/'src').rglob('solyanka.client.mixins.json')).read_text())['client'];print('Mixin classes:',len(reg),'new target methods verified:',len(results))
+jar=p/'build/libs/solyanka-0.8.0-dev.jar';reg=json.loads(next((p/'src').rglob('solyanka.client.mixins.json')).read_text())['client'];print('Mixin classes:',len(reg),'new target methods verified:',len(results))
 (p/'validation/new-mixin-targets.json').write_text(json.dumps(results,indent=2)+'\n')
