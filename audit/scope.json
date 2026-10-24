@@ -1,0 +1,11 @@
+{
+  "excluded_features": [
+    {
+      "source": "impl.zip",
+      "path": "impl/general/AetherOSSettings.kt",
+      "reason": "Explicit user instruction: Do not add AetherOSSettings from impl.zip",
+      "implement": false
+    }
+  ],
+  "requested_rest_remains_in_scope": true
+}

@@ -1,3 +1,22 @@
+# 0.6.0-dev — XP-bar visibility and Stray HUD batch
+
+- Added independent Player Display Hide XP Bar, preserving mount/locator bars and the existing XP-level option.
+- Added Inventory HUD, persistent Item Name HUD, Skill Progress HUD (29 registered modules total).
+- Added bounded skill parsing, source XP tables and observed level hints, monotonic optional expiry and reset behavior; no API calls or invented live samples.
+- All three HUDs integrate with instant-save settings/palettes/sliders and the layout editor (17 entries).
+- Explicitly excluded impl.zip AetherOSSettings from future implementation scope.
+- Additional regression/static API checks; in-game acceptance remains pending.
+
+# 0.5.2-dev — compact settings, sliders and draggable HUD editor
+
+- Compact one-line HUD toggle/edit rows with a narrow-screen fallback.
+- Bounded numeric sliders with live value labels instead of numeric text entry.
+- Bidirectional mode buttons: LMB next, RMB previous, wrapping both ways.
+- Removed all timed preview controls, commands and preview state.
+- Added deferred `/solyanka gui`: direct drag, scroll-scale, visibility toggle and selection of existing HUDs, including position-only Map Info.
+- Editor samples never enable modules or mutate timer/stat data; live atomic saving/errors retained.
+- Added slider, mode, layout, persistence and source-wiring regression checks. Runtime acceptance remains pending.
+
 # 0.5.1-dev — settings cleanup
 
 - Removed full-screen dim surfaces from GUI and settings roots.

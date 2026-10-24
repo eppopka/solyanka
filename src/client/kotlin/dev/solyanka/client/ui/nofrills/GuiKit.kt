@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.navigation.ScreenRectangle
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
+import dev.solyanka.ui.NumberRange
 
 object GuiKit {
     const val BLUE = 0xff5ca0bf.toInt()
@@ -20,7 +21,8 @@ object GuiKit {
         g.fill(x,y+1,x+1,y+h-1,color);g.fill(x+w-1,y+1,x+w,y+h-1,color)
     }
     fun button(text:String,width:Int=70,white:Boolean=false,action:()->Unit): ButtonComponent =
-        UIComponents.button(Component.literal(text)) { action() }.apply {
+        styleButton(UIComponents.button(Component.literal(text)) { action() },width,white)
+    private fun styleButton(button:ButtonComponent,width:Int,white:Boolean=false):ButtonComponent = button.apply {
             sizing(Sizing.fixed(width),Sizing.fixed(18))
             textShadow(false)
             renderer { g,b,_ ->
@@ -76,17 +78,51 @@ object GuiKit {
         })
         return container
     }
-    fun choiceRow(width:Int,name:String,choices:List<String>,initial:Int,update:(Int)->Unit):FlowLayout {
+    fun choiceRow(width:Int,name:String,choices:List<String>,initial:Int,readCurrent:(()->Int)?=null,update:(Int)->Unit):FlowLayout {
         require(choices.isNotEmpty())
         var selected=initial.coerceIn(choices.indices)
-        val choice=button(choices[selected],width-10) {}
-        choice.tooltip(Component.literal("Click to cycle options"))
-        choice.onPress {
-            selected=dev.solyanka.ui.SettingsCatalog.nextChoice(selected,choices.size)
+        lateinit var choice:ButtonComponent
+        choice=styleButton(DirectionalButton(choices[selected]) { direction ->
+            selected=dev.solyanka.ui.SettingsCatalog.nextChoice(readCurrent?.invoke() ?: selected,choices.size,direction)
             choice.message=Component.literal(choices[selected]);update(selected)
-        }
+        },width-10)
+        choice.tooltip(Component.literal("Left click: next | Right click: previous"))
         return UIContainers.verticalFlow(Sizing.fixed(width),Sizing.content()).apply {
             padding(Insets.of(5));gap(3);child(label(name));child(choice)
+        }
+    }
+    fun sliderRow(width:Int,name:String,current:Double,range:NumberRange,help:String="",update:(Double)->Unit):FlowLayout {
+        val caption=label("$name: ${range.label(current)}")
+        val slider=SlimSliderComponent(SlimSliderComponent.Axis.HORIZONTAL).apply {
+            sizing(Sizing.fixed(width-14),Sizing.fixed(12))
+            min(range.min);max(range.max);stepSize(range.step);value(current)
+            tooltipSupplier { Component.literal(range.label(it)) }
+        }
+        var last=current
+        slider.onChanged().subscribe { raw ->
+            val value=range.snap(raw)
+            caption.text(Component.literal("$name: ${range.label(value)}"))
+            if(value!=last) {last=value;update(value)}
+        }
+        return UIContainers.verticalFlow(Sizing.fixed(width),Sizing.content()).apply {
+            padding(Insets.of(3));gap(3)
+            child(caption.apply { horizontalSizing(Sizing.fixed(width-10));tooltip(Component.literal(help)) })
+            child(slider)
+        }
+    }
+    /** One compact line where space permits; narrow screens use a tightly stacked row. */
+    fun hudRow(width:Int,name:String,current:Boolean,editLabel:String,editWidth:Int,update:(Boolean)->Unit,edit:()->Unit):FlowLayout {
+        val label=label(name)
+        val needed=net.minecraft.client.Minecraft.getInstance().font.width(name)+58+editWidth+25
+        val compact=needed<=width
+        return (if(compact) UIContainers.horizontalFlow(Sizing.fixed(width),Sizing.content())
+            else UIContainers.verticalFlow(Sizing.fixed(width),Sizing.content())).apply {
+            padding(Insets.of(3));gap(3);verticalAlignment(VerticalAlignment.CENTER)
+            if(compact) {child(label);child(toggle(current,update));child(button(editLabel,editWidth,action=edit))}
+            else {
+                child(UIContainers.horizontalFlow(Sizing.fixed(width-6),Sizing.content()).apply {gap(4);verticalAlignment(VerticalAlignment.CENTER);child(label);child(toggle(current,update))})
+                child(button(editLabel,minOf(editWidth,width-6),action=edit))
+            }
         }
     }
     fun description(width:Int,text:String) = UIContainers.verticalFlow(Sizing.fixed(width),Sizing.content()).apply {
@@ -109,4 +145,12 @@ class FlatTextbox(size:Sizing):TextBoxComponent(size) {
     }
     override fun isBordered()=false
     override fun getInnerWidth()=getWidth()-8
+}
+
+/** Consume right-click before vanilla Button rejects it; keyboard activation still advances. */
+class DirectionalButton(text:String,private val cycle:(Int)->Unit):ButtonComponent(Component.literal(text),{cycle(1)}) {
+    override fun onMouseDown(click:MouseButtonEvent,doubled:Boolean):Boolean {
+        if(click.button()==1) {cycle(-1);return true}
+        return super.onMouseDown(click,doubled)
+    }
 }

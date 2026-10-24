@@ -1,0 +1,44 @@
+[
+  {
+    "file": "SkillProgressTracker.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "ed0c081cf8313f5c6cdc8df49a5859886f4b977bbffdccae44e47f8f51938111",
+    "implemented_this_batch": true
+  },
+  {
+    "file": "SkillProgressHudRenderer.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "45eb3ab7b9198847c93a0f375d14beeab8d2b29fe5f81698a0e95366dad4ca73",
+    "implemented_this_batch": true
+  },
+  {
+    "file": "HeldItemHudRenderer.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "35e8f9d35176c323b397488aee59db2fcee0c073e287c513968e011be64fabe8",
+    "implemented_this_batch": true
+  },
+  {
+    "file": "InventoryHudRenderer.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "060964cf2b6483c9693a64401937ad27a5a3d481e0297a1f756aad01bfc1a330",
+    "implemented_this_batch": true
+  },
+  {
+    "file": "BlockOutlineGlow.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "1d4dbe86b747faccfe70d18f2a3af8cf8849e870a03ff4b4d255340ce8b809f4",
+    "implemented_this_batch": false
+  },
+  {
+    "file": "SkillKind.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "6a79b7530e5687f3eb4ad81cd0d64b037c45d6f458f3f010ccada9a26b48784c",
+    "implemented_this_batch": true
+  },
+  {
+    "file": "SkillXp.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "ef2567deabc375856c04663cc1dc6bb9fd9100c37048e094d5c73457bfcb0042",
+    "implemented_this_batch": true
+  }
+]

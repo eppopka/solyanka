@@ -8,6 +8,9 @@ import dev.solyanka.utility.*
 data class FeatureCardInfo(val id: String, val name: String, val category: String, val description: String)
 object GuiCatalog {
     val features = listOf(
+        FeatureCardInfo("hud.inventory","Inventory HUD","HUD","Stray: inventory grid, optional armor/offhand and hotbar, filled count; display only."),
+        FeatureCardInfo("hud.item_name","Item Name HUD","HUD","Stray: persistent styled held-item name and optional vanilla-name suppression."),
+        FeatureCardInfo("hud.skill_progress","Skill Progress HUD","HUD","Stray: SkyBlock skill gains, ratio/percent/MAXED and observed level hints; no network requests."),
         FeatureCardInfo("render.ambience","Ambience","Render","Stray: client clock, weather, snowy precipitation and intensity overrides; no server time changes."),
         FeatureCardInfo("render.aspect","Aspect","Render","Stray: matched horizontal projection and entity/terrain culling aspect multiplier."),
         FeatureCardInfo("render.fog","Fog","Render","Stray: atmospheric fog distances, color and density; preserves liquid/status fog. No Render wins."),

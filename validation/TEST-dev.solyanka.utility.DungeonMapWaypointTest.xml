@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="dev.solyanka.utility.DungeonMapWaypointTest" tests="26" skipped="0" failures="0" errors="0" timestamp="2026-10-24T10:36:33.950Z" hostname="da2cdeed-e2c" time="0.085">
+<testsuite name="dev.solyanka.utility.DungeonMapWaypointTest" tests="26" skipped="0" failures="0" errors="0" timestamp="2026-10-24T11:25:13.447Z" hostname="2d8e288e-7a4" time="0.064">
   <properties/>
   <testcase name="all L rotations normalize the same canonical tile centers()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.003"/>
   <testcase name="all room transforms invert and preserve absolute y()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.001"/>
-  <testcase name="gold roof and ignored chests match Odin()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.002"/>
-  <testcase name="malformed packs cannot become partial data()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.01"/>
-  <testcase name="pack rename delete and only-pack guard()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.005"/>
-  <testcase name="mimic death guards()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.002"/>
-  <testcase name="blaze reads formatted maximum HP and rejects malformed tags()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.004"/>
-  <testcase name="corrupt packs are not overwritten()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.003"/>
-  <testcase name="watcher clear transition and reset()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.003"/>
-  <testcase name="atomic writes and duplicate create guard()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.003"/>
-  <testcase name="rotated boxes use block center convention()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.005"/>
-  <testcase name="floor thresholds and explicit Paul bonus()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.004"/>
-  <testcase name="map layout detects wither and blood doors()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.003"/>
-  <testcase name="typed waypoint settings permit fractional sizes but not fractional integers()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.004"/>
-  <testcase name="core hashing preserves source block string format()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.001"/>
+  <testcase name="gold roof and ignored chests match Odin()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.001"/>
+  <testcase name="malformed packs cannot become partial data()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.006"/>
+  <testcase name="pack rename delete and only-pack guard()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.004"/>
+  <testcase name="mimic death guards()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.0"/>
+  <testcase name="blaze reads formatted maximum HP and rejects malformed tags()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.002"/>
+  <testcase name="corrupt packs are not overwritten()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.002"/>
+  <testcase name="watcher clear transition and reset()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.002"/>
+  <testcase name="atomic writes and duplicate create guard()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.002"/>
+  <testcase name="rotated boxes use block center convention()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.001"/>
+  <testcase name="floor thresholds and explicit Paul bonus()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.002"/>
+  <testcase name="map layout detects wither and blood doors()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.002"/>
+  <testcase name="typed waypoint settings permit fractional sizes but not fractional integers()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.002"/>
+  <testcase name="core hashing preserves source block string format()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.0"/>
   <testcase name="legacy field aliases preserve values()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.002"/>
   <testcase name="score is explicitly incomplete without tab evidence()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.001"/>
-  <testcase name="tile bounds fail closed()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.0"/>
+  <testcase name="tile bounds fail closed()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.001"/>
   <testcase name="key tracking handles ranked chat and clamps below zero()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.002"/>
   <testcase name="map rejects unknown layouts and full room connectors()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.001"/>
-  <testcase name="bedrock cutoff matches zero padding()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.004"/>
+  <testcase name="bedrock cutoff matches zero padding()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.001"/>
   <testcase name="pack names cannot escape directory()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.001"/>
-  <testcase name="disjoint tiles cannot silently become a valid room()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.001"/>
-  <testcase name="Odin JSON and compressed clipboard packs round trip()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.004"/>
+  <testcase name="disjoint tiles cannot silently become a valid room()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.0"/>
+  <testcase name="Odin JSON and compressed clipboard packs round trip()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.002"/>
   <testcase name="score arithmetic includes secrets deaths puzzles and crypts()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.003"/>
-  <testcase name="multi tile geometry waits for all segments()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.004"/>
+  <testcase name="multi tile geometry waits for all segments()" classname="dev.solyanka.utility.DungeonMapWaypointTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

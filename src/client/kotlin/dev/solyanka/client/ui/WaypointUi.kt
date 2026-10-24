@@ -31,13 +31,8 @@ object WaypointUi {
      if(field=="color") add(GuiKit.colorRow(w,label,value.asInt) {change(field,JsonPrimitive(it))})
      else if(field=="type") add(GuiKit.choiceRow(w,label,dev.solyanka.ui.SettingsCatalog.waypointTypes,value.asInt) {change(field,JsonPrimitive(it))})
      else if(value.asJsonPrimitive.isBoolean) add(GuiKit.toggleRow(w,label,value.asBoolean) {change(field,JsonPrimitive(it))})
-     else add(GuiKit.textRow(w,label,raw.getOrPut(field) {value.asString}) {input->raw[field]=input
-      if(value.asJsonPrimitive.isString) change(field,JsonPrimitive(input))
-      else {val default=Gson().toJsonTree(WaypointSettings()).asJsonObject[field].asJsonPrimitive
-       val parsed=if(default.asNumber is Double || default.asNumber is Float) input.toDoubleOrNull()?.let(::JsonPrimitive) else input.toIntOrNull()?.let(::JsonPrimitive)
-       if(parsed==null) {parseErrors[field]="$label must be numeric";panel.refreshStatus()} else change(field,parsed)
-      }
-     })
+     else if(value.asJsonPrimitive.isString) add(GuiKit.textRow(w,label,raw.getOrPut(field) {value.asString}) {input->raw[field]=input;change(field,JsonPrimitive(input))})
+     else add(GuiKit.sliderRow(w,label,value.asDouble,dev.solyanka.ui.SettingsNumbers.range("waypoints",field,host.width,host.height,value.asDouble)) {input ->change(field,JsonPrimitive(input))})
     }
     add(GuiKit.textRow(w,"New / import / rename-to pack name",newName) {newName=it})
     add(GuiKit.textRow(w,"Existing pack name (export / delete / rename)",oldName) {oldName=it})

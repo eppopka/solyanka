@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.CommandResolverTest" tests="20" skipped="0" failures="0" errors="0" timestamp="2026-10-24T10:36:33.873Z" hostname="da2cdeed-e2c" time="0.041">
+  <properties/>
+  <testcase name="plain chat target preserves appended arguments()" classname="dev.solyanka.utility.CommandResolverTest" time="0.007"/>
+  <testcase name="exact alias appends supplied arguments()" classname="dev.solyanka.utility.CommandResolverTest" time="0.002"/>
+  <testcase name="chain resolves once with argument order preserved()" classname="dev.solyanka.utility.CommandResolverTest" time="0.001"/>
+  <testcase name="normal messages are unchanged and not marked expanded()" classname="dev.solyanka.utility.CommandResolverTest" time="0.0"/>
+  <testcase name="long acyclic chains are bounded()" classname="dev.solyanka.utility.CommandResolverTest" time="0.0"/>
+  <testcase name="optional slash and surrounding whitespace normalize alias()" classname="dev.solyanka.utility.CommandResolverTest" time="0.0"/>
+  <testcase name="disabled aliases and chat do not enter interceptor()" classname="dev.solyanka.utility.CommandResolverTest" time="0.001"/>
+  <testcase name="disabled feature does not resolve aliases()" classname="dev.solyanka.utility.CommandResolverTest" time="0.0"/>
+  <testcase name="blank disabled draft is allowed()" classname="dev.solyanka.utility.CommandResolverTest" time="0.001"/>
+  <testcase name="reserved shortcut and duplicates are rejected()" classname="dev.solyanka.utility.CommandResolverTest" time="0.001"/>
+  <testcase name="shortcut token matching is case sensitive()" classname="dev.solyanka.utility.CommandResolverTest" time="0.0"/>
+  <testcase name="alias names never match prefixes()" classname="dev.solyanka.utility.CommandResolverTest" time="0.0"/>
+  <testcase name="invalid keyboard and mouse codes are rejected()" classname="dev.solyanka.utility.CommandResolverTest" time="0.001"/>
+  <testcase name="control characters and empty commands are rejected()" classname="dev.solyanka.utility.CommandResolverTest" time="0.0"/>
+  <testcase name="oversized expansion is rejected()" classname="dev.solyanka.utility.CommandResolverTest" time="0.001"/>
+  <testcase name="self cycle with growing arguments is rejected()" classname="dev.solyanka.utility.CommandResolverTest" time="0.0"/>
+  <testcase name="mutual cycle is rejected()" classname="dev.solyanka.utility.CommandResolverTest" time="0.005"/>
+  <testcase name="unbound enabled entry remains configurable()" classname="dev.solyanka.utility.CommandResolverTest" time="0.0"/>
+  <testcase name="unrelated long server commands do not enter alias interceptor()" classname="dev.solyanka.utility.CommandResolverTest" time="0.001"/>
+  <testcase name="disabled entry does not resolve()" classname="dev.solyanka.utility.CommandResolverTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

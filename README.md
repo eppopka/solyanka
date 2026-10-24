@@ -1,17 +1,17 @@
-# solyanka — 0.5.1-dev
+# solyanka — 0.6.0-dev
 
 **Minecraft 26.2 exactly · Fabric · Kotlin · Java 25 · GPL-3.0-only**
 
-This development build has **26 real registered modules (14 new in this batch)**. `/solyanka` opens the NoFrills-style GUI directly. Right-click settings remain embedded in the same Screen; every valid setting change saves immediately. There is no Save / Save & back button. All master modules default off.
+This development build has **29 real registered modules (3 new HUDs in this batch)**. `/solyanka` opens the NoFrills-style GUI directly. Right-click settings remain embedded in the same Screen; every valid setting change saves immediately. There is no Save / Save & back button. All master modules default off.
 
-**The whole requested mod is NOT complete.** Every requested Odin/NoFrills feature category now has an implementation or explicit adaptation, but this is not full upstream option/behavior parity. Only Ambience, Aspect and Fog are implemented from Stray; only Mimic Chest is implemented from impl.zip. The rest of Stray and the archive remain tracked in `docs/FEATURE_MATRIX.md` and `audit/archive-inventory.json`. No placeholder toggles are advertised as working.
+**The whole requested mod is NOT complete.** Every requested Odin/NoFrills feature category now has an implementation or explicit adaptation, but this is not full upstream option/behavior parity. Ambience, Aspect, Fog, Inventory HUD, Item Name HUD and Skill Progress HUD are adapted from Stray; only Mimic Chest is implemented from impl.zip. AetherOSSettings is explicitly excluded at the user’s request. The rest of Stray and the archive remain tracked in `docs/FEATURE_MATRIX.md` and `audit/archive-inventory.json`. No placeholder toggles are advertised as working.
 
 ## Install / upgrade
 
 1. Back up `config/solyanka.json` and any existing local market/waypoint files. Remove older solyanka JARs.
 2. Use **Minecraft 26.2**, **Java 25**, **Fabric Loader 0.20.1+**.
 3. Install **Fabric API 0.161.0+26.2**, **Fabric Language Kotlin 1.14.2+kotlin.2.4.21**, and **owo-lib 0.13.1+26.2**.
-4. Install the ordinary **solyanka-0.5.1-dev.jar**, not the sources JAR. Optional: **Mod Menu 20.0.3**.
+4. Install the ordinary **solyanka-0.6.0-dev.jar**, not the sources JAR. Optional: **Mod Menu 20.0.3**.
 
 YACL is not required by solyanka. Odin/NoFrills/Stray themselves are not dependencies. Do not install multiple solyanka builds. Existing solyanka settings/unknown config fields are preserved.
 
@@ -19,18 +19,42 @@ YACL is not required by solyanka. Odin/NoFrills/Stray themselves are not depende
 
 - `/solyanka`, `/solyanka config`, Right Shift or Mod Menu open the same GUI.
 - Left-click a card to toggle it; right-click for settings. Back/Escape closes the embedded panel, not a save operation.
-- Settings write atomically before live commit. Invalid numeric/text drafts and write errors remain inline; last-good disk/live state is retained. Valid edits in the advanced independent-field panels can save while another raw numeric field is invalid; the error remains until corrected.
+- Settings write atomically before live commit. Numeric sliders are bounded; invalid text drafts and write errors remain inline. Last-good disk/live state is retained.
 - GUI input, scrolling, key capture and tooltips remain modal; underlying cards/search cannot be activated through settings.
-- Commands: `/solyanka status`, `/solyanka toggle <module-id>`, `/solyanka preview timers`, `/solyanka preview player`.
+- Commands: `/solyanka status`, `/solyanka toggle <module-id>`, `/solyanka gui` (HUD editor). The timed preview commands were removed in 0.5.2.
 
-## New in 0.5.1 — settings cleanup
+## New in 0.6.0 — XP bar and three Stray HUDs
+
+- **Player Display → Hide XP Bar:** independent from Hide XP Level. SkyBlock and Player Display master gates apply. Only ExperienceBar background/progress extraction is cancelled; INFO_BAR/mount/locator bars are not cancelled.
+- **Inventory HUD:** live 27-slot inventory grid; optional hotbar with selected-slot outline, armor/offhand, filled /41 count, minimal style and background. Item counts/durability use vanilla decorations. Display only: no click, pickup, swap or item automation.
+- **Item Name HUD:** persistent styled main-hand name, hidden with an empty hand; optional suppression of the vanilla fading name. This is the Item Name HUD request, not the separate Held Item shader/CS2 cosmetic request.
+- **Skill Progress HUD:** action-bar gain parsing for ratio, percentage and MAX/MAXED; twelve skill families including Dungeoneering/Catacombs alias, source XP tables, observed tab/Skills-menu levels, skill icon, gain/level fields and optional timeout. Percent-only readings stay percentages when no denominator is known. No fabricated absolute values or API calls. It resets on world change, disable and leaving SkyBlock.
+- Each new HUD has x/y/scale sliders, visibility and text/background colors. `/solyanka gui` now includes **17 entries** and uses actual inventory-grid dimensions with representative editor samples. No master module is enabled by editing.
+- **AetherOSSettings is excluded**, not pending. Original archive inventory is retained only as audit/provenance. See `audit/scope.json` and `docs/PENDING_FEATURES.md`.
+
+All new masters default off. Other unfinished features remain pending. These are adaptations, not full Stray theme/font/blur parity. Inventory and item-name HUDs can run outside SkyBlock; Skill Progress and XP-bar suppression are SkyBlock-only. Gameplay HUDs hide in container/other blocking screens (editor shows samples). No in-game or GPU acceptance is claimed.
+
+## Previous patch: 0.5.2 — compact settings and HUD editor
+
+- Timer/Player HUD visibility and Position/Scale buttons now share one compact line where it fits; small windows use tight stacking.
+- All numeric settings exposed by the GUI now use bounded sliders with live value labels: HUD positions/scales, environment, waypoint sizes, cursor timeout and chat limits. Text fields remain for names, commands, pack names and filters.
+- All mode buttons support left-click forward, right-click backward, with wraparound. This includes Clock, Weather, No Render, waypoint type and keybind modifiers. Keyboard activation advances.
+- All 15-second preview buttons, commands and timer state were removed. Runtime HUD behavior is otherwise unchanged.
+- `/solyanka gui` opens a transparent dedicated HUD-layout canvas with the six timer HUDs, seven Player Display HUDs and Map Info. LMB drag moves; mouse wheel scales; RMB toggles individual HUD visibility; arrow keys nudge the selected HUD. Bottom selection cycles through overlapping/hidden elements (LMB next, RMB previous). Done/Escape closes; changes save immediately.
+- Map Info is position-only: its scale/visibility remain controlled by its existing feature settings/master switch. The other editor elements have independent visibility and 0.5–4x scaling. Editing never automatically enables master modules.
+- Editor uses labelled sample values even outside SkyBlock or with a master disabled. These are editor-only samples, not timed previews and not live dungeon data. Last-good live positions remain displayed on a failed write; errors stay visible.
+- No additional backlog gameplay port is claimed in this UI-focused patch. The exact pending list is in `docs/PENDING_FEATURES.md`.
+
+Manual acceptance: test at your normal GUI scale and smaller sizes; drag/reopen each HUD; overlap and select using the bottom picker; scroll-scale; toggle visibility; move Map Info; verify Clock Noon -> Dusk by LMB and Dusk -> Noon by RMB; test sliders and restart persistence. In-game/GPU testing has not been performed here.
+
+## Previous patch: 0.5.1 — settings cleanup
 
 - Transparent GUI/settings roots: no full-screen dimming layer; cards and panel remain readable.
 - Colors show a small swatch and **Edit color**, opening an inline owo palette (including alpha).
 - Clock, weather, waypoint type, Health Bar, Vignette and burger count use named cycling buttons, not numeric mode codes.
 - Ambience, Aspect, Fog, Door Highlight, Map Info and each puzzle/mimic feature have scoped settings.
 - Ice Fill, Blaze and Creeper Beams now have independent depth-test switches. Old shared values migrate automatically; beam connecting lines retain their existing through-wall behavior.
-- Removed Player Display preview buttons, including nested HUD editors, and the success-status text. Timer previews and inline save errors remain.
+- Removed Player Display preview buttons, including nested HUD editors, and the success-status text. Inline save errors remain. (Timer previews were subsequently removed in 0.5.2.)
 - Instant saving and same-Screen input isolation are unchanged. This patch does not add the unfinished Stray/archive features.
 
 Build/unit/static checks only; no in-game or GPU/Sodium/Iris testing was performed here. Test palette dragging, scrolling, resizing, save/reopen, and each menu in Minecraft 26.2.

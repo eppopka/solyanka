@@ -8,6 +8,7 @@ import dev.solyanka.client.ui.ConfigUi
 import dev.solyanka.client.feature.ChatTweaks
 import dev.solyanka.client.feature.InfoTooltips
 import dev.solyanka.client.feature.FeatureRuntime
+import dev.solyanka.client.feature.ExtraHuds
 import dev.solyanka.client.feature.Experiments
 import dev.solyanka.client.feature.PriceTooltips
 import dev.solyanka.client.feature.Suppression
@@ -45,6 +46,7 @@ object SolyankaClient : ClientModInitializer {
         message, error -> logger.error(message, error)
     } }
     private var initialized = false
+    private var openHudRequested = false
     private var openSettingsRequested = false
     private var previousWorld: Any? = null
     private var profile = CommandProfile()
@@ -59,6 +61,9 @@ object SolyankaClient : ClientModInitializer {
     const val TOOLTIPS = "utility.info_tooltips"
     const val TICK_TIMERS = "dungeon.tick_timers"
     const val PLAYER_DISPLAY = "hud.player_display"
+    const val INVENTORY_HUD="hud.inventory"
+    const val ITEM_NAME_HUD="hud.item_name"
+    const val SKILL_HUD="hud.skill_progress"
     const val ANIMATION = "render.animation_fix"
     const val MIDDLE_FIX = "utility.middle_click_fix"
     const val MIDDLE_OVERRIDE = "utility.middle_click_override"
@@ -101,6 +106,9 @@ object SolyankaClient : ClientModInitializer {
         modules.register(object : Module(ModuleInfo(TOOLTIPS,"Info tooltips",Category.UTILITY)) {})
         modules.register(object : Module(ModuleInfo(TICK_TIMERS,"Tick timers (Odin)",Category.DUNGEON)) { override fun onDisable() { FeatureRuntime.timers.reset() } })
         modules.register(object : Module(ModuleInfo(PLAYER_DISPLAY,"Player display (Odin)",Category.HUD)) { override fun onDisable() { FeatureRuntime.stats.reset() } })
+        listOf(INVENTORY_HUD to "Inventory HUD",ITEM_NAME_HUD to "Item Name HUD",SKILL_HUD to "Skill Progress HUD").forEach {(id,name)->
+            modules.register(object : Module(ModuleInfo(id,name,Category.HUD)) {override fun onDisable() {if(id==SKILL_HUD) ExtraHuds.reset()}})
+        }
         modules.register(object : Module(ModuleInfo(ANIMATION,"Animation fix",Category.RENDER)) {})
         modules.register(object : Module(ModuleInfo(MIDDLE_FIX,"Middle click fix",Category.UTILITY)) {})
         modules.register(object : Module(ModuleInfo(MIDDLE_OVERRIDE,"Middle click override",Category.UTILITY)) {})
@@ -116,6 +124,7 @@ object SolyankaClient : ClientModInitializer {
         general = config.general()
         InfoTooltips.register()
         FeatureRuntime.register()
+        ExtraHuds.register()
         PriceTooltips.register()
         Suppression.register()
         DungeonPuzzles.register();DungeonMap.register();DungeonWaypoints.register()
@@ -136,11 +145,15 @@ object SolyankaClient : ClientModInitializer {
             while (settingsKey.consumeClick()) {
                 if (client.gui.screen() == null && client.isWindowActive) openSettingsRequested = true
             }
+            if (openHudRequested) {
+                openHudRequested=false
+                client.setScreenAndShow(dev.solyanka.client.ui.HudEditorScreen())
+            }
             if (openSettingsRequested) {
                 openSettingsRequested = false
                 client.setScreenAndShow(ConfigUi.create(null))
             }
-            if (world != null && client.player != null) { FeatureRuntime.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
+            if (world != null && client.player != null) { FeatureRuntime.tick(client); ExtraHuds.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
         }
         ClientSendMessageEvents.ALLOW_COMMAND.register { command ->
             if (bypassExpansion || !isEnabled(SHORTCUTS)) true
@@ -167,9 +180,7 @@ object SolyankaClient : ClientModInitializer {
                     // Defer opening until after chat submission has finished closing ChatScreen.
                     openSettingsRequested = true; 1
                 })
-                .then(literal("preview")
-                    .then(literal("timers").executes { ctx -> FeatureRuntime.preview("timers");ctx.source.sendFeedback(Component.literal("15s local timer HUD preview; enable Tick Timers first."));1 })
-                    .then(literal("player").executes { ctx -> FeatureRuntime.preview("player");ctx.source.sendFeedback(Component.literal("15s local player HUD preview; enable Player Display first."));1 }))
+                .then(literal("gui").executes { openHudRequested=true;1 })
                 .then(literal("waypoint").then(literal("add").executes { ctx -> try {DungeonWaypoints.addTarget();ctx.source.sendFeedback(Component.literal("Waypoint saved"));1} catch(e:Exception) {ctx.source.sendError(Component.literal(e.message ?: "Cannot add waypoint"));0} }.then(argument("title",StringArgumentType.greedyString()).executes {ctx ->try {DungeonWaypoints.addTarget(StringArgumentType.getString(ctx,"title"));ctx.source.sendFeedback(Component.literal("Waypoint saved"));1} catch(e:Exception) {ctx.source.sendError(Component.literal(e.message ?: "Cannot add waypoint"));0}})))
                 .then(literal("status").executes { ctx ->
                     modules.all().forEach { ctx.source.sendFeedback(Component.literal("${it.info.id}: ${if (it.enabled) "on" else "off"}")) }
@@ -188,7 +199,7 @@ object SolyankaClient : ClientModInitializer {
                 })))
         }
         initialized = true
-        logger.info("solyanka 0.5.0 initialized for Minecraft 26.2")
+        logger.info("solyanka 0.6.0 initialized for Minecraft 26.2")
     }
 
     /** Validate and persist first; do not activate an invalid or unwritable UI draft. */

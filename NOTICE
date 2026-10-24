@@ -103,3 +103,28 @@ palette embedded inline rather than a new Screen, swatch/Edit color controls,
 named integer-backed cycling buttons, transparent screen roots, feature-scoped
 panels and backwards-compatible independent solver depth settings. No upstream
 runtime or separate color-picker Screen is bundled.
+
+0.5.2 GUI derivatives additionally reference NoFrills hud/HudEditorScreen.java
+at the same pinned revision (WhatYouThing and contributors, GPL-3.0). Changed:
+solyanka-specific editor for existing Odin HUD settings and map coordinates;
+representative editor-only samples, no master auto-enable, validated immediate
+writes, drag/scroll/visibility controls and no fullscreen dim. Added compact
+HUD rows, bounded owo slim sliders and explicit right-click backwards cycling.
+No NoFrills HUD runtime or unrequested HUD elements are bundled.
+
+0.6.0 Stray CC0 HUD adaptations (camberX and Stray contributors), pinned revision
+ d91fcd4515b4eda647ee8fd7fa99408f473e5718:
+ src/client/java/dev/stray/client/render/InventoryHudRenderer.java
+ src/client/java/dev/stray/client/render/HeldItemHudRenderer.java
+ src/client/java/dev/stray/client/render/SkillProgressHudRenderer.java
+ src/client/java/dev/stray/client/skill/SkillProgressTracker.java
+ src/client/java/dev/stray/client/skill/SkillKind.java
+ src/client/java/dev/stray/client/skill/SkillXp.java
+Changed: Kotlin/official 26.2 APIs, independent solyanka config and module gates,
+flat selectable panel colors instead of Stray font/theme/blur shaders, integration
+with existing editor, strict bounded skill amounts/progress, monotonic expiry,
+observed denominator/level evidence only and no network API polling.
+The XP table source comment cites the Hypixel SkyBlock Skills wiki; these are
+source-derived game data, not an independent current-server accuracy guarantee.
+Vanilla item icons are requested from the installed game; no game assets are bundled.
+AetherOSSettings is excluded by user request and has not been implemented.

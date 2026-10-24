@@ -1,0 +1,25 @@
+{
+  "version": "0.5.1-dev",
+  "minecraft": "26.2",
+  "build": "SUCCESS",
+  "tests": {
+    "tests": 231,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "registered_modules": 26,
+  "new_modules": [],
+  "mixin_classes": 30,
+  "target_methods_rechecked": 34,
+  "settings_embedded_in_same_screen": true,
+  "instant_save": true,
+  "scoped_advanced_panels": 13,
+  "legacy_depth_config_migration_tested": true,
+  "in_game_tested_here": false,
+  "gpu_sodium_iris_tested_here": false,
+  "full_requested_feature_set_complete": false,
+  "jar_sha256": "2c2ab780a1bbf567b43271bf44b3b4b69175fea8f55d335e1ba313ed8b1f3027",
+  "sources_jar_sha256": "7ef3ef2976cb1a5d07af05f8d558d965ee09a46e5ed4b49ad2b7599f47a18f6f",
+  "note": "Existing access-widener/ABI reports are baseline evidence; clean Gradle AW validation and target-method checker reran for this patch."
+}

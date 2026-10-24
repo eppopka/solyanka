@@ -1,6 +1,6 @@
-# Feature matrix — 0.5.0-dev
+# Feature matrix — 0.6.0-dev
 
-26 registered modules. IMPLEMENTED means code/build-tested, **not** full upstream parity or in-game acceptance. All requested features remain in scope; no placeholder toggles. Read M4.md for provider, editor, rendering and score adaptations.
+29 registered modules; `/solyanka gui` edits the existing HUD layouts (not a new gameplay module). IMPLEMENTED means code/build-tested, **not** full upstream parity or in-game acceptance. All requested features except the user-excluded AetherOSSettings remain in scope; no placeholder toggles. Read M4.md for provider, editor, rendering and score adaptations.
 
 | Source | Feature | Module | Current status |
 |---|---|---|---|
@@ -35,17 +35,17 @@
 | Stray | Block Outline | `render.block_outline` | Pending implementation |
 | Stray | Picture in Picture | `render.pip` | Pending implementation |
 | Stray | Titanium ESP | `mining.titanium` | Pending implementation |
-| Stray | Skill Progress | `hud.skill_progress` | Pending implementation |
-| Stray | Inventory | `hud.inventory` | Pending implementation |
+| Stray | Skill Progress | `hud.skill_progress` | Adapted implementation; in-game pending |
+| Stray | Inventory | `hud.inventory` | Adapted implementation; in-game pending |
 | Stray | Scoreboard | `hud.scoreboard` | Pending implementation |
-| Stray | Item Name | `hud.item_name` | Pending implementation |
+| Stray | Item Name | `hud.item_name` | Adapted implementation; in-game pending |
 | Stray | Themed Chat | `hud.themed_chat` | Pending implementation |
 | Stray | CS2 Knife | `cosmetic.cs2_knife` | Pending implementation |
 | Stray | Held Item | `cosmetic.held_item` | Pending implementation |
 
 ## Archive (impl.zip)
 
-Mimic Chest (`custom.mimic_chest`) is an adapted implementation. All other 22 feature objects remain pending, including the separate OdinDungeonWaypoints route steps. See audit/archive-inventory.json for all 34 Kotlin files and their helper dependencies. No entire archive integration claim.
+Mimic Chest (`custom.mimic_chest`) is an adapted implementation. 21 other feature objects, including the separate OdinDungeonWaypoints route steps, remain pending. AetherOSSettings is explicitly excluded. See audit/archive-inventory.json for all 34 Kotlin files and their helper dependencies. No entire archive integration claim.
 
 ## Pinned source entry points
 
@@ -194,7 +194,7 @@ Mimic Chest (`custom.mimic_chest`) is an adapted implementation. All other 22 fe
 
 ## impl.zip: every feature object
 
-The archive contains **34 Kotlin files**, including **23 detected Feature objects**. Helpers are tracked in `audit/archive-inventory.json`; none are dropped.
+The archive contains **34 Kotlin files**, including **23 detected Feature objects**. Helpers are tracked in `audit/archive-inventory.json`; AetherOSSettings is retained in the source audit but excluded from implementation.
 
 | Feature source | Required integration |
 |---|---|
@@ -203,7 +203,7 @@ The archive contains **34 Kotlin files**, including **23 detected Feature object
 | `impl/dungeon/SecretCounter.kt` | Chat/dungeon run events and state persistence. |
 | `impl/dungeon/ShitterList.kt` | Local list/commands, Mojang profile lookups; retain MIT-derived attribution; use bounded background I/O. |
 | `impl/dungeon/SimonSays.kt` | Packet/block observations, button state, render hints; inspect interaction modes and cancellation. |
-| `impl/general/AetherOSSettings.kt` | Shared theme palette and settings; preserve styling options behind future UI adapter. |
+| `impl/general/AetherOSSettings.kt` | EXCLUDED by user request; audit entry only. Do not implement. |
 | `impl/general/BestiaryESP.kt` | Name metadata, armor-stand-to-mob association, entity unload, glow/tracers. |
 | `impl/general/PetDisplay.kt` | Container, chat and packet events; inspect external item data and HUD. |
 | `impl/general/Timer.kt` | Keyboard/mouse inputs, monotonic timer and HUD rendering. |

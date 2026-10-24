@@ -14,7 +14,7 @@ data class TimerSettings(val ticks:Boolean=false,val symbols:Boolean=true,val pr
     fun huds()=linkedMapOf("goldor" to goldor,"pad" to pad,"lightning" to lightning,"py" to py,"storm" to storm,"freeze" to freeze)
     fun withHud(id:String,h:HudSpec)=when(id) { "goldor"->copy(goldor=h);"pad"->copy(pad=h);"lightning"->copy(lightning=h);"py"->copy(py=h);"storm"->copy(storm=h);"freeze"->copy(freeze=h);else->error("Unknown timer HUD") }
 }
-data class PlayerDisplaySettings(val hideArmor:Boolean=false,val hideFood:Boolean=false,val hideHearts:Boolean=false,val hideXp:Boolean=false,
+data class PlayerDisplaySettings(val hideArmor:Boolean=false,val hideFood:Boolean=false,val hideHearts:Boolean=false,val hideXp:Boolean=false,val hideXpBar:Boolean=false,
     val hideHealth:Boolean=true,val hideMana:Boolean=true,val hideOverflow:Boolean=true,val hideDefense:Boolean=true,val hideVitality:Boolean=true,
     val separateOverflow:Boolean=true,val hideZeroOverflow:Boolean=true,val icons:Boolean=true,
     val health:HudSpec=HudSpec(x=12,y=130,color=0xffff5555.toInt()),val mana:HudSpec=HudSpec(x=12,y=144,color=0xff55ffff.toInt()),
@@ -32,8 +32,8 @@ data class SuppressionSettings(val explosions:Boolean=false,val emptyTooltips:Bo
  val fallingBlocks:Boolean=false,val entityFire:Boolean=false,val mageBeam:Boolean=false,val iceSpray:Boolean=false,val powderCoating:Boolean=false,
  val soulweaverSkulls:Boolean=false,val guidedSheep:Boolean=false,val bonePlating:Boolean=false,val healerFairy:Boolean=false,val treeBits:Boolean=false,
  val cocoonAnimation:Boolean=false,val nausea:Boolean=false,val vignette:Int=0,val expOrbs:Boolean=false,val stuckArrows:Boolean=false)
-data class FeatureSettings(val timers:TimerSettings=TimerSettings(),val player:PlayerDisplaySettings=PlayerDisplaySettings(),val fixes:UtilityFixSettings=UtilityFixSettings(),val puzzles:PuzzleSettings=PuzzleSettings(),val map:MapSettings=MapSettings(),val environment:EnvironmentSettings=EnvironmentSettings(),val waypoints:WaypointSettings=WaypointSettings(),val prices:PriceSettings=PriceSettings(),val experiments:ExperimentSettings=ExperimentSettings(),val suppression:SuppressionSettings=SuppressionSettings()) {
-    fun validate() { map.validate();environment.validate();waypoints.validate();require(prices.burgers in 0..5);require(suppression.healthBar in 0..2);require(suppression.vignette in 0..3);timers.huds().values.forEach { it.validate() };player.huds().values.forEach { it.validate() };require(fixes.cursorClearTicks in 0..1200) { "Cursor expiry must be 0–1200 ticks (0 = retain until reset)" } }
+data class FeatureSettings(val timers:TimerSettings=TimerSettings(),val player:PlayerDisplaySettings=PlayerDisplaySettings(),val fixes:UtilityFixSettings=UtilityFixSettings(),val puzzles:PuzzleSettings=PuzzleSettings(),val map:MapSettings=MapSettings(),val environment:EnvironmentSettings=EnvironmentSettings(),val waypoints:WaypointSettings=WaypointSettings(),val prices:PriceSettings=PriceSettings(),val experiments:ExperimentSettings=ExperimentSettings(),val suppression:SuppressionSettings=SuppressionSettings(),val inventoryHud:InventoryHudSettings=InventoryHudSettings(),val itemNameHud:ItemNameHudSettings=ItemNameHudSettings(),val skillHud:SkillHudSettings=SkillHudSettings()) {
+    fun validate() { inventoryHud.hud.validate();itemNameHud.hud.validate();skillHud.hud.validate();require(skillHud.timeoutSeconds in 0..120);map.validate();environment.validate();waypoints.validate();require(prices.burgers in 0..5);require(suppression.healthBar in 0..2);require(suppression.vignette in 0..3);timers.huds().values.forEach { it.validate() };player.huds().values.forEach { it.validate() };require(fixes.cursorClearTicks in 0..1200) { "Cursor expiry must be 0–1200 ticks (0 = retain until reset)" } }
 }
 object FeatureCodec {
     private val gson=Gson()

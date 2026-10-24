@@ -93,7 +93,7 @@ object DungeonMap {
   }
   HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT,Identifier.fromNamespaceAndPath("solyanka","map_info")) {g,_ ->
    val c=Minecraft.getInstance();val ctx=FeatureRuntime.context;val cfg=SolyankaClient.currentGeneral().features.map
-   if(SolyankaClient.isEnabled(SolyankaClient.MAP_INFO) && ctx.dungeon && !(cfg.disableInBoss && ctx.boss) && !c.gui.hud.isHidden && c.player!=null) {
+   if(SolyankaClient.isEnabled(SolyankaClient.MAP_INFO) && ctx.dungeon && !(cfg.disableInBoss && ctx.boss) && !c.gui.hud.isHidden && c.player!=null && c.gui.screen() !is dev.solyanka.client.ui.HudEditorScreen) {
     val s=score
     val text=listOf("Secrets: ${stats.secrets ?: "?"}/${s?.totalSecrets ?: "?"} | ${if(cfg.remaining) "Need: ${s?.neededSecrets?.let {(it-(stats.secrets ?: 0)).coerceAtLeast(0)} ?: "?"} | " else ""}Score${if(s?.completeInputs==true) "~" else "?"}: ${s?.value ?: "?"}",
      "Deaths: ${stats.deaths ?: "?"} | Crypts: ${stats.crypts ?: "?"} | M:${DungeonPuzzles.mimicKilled} P:${DungeonPuzzles.princeKilled} B:${DungeonPuzzles.batsKilled}",

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.core.ModuleTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-24T10:36:33.710Z" hostname="da2cdeed-e2c" time="0.033">
+  <properties/>
+  <testcase name="failed tick quarantines module without stopping siblings()" classname="dev.solyanka.core.ModuleTest" time="0.006"/>
+  <testcase name="duplicate ids rejected()" classname="dev.solyanka.core.ModuleTest" time="0.017"/>
+  <testcase name="reset preserves enabled state()" classname="dev.solyanka.core.ModuleTest" time="0.002"/>
+  <testcase name="transitions are idempotent()" classname="dev.solyanka.core.ModuleTest" time="0.001"/>
+  <testcase name="failed startup is cleaned up()" classname="dev.solyanka.core.ModuleTest" time="0.001"/>
+  <testcase name="shutdown continues after cleanup failure()" classname="dev.solyanka.core.ModuleTest" time="0.001"/>
+  <testcase name="disabled modules never receive ticks or resets()" classname="dev.solyanka.core.ModuleTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

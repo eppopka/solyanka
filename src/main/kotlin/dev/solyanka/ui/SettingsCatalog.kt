@@ -29,5 +29,5 @@ object SettingsCatalog {
         "burgers" to (0..5).map { "$it burgers" }
     )
     val colors=setOf("fogColor","mimicChestColor")
-    fun nextChoice(current:Int,size:Int):Int { require(size>0);return Math.floorMod(current+1,size) }
+    fun nextChoice(current:Int,size:Int,direction:Int=1):Int { require(size>0);require(direction==1 || direction== -1);return Math.floorMod(current+direction,size) }
 }

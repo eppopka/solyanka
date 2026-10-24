@@ -28,9 +28,7 @@ object FeatureRuntime {
     val stats=PlayerStats()
     val cursor=CursorMemory()
     var context=SkyblockContext();private set
-    private var previewType=""
-    private var previewUntil=0L
-    fun reset() { context=SkyblockContext();timers.reset();stats.reset();cursor.reset();previewUntil=0L;previewType="" }
+    fun reset() { context=SkyblockContext();timers.reset();stats.reset();cursor.reset();ExtraHuds.reset() }
     private fun readContext(client:Minecraft):SkyblockContext {
         val player=client.player ?: return SkyblockContext()
         val scoreboard=client.level?.scoreboard ?: return SkyblockContext()
@@ -82,7 +80,6 @@ object FeatureRuntime {
         }
         return result
     }
-    fun preview(type:String) { previewType=type;previewUntil=System.nanoTime()+15_000_000_000L }
     private fun draw(g:GuiGraphicsExtractor,text:Component,h:HudSpec) {
         if(!h.enabled) return
         val client=Minecraft.getInstance();val scale=h.scale.toFloat()
@@ -97,22 +94,16 @@ object FeatureRuntime {
         if(client.player==null || client.level==null || client.gui.hud.isHidden) return
         val screen=client.gui.screen()
         if(screen!=null && screen !is ChatScreen && screen !is dev.solyanka.client.ui.nofrills.NoFrillsClickGui) return
-        val preview=System.nanoTime()<previewUntil
         val f=SolyankaClient.currentGeneral().features
-        if(SolyankaClient.isEnabled(SolyankaClient.TICK_TIMERS) && (context.boss || preview && previewType=="timers")) {
-            val lines=if(preview && previewType=="timers") linkedMapOf(
-                "goldor" to TickTimers.format(35,60,"Tick:",f.timers),"pad" to TickTimers.format(15,20,"Pad:",f.timers),
-                "lightning" to TickTimers.format(520,520,"Lightning:",f.timers),"py" to TickTimers.format(55,55,"PY:",f.timers),
-                "storm" to TickTimers.format(200,540,"Storm:",f.timers),"freeze" to TickTimers.format(50,106,"Fire Freeze:",f.timers)) else timers.lines(f.timers)
+        if(SolyankaClient.isEnabled(SolyankaClient.TICK_TIMERS) && context.boss) {
+            val lines=timers.lines(f.timers)
             lines.forEach { (id,line) ->
                 val text=Component.literal(line.prefix).withColor(line.prefixColor).append(Component.literal(line.value).withColor(line.color))
                 draw(g,text,f.timers.huds().getValue(id))
             }
         }
-        if(SolyankaClient.isEnabled(SolyankaClient.PLAYER_DISPLAY) && (context.skyblock || preview && previewType=="player")) {
-            val data=if(preview && previewType=="player") PlayerStats().apply {
-                overlay("3000/4000❤ 2000/20000✎ 333ʬ 1000❈ Defense 100/100♨");tick(15.0,20.0,0.1)
-            } else stats
+        if(SolyankaClient.isEnabled(SolyankaClient.PLAYER_DISPLAY) && context.skyblock) {
+            val data=stats
             data.lines(f.player).forEach { (id,text) -> draw(g,Component.literal(text),f.player.huds().getValue(id)) }
         }
     }
@@ -120,6 +111,7 @@ object FeatureRuntime {
         ClientReceiveMessageEvents.MODIFY_GAME.register { message,overlay ->
             if(overlay) {
                 context=readContext(Minecraft.getInstance())
+                if(context.skyblock && SolyankaClient.isEnabled(SolyankaClient.SKILL_HUD)) ExtraHuds.skills.overlay(message.string)
                 if(context.skyblock && SolyankaClient.isEnabled(SolyankaClient.PLAYER_DISPLAY)) {
                     stats.overlay(message.string)
                     val before=ChatLogic.plain(message.string)

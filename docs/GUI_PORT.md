@@ -63,3 +63,34 @@ dim surface is installed. Panel/card surfaces themselves remain dark.
 Player Display preview controls and success footer text are removed; timer
 preview controls, explicit diagnostic commands, validation and write errors
 remain. Runtime appearance/input still requires in-game verification.
+
+## 0.5.2 compact controls and HUD layout editor
+
+`GuiKit.hudRow` places each HUD toggle and edit button in one line when it fits,
+with a tight stacked fallback. `sliderRow` uses owo SlimSliderComponent with
+explicit min/max/step; initialization precedes subscription so opening a panel
+does not write config. `SettingsNumbers` defines ranges for every exposed numeric
+field. Text inputs now represent actual text only. `DirectionalButton` consumes
+RMB directly before vanilla rejects that button; LMB/keyboard advance. Cycling
+supports an external current-index getter so canvas selection stays synchronized.
+
+NoFrills HudEditorScreen interaction concepts are adapted to a dedicated
+`HudEditorScreen` opened after chat closes by `/solyanka gui`. It shows six timers,
+seven stat HUDs and position-only Map Info. All samples are generated locally,
+not inferred from a dungeon run. No master module is enabled by opening/editing.
+Map Info keeps its existing fixed scale and module-based visibility; other HUDs
+support direct drag, per-HUD visibility, scroll-scale, and arrow-key nudging.
+
+Pure `HudLayout` provides registry/update/bounds/drag policies. The editor reads
+last-good live settings and resets each update to that base, so failed disk
+writes do not render an uncommitted draft or leak it into another edit. The
+old timed preview state and commands are removed, not repurposed.
+
+Bounds reflect representative text, not guaranteed future dynamic text length.
+Overlapping elements can be selected using the bottom forward/back cycle picker;
+selected elements draw last. Disabled per-HUD elements remain selectable as gray
+samples. The canvas is transparent. Done/Escape only navigates; writes occur
+through the existing validated atomic config path during interaction.
+
+Manual verification still required for mouse dragging, sliders, right-click,
+resizing, keyboard focus and scaling at actual Minecraft GUI scales.

@@ -5,6 +5,7 @@ import dev.solyanka.client.SolyankaClient
 import dev.solyanka.client.ui.nofrills.*
 import dev.solyanka.ui.InstantSettings
 import dev.solyanka.ui.SettingsCatalog
+import dev.solyanka.ui.SettingsNumbers
 import dev.solyanka.utility.FeatureCodec
 
 /** Typed settings still validate through FeatureCodec; widgets edit only an immutable copy. */
@@ -14,7 +15,6 @@ object AdvancedUi {
   val key=spec.section
   val title=spec.title
   val errors=linkedMapOf<String,String>()
-  val raw=mutableMapOf<String,String>()
   host.showPanel(SettingsPanel(title,{host.closePanel()},{errors.values.firstOrNull() ?: model.error}) { panel,w ->
    val objectValue=Gson().toJsonTree(model.general.features).asJsonObject
    val section=objectValue.getAsJsonObject(key)
@@ -27,7 +27,7 @@ object AdvancedUi {
    }
    buildList {
     add(GuiKit.description(w,when(id) {
-     SolyankaClient.AMBIENCE->"Local time and weather overrides. Click a style button to cycle options."
+     SolyankaClient.AMBIENCE->"Local time and weather overrides. Left click: next style; right click: previous."
      SolyankaClient.ASPECT->"Horizontal projection multiplier: 1 is vanilla. Range 0.3–3; not a width:height ratio."
      SolyankaClient.FOG->"Start/end/density are fractions from 0–1. Density controls fog opacity; palette alpha is ignored. Sodium uses native fog uniforms; Iris parity is not included."
      SolyankaClient.DOORS->"Door colors follow Magical Map data and available-key chat. Optionally announce key spawns locally."
@@ -39,7 +39,7 @@ object AdvancedUi {
      SolyankaClient.MIMIC_CHEST->"Highlights trapped chests in recognized rooms; not proof that every trapped chest is a mimic."
      SolyankaClient.PRICES->"Online pricing is opt-in: public item-data requests only, no player data or API key. Missing prices stay unavailable. Purchases and recipes are stored locally."
      SolyankaClient.EXPERIMENTS->"Private Island only. Next=green, following=yellow. Superpairs remembers revealed rewards. No automatic clicks."
-     else->"Independent rendering filters, all off by default. Click a mode button to cycle its named options."
+     else->"Independent rendering filters, all off by default. Left click: next mode; right click: previous."
     }))
     spec.fields.forEach { field ->
      val value=section.get(field)
@@ -48,10 +48,10 @@ object AdvancedUi {
      if(field in SettingsCatalog.colors) add(GuiKit.colorRow(w,label,value.asInt) { change(field,com.google.gson.JsonPrimitive(it)) })
      else if(choices!=null) add(GuiKit.choiceRow(w,label,choices,value.asInt) { change(field,com.google.gson.JsonPrimitive(it)) })
      else if(value.asJsonPrimitive.isBoolean) add(GuiKit.toggleRow(w,label,value.asBoolean) { change(field,com.google.gson.JsonPrimitive(it)) })
-     else add(GuiKit.textRow(w,label,raw.getOrPut(field) {value.asString}) { input ->
-      raw[field]=input;val default=Gson().toJsonTree(dev.solyanka.utility.FeatureSettings()).asJsonObject.getAsJsonObject(key)[field].asJsonPrimitive
-      val n: Number?=if(default.asNumber is Double || default.asNumber is Float) input.toDoubleOrNull() else input.toIntOrNull()
-      if(n==null) { errors[field]="$label must be a valid number";panel.refreshStatus() } else change(field,com.google.gson.JsonPrimitive(n))
+     else add(GuiKit.sliderRow(w,label,value.asDouble,SettingsNumbers.range(key,field,host.width,host.height,value.asDouble)) { input ->
+      val default=Gson().toJsonTree(dev.solyanka.utility.FeatureSettings()).asJsonObject.getAsJsonObject(key)[field].asJsonPrimitive
+      val n:Number=if(default.asNumber is Double || default.asNumber is Float) input else input.toInt()
+      change(field,com.google.gson.JsonPrimitive(n))
      })
     }
    }

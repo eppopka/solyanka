@@ -1,0 +1,30 @@
+{
+  "settings_panel_is_minecraft_screen": false,
+  "settings_use_createWithoutScreen": true,
+  "explicit_save_buttons": false,
+  "settings_navigation_calls_setScreen": false,
+  "modal_input_routes_checked": [
+    "key",
+    "character",
+    "click",
+    "release",
+    "drag",
+    "scroll"
+  ],
+  "background_tooltip_guard": true,
+  "settings_root_transparent": true,
+  "main_root_transparent": true,
+  "success_status_removed": true,
+  "swatch_and_embedded_palette": true,
+  "bounded_sliders": true,
+  "compact_hud_toggle_and_edit_rows": true,
+  "explicit_right_click_previous": true,
+  "timed_preview_removed": true,
+  "hud_editor_command_deferred": true,
+  "editor_root_transparent": true,
+  "editor_uses_existing_config": true,
+  "editor_drag": true,
+  "editor_scale_scroll": true,
+  "editor_keeps_last_good_live_state": true,
+  "runtime_tested_here": false
+}

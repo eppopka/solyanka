@@ -32,7 +32,8 @@
     "AmbienceWeatherMixin",
     "AmbiencePrecipitationMixin",
     "AspectProjectionMixin",
-    "AspectCameraMixin"
+    "AspectCameraMixin",
+    "ExperienceBarMixin"
   ],
   "injectors": {
     "defaultRequire": 1

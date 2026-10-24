@@ -1,0 +1,29 @@
+{
+  "version": "0.5.2-dev",
+  "minecraft": "26.2",
+  "build": "SUCCESS",
+  "tests": {
+    "tests": 247,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "registered_modules": 26,
+  "new_gameplay_modules": [],
+  "mixin_classes": 30,
+  "target_methods_rechecked": 34,
+  "instant_save": true,
+  "settings_embedded_in_same_screen": true,
+  "hud_editor_command": "/solyanka gui",
+  "hud_editor_elements": 14,
+  "hud_editor_map_info_position_only": true,
+  "all_timed_previews_removed": true,
+  "numeric_settings_use_sliders": true,
+  "bidirectional_choices": true,
+  "in_game_tested_here": false,
+  "gpu_sodium_iris_tested_here": false,
+  "full_requested_feature_set_complete": false,
+  "jar_sha256": "2440a4acd1bc634241ce9dd0e05fc0a616c728481571cbfa2d1e4eb52a0685a6",
+  "sources_jar_sha256": "0def377577ebf365dfb19c78128f9e9556b608fc5bca0c582d1dc8f085a620c0",
+  "baseline_report_note": "Unchanged AW/ABI reports retained from earlier build; Gradle clean AW validation and 34 target-method checker rechecked. New UI/layout/mode/slider tests passed. No visual/input runtime acceptance claimed."
+}

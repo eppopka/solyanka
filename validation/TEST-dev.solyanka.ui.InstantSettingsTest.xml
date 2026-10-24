@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="dev.solyanka.ui.InstantSettingsTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-24T10:36:33.799Z" hostname="da2cdeed-e2c" time="0.022">
+<testsuite name="dev.solyanka.ui.InstantSettingsTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-24T11:25:13.313Z" hostname="2d8e288e-7a4" time="0.025">
   <properties/>
   <testcase name="valid numeric edits save immediately()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.001"/>
-  <testcase name="keyboard and mouse captures save typed identities()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.001"/>
-  <testcase name="out of range and fractional numbers are held locally()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.001"/>
-  <testcase name="opening settings does not write or mutate anything()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.001"/>
+  <testcase name="keyboard and mouse captures save typed identities()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.005"/>
+  <testcase name="out of range and fractional numbers are held locally()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.0"/>
+  <testcase name="opening settings does not write or mutate anything()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.0"/>
   <testcase name="toggle persists immediately without save action()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.001"/>
-  <testcase name="invalid enabled command stays local until corrected()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.002"/>
+  <testcase name="invalid enabled command stays local until corrected()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.003"/>
   <testcase name="persistence failure keeps last good live state and visible error()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.001"/>
-  <testcase name="closing and reopening keeps successful edits not invalid pending input()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.0"/>
-  <testcase name="add edit and delete persist without leaving list or editor()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.001"/>
-  <testcase name="reserved shortcut and cycles are not activated()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.004"/>
-  <testcase name="failed transient text blocks remaining pending edits until fixed()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.002"/>
+  <testcase name="closing and reopening keeps successful edits not invalid pending input()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.001"/>
+  <testcase name="add edit and delete persist without leaving list or editor()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.002"/>
+  <testcase name="reserved shortcut and cycles are not activated()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.003"/>
+  <testcase name="failed transient text blocks remaining pending edits until fixed()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.001"/>
   <testcase name="temporary blank numeric input never replaces last good config()" classname="dev.solyanka.ui.InstantSettingsTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

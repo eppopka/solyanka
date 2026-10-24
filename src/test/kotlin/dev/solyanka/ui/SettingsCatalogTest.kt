@@ -71,7 +71,7 @@ class SettingsCatalogTest {
         assertFalse(player.contains("Preview"))
         assertFalse(ui.contains("FeatureRuntime.preview(\"player\")"))
         assertFalse(ui.contains("FeatureRuntime.preview(if(timer)"))
-        assertTrue(ui.contains("if(timer) add(GuiKit.row(w).apply { child(GuiKit.button(\"Preview"))
+        assertFalse(ui.contains("Preview 15 seconds"))
         assertTrue(ui.contains("GuiKit.colorRow(w,\"Color\",h.color)"))
         assertFalse(ui.contains("Color (#RRGGBB)"))
     }
