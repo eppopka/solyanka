@@ -26,6 +26,7 @@ class ConfigStore(private val path: Path, private val report: (String, Exception
                 require(value.isJsonPrimitive && value.asJsonPrimitive.isBoolean) { "Module values must be booleans" }
             }
             loaded.get("commandUtilities")?.let { ProfileCodec.decode(it.asJsonObject) }
+            loaded.get("generalUtilities")?.let { GeneralCodec.decode(it.asJsonObject) }
             root = loaded
         } catch (e: Exception) {
             writable = false
@@ -34,7 +35,8 @@ class ConfigStore(private val path: Path, private val report: (String, Exception
     }
     fun enabled(id: String): Boolean = root.getAsJsonObject("modules")?.get(id)?.asBoolean ?: false
     fun profile(): CommandProfile = ProfileCodec.decode(root.getAsJsonObject("commandUtilities"))
-    fun save(states: Map<String, Boolean>, profile: CommandProfile? = null): Boolean {
+    fun general(): GeneralSettings = GeneralCodec.decode(root.getAsJsonObject("generalUtilities"))
+    fun save(states: Map<String, Boolean>, profile: CommandProfile? = null, general: GeneralSettings? = null): Boolean {
         if (!writable) return false
         var temp: Path? = null
         try {
@@ -42,6 +44,7 @@ class ConfigStore(private val path: Path, private val report: (String, Exception
             val candidate = root.deepCopy()
             candidate.addProperty("schemaVersion", 1)
             if (profile != null) candidate.add("commandUtilities", ProfileCodec.encode(profile, candidate.getAsJsonObject("commandUtilities")))
+            if (general != null) candidate.add("generalUtilities", GeneralCodec.encode(general, candidate.getAsJsonObject("generalUtilities")))
             val modules = candidate.getAsJsonObject("modules") ?: JsonObject().also { candidate.add("modules", it) }
             states.forEach { (id, enabled) -> modules.addProperty(id, enabled) }
             temp = Files.createTempFile(path.parent, "solyanka-", ".tmp")

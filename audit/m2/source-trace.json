@@ -1,0 +1,18 @@
+{
+  "repository": "https://github.com/WhatYouThing/NoFrills",
+  "commit": "74e9317c1a7b8484a575b2f177479f5e3f2bfb9a",
+  "license": "GPL-3.0",
+  "features": [
+    "ChatTweaks.java",
+    "InfoTooltips.java"
+  ],
+  "supporting_sources": [
+    "ChatComponentMixin.java",
+    "GuiMixin.java:onClearChat",
+    "Utils.java:getMarketId(ItemStack),getSkyblockId,toPlain,parseDate",
+    "ShardData.java:isShard,getSource,parseId",
+    "NoFrillsAPI.java:museum task",
+    "ClickGui.java:settings"
+  ],
+  "differences_document": "docs/M2.md"
+}

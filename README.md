@@ -1,65 +1,90 @@
-# solyanka — NoFrills GUI update (0.2.1-dev)
+# solyanka — 0.5.1-dev
 
-**Minecraft 26.2 exactly • Fabric • Kotlin • Java 25 • GPL-3.0-only**
+**Minecraft 26.2 exactly · Fabric · Kotlin · Java 25 · GPL-3.0-only**
 
-This update replaces YACL with an adapted port of the NoFrills click GUI. Implemented modules remain command keybinds, command shortcuts and diagnostics. All other requested gameplay/rendering features remain in the backlog. **The new GUI has not been launched or visually checked in Minecraft here.**
+This development build has **26 real registered modules (14 new in this batch)**. `/solyanka` opens the NoFrills-style GUI directly. Right-click settings remain embedded in the same Screen; every valid setting change saves immediately. There is no Save / Save & back button. All master modules default off.
+
+**The whole requested mod is NOT complete.** Every requested Odin/NoFrills feature category now has an implementation or explicit adaptation, but this is not full upstream option/behavior parity. Only Ambience, Aspect and Fog are implemented from Stray; only Mimic Chest is implemented from impl.zip. The rest of Stray and the archive remain tracked in `docs/FEATURE_MATRIX.md` and `audit/archive-inventory.json`. No placeholder toggles are advertised as working.
 
 ## Install / upgrade
 
-1. Back up `config/solyanka.json`; remove the previous solyanka JAR. Do not install multiple solyanka builds.
-2. Use Minecraft **26.2**, Java **25**, Fabric Loader **0.20.1+**.
-3. Keep **Fabric API 0.161.0+26.2** and **Fabric Language Kotlin 1.14.2+kotlin.2.4.21**.
-4. Install **owo-lib 0.13.1+26.2** (Fabric). It is the new required external UI dependency.
-5. Install `solyanka-0.2.1-dev.jar`. **Mod Menu 20.0.3** is optional.
+1. Back up `config/solyanka.json` and any existing local market/waypoint files. Remove older solyanka JARs.
+2. Use **Minecraft 26.2**, **Java 25**, **Fabric Loader 0.20.1+**.
+3. Install **Fabric API 0.161.0+26.2**, **Fabric Language Kotlin 1.14.2+kotlin.2.4.21**, and **owo-lib 0.13.1+26.2**.
+4. Install the ordinary **solyanka-0.5.1-dev.jar**, not the sources JAR. Optional: **Mod Menu 20.0.3**.
 
-**YACL is no longer required by solyanka.** Keep it if another installed mod needs it. Existing 0.1/0.2 config remains compatible; no keybind/shortcut reset is required.
+YACL is not required by solyanka. Odin/NoFrills/Stray themselves are not dependencies. Do not install multiple solyanka builds. Existing solyanka settings/unknown config fields are preserved.
 
-## Open the GUI
+## GUI
 
-- **`/solyanka` opens the GUI directly**, on the next client tick after chat submission.
-- `/solyanka config` remains an equivalent alias.
-- **Right Shift** opens it from the world; rebind this key in Minecraft Controls.
-- Optional Mod Menu configuration button opens the same GUI, including from the title menu.
+- `/solyanka`, `/solyanka config`, Right Shift or Mod Menu open the same GUI.
+- Left-click a card to toggle it; right-click for settings. Back/Escape closes the embedded panel, not a save operation.
+- Settings write atomically before live commit. Invalid numeric/text drafts and write errors remain inline; last-good disk/live state is retained. Valid edits in the advanced independent-field panels can save while another raw numeric field is invalid; the error remains until corrected.
+- GUI input, scrolling, key capture and tooltips remain modal; underlying cards/search cannot be activated through settings.
+- Commands: `/solyanka status`, `/solyanka toggle <module-id>`, `/solyanka preview timers`, `/solyanka preview player`.
 
-The main GUI ports NoFrills' horizontal category columns, blue headers, dark/flat surfaces, active accent bars, text colors, search and category scrolling. **Left click a feature to toggle it; right click for its settings.** Only implemented features appear; there are no fake working toggles for the remaining backlog.
+## New in 0.5.1 — settings cleanup
 
-## Command settings
+- Transparent GUI/settings roots: no full-screen dimming layer; cards and panel remain readable.
+- Colors show a small swatch and **Edit color**, opening an inline owo palette (including alpha).
+- Clock, weather, waypoint type, Health Bar, Vignette and burger count use named cycling buttons, not numeric mode codes.
+- Ambience, Aspect, Fog, Door Highlight, Map Info and each puzzle/mimic feature have scoped settings.
+- Ice Fill, Blaze and Creeper Beams now have independent depth-test switches. Old shared values migrate automatically; beam connecting lines retain their existing through-wall behavior.
+- Removed Player Display preview buttons, including nested HUD editors, and the success-status text. Timer previews and inline save errors remain.
+- Instant saving and same-Screen input isolation are unchanged. This patch does not add the unfinished Stray/archive features.
 
-- Main feature-card toggles save immediately. All modules and new entries default off.
-- Right click Command Keybinds or Command Shortcuts to edit entries.
-- List changes are staged. Add/Delete do **not** save immediately in this update.
-- In the keybind editor, **Done (stage)** returns edited values to the draft list; **Save & back** on the list validates and persists the profile.
-- Cancel / back (or Escape outside capture) discards the current editor's unstaged changes, or the entire list draft when leaving the root list without saving.
-- Capture is inline like NoFrills: click the keybind button, then press a main key or mouse button. Escape cancels capture; Backspace unbinds. Configure Ctrl/Shift/Alt separately.
-- `/`-prefixed targets are commands; other targets are ordinary chat. They can reach the server. Configure and test with harmless targets first.
-- Keyboard and mouse identities are separate; only initial presses send. First matching row wins. Container execution is opt-in; chat, anvils, settings, text fields, unfocused/disconnected clients are blocked.
-- Class/island filters use current standard tab-list labels, not full dungeon context. Unknown filtered context blocks the bind; empty filters are unrestricted.
-- Shortcut names are exact/case-sensitive tokens. Arguments append, changes apply live, cycles and excessive depth/length fail locally. Unrelated server commands are untouched.
-- `/solyanka` and other registered client command roots retain precedence. Alias completion/help nodes are still pending.
+Build/unit/static checks only; no in-game or GPU/Sodium/Iris testing was performed here. Test palette dragging, scrolling, resizing, save/reopen, and each menu in Minecraft 26.2.
 
-Other commands: `/solyanka status`, `/solyanka toggle utility.command_keybinds`, `/solyanka toggle utility.command_shortcuts`, `/solyanka toggle core.diagnostics`.
+## Previous feature batch: 0.5.0
 
-## Build
+### Odin dungeon adapters
 
-Install a full JDK 25, set JAVA_HOME, then:
+- **Dungeon Waypoints:** room-relative packs, 1x1 blue-marker and multi-tile geometry transforms, colored outlined/filled boxes, world titles, per-pack selection/editing, manual placement/removal, secret and manually initiated etherwarp hiding, collection reset. JSON and Base64+GZIP Odin pack import/export via clipboard. Bounded, validated, atomic local files; no online pack download or bundled secret pack.
+- **Ice Fill:** source easy/optimized route data, rotated into recognized rooms; all three floors must match before a route is shown.
+- **Blaze:** Higher/Lower ordering from armor-stand maximum HP, priority colors and connecting lines; entity-death exclusion.
+- **Creeper Beams:** rotated bundled lantern-pair solutions; pairs disappear when either block is no longer a sea lantern.
+- **Door Highlight:** Magical Map layout parsing, wither/blood doors, chat-tracked available keys, openable colors and key entity/spawn alerts.
+- **Map Info:** tab/sidebar secrets, deaths, crypts, elapsed time, bonus flags, estimated score, remaining required secrets, room-secret samples and blood portal highlight. Missing inputs show `?`; Paul bonus is manual. This is not an authoritative completion guarantee.
+- **Mimic:** baby-zombie death heuristic on F6/F7, baby-zombie outlines, prince/bat messages and optional explicit party announcements. A highlighted baby zombie is not proof of a mimic.
 
-```sh
-./gradlew clean build
-```
+Previously implemented Tick Timers and Player Display remain. The source room/solver JSON and Odin BSD notice are bundled. See `docs/M4.md` for exact differences and unsupported behavior.
 
-Windows: `gradlew.bat clean build`. Dev client: `./gradlew runClient` in a graphical environment. Install the ordinary `build/libs/solyanka-0.2.1-dev.jar`, not the sources JAR.
+### NoFrills
 
-Pinned build tools: Gradle 9.7.1 (checksum pinned), Fabric Loom 1.18.4, Kotlin 2.4.21. This Minecraft target uses official unobfuscated names; no Yarn/remapping configuration is added. Runtime mods are external, not bundled.
+- **Experiment Solver:** Chronomatron sequence memory, Ultrasequencer count ordering, Superpairs remembered reward overlays, next/following hints and optional wrong-click prevention. Private Island/menu gates, packet/tick snapshots and reset. No automatic clicking.
+- **No Render:** independent particle/entity/GUI/overlay/fog/nausea/vignette filters, all off by default. Health Bar modes: Nowhere / Outside Rift / Everywhere. Vignette modes: None / Ambient / Danger / Both.
+- **Price Tooltips:** auction/Bazaar/NPC/mote fields where providers supply them, stack/storage quantity, locally observed purchase costs and crafting recipes with cycle/unknown-price protection. **Network is separately opt-in and off by default.**
 
-## Source and documentation
+The NoFrills pricing endpoint returned HTTP 401 during audit. Fallbacks use public Hypixel Bazaar/item resources and Moulberry lowest-bin data; the latter also failed during audit. Missing prices stay unavailable, never zero. Motes require primary data. PricePaid records a manual confirmation click, not a server-confirmed purchase. Craft costs require complete locally observed recipes and ingredient prices. See M4.md for stale/error behavior and privacy.
 
-- `src/main/kotlin/dev/solyanka`: core lifecycle, typed command profiles, persistence and pure GUI catalog/drafts.
-- `src/client/kotlin/dev/solyanka/client/ui/nofrills`: adapted NoFrills click GUI, flat controls and settings panels.
-- `src/client/kotlin/dev/solyanka/client/ui/ConfigUi.kt`: solyanka profile/settings adapter.
-- `src/test/kotlin`: lifecycle/config/command/input/context tests plus GUI draft/search tests.
-- `docs/GUI_PORT.md`: upstream file trace and intentional differences.
-- `docs/TESTING.md`, `docs/VALIDATION.md`: actual validation boundary and your in-game checklist.
-- `docs/FEATURE_MATRIX.md`, `docs/ROADMAP.md`: all requested feature scope remains tracked.
-- `audit/`: source locks, attachment inventory, license text and dependency evidence.
+Existing command keybinds/shortcuts, Chat Tweaks, Info Tooltips, Animation Fix, Middle Click Fix/Override, No Cursor Reset and visual-only No Loading Screen remain. Loading readiness/input blocking are deliberately preserved.
 
-Project code and NoFrills adaptations are GPL-3.0-only; full project source/build scripts and notices accompany this delivery. See LICENSE/NOTICE. External owo (MIT), Mod Menu (MIT) and Fabric dependencies are separate. NoFrills itself is not required; its complete feature/config/event framework is not bundled.
+### Stray and archive
+
+- **Ambience:** client-only clock presets, clear/rain/thunder/snow and precipitation intensity. No integrated-server time/weather mutation.
+- **Aspect:** matching projection/culling horizontal multiplier; 1.0 is vanilla.
+- **Fog:** atmospheric distance/color/density with liquid/status fog preserved. No Render fog suppression wins. Sodium uses native uniforms only: the upstream custom Sodium shader patch is NOT included; Iris/shader parity is unverified.
+- **Mimic Chest (impl.zip):** loaded-chunk trapped-chest scan every 20 client ticks and depth-tested filled block-shape overlay, configurable signed ARGB color. Display refreshes every five client ticks. No chunk loads; not every trapped chest is a mimic.
+
+## Waypoint quick start
+
+1. Enable Dungeon Waypoints; right-click settings. On first use an empty `default` pack is created under `config/solyanka-waypoints/`.
+2. To import an Odin pack, copy raw JSON or its Base64+GZIP share string. Enter a **new** pack name and click **Import clipboard**. URLs are not fetched.
+3. Set **Selected Packs** to comma-separated existing names and **Edit Pack** to the editable name. Valid settings save instantly. Click **Reload packs** after editing files outside the game.
+4. In a recognized dungeon room, enable **Allow Edits**, close the GUI, and right-click a block within normal reach to add/remove a waypoint. Editing consumes the click. `/solyanka waypoint add <title>` adds/replaces the targeted waypoint with a title. Disable Allow Edits for normal gameplay.
+5. Types: 0=None, 1=Normal, 2=Secret, 3=Etherwarp. Select block bounds or custom dimensions. Colors are signed Java ARGB integers (default green `-11141291`); filled/depth/title settings are independent. Title size is configurable.
+6. Export a named pack to the clipboard. Create/import do not automatically change selection. Rename/delete apply only to inactive packs; switch Selected/Edit Pack first. The only pack cannot be deleted. Editing requires an existing readable pack; corrupt files are not silently overwritten.
+
+This is a solyanka embedded editor, not Odin's Compose editor/HUD or editor hotkey cycling. Etherwarp uses a bounded vanilla raycast, not Odin's full tuned targeting validator. Manual interactions are observed, never automatically executed. Review server rules for client assistance/ESP/click filters before use.
+
+## Validation boundary
+
+`./gradlew clean build` compiles both source sets and runs pure regression tests. See `validation/summary.json` for exact counts, artifact checksum and static checks. **No full Minecraft launch, Mixin application in a launched client, Hypixel session, GPU visual test, Sodium or Iris acceptance has been performed here.** Successful compilation/static target checks are not proof of in-game behavior.
+
+Run the new feature checklist in `docs/TESTING.md` with minimal required mods first, then your actual performance/shader setup. Toggle modules one at a time. Report module ID, steps, screenshot and sanitized latest.log/crash report.
+
+## Build / source
+
+Use a full JDK 25 and run `./gradlew clean build` (Windows: `gradlew.bat clean build`). Gradle 9.7.1, Loom 1.18.4, Kotlin 2.4.21; official unobfuscated 26.2 names, no Yarn/legacy mappings. Dev launch: `./gradlew runClient` in a graphical environment.
+
+Source ZIP includes source, wrapper/build scripts, notices/licenses, audit/source locks, validation evidence and ordinary/sources JARs in `dist/`. Dependencies and upstream frameworks are not vendored. `NOTICE`, `docs/M4.md`, `docs/FEATURE_MATRIX.md` and `docs/ROADMAP.md` describe attribution, adaptations and remaining work. Historical M1–M3 documents describe their original release scope, not the current feature count.

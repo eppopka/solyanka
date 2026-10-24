@@ -1,0 +1,21 @@
+{
+  "scope": "Observed during 0.5 source audit; availability can change; no credentials or impersonation used",
+  "providers": [
+    {
+      "url": "https://whatyouth.ing/api/nofrills/v2/economy/get-item-pricing/",
+      "observed_http_status": 401
+    },
+    {
+      "url": "https://api.hypixel.net/v2/skyblock/bazaar",
+      "observed_http_status": 200
+    },
+    {
+      "url": "https://api.hypixel.net/v2/resources/skyblock/items",
+      "observed_http_status": 200
+    },
+    {
+      "url": "https://moulberry.codes/lowestbin.json",
+      "observed_http_status": 525
+    }
+  ]
+}

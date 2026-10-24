@@ -14,7 +14,9 @@
     ],
     "module": "dungeon.waypoints",
     "risk": "Room transforms, secrets, persistence, route packs and editor",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "Odin",
@@ -24,7 +26,9 @@
     ],
     "module": "solver.ice_fill",
     "risk": "Room coordinates, block updates and route resets",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "Odin",
@@ -34,7 +38,9 @@
     ],
     "module": "solver.blaze",
     "risk": "Entity health ordering and room lifecycle",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "Odin",
@@ -44,7 +50,9 @@
     ],
     "module": "solver.creeper_beams",
     "risk": "Requires solution JSON and room-to-world transform",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "Odin",
@@ -52,9 +60,11 @@
     "files": [
       "src/main/kotlin/com/odtheking/odin/features/impl/dungeon/DoorHighlight.kt"
     ],
-    "module": "dungeon.doors",
+    "module": "dungeon.door_highlight",
     "risk": "Map scanner and world rendering",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "Odin",
@@ -64,7 +74,9 @@
     ],
     "module": "dungeon.map_info",
     "risk": "Dungeon map model and HUD",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "Odin",
@@ -74,7 +86,9 @@
     ],
     "module": "dungeon.mimic",
     "risk": "Entity/block evidence and run-state reset",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "Odin",
@@ -84,7 +98,8 @@
     ],
     "module": "dungeon.tick_timers",
     "risk": "Boss chat triggers, tick timebase, multiple HUD elements",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_BUILD_TESTED_INGAME_PENDING",
+    "implementation_notes": "0.4.0; see docs/M3.md for all options, source trace and intentional adaptations."
   },
   {
     "source": "Odin",
@@ -94,7 +109,8 @@
     ],
     "module": "hud.player_display",
     "risk": "Inspect source-specific player data and UI options",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_BUILD_TESTED_INGAME_PENDING",
+    "implementation_notes": "0.4.0; see docs/M3.md for all options, source trace and intentional adaptations."
   },
   {
     "source": "NoFrills",
@@ -104,7 +120,8 @@
     ],
     "module": "utility.chat",
     "risk": "Chat interception and history semantics",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_BUILD_TESTED_INGAME_PENDING",
+    "implementation_notes": "See docs/M2.md for all settings, source trace and intentional adaptations."
   },
   {
     "source": "NoFrills",
@@ -136,7 +153,8 @@
     ],
     "module": "utility.info_tooltips",
     "risk": "SkyBlock item data and tooltip hooks",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_BUILD_TESTED_INGAME_PENDING",
+    "implementation_notes": "See docs/M2.md for all settings, source trace and intentional adaptations."
   },
   {
     "source": "NoFrills",
@@ -146,7 +164,9 @@
     ],
     "module": "utility.price_tooltips",
     "risk": "Pricing API, recipes, cache and stale-data behavior",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "NoFrills",
@@ -156,7 +176,9 @@
     ],
     "module": "render.suppression",
     "risk": "Multiple entity/particle/render hooks",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "NoFrills",
@@ -166,7 +188,8 @@
     ],
     "module": "render.animation_fix",
     "risk": "Version-specific animation hooks",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_BUILD_TESTED_INGAME_PENDING",
+    "implementation_notes": "0.4.0; see docs/M3.md for all options, source trace and intentional adaptations."
   },
   {
     "source": "NoFrills",
@@ -176,7 +199,8 @@
     ],
     "module": "utility.middle_click_fix",
     "risk": "Screen slot input semantics",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_BUILD_TESTED_INGAME_PENDING",
+    "implementation_notes": "0.4.0; see docs/M3.md for all options, source trace and intentional adaptations."
   },
   {
     "source": "NoFrills",
@@ -186,7 +210,8 @@
     ],
     "module": "utility.middle_click_override",
     "risk": "Must arbitrate with middle-click fix",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_BUILD_TESTED_INGAME_PENDING",
+    "implementation_notes": "0.4.0; see docs/M3.md for all options, source trace and intentional adaptations."
   },
   {
     "source": "NoFrills",
@@ -196,7 +221,8 @@
     ],
     "module": "utility.cursor",
     "risk": "Mouse grabbing and screen transitions",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_BUILD_TESTED_INGAME_PENDING",
+    "implementation_notes": "0.4.0; see docs/M3.md for all options, source trace and intentional adaptations."
   },
   {
     "source": "NoFrills",
@@ -206,7 +232,8 @@
     ],
     "module": "utility.loading_screen",
     "risk": "Do not bypass world readiness or disconnect screens",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "implementation_notes": "0.4.0; see docs/M3.md for all options, source trace and intentional adaptations."
   },
   {
     "source": "NoFrills",
@@ -216,7 +243,9 @@
     ],
     "module": "solver.experiments",
     "risk": "Inventory content, menu identity, slot updates and reset",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "Stray",
@@ -237,7 +266,9 @@
     ],
     "module": "render.ambience",
     "risk": "Lighting/time/weather interactions",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "Stray",
@@ -249,7 +280,9 @@
     ],
     "module": "render.fog",
     "risk": "Optional Sodium-specific mixin must be guarded",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "Stray",
@@ -259,7 +292,9 @@
     ],
     "module": "render.aspect",
     "risk": "Projection and FOV behavior",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.5.0-dev",
+    "notes": "Implementation and deviations: docs/M4.md. Not full source parity or in-game verified."
   },
   {
     "source": "Stray",

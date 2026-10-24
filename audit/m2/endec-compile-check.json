@@ -1,0 +1,10 @@
+{
+  "version": "0.1.12",
+  "scope": "clientCompileOnly, non-transitive",
+  "runtime": "nested in external owo-lib 0.13.1+26.2",
+  "all_maven_entries_identical_in_nested_runtime": true,
+  "identical_class_count": 161,
+  "nested_only_entry": "fabric.mod.json",
+  "maven_jar_sha256": "4f931023e535d0465675b7776a363edca231f1c1e8c6810c5e10ce2bdfd73267",
+  "nested_jar_sha256": "8bf9ba921b8b2cb46c0be74c2db4f6df124df6caed22d96a11465e104f757dae"
+}

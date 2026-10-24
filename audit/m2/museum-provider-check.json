@@ -1,0 +1,20 @@
+{
+  "provider": "Hypixel public SkyBlock item resource",
+  "url": "https://api.hypixel.net/v2/resources/skyblock/items",
+  "checked_utc": "2026-10-23T21:38:30.809392+00:00",
+  "http_status": 200,
+  "response_bytes": 4810899,
+  "response_sha256": "adb76eae35cbce2f18f01b947f9d914967b36e53895adf615e39efbd9d2c4fe8",
+  "museum_items": 1060,
+  "compiled_parser_check": {
+    "compiled_parser_ok": true,
+    "category_ids": 1081,
+    "mapped_variant_checked": "STARRED_DAEDALUS_AXE"
+  },
+  "upstream_endpoint_audit": {
+    "url": "https://whatyouth.ing/api/nofrills/v1/items/get-museum-data/",
+    "without_headers": 401,
+    "with_honest_solyanka_identification_headers": 403
+  },
+  "no_live_payload_bundled": true
+}

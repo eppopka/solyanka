@@ -1,0 +1,16 @@
+[
+  {
+    "target": "KeyboardHandler",
+    "method": "keyPress",
+    "descriptor": "(JILnet/minecraft/client/input/KeyEvent;)V",
+    "static_match": true,
+    "runtime_tested": false
+  },
+  {
+    "target": "MouseHandler",
+    "method": "onButton",
+    "descriptor": "(JLnet/minecraft/client/input/MouseButtonInfo;I)V",
+    "static_match": true,
+    "runtime_tested": false
+  }
+]

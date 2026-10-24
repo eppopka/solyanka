@@ -1,51 +1,51 @@
-# Feature matrix
+# Feature matrix — 0.5.0-dev
 
-**Status (0.2.1): Command Keybinds and Command Shortcuts are implemented/build-tested, with in-game acceptance and documented follow-ups pending. Every other upstream feature remains a backlog item.**
+26 registered modules. IMPLEMENTED means code/build-tested, **not** full upstream parity or in-game acceptance. All requested features remain in scope; no placeholder toggles. Read M4.md for provider, editor, rendering and score adaptations.
 
-See GUI_PORT.md for the NoFrills GUI replacement and M1.md for command behavior differences/alias-completion limitations. No feature is certified in-game yet.
-
-The initial audit locates implementations and major dependencies; it does not certify behavior on Minecraft 26.2. Every requested feature is retained. Supporting files, mixins and assets must be traced before each port.
-
-| Source | Feature | Proposed module | Integration concerns |
+| Source | Feature | Module | Current status |
 |---|---|---|---|
-| Odin | Dungeon Waypoints | `dungeon.waypoints` | Room transforms, secrets, persistence, route packs and editor |
-| Odin | Ice Fill | `solver.ice_fill` | Room coordinates, block updates and route resets |
-| Odin | Blaze | `solver.blaze` | Entity health ordering and room lifecycle |
-| Odin | Creeper Beams | `solver.creeper_beams` | Requires solution JSON and room-to-world transform |
-| Odin | Door Highlight | `dungeon.doors` | Map scanner and world rendering |
-| Odin | Map Info | `dungeon.map_info` | Dungeon map model and HUD |
-| Odin | Mimic detection/highlight | `dungeon.mimic` | Entity/block evidence and run-state reset |
-| Odin | Tick Timers | `dungeon.tick_timers` | Boss chat triggers, tick timebase, multiple HUD elements |
-| Odin | Player Display | `hud.player_display` | Inspect source-specific player data and UI options |
-| NoFrills | Chat Tweaks | `utility.chat` | Chat interception and history semantics |
-| NoFrills | Command Keybinds | `utility.command_keybinds` | Input focus and server command dispatch |
-| NoFrills | Command Shortcuts | `utility.command_shortcuts` | Parsing, command precedence and recursion |
-| NoFrills | Info Tooltips | `utility.info_tooltips` | SkyBlock item data and tooltip hooks |
-| NoFrills | Price Tooltips | `utility.price_tooltips` | Pricing API, recipes, cache and stale-data behavior |
-| NoFrills | No Render | `render.suppression` | Multiple entity/particle/render hooks |
-| NoFrills | Animation Fix | `render.animation_fix` | Version-specific animation hooks |
-| NoFrills | Middle Click Fix | `utility.middle_click_fix` | Screen slot input semantics |
-| NoFrills | Middle Click Override | `utility.middle_click_override` | Must arbitrate with middle-click fix |
-| NoFrills | No Cursor Reset | `utility.cursor` | Mouse grabbing and screen transitions |
-| NoFrills | No Loading Screen | `utility.loading_screen` | Do not bypass world readiness or disconnect screens |
-| NoFrills | Experiment Solver | `solver.experiments` | Inventory content, menu identity, slot updates and reset |
-| Stray | Skybox | `render.skybox` | Sky extraction, tint, textures and shader compatibility |
-| Stray | Ambience | `render.ambience` | Lighting/time/weather interactions |
-| Stray | Fog | `render.fog` | Optional Sodium-specific mixin must be guarded |
-| Stray | Aspect | `render.aspect` | Projection and FOV behavior |
-| Stray | Motion Blur | `render.motion_blur` | GPU resources, resize, temporal reset, Iris integration |
-| Stray | Player Glow | `render.player_glow` | Player filtering and shared glow pass |
-| Stray | Nametags | `render.nametags` | Render extraction and text layout |
-| Stray | Block Outline | `render.block_outline` | Outline framebuffer and render-state restoration |
-| Stray | Picture in Picture | `render.pip` | Actual feature captures another desktop window; Win32/JNA backend |
-| Stray | Titanium ESP | `mining.titanium` | Block tracking, location context and world renderer |
-| Stray | Skill Progress | `hud.skill_progress` | Chat/state tracking and persistence |
-| Stray | Inventory | `hud.inventory` | Item renderer and HUD positions |
-| Stray | Scoreboard | `hud.scoreboard` | Vanilla replacement and text layout |
-| Stray | Item Name | `hud.item_name` | Confirm precise feature toggle semantics before porting |
-| Stray | Themed Chat | `hud.themed_chat` | Chat layout, clipping, input and history |
-| Stray | CS2 Knife | `cosmetic.cs2_knife` | Model/material/shader assets and their provenance need separate review |
-| Stray | Held Item | `cosmetic.held_item` | Separate HUD/shader behavior from knife and item-name features |
+| Odin | Dungeon Waypoints | `dungeon.waypoints` | Adapted implementation; in-game pending |
+| Odin | Ice Fill | `solver.ice_fill` | Adapted implementation; in-game pending |
+| Odin | Blaze | `solver.blaze` | Adapted implementation; in-game pending |
+| Odin | Creeper Beams | `solver.creeper_beams` | Adapted implementation; in-game pending |
+| Odin | Door Highlight | `dungeon.door_highlight` | Adapted implementation; in-game pending |
+| Odin | Map Info | `dungeon.map_info` | Adapted implementation; in-game pending |
+| Odin | Mimic detection/highlight | `dungeon.mimic` | Adapted implementation; in-game pending |
+| Odin | Tick Timers | `dungeon.tick_timers` | Adapted implementation; in-game pending |
+| Odin | Player Display | `hud.player_display` | Adapted implementation; in-game pending |
+| NoFrills | Chat Tweaks | `utility.chat` | Adapted implementation; in-game pending |
+| NoFrills | Command Keybinds | `utility.command_keybinds` | Adapted implementation; in-game pending |
+| NoFrills | Command Shortcuts | `utility.command_shortcuts` | Adapted implementation; in-game pending |
+| NoFrills | Info Tooltips | `utility.info_tooltips` | Adapted implementation; in-game pending |
+| NoFrills | Price Tooltips | `utility.price_tooltips` | Adapted implementation; in-game pending |
+| NoFrills | No Render | `render.suppression` | Adapted implementation; in-game pending |
+| NoFrills | Animation Fix | `render.animation_fix` | Adapted implementation; in-game pending |
+| NoFrills | Middle Click Fix | `utility.middle_click_fix` | Adapted implementation; in-game pending |
+| NoFrills | Middle Click Override | `utility.middle_click_override` | Adapted implementation; in-game pending |
+| NoFrills | No Cursor Reset | `utility.cursor` | Adapted implementation; in-game pending |
+| NoFrills | No Loading Screen | `utility.loading_screen` | Adapted implementation; in-game pending |
+| NoFrills | Experiment Solver | `solver.experiments` | Adapted implementation; in-game pending |
+| Stray | Skybox | `render.skybox` | Pending implementation |
+| Stray | Ambience | `render.ambience` | Adapted implementation; in-game pending |
+| Stray | Fog | `render.fog` | Adapted implementation; in-game pending |
+| Stray | Aspect | `render.aspect` | Adapted implementation; in-game pending |
+| Stray | Motion Blur | `render.motion_blur` | Pending implementation |
+| Stray | Player Glow | `render.player_glow` | Pending implementation |
+| Stray | Nametags | `render.nametags` | Pending implementation |
+| Stray | Block Outline | `render.block_outline` | Pending implementation |
+| Stray | Picture in Picture | `render.pip` | Pending implementation |
+| Stray | Titanium ESP | `mining.titanium` | Pending implementation |
+| Stray | Skill Progress | `hud.skill_progress` | Pending implementation |
+| Stray | Inventory | `hud.inventory` | Pending implementation |
+| Stray | Scoreboard | `hud.scoreboard` | Pending implementation |
+| Stray | Item Name | `hud.item_name` | Pending implementation |
+| Stray | Themed Chat | `hud.themed_chat` | Pending implementation |
+| Stray | CS2 Knife | `cosmetic.cs2_knife` | Pending implementation |
+| Stray | Held Item | `cosmetic.held_item` | Pending implementation |
+
+## Archive (impl.zip)
+
+Mimic Chest (`custom.mimic_chest`) is an adapted implementation. All other 22 feature objects remain pending, including the separate OdinDungeonWaypoints route steps. See audit/archive-inventory.json for all 34 Kotlin files and their helper dependencies. No entire archive integration claim.
 
 ## Pinned source entry points
 

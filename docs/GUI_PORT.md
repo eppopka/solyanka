@@ -27,16 +27,39 @@ All upstream paths are under `src/main/java/nofrills/`. The palette retains `0xf
 
 - Uses published owo-lib **0.13.1+26.2**, not a NoFrills 26.1 binary or the old YACL layer.
 - Replaces NoFrills Feature/Setting/Orbit references with solyanka state, immutable rows and transactional persistence.
-- Shows only three registered modules; it does not copy unrelated NoFrills features or expose unimplemented toggles.
+- Initially showed three modules; 0.3.0 added Chat Tweaks and Info Tooltips. Version 0.4.0 now has twelve real registered modules, including two Odin and five additional NoFrills modules. Unimplemented toggles remain hidden.
 - `/solyanka` directly requests opening the GUI next client tick, avoiding chat-close races. `/solyanka config`, Right Shift and Mod Menu converge on the same screen factory.
-- Keeps main left-click toggles immediate, but stages row edits until explicit Save & back. Editor Done stages one row; root Cancel abandons the draft. This deliberately differs from upstream auto-save settings to preserve validation and file safety.
+- As of 0.3.1, saves valid controls/list/editor changes immediately, with inline validation/write failures. No save or staging buttons remain. Last-good values are preserved while intermediate invalid input stays local.
 - Keeps keyboard vs mouse distinction, focus/connection/filter checks, bounded aliases and corrupt-config protection.
 - Key capture cancels with Escape and unbinds with Backspace; modifier selection is separate. It no longer opens a separate vanilla/YACL capture screen.
 - Centers settings panels, adapts widths to the GUI and limits the main list to known categories. Exact upstream pixel identity is not promised.
-- Releases screen-owned native cursor resources when replacing screens; returning screens rebuild adapters as needed.
+- Releases screen-owned native cursor resources on exit and embedded panel adapters on replacement/close/resize. Settings use createWithoutScreen and never install a second Minecraft Screen.
 
 ## Preserved limitations
 
-No in-game launch, screenshot/visual confirmation, signed chat test or Sodium/Iris test was performed. Unit tests and compile-time API checks do not prove runtime layout correctness. Tab parsing supports standard current Area/Dungeon/player-class labels only; alias completion nodes and other feature modules remain pending.
+No in-game launch, screenshot/visual confirmation, signed chat test or Sodium/Iris test was performed here. The user subsequently reported the 0.2.1 build working; that is not a detailed compatibility certification. Unit tests and compile-time API checks do not prove runtime layout correctness. Tab parsing supports standard current Area/Dungeon/player-class labels only; alias completion nodes and other feature modules remain pending.
 
 See TESTING.md for the acceptance sequence.
+
+## 0.5.1 controls and panel scoping
+
+ColorPickerScreen/SettingColor and EnumButton from the same pinned NoFrills
+revision inform the new controls. `GuiKit.colorRow` embeds owo's
+ColorPickerComponent directly in the current SettingsPanel, below a swatch and
+Edit color button. No Minecraft Screen is created. Palette changes persist via
+the existing validated instant-save path. `choiceRow` cycles named options while
+preserving existing serialized integer meanings.
+
+SettingsCatalog explicitly assigns fields to each feature; sibling environment
+and dungeon features no longer expose identical whole-config sections. Legacy
+puzzle depthTest migrates to separate iceDepthTest/blazeDepthTest/beamDepthTest
+when the new keys are absent. Existing unknown config fields remain preserved.
+The old shared field is retained for compatibility but not shown in the GUI.
+
+Both top-level and panel roots are transparent. owo BaseOwoScreen's
+extractBackground is a no-op in the pinned dependency; no additional fullscreen
+dim surface is installed. Panel/card surfaces themselves remain dark.
+
+Player Display preview controls and success footer text are removed; timer
+preview controls, explicit diagnostic commands, validation and write errors
+remain. Runtime appearance/input still requires in-game verification.

@@ -2,7 +2,7 @@ solyanka — Minecraft 26.2 utility mod
 Project source is distributed under GPL-3.0-only. See LICENSE.
 No warranty; corresponding project source is included in the companion ZIP.
 
-GUI and command behavior adapted from NoFrills:
+GUI, command, chat and tooltip behavior adapted from NoFrills:
 https://github.com/WhatYouThing/NoFrills
 Pinned source: 74e9317c1a7b8484a575b2f177479f5e3f2bfb9a
 Author: WhatYouThing and NoFrills contributors.
@@ -23,5 +23,83 @@ owo-lib (MIT), Mod Menu (MIT), Fabric and Fabric Language Kotlin are separate
 external runtime dependencies, not bundled into this mod JAR. YACL is no
 longer a solyanka dependency as of 0.2.1.
 Gradle wrapper bootstrap files originate from FabricMC/fabric-example-mod (CC0).
-Other requested upstream gameplay/render implementations and artwork are not
-included yet; their separate license/provenance checks remain pending.
+Remaining requested upstream gameplay/render implementations and artwork are
+not included yet; see the feature matrix for the exact implemented subset.
+
+0.3.0 derivatives additionally include features/general/ChatTweaks.java,
+features/general/InfoTooltips.java, mixin/ChatComponentMixin.java,
+mixin/GuiMixin.java (disconnect chat operation), misc/Utils.java (plain text,
+market item IDs and local dates), misc/ShardData.java (shard identification and
+alias mapping), and the museum-cache concept in misc/NoFrillsAPI.java.
+Changed: Kotlin/26.2 hooks, parent-message copying, staged typed settings,
+malformed-data handling, bounded background HTTP and public Hypixel resource
+provider in place of the inaccessible NoFrills museum endpoint. See docs/M2.md.
+No Hypixel resource response or game assets are bundled. Endec 0.1.12 (MIT)
+is compile-only; its runtime copy is already bundled within external owo.
+
+0.3.1 UI changes: same-Screen embedded settings adapters, isolated modal input,
+immediate validated persistence and inline failure status replace the previous
+staged save/navigation flow. Original NoFrills attribution remains applicable.
+
+0.4.0 Odin derivatives:
+https://github.com/odtheking/Odin
+Pinned source: 19118e15bfb57a953c3264373a32b42171c5f281
+Original copyright (c) 2025, odtheking. BSD 3-Clause License.
+Full copyright/conditions/disclaimer: licenses/Odin-BSD-3-Clause.txt, bundled
+in the ordinary/source JARs and source ZIP. No endorsement is implied.
+Sources: features/impl/boss/TickTimers.kt, features/impl/skyblock/PlayerDisplay.kt,
+utils/skyblock/ActionBarListener.kt, utils/skyblock/dungeon/DungeonListener.kt,
+and ConnectionMixin.java's nonzero-ping tick signal.
+Changed: Minecraft 26.2 Fabric HUD layers, game-thread ping dispatch, pure state
+machines, explicit world/disable reset, safer numeric parsing and long EHP,
+legacy glyph compatibility, instant-save numeric HUD/RGB editors and previews.
+In 0.4.0 no Odin runtime framework, Compose UI, map scanner or assets were bundled; 0.5.0 adds selected room/solver assets and scanner adapters as below.
+
+0.4.0 NoFrills additional derivatives:
+features/tweaks/{AnimationFix,MiddleClickFix,MiddleClickOverride,NoCursorReset,
+NoLoadingScreen}.java and supporting ClientPacketListenerMixin,
+AbstractContainerScreenMixin, MouseHandlerMixin and MinecraftMixin hooks.
+SkyblockData sidebar title guard also informs the shared context adapter.
+Changed: immutable metadata filtering, exact 26.2 hooks, cursor clamping/reset,
+embedded validated settings; loading visual suppression preserves readiness
+instead of bypassing the loading screen. See docs/M3.md.
+
+0.5.0 Odin derivatives additionally include dungeon map/room core/rotation logic,
+DoorHighlight, MapInfo, Mimic, IceFillSolver, BlazeSolver, BeamsSolver,
+DungeonWaypoints/editor/secret/pack codec behavior and three exact room/puzzle
+JSON resources. Original (c)2025 odtheking, BSD-3-Clause. Full license remains
+bundled. Kotlin/26.2 adapters, bounded local packs, shared snapshot renderer,
+manual Paul setting, estimated scores and safety gates differ from upstream.
+See docs/M4.md for exact source paths and limitations. No Odin framework or
+Compose UI is bundled.
+
+0.5.0 NoFrills derivatives additionally include NoRender, PriceTooltips,
+ExperimentSolver and supporting NoFrillsAPI, utility and renderer/container
+hooks. Original WhatYouThing and NoFrills contributors, GPLv3. Changed:
+26.2 Kotlin hooks, state/snapshot solvers, public pricing fallbacks, bounded
+background requests, strict local atomic storage and explicit unavailable data.
+No pricing API responses or provider credentials are bundled.
+
+0.5.0 Stray derivatives:
+https://github.com/camberX/Stray
+Pinned source: d91fcd4515b4eda647ee8fd7fa99408f473e5718
+Author: camberX / Stray contributors. Repository license: CC0-1.0.
+Full CC0 text: licenses/Stray-CC0.txt (bundled in both JARs/source ZIP).
+Sources: CustomAmbience.java, CustomFog.java, AspectFov.java and supporting
+clock/weather/projection/camera/fog mixins. Changed: Kotlin/26.2 APIs, guarded
+client/Overworld scope, shared atmospheric fog precedence and native Sodium
+uniforms without the source custom Sodium shader patch. No Stray artwork,
+CS2 assets, PiP backend or whole framework is bundled.
+
+0.5.0 user archive derivative: impl.zip impl/dungeon/MimicChest.kt.
+User-provided eppopkaaddons implementation; transformed to solyanka shared
+world snapshots, Kotlin/26.2 settings and 20-tick loaded-chunk scan. Other
+archive implementations/helpers are not incorporated or claimed complete.
+
+0.5.1 GUI adaptation additionally references NoFrills hud/ColorPickerScreen.java,
+hud/clickgui/components/EnumButton.java and config/SettingColor.java at the
+pinned source above (WhatYouThing and contributors, GPL-3.0). Changed: owo
+palette embedded inline rather than a new Screen, swatch/Edit color controls,
+named integer-backed cycling buttons, transparent screen roots, feature-scoped
+panels and backwards-compatible independent solver depth settings. No upstream
+runtime or separate color-picker Screen is bundled.

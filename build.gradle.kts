@@ -10,12 +10,14 @@ version = property("mod_version")!!
 base { archivesName.set("solyanka") }
 repositories {
     mavenCentral()
+    maven("https://maven.wispforest.io/releases") { content { includeGroup("io.wispforest") } }
     maven("https://api.modrinth.com/maven") {
         content { includeGroup("maven.modrinth") }
     }
 }
 
 loom {
+    accessWidenerPath.set(file("src/main/resources/solyanka.accesswidener"))
     splitEnvironmentSourceSets()
     mods {
         create("solyanka") {
@@ -32,6 +34,8 @@ dependencies {
     implementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_api_version")}")
     implementation("net.fabricmc:fabric-language-kotlin:${property("fabric_kotlin_version")}")
     implementation("maven.modrinth:owo-lib:${property("owo_version")}")
+    // owo injects Endec's MapCarrier into CompoundTag. The runtime library is nested in owo.
+    "clientCompileOnly"("io.wispforest:endec:0.1.12") { isTransitive = false }
     "clientCompileOnly"("maven.modrinth:modmenu:${property("modmenu_version")}")
     "clientRuntimeOnly"("maven.modrinth:modmenu:${property("modmenu_version")}")
     testImplementation(platform("org.junit:junit-bom:5.12.2"))
@@ -56,6 +60,7 @@ tasks.processResources {
 }
 tasks.jar {
     from("NOTICE", "LICENSE")
+    from("licenses") { into("licenses") }
 }
 
-tasks.named<Jar>("sourcesJar") { from("NOTICE", "LICENSE") }
+tasks.named<Jar>("sourcesJar") { from("NOTICE", "LICENSE");from("licenses") { into("licenses") } }

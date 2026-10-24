@@ -1,0 +1,31 @@
+{
+  "version": "0.4.0-dev",
+  "odin": {
+    "commit": "19118e15bfb57a953c3264373a32b42171c5f281",
+    "license": "BSD-3-Clause",
+    "features": [
+      "TickTimers",
+      "PlayerDisplay"
+    ],
+    "support": [
+      "ActionBarListener",
+      "DungeonListener boss/floor",
+      "ConnectionMixin ping signal"
+    ],
+    "license_file": "licenses/Odin-BSD-3-Clause.txt"
+  },
+  "nofrills": {
+    "commit": "74e9317c1a7b8484a575b2f177479f5e3f2bfb9a",
+    "license": "GPL-3.0",
+    "features": [
+      "AnimationFix",
+      "MiddleClickFix",
+      "MiddleClickOverride",
+      "NoCursorReset",
+      "NoLoadingScreen"
+    ],
+    "loading_adaptation": "visual-only; vanilla readiness retained"
+  },
+  "differences_document": "docs/M3.md",
+  "in_game_tested_here": false
+}

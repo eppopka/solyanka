@@ -3,7 +3,16 @@
   "modules": {
     "core.diagnostics": false,
     "utility.command_keybinds": false,
-    "utility.command_shortcuts": false
+    "utility.command_shortcuts": false,
+    "utility.chat": false,
+    "utility.info_tooltips": false,
+    "dungeon.tick_timers": false,
+    "hud.player_display": false,
+    "render.animation_fix": false,
+    "utility.middle_click_fix": false,
+    "utility.middle_click_override": false,
+    "utility.cursor": false,
+    "utility.loading_screen": false
   },
   "commandUtilities": {
     "allowAllInGui": false,
@@ -29,5 +38,58 @@
         "enabled": false
       }
     ]
+  },
+  "generalUtilities": {
+    "chat": {
+      "copy": {
+        "device": "KEYBOARD",
+        "key": -1
+      },
+      "copyLine": {
+        "device": "KEYBOARD",
+        "key": -1
+      },
+      "trimOnCopy": false,
+      "messageOnCopy": false,
+      "feedbackLimit": 50,
+      "keepHistory": false,
+      "extraLines": false,
+      "lines": 1000
+    },
+    "tooltips": {
+      "dungeonQuality": false,
+      "createdDate": false,
+      "hexColor": false,
+      "museum": false,
+      "skyblockId": false
+    },
+    "features": {
+      "timers": {
+        "ticks": false,
+        "symbols": true,
+        "prefix": true,
+        "startTimer": false
+      },
+      "player": {
+        "hideArmor": false,
+        "hideHearts": false,
+        "hideFood": false,
+        "hideXp": false,
+        "hideHealth": true,
+        "hideMana": true,
+        "hideOverflow": true,
+        "hideDefense": true,
+        "hideVitality": true,
+        "separateOverflow": true,
+        "hideZeroOverflow": true,
+        "icons": true
+      },
+      "fixes": {
+        "animationSkyblockOnly": false,
+        "middleDebug": false,
+        "cursorClearTicks": 200,
+        "loadingServerOnly": true
+      }
+    }
   }
 }

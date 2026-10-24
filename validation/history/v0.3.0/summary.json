@@ -1,0 +1,25 @@
+{
+  "version": "0.3.0-dev",
+  "minecraft": "26.2",
+  "build": "SUCCESS",
+  "tests": {
+    "tests": 96,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "implemented_new_modules": [
+    "utility.chat",
+    "utility.info_tooltips"
+  ],
+  "registered_modules": 5,
+  "static_mixin_checks": 5,
+  "museum_compiled_parser_live_resource": {
+    "compiled_parser_ok": true,
+    "category_ids": 1081,
+    "mapped_variant_checked": "STARRED_DAEDALUS_AXE"
+  },
+  "new_modules_in_game_tested_here": false,
+  "previous_build_user_feedback": "User reported 0.2.1 working; no detailed compatibility matrix supplied",
+  "jar_sha256": "6024f447dd6d812bf44f7e6d33bf92b75079f4b692048961c13767a02a09d198"
+}

@@ -1,3 +1,18 @@
+# Current roadmap — 0.5.0-dev
+
+Delivered 14 additional real modules: remaining seven requested Odin feature categories, three NoFrills categories, three Stray environment categories and archive Mimic Chest. These are adapted implementations, not full parity/acceptance. All remaining scope is retained.
+
+Next unresolved implementation work:
+1. Stray Player Glow/Nametags/Block Outline/Titanium, then Skill/Inventory/Scoreboard/Item Name/Themed Chat.
+2. Stray Skybox/Motion Blur resource lifecycle, real Windows window-capture PiP, CS2 knife asset/material provenance and Held Item shader.
+3. Archive SecretCounter/SimonSays/OdinDungeonWaypoints route-step extensions, PetDisplay/Timer and ESP features.
+4. Remaining archive cosmetics/settings/list/automatic-action features with explicit opt-ins and version-specific adapters.
+5. Complete source option parity and acceptance of current adaptations: map bonus/party state, full editor widgets, pricing/recipe coverage, NoRender slayer state, Sodium fog shader path and all GPU/in-game checks.
+
+No future feature is presented as implemented; see FEATURE_MATRIX.md and archive inventory. Existing older milestone ordering is retained below as historical planning, not current status.
+
+## Original milestone plan (historical)
+
 # Iterative implementation roadmap
 
 Every requested feature is mandatory backlog scope. Ordering is not permission to omit features. Full parity will require multiple milestones.
@@ -7,12 +22,12 @@ Build scripts/wrapper, Kotlin client entrypoint, module lifecycle, persistence, 
 
 ## M1 — usable settings + input/commands (implemented/build-tested in 0.2; in-game acceptance pending)
 
-The initial YACL GUI was replaced in 0.2.1 by the adapted NoFrills/owo GUI; /solyanka opens it directly. See GUI_PORT.md and historical M1.md for delivered behavior and differences. Alias completion/help nodes remain a follow-up. No M1 runtime compatibility claim is made yet.
+The initial YACL GUI was replaced in 0.2.1 by the adapted NoFrills/owo GUI; /solyanka opens it directly. Version 0.3.1 removes explicit save/staging and embeds all settings inside the same Screen. See GUI_PORT.md and historical M1.md for delivered behavior and differences. Alias completion/help nodes remain a follow-up. The user reported 0.2.1 working; no exhaustive runtime compatibility claim is made.
 
 NoFrills/owo + optional Mod Menu integration, typed settings, translation keys, input focus routing, command keybinds and shortcuts. Keep fixed command boundaries/loop prevention. Acceptance: bind, execute, persist, reopen, restart, no triggering while typing.
 
-## M2 — shared context and low-risk information
-SkyBlock/location/item parsing, chat event adapter, basic Chat Tweaks + Info Tooltips; pricing provider contract/cache/error handling before full Price Tooltips. GPLv3 project decision is now recorded; retain attribution/source and inspect additional file/asset provenance before each port.
+## M2 — shared context and low-risk information (M2a delivered in 0.3.0)
+M2a implements Chat Tweaks + Info Tooltips, item-ID/shard parsing and opt-in museum resource loading. See M2.md. Remaining M2: shared SkyBlock/location context, pricing provider contract/cache/error handling and full Price Tooltips. GPLv3 project decision is now recorded; retain attribution/source and inspect additional file/asset provenance before each port.
 
 ## M3 — dungeon state + first overlays
 Room/map model, coordinate rotation fixtures, room enter/exit and secret/run events, renderer adapter. Port door highlight, mimic/chests and map info; then both waypoint implementations/codec/editor, SecretCounter and Player Display. Acceptance: rotated rooms, reconnect/world changes, collection/reset, import/export parity.
@@ -43,3 +58,7 @@ ShitterList/profile I/O, AetherOS settings fidelity, AutoRag/AutoReel behind exp
 5. User in-game testing on exact MC 26.2 with minimal mods.
 6. Repeat with required performance/shader mods and document versions.
 7. Mark implemented only after acceptance; unresolved items remain visible in the matrix.
+
+## 0.4.0 delivered cross-source batch
+
+Odin Tick Timers and Player Display were pulled forward using the new context/HUD adapters. Five NoFrills utilities are now implemented: Animation Fix, Middle Click Fix/Override, No Cursor Reset and safety-adapted No Loading Screen. These remain pending in-game acceptance. Their completion does not mark whole M3–M6 milestones complete. Seven Odin feature entries, Price Tooltips/No Render/Experiment Solver, all Stray and archive features still require their own ports. See M3.md for exact boundaries.

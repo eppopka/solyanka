@@ -5,6 +5,15 @@ import dev.solyanka.config.ConfigStore
 import dev.solyanka.core.*
 import dev.solyanka.utility.*
 import dev.solyanka.client.ui.ConfigUi
+import dev.solyanka.client.feature.ChatTweaks
+import dev.solyanka.client.feature.InfoTooltips
+import dev.solyanka.client.feature.FeatureRuntime
+import dev.solyanka.client.feature.Experiments
+import dev.solyanka.client.feature.PriceTooltips
+import dev.solyanka.client.feature.Suppression
+import dev.solyanka.client.feature.DungeonPuzzles
+import dev.solyanka.client.feature.DungeonMap
+import dev.solyanka.client.feature.DungeonWaypoints
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal
@@ -39,11 +48,39 @@ object SolyankaClient : ClientModInitializer {
     private var openSettingsRequested = false
     private var previousWorld: Any? = null
     private var profile = CommandProfile()
+    private var general = GeneralSettings()
     private var bypassExpansion = false
     private val ownedInputs = hashSetOf<Pair<InputDevice,Int>>()
     private lateinit var settingsKey: KeyMapping
     const val KEYBINDS = "utility.command_keybinds"
     const val SHORTCUTS = "utility.command_shortcuts"
+
+    const val CHAT = "utility.chat"
+    const val TOOLTIPS = "utility.info_tooltips"
+    const val TICK_TIMERS = "dungeon.tick_timers"
+    const val PLAYER_DISPLAY = "hud.player_display"
+    const val ANIMATION = "render.animation_fix"
+    const val MIDDLE_FIX = "utility.middle_click_fix"
+    const val MIDDLE_OVERRIDE = "utility.middle_click_override"
+    const val CURSOR = "utility.cursor"
+    const val AMBIENCE="render.ambience"
+    const val ASPECT="render.aspect"
+    const val FOG="render.fog"
+    const val WAYPOINTS="dungeon.waypoints"
+    const val DOORS="dungeon.door_highlight"
+    const val MAP_INFO="dungeon.map_info"
+    const val ICE="solver.ice_fill"
+    const val BLAZE="solver.blaze"
+    const val BEAMS="solver.creeper_beams"
+    const val MIMIC="dungeon.mimic"
+    const val MIMIC_CHEST="custom.mimic_chest"
+    const val PRICES = "utility.price_tooltips"
+    const val EXPERIMENTS = "solver.experiments"
+    const val SUPPRESSION = "render.suppression"
+    const val LOADING = "utility.loading_screen"
+    fun currentGeneral() = general
+    @JvmStatic fun chatLimit(original:Int) = if(isEnabled(CHAT) && general.chat.extraLines) general.chat.lines else original
+    @JvmStatic fun keepChatHistory() = isEnabled(CHAT) && general.chat.keepHistory
 
     fun currentProfile() = profile
     fun isEnabled(id: String) = modules.get(id)?.enabled == true
@@ -60,8 +97,28 @@ object SolyankaClient : ClientModInitializer {
             override fun onReset(reason: ResetReason) { ownedInputs.clear() }
         })
         modules.register(object : Module(ModuleInfo(SHORTCUTS, "Command shortcuts", Category.UTILITY)) {})
+        modules.register(object : Module(ModuleInfo(CHAT,"Chat tweaks",Category.UTILITY)) {})
+        modules.register(object : Module(ModuleInfo(TOOLTIPS,"Info tooltips",Category.UTILITY)) {})
+        modules.register(object : Module(ModuleInfo(TICK_TIMERS,"Tick timers (Odin)",Category.DUNGEON)) { override fun onDisable() { FeatureRuntime.timers.reset() } })
+        modules.register(object : Module(ModuleInfo(PLAYER_DISPLAY,"Player display (Odin)",Category.HUD)) { override fun onDisable() { FeatureRuntime.stats.reset() } })
+        modules.register(object : Module(ModuleInfo(ANIMATION,"Animation fix",Category.RENDER)) {})
+        modules.register(object : Module(ModuleInfo(MIDDLE_FIX,"Middle click fix",Category.UTILITY)) {})
+        modules.register(object : Module(ModuleInfo(MIDDLE_OVERRIDE,"Middle click override",Category.UTILITY)) {})
+        modules.register(object : Module(ModuleInfo(CURSOR,"No cursor reset",Category.UTILITY)) { override fun onDisable() { FeatureRuntime.cursor.reset() } })
+        modules.register(object : Module(ModuleInfo(LOADING,"No loading screen",Category.UTILITY)) {})
+        modules.register(object : Module(ModuleInfo(PRICES,"Price tooltips",Category.UTILITY)) {})
+        modules.register(object : Module(ModuleInfo(EXPERIMENTS,"Experiment solver",Category.SOLVER)) { override fun onDisable() { Experiments.reset() } })
+        modules.register(object : Module(ModuleInfo(SUPPRESSION,"No render",Category.RENDER)) {})
+        listOf(WAYPOINTS to "Dungeon Waypoints",DOORS to "Door Highlight",MAP_INFO to "Map Info",ICE to "Ice Fill",BLAZE to "Blaze",BEAMS to "Creeper Beams",MIMIC to "Mimic detection",MIMIC_CHEST to "Mimic Chest (archive)").forEach { (id,name) -> modules.register(object : Module(ModuleInfo(id,name,if(id.startsWith("solver.")) Category.SOLVER else Category.DUNGEON)) {override fun onDisable() {DungeonPuzzles.invalidate()}}) }
+        listOf(AMBIENCE to "Ambience",ASPECT to "Aspect",FOG to "Fog").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {})}
         config.load()
         profile = config.profile()
+        general = config.general()
+        InfoTooltips.register()
+        FeatureRuntime.register()
+        PriceTooltips.register()
+        Suppression.register()
+        DungeonPuzzles.register();DungeonMap.register();DungeonWaypoints.register()
         modules.all().forEach { module ->
             try { module.setEnabled(config.enabled(module.info.id)) }
             catch (e: Exception) { logger.error("Cannot enable ${module.info.id}", e) }
@@ -73,6 +130,7 @@ object SolyankaClient : ClientModInitializer {
             if (world !== previousWorld) {
                 modules.reset(if (world == null) ResetReason.DISCONNECTED else ResetReason.WORLD_CHANGED)
                 ownedInputs.clear()
+                FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset()
                 previousWorld = world
             }
             while (settingsKey.consumeClick()) {
@@ -82,7 +140,7 @@ object SolyankaClient : ClientModInitializer {
                 openSettingsRequested = false
                 client.setScreenAndShow(ConfigUi.create(null))
             }
-            if (world != null && client.player != null) modules.tick()
+            if (world != null && client.player != null) { FeatureRuntime.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
         }
         ClientSendMessageEvents.ALLOW_COMMAND.register { command ->
             if (bypassExpansion || !isEnabled(SHORTCUTS)) true
@@ -96,8 +154,8 @@ object SolyankaClient : ClientModInitializer {
             }
         }
         ClientLifecycleEvents.CLIENT_STOPPING.register {
-            config.save(states(), profile)
-            modules.shutdown(); ownedInputs.clear(); previousWorld = null; initialized = false
+            config.save(states(), profile, general)
+            modules.shutdown(); FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset(); ownedInputs.clear(); previousWorld = null; initialized = false
         }
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             dispatcher.register(literal("solyanka")
@@ -109,6 +167,10 @@ object SolyankaClient : ClientModInitializer {
                     // Defer opening until after chat submission has finished closing ChatScreen.
                     openSettingsRequested = true; 1
                 })
+                .then(literal("preview")
+                    .then(literal("timers").executes { ctx -> FeatureRuntime.preview("timers");ctx.source.sendFeedback(Component.literal("15s local timer HUD preview; enable Tick Timers first."));1 })
+                    .then(literal("player").executes { ctx -> FeatureRuntime.preview("player");ctx.source.sendFeedback(Component.literal("15s local player HUD preview; enable Player Display first."));1 }))
+                .then(literal("waypoint").then(literal("add").executes { ctx -> try {DungeonWaypoints.addTarget();ctx.source.sendFeedback(Component.literal("Waypoint saved"));1} catch(e:Exception) {ctx.source.sendError(Component.literal(e.message ?: "Cannot add waypoint"));0} }.then(argument("title",StringArgumentType.greedyString()).executes {ctx ->try {DungeonWaypoints.addTarget(StringArgumentType.getString(ctx,"title"));ctx.source.sendFeedback(Component.literal("Waypoint saved"));1} catch(e:Exception) {ctx.source.sendError(Component.literal(e.message ?: "Cannot add waypoint"));0}})))
                 .then(literal("status").executes { ctx ->
                     modules.all().forEach { ctx.source.sendFeedback(Component.literal("${it.info.id}: ${if (it.enabled) "on" else "off"}")) }
                     ctx.source.sendFeedback(Component.literal("${profile.binds.size} binds, ${profile.shortcuts.size} shortcuts. Other ports: pending.")); 1
@@ -126,15 +188,17 @@ object SolyankaClient : ClientModInitializer {
                 })))
         }
         initialized = true
-        logger.info("solyanka 0.2.1 initialized for Minecraft 26.2")
+        logger.info("solyanka 0.5.0 initialized for Minecraft 26.2")
     }
 
     /** Validate and persist first; do not activate an invalid or unwritable UI draft. */
-    fun applySettings(next: CommandProfile, enabled: Map<String,Boolean>): String? {
+    fun applySettings(next: CommandProfile, enabled: Map<String,Boolean>, nextGeneral:GeneralSettings=general): String? {
         try {
             CommandRules.validate(next)
-            if (!config.save(enabled, next)) return "Settings not saved; check config permissions/schema and latest.log."
+            nextGeneral.validate()
+            if (!config.save(enabled, next, nextGeneral)) return "Settings not saved; check config permissions/schema and latest.log."
             profile = next
+            general = nextGeneral
             modules.all().forEach { it.setEnabled(enabled[it.info.id] ?: it.enabled) }
             return null
         } catch (e: Exception) {
@@ -151,7 +215,12 @@ object SolyankaClient : ClientModInitializer {
         val token = device to key
         if (action == GLFW.GLFW_RELEASE) return ownedInputs.remove(token)
         if (action == GLFW.GLFW_REPEAT) return token in ownedInputs
-        if (action != GLFW.GLFW_PRESS || !isEnabled(KEYBINDS)) return false
+        if (action != GLFW.GLFW_PRESS) return false
+        try {
+            if(ChatTweaks.copy(client,device,key)) { ownedInputs.add(token);return true }
+        } catch(e:Exception) { logger.error("Chat copy failure",e) }
+        if (DungeonWaypoints.editorInput(device,key)) {ownedInputs.add(token);return true}
+        if (!isEnabled(KEYBINDS)) return false
         try {
             val screen = client.gui.screen()
             val kind = when (screen) {

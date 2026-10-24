@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.GeneralFeaturesTest" tests="32" skipped="0" failures="0" errors="0" timestamp="2026-10-23T21:39:17.515Z" hostname="f413c0a7-73b" time="0.057">
+  <properties/>
+  <testcase name="codec refuses coerced booleans null sections and fractional integers()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.002"/>
+  <testcase name="creation date uses specified timezone and ignores zero()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.006"/>
+  <testcase name="tooltip lines preserve upstream order()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.003"/>
+  <testcase name="copy removes legacy formatting and only optionally trims()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="copy bindings separate mouse from keyboard()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="dye hex pads masks and uses lowercase()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="copy feedback zero limit does not leak text()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="hover excludes input box and outside visible bounds()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="museum rejects error or partial payloads()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.002"/>
+  <testcase name="market id keeps ordinary id and perfect dungeon variant()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="limits reject out of bounds()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="quality reports tier and perfect boost()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="shards use source lore rather than attribute display name()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="pets resolve type rarity and tolerate corrupt json()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.0"/>
+  <testcase name="copy feedback preserves unicode and bounds preview()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="all upstream shard aliases are retained()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="copy binding validates devices and bounds()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="empty id with source and rarity is treated as shard()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="no tooltip options no lines()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.0"/>
+  <testcase name="official museum resource decodes base and mapped items()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="http body subscriber rejects duplicate subscriptions and transport errors()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.002"/>
+  <testcase name="enchantments and potions use root locale uppercase()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="hover selects bottom and next line()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.0"/>
+  <testcase name="unknown nested fields survive general serialization()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="museum normalizes starred and donation flags()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.0"/>
+  <testcase name="hover handles empty and partial final page()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.0"/>
+  <testcase name="http body subscriber collects chunks within cap()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.004"/>
+  <testcase name="hover obeys scale scroll and floored baseline()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="runes preserve first rune and empty fallback()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.0"/>
+  <testcase name="http body subscriber cancels oversized response()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.0"/>
+  <testcase name="general defaults are off and unbound()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.001"/>
+  <testcase name="general settings round trip all options()" classname="dev.solyanka.utility.GeneralFeaturesTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

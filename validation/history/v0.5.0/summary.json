@@ -1,0 +1,38 @@
+{
+  "version": "0.5.0-dev",
+  "minecraft": "26.2",
+  "build": "SUCCESS",
+  "tests": {
+    "tests": 223,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "registered_modules": 26,
+  "new_modules": [
+    "dungeon.waypoints",
+    "solver.ice_fill",
+    "solver.blaze",
+    "solver.creeper_beams",
+    "dungeon.door_highlight",
+    "dungeon.map_info",
+    "dungeon.mimic",
+    "utility.price_tooltips",
+    "render.suppression",
+    "solver.experiments",
+    "render.ambience",
+    "render.aspect",
+    "render.fog",
+    "custom.mimic_chest"
+  ],
+  "mixin_classes": 30,
+  "new_target_methods_checked": 34,
+  "access_widener_members_checked": 4,
+  "instant_save": true,
+  "settings_embedded_in_same_screen": true,
+  "in_game_tested_here": false,
+  "gpu_sodium_iris_tested_here": false,
+  "full_requested_feature_set_complete": false,
+  "jar_sha256": "e289895129456915817f18b69f4c1c56196e6db1099f615ff8c2e8174b4c16d0",
+  "sources_jar_sha256": "271421eac3130665201a619594d6a182a4c43ee45ecbe044dc0dfa5eb18b6fe2"
+}

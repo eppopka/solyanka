@@ -1,0 +1,46 @@
+/* SPDX-License-Identifier: GPL-3.0-only */
+package dev.solyanka.utility
+import kotlin.test.*
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.*
+import com.google.gson.JsonParser
+class DungeonMapWaypointTest {
+ @TempDir lateinit var directory:Path
+ @Test fun `all room transforms invert and preserve absolute y`() {val origin=GridPos(-170,0,-202);val p=GridPos(2,71,29);RoomFacing.entries.forEach {f->assertEquals(p,DungeonLogic.relative(DungeonLogic.real(p,origin,f),origin,f))}}
+ @Test fun `tile bounds fail closed`() {assertEquals(0 to 0,DungeonLogic.tile(-201,-201));assertEquals(5 to 5,DungeonLogic.tile(-10,-10));assertNull(DungeonLogic.tile(-202,0));assertNull(DungeonLogic.tile(-9,-185))}
+ @Test fun `core hashing preserves source block string format`() {assertEquals("0Block{minecraft:stone}Block{minecraft:air}".hashCode() to 139,DungeonLogic.core(listOf(140 to "minecraft:air",139 to "minecraft:stone",138 to "minecraft:air")))}
+ @Test fun `gold roof and ignored chests match Odin`() {assertEquals("0Block{minecraft:stone}Block{minecraft:air}".hashCode() to 139,DungeonLogic.core(listOf(140 to "minecraft:gold_block",139 to "minecraft:stone",138 to "minecraft:chest",137 to "minecraft:oak_planks",136 to "minecraft:trapped_chest",135 to "minecraft:air")))}
+ @Test fun `bedrock cutoff matches zero padding`() {val text="Block{minecraft:stone}Block{minecraft:bedrock}Block{minecraft:bedrock}"+"0".repeat(54);assertEquals(text.hashCode() to 68,DungeonLogic.core(listOf(68 to "minecraft:stone",67 to "minecraft:bedrock",66 to "minecraft:bedrock",65 to "minecraft:air",64 to "minecraft:dirt")))}
+ @Test fun `blaze reads formatted maximum HP and rejects malformed tags`() {assertEquals(2500,DungeonLogic.blazeHealth("§e[Lv15] Blaze 1,000/2,500❤"));assertEquals(25,DungeonLogic.blazeHealth("[Lv15]  Blaze 10/25❤"));assertNull(DungeonLogic.blazeHealth("Blaze 20❤"));assertNull(DungeonLogic.blazeHealth("[Lv15] Blaze 0/0❤"))}
+ @Test fun `mimic death guards`() {assertTrue(DungeonLogic.mimicDeath(3,true,7,true,false));assertFalse(DungeonLogic.mimicDeath(3,true,5,true,false));assertFalse(DungeonLogic.mimicDeath(2,true,7,true,false));assertFalse(DungeonLogic.mimicDeath(3,false,7,true,false));assertFalse(DungeonLogic.mimicDeath(3,true,7,false,false));assertFalse(DungeonLogic.mimicDeath(3,true,7,true,true))}
+ @Test fun `key tracking handles ranked chat and clamps below zero`() {val k=DoorKeys();k.message("[MVP+] Alice has obtained Wither Key!");assertEquals(1,k.wither);repeat(2) {k.message("Alice opened a WITHER door!")};assertEquals(0,k.wither);k.message("A Blood Key was picked up!");assertTrue(k.blood);k.message("The BLOOD DOOR has been opened!");assertFalse(k.blood);assertTrue(k.bloodOpened);k.reset();assertFalse(k.bloodOpened)}
+ private fun map():ByteArray=ByteArray(16384).apply {for(z in 5..20) for(x in 5..20) this[z*128+x]=30;this[13*128+23]=119;this[23*128+13]=18}
+ @Test fun `map layout detects wither and blood doors`() {val doors=DungeonMapLogic.doors(map())!!;assertTrue(MapDoor(-169,-185,false) in doors);assertTrue(MapDoor(-185,-169,true) in doors)}
+ @Test fun `map rejects unknown layouts and full room connectors`() {assertNull(DungeonMapLogic.doors(ByteArray(3)));assertNull(DungeonMapLogic.doors(ByteArray(16384)));val map=map();map[9*128+23]=63;assertFalse(MapDoor(-169,-185,false) in DungeonMapLogic.doors(map)!!)}
+ @Test fun `score is explicitly incomplete without tab evidence`() {val s=MapStats().score(7,false,false,0);assertFalse(s.completeInputs);assertNull(s.totalSecrets);assertNull(s.neededSecrets)}
+ private fun complete()=MapStats().apply {update(listOf(" Secrets Found: 100"," Secrets Found: 100.0%"," Completed Rooms: 20","Team Deaths: 0"," Crypts: 5","Puzzles: (1)"," Ice Fill: [✔]"," Time: 5m 4s"),listOf("Cleared: 100% (300)"))}
+ @Test fun `score arithmetic includes secrets deaths puzzles and crypts`() {val m=complete();val s=m.score(7,false,true,5);assertTrue(s.completeInputs);assertEquals(305,s.value);assertEquals(100,s.totalSecrets);assertEquals(88,s.neededSecrets);assertEquals("5m 4s",m.elapsed);m.update(listOf("Team Deaths: 2"," Ice Fill: [✖]"),emptyList());assertEquals(292,m.score(7,false,true,5).value)}
+ @Test fun `floor thresholds and explicit Paul bonus`() {val m=complete();assertEquals(27,m.score(1,false,true,5).neededSecrets);assertEquals(88,m.score(1,true,true,5).neededSecrets);assertEquals(315,m.score(7,false,true,15).value)}
+ @Test fun `watcher clear transition and reset`() {val m=complete();m.message("[BOSS] The Watcher: You have proven yourself. You may pass.");m.update(emptyList(),listOf("Cleared: 99% (300)"));assertTrue(m.bloodDone);m.reset();assertNull(m.secrets);assertFalse(m.bloodDone)}
+ private fun pack()=mapOf("Ice Fill" to listOf(Waypoint(GridPos(1,70,2),0x8055aaff.toInt(),true,false,WayBox(.1,.2,.3,.9,.8,.7),"Secret",WayType.SECRET)))
+ @Test fun `Odin JSON and compressed clipboard packs round trip`() {val p=pack();val text=WaypointCodec.encode(p);assertTrue("#55AAFF80" in text);assertEquals(p,WaypointCodec.decode(text));assertEquals(p,WaypointCodec.decode(WaypointCodec.encode(p,true)))}
+ @Test fun `legacy field aliases preserve values`() {val root=JsonParser.parseString(WaypointCodec.encode(pack())).asJsonObject;val w=root["Ice Fill"].asJsonArray[0].asJsonObject;w.add("blockPos",JsonParser.parseString("""{"field_11175":1,"field_11174":70,"field_11173":2}"""));val b=w["aabb"].asJsonObject;listOf("minX" to "field_1323","minY" to "field_1322","minZ" to "field_1321","maxX" to "field_1320","maxY" to "field_1325","maxZ" to "field_1324").forEach {(a,z)->b.add(z,b.remove(a))};assertEquals(pack(),WaypointCodec.decode(root.toString()))}
+ @Test fun `malformed packs cannot become partial data`() {assertFails {WaypointCodec.decode("https://example.com/pack")};val text=WaypointCodec.encode(pack());assertFails {WaypointCodec.decode(text.replace("#55AAFF80","#xyz"))};assertFails {WaypointCodec.decode(text.replace("0.1","NaN"))};assertFails {WaypointCodec.decode(text.replace("SECRET","INVALID"))}}
+ @Test fun `pack names cannot escape directory`() {val store=WaypointStore(directory);listOf("../bad","a/b","a.json",""," trailing ").forEach {assertFalse(WaypointStore.validName(it));assertFails {store.write(it,pack(),true)}}}
+ @Test fun `atomic writes and duplicate create guard`() {val s=WaypointStore(directory);s.write("default",pack(),true);val before=Files.readString(directory.resolve("default.json"));assertFails {s.write("default",pack(),true)};assertEquals(before,Files.readString(directory.resolve("default.json")));s.write("default",emptyMap());assertEquals(emptyMap(),s.load("default"))}
+ @Test fun `corrupt packs are not overwritten`() {val s=WaypointStore(directory);Files.writeString(directory.resolve("default.json"),"broken");assertFails {s.write("default",pack())};assertEquals("broken",Files.readString(directory.resolve("default.json")))}
+ @Test fun `pack rename delete and only-pack guard`() {val s=WaypointStore(directory);s.write("default",pack(),true);assertFails {s.delete("default")};s.write("other",emptyMap(),true);s.rename("other","renamed");assertEquals(listOf("default","renamed"),s.names());s.delete("renamed");assertEquals(listOf("default"),s.names())}
+ @Test fun `rotated boxes use block center convention`() {val b=WayBox(0.0,0.0,0.0,1.0,1.0,1.0);val origin=GridPos(-100,0,-100);RoomFacing.entries.forEach {f->val p=DungeonLogic.real(GridPos(1,70,2),origin,f);val box=WaypointLogic.box(b,GridPos(1,70,2),origin,f);assertEquals(p.x.toDouble(),box.minX);assertEquals(p.z+1.0,box.maxZ);assertEquals(70.0,box.minY)}}
+ @Test fun `multi tile geometry waits for all segments`() {assertNull(WaypointLogic.geometry(setOf(0 to 0),"1x2",100));val g=WaypointLogic.geometry(setOf(0 to 0,0 to 1),"1x2",100)!!;assertEquals(RoomFacing.WEST,g.facing);assertEquals(GridPos(-170,0,-200),g.origin);assertEquals(RoomFacing.SOUTH,WaypointLogic.geometry(setOf(0 to 0,1 to 0),"1x2",100)!!.facing)}
+ @Test fun `typed waypoint settings permit fractional sizes but not fractional integers`() {val s=FeatureCodec.decode(JsonParser.parseString("""{"waypoints":{"sizeX":1.25,"titleScale":0.8,"selectedPacks":"default, test"}}""").asJsonObject);assertEquals(1.25,s.waypoints.sizeX);assertFails {FeatureCodec.decode(JsonParser.parseString("""{"waypoints":{"type":1.2}}""").asJsonObject)};assertFails {FeatureCodec.decode(JsonParser.parseString("""{"waypoints":{"sizeX":0}}""").asJsonObject)}}
+
+ @Test fun `all L rotations normalize the same canonical tile centers`() {
+  val all=setOf(0 to 0,0 to 1,1 to 0,1 to 1)
+  val cases=mapOf((1 to 0) to RoomFacing.SOUTH,(0 to 1) to RoomFacing.NORTH,(1 to 1) to RoomFacing.WEST,(0 to 0) to RoomFacing.EAST)
+  cases.forEach {(missing,f)->val tiles=all-missing;val g=WaypointLogic.geometry(tiles,"L",100)!!;assertEquals(f,g.facing)
+   val actual=listOf(GridPos(15,70,15),GridPos(15,70,47),GridPos(47,70,47)).map {p->val r=DungeonLogic.real(p,g.origin,g.facing);((r.x+185)/32) to ((r.z+185)/32)}.toSet();assertEquals(tiles,actual)
+  }
+ }
+ @Test fun `disjoint tiles cannot silently become a valid room`() {assertNull(WaypointLogic.geometry(setOf(0 to 0,2 to 0),"1x2",100));assertNull(WaypointLogic.geometry(setOf(0 to 0,0 to 1,0 to 2),"L",100))}
+}

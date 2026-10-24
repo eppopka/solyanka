@@ -1,0 +1,18 @@
+{
+  "version": "0.3.1-dev",
+  "minecraft": "26.2",
+  "build": "SUCCESS",
+  "tests": {
+    "tests": 110,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "registered_modules": 5,
+  "new_gameplay_features_this_update": [],
+  "instant_save": true,
+  "settings_embedded_in_same_screen": true,
+  "static_mixin_checks": 5,
+  "new_gui_in_game_tested_here": false,
+  "jar_sha256": "76bf51eea3377e601d3bf51e42e5264b0d89c7f152328fe2cefa3396a1d749a7"
+}

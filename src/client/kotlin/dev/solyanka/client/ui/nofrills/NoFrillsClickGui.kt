@@ -12,6 +12,7 @@ import io.wispforest.owo.ui.core.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
@@ -23,9 +24,16 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     private lateinit var mainScroll:ScrollContainer<FlowLayout>
     private val categoryScrolls=mutableListOf<ScrollContainer<FlowLayout>>()
     private var cursorX=0;private var cursorY=0
+    private var panel:SettingsPanel?=null
+    private var toggleError:String?=null
+    fun showPanel(next:SettingsPanel) {
+        uiAdapter.rootComponent.focusHandler()?.focus(null,UIComponent.FocusSource.MOUSE_CLICK)
+        panel?.dispose();panel=next;next.mount(width,height)
+    }
+    fun closePanel() { panel?.dispose();panel=null;populate() }
     override fun createAdapter():OwoUIAdapter<FlowLayout> = OwoUIAdapter.create(this) { w,h -> UIContainers.verticalFlow(w,h) }
     override fun build(root:FlowLayout) {
-        root.surface(Surface.VANILLA_TRANSLUCENT)
+        // Transparent root: opening the GUI or a settings panel does not dim the world.
         columns=UIContainers.horizontalFlow(Sizing.content(),Sizing.fill(100))
         mainScroll=UIContainers.horizontalScroll(Sizing.fill(100),Sizing.fill(78),columns)
         mainScroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.WHITE)))
@@ -50,9 +58,9 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
                 toggle={
                     val states=SolyankaClient.states().toMutableMap();states[info.id]=!SolyankaClient.isEnabled(info.id)
                     val failure=SolyankaClient.applySettings(SolyankaClient.currentProfile(),states)
-                    if(failure!=null) ConfigUi.error({ NoFrillsClickGui(previous,query) },failure)
+                    toggleError=failure
                 },
-                settings=if(info.id=="core.diagnostics") null else ({ ConfigUi.openSettings(info.id) { NoFrillsClickGui(previous,query) } })
+                settings=if(info.id=="core.diagnostics") null else ({ ConfigUi.openSettings(info.id,this) })
             )) }
             val scroll=UIContainers.verticalScroll(Sizing.fixed(w),Sizing.fill(90),cards)
             scroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.BLUE)))
@@ -66,26 +74,52 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
             })
         }
     }
+    override fun drawComponentTooltip(g:GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
+        if(panel==null) super.drawComponentTooltip(g,mx,my,delta)
+    }
+    override fun getFocused():net.minecraft.client.gui.components.events.GuiEventListener? = panel?.adapter ?: super.getFocused()
     override fun extractRenderState(g:GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
         super.extractRenderState(g,mx,my,delta);cursorX=mx;cursorY=my
         g.text(font,"solyanka • Minecraft 26.2",3,height-43,GuiKit.BLUE)
         g.text(font,"Left click: toggle  |  Right click: settings",3,height-32,GuiKit.WHITE)
+        toggleError?.let { g.text(font,"Not saved: $it",3,height-54,0xffff5555.toInt()) }
+        panel?.adapter?.let { it.extractRenderState(g,mx,my,delta);it.drawTooltip(g,mx,my,delta) }
     }
     override fun mouseScrolled(x:Double,y:Double,horizontal:Double,vertical:Double):Boolean {
+        panel?.let { it.adapter.mouseScrolled(x,y,horizontal,vertical);return true }
         if(!::mainScroll.isInitialized) return super.mouseScrolled(x,y,horizontal,vertical)
         val hovered=categoryScrolls.firstOrNull { it.isInBoundingBox(x,y) }
         return hovered?.onMouseScroll(x,y,vertical*2) ?: mainScroll.onMouseScroll(x,y,vertical*2)
     }
     override fun keyPressed(event:KeyEvent):Boolean {
+        panel?.let { it.keyPressed(event);return true }
         if(event.key()==GLFW.GLFW_KEY_PAGE_UP || event.key()==GLFW.GLFW_KEY_PAGE_DOWN) {
             return mouseScrolled(cursorX.toDouble(),cursorY.toDouble(),0.0,if(event.key()==GLFW.GLFW_KEY_PAGE_UP) 4.0 else -4.0)
         }
         return super.keyPressed(event)
     }
+    override fun mouseClicked(event:MouseButtonEvent,doubled:Boolean):Boolean {
+        panel?.let { it.mouseClicked(event,doubled);return true }
+        return super.mouseClicked(event,doubled)
+    }
+    override fun mouseReleased(event:MouseButtonEvent):Boolean {
+        panel?.let { it.adapter.mouseReleased(event);return true }
+        return super.mouseReleased(event)
+    }
+    override fun mouseDragged(event:MouseButtonEvent,dx:Double,dy:Double):Boolean {
+        panel?.let { it.adapter.mouseDragged(event,dx,dy);return true }
+        return super.mouseDragged(event,dx,dy)
+    }
+    override fun charTyped(event:CharacterEvent):Boolean {
+        panel?.let { it.charTyped(event);return true }
+        return super.charTyped(event)
+    }
+    override fun resize(width:Int,height:Int) { super.resize(width,height);panel?.mount(width,height) }
     // Navigation returns fresh screen instances; release owned native cursor handles.
-    override fun dispose() { super.dispose();uiAdapter=null }
+    override fun dispose() { panel?.dispose();panel=null;super.dispose();uiAdapter=null }
     override fun removed() { super.removed();dispose() }
     override fun onClose() {
+        if(panel!=null) { closePanel();return }
         val client=Minecraft.getInstance()
         if(previous!=null) client.setScreenAndShow(previous) else client.gui.setScreen(null)
     }

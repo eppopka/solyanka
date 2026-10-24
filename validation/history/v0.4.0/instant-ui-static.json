@@ -1,0 +1,16 @@
+{
+  "settings_panel_is_minecraft_screen": false,
+  "settings_use_createWithoutScreen": true,
+  "explicit_save_buttons": false,
+  "settings_navigation_calls_setScreen": false,
+  "modal_input_routes_checked": [
+    "key",
+    "character",
+    "click",
+    "release",
+    "drag",
+    "scroll"
+  ],
+  "background_tooltip_guard": true,
+  "runtime_tested_here": false
+}

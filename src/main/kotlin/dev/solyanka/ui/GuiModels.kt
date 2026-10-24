@@ -8,6 +8,30 @@ import dev.solyanka.utility.*
 data class FeatureCardInfo(val id: String, val name: String, val category: String, val description: String)
 object GuiCatalog {
     val features = listOf(
+        FeatureCardInfo("render.ambience","Ambience","Render","Stray: client clock, weather, snowy precipitation and intensity overrides; no server time changes."),
+        FeatureCardInfo("render.aspect","Aspect","Render","Stray: matched horizontal projection and entity/terrain culling aspect multiplier."),
+        FeatureCardInfo("render.fog","Fog","Render","Stray: atmospheric fog distances, color and density; preserves liquid/status fog. No Render wins."),
+        FeatureCardInfo("dungeon.waypoints","Dungeon Waypoints","Dungeon","Odin-compatible local packs, room rotation, titles, secret/etherwarp hiding and manual editor."),
+        FeatureCardInfo("dungeon.door_highlight","Door Highlight","Dungeon","Odin: Magical Map doors, chat-tracked keys, key spawn alerts and openable colors."),
+        FeatureCardInfo("dungeon.map_info","Map Info","Dungeon","Odin: secrets, estimated score, crypts, deaths, bonus flags, room secrets and portal highlight."),
+        FeatureCardInfo("solver.ice_fill","Ice Fill","Solver","Odin: room-core identification, rotation and bundled easy/optimized Ice Fill routes."),
+        FeatureCardInfo("solver.blaze","Blaze","Solver","Odin: Higher/Lower Blaze health ordering, three priority colors and connecting lines."),
+        FeatureCardInfo("solver.creeper_beams","Creeper Beams","Solver","Odin: rotated sea-lantern pairs from bundled solutions, refreshed as blocks change."),
+        FeatureCardInfo("dungeon.mimic","Mimic Detection","Dungeon","Odin: baby-zombie death, prince and bat detection, optional party announcements; baby-zombie highlights."),
+        FeatureCardInfo("custom.mimic_chest","Mimic Chest","Dungeon","impl.zip: trapped-chest highlights, loaded chunks only; no forced chunk loads."),
+        FeatureCardInfo("utility.price_tooltips","Price Tooltips","General","NoFrills: market prices, observed crafting recipes and local purchase costs. Online data is opt-in."),
+        FeatureCardInfo("solver.experiments","Experiment Solver","Solver","Chronomatron, Ultrasequencer and Superpairs memory overlays, next-click hints and optional wrong-click prevention."),
+        FeatureCardInfo("render.suppression","No Render","Render","Independent particle, entity, overlay, fog, recipe-book and HUD suppression filters."),
+        FeatureCardInfo("dungeon.tick_timers","Tick Timers","Dungeon","Odin: Goldor, Storm pad/lightning/PY/phase and M3 Fire Freeze server-ping timers."),
+        FeatureCardInfo("hud.player_display","Player Display","HUD","Odin: health, mana, overflow, defense, vitality, EHP, speed and vanilla/action-bar visibility."),
+        FeatureCardInfo("render.animation_fix","Animation Fix","General","NoFrills: preserve local player pose from server metadata resets; optional SkyBlock-only guard."),
+        FeatureCardInfo("utility.middle_click_fix","Middle Click Fix","General","NoFrills: allow pick-item CLONE clicks in survival container screens."),
+        FeatureCardInfo("utility.middle_click_override","Middle Click Override","General","NoFrills: convert eligible manual menu left clicks to middle CLONE, with menu/transaction/loadout guards."),
+        FeatureCardInfo("utility.cursor","No Cursor Reset","General","NoFrills: remember GUI cursor position across close/reopen, with configurable in-world expiry."),
+        FeatureCardInfo("utility.loading_screen","No Loading Screen","General","Hide terrain-loading visuals only; keep vanilla loading readiness and controls. Optional remote-server-only guard."),
+
+        FeatureCardInfo("utility.chat","Chat Tweaks","General","Copy hovered messages or lines, keep history on disconnect and expand history limits."),
+        FeatureCardInfo("utility.info_tooltips","Info Tooltips","General","Dungeon quality, creation date, dye hex, museum category and market item IDs."),
         FeatureCardInfo("utility.command_keybinds","Command Keybinds","General","Create keyboard and mouse binds for commands or chat. Modifier, GUI, island and dungeon class filters."),
         FeatureCardInfo("utility.command_shortcuts","Command Shortcuts","General","Create command aliases with arguments, live expansion and cycle protection."),
         FeatureCardInfo("core.diagnostics","Lifecycle Diagnostics","Core","Debug module lifecycle, tick and world reset events.")

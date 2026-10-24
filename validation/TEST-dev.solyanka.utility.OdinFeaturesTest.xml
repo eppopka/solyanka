@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.OdinFeaturesTest" tests="34" skipped="0" failures="0" errors="0" timestamp="2026-10-24T10:36:34.199Z" hostname="da2cdeed-e2c" time="0.093">
+  <properties/>
+  <testcase name="EHP keeps source integer defense formula without int overflow()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.006"/>
+  <testcase name="zero mana hidden only with separate overflow()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.002"/>
+  <testcase name="combined overflow respects overflow HUD and icon settings()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="context requires SkyBlock sidebar before trusting dungeon names()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="player legacy glyphs yield seven independent HUDs()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.002"/>
+  <testcase name="unknown floor fails closed even if tab mentions dungeon()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.0"/>
+  <testcase name="goldor ticks loop while core remains closed()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="old general config gets safe new feature defaults()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.003"/>
+  <testcase name="timer begins inactive and ignores unrelated or player chat()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="health tracks vanilla health ratio and speed base attribute()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="storm start seeds all phase timers()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.002"/>
+  <testcase name="stats reset removes all data()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.006"/>
+  <testcase name="feature defaults and all nested HUD settings round trip()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.005"/>
+  <testcase name="action bar removes only selected recognized fields()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="timer colors preserve high medium low thresholds()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="PY only triggers once per reset for either phrase()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.0"/>
+  <testcase name="boss coordinates cover every Odin floor group()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="ordinary SkyBlock area is not dungeon()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="all fixed HUD identifiers update immutably and validate()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.005"/>
+  <testcase name="storm end starts 64 tick Goldor start and clears pad phase()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="hide zero overflow and per HUD toggles work()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.0"/>
+  <testcase name="pad wraps on next tick after zero when enabled()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.0"/>
+  <testcase name="context detects master floor and Odin boss coordinates()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.0"/>
+  <testcase name="one nonzero ping equals one Odin server tick()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.003"/>
+  <testcase name="player parses PUA glyphs and commas before display filtering()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="zero pings and outside boss never advance timers()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.0"/>
+  <testcase name="feature codec rejects wrong booleans nulls fractions and invalid ranges()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.002"/>
+  <testcase name="timer formatting uses fixed seconds ticks symbols and prefix options()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="vitality disappears when missing in the next action bar()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="disabled pad does not repeat()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="reset clears every timer and one-shot state()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="unknown future feature and nested HUD fields survive saving()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.002"/>
+  <testcase name="unrecognized action bar remains intact and stats tolerate bad numbers()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.001"/>
+  <testcase name="fire freeze countdown prompt and expiry match Odin()" classname="dev.solyanka.utility.OdinFeaturesTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

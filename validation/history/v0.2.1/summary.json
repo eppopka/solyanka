@@ -1,0 +1,17 @@
+{
+  "version": "0.2.1-dev",
+  "minecraft": "26.2",
+  "build": "SUCCESS",
+  "tests": {
+    "tests": 60,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "gui": "NoFrills-derived owo port",
+  "root_command_opens_gui": true,
+  "required_ui_mod": "owo 0.13.1+26.2",
+  "yacl_required": false,
+  "in_game_tested": false,
+  "jar_sha256": "9922272dacd0c1a3f6479a9ba14c547f64607a031b12eb6eff3e66ed6b0c7269"
+}

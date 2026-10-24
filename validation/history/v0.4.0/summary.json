@@ -1,0 +1,26 @@
+{
+  "version": "0.4.0-dev",
+  "minecraft": "26.2",
+  "build": "SUCCESS",
+  "tests": {
+    "tests": 162,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "registered_modules": 12,
+  "new_modules": [
+    "Tick Timers",
+    "Player Display",
+    "Animation Fix",
+    "Middle Click Fix",
+    "Middle Click Override",
+    "No Cursor Reset",
+    "No Loading Screen (visual-only adaptation)"
+  ],
+  "instant_save": true,
+  "settings_embedded_in_same_screen": true,
+  "static_mixin_checks": 11,
+  "in_game_tested_here": false,
+  "jar_sha256": "bcd27b70e08c7dd040f28966d96a8b80feb459c0a2a3cc58c0452626271e3c1c"
+}

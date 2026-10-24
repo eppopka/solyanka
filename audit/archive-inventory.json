@@ -22,7 +22,10 @@
       "TickEvent.End",
       "WorldChangeEvent"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.mimic_chest",
+    "notes": "M4.md: 20-tick loaded scan, 5-tick world snapshot, configurable color."
   },
   {
     "file": "impl/dungeon/OdinDungeonWaypoints.kt",
@@ -80,7 +83,8 @@
       "RenderWorldEvent",
       "WorldChangeEvent"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/dungeon/SecretCounter.kt",
@@ -107,7 +111,8 @@
       "TickEvent.End",
       "WorldChangeEvent"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/dungeon/ShitterList.kt",
@@ -144,7 +149,8 @@
       "https://api.mojang.com/users/profiles/minecraft/${username.trim(",
       "https://github.com/qwertycry/Shitterlist",
       "https://sessionserver.mojang.com/session/minecraft/profile/$formatted"
-    ]
+    ],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/dungeon/SimonSays.kt",
@@ -191,7 +197,8 @@
       "TickEvent.Start",
       "WorldChangeEvent"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/dungeon/waypoints/OdinWaypointCodec.kt",
@@ -211,7 +218,8 @@
       "java.util.zip.GZIPInputStream"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/dungeon/waypoints/RouteSteps.kt",
@@ -220,7 +228,8 @@
     "feature": false,
     "imports": [],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/general/AetherOSSettings.kt",
@@ -236,7 +245,8 @@
       "java.awt.Color"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/general/BestiaryESP.kt",
@@ -271,7 +281,8 @@
       "RenderWorldEvent",
       "WorldChangeEvent"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/general/PetDisplay.kt",
@@ -317,7 +328,8 @@
       "PacketEvent.Sent",
       "WorldChangeEvent"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/general/Timer.kt",
@@ -341,7 +353,8 @@
       "KeyboardEvent.KeyPressed",
       "MouseClickEvent"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/hunting/InvisibugESP.kt",
@@ -374,7 +387,8 @@
       "TickEvent.Start",
       "WorldChangeEvent"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/hunting/TikiESP.kt",
@@ -412,7 +426,8 @@
       "TickEvent.End",
       "WorldChangeEvent"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/qol/AutoRag.kt",
@@ -446,7 +461,8 @@
       "ContainerFullyOpenedEvent",
       "MainThreadPacketReceivedEvent.Pre"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/qol/AutoReel.kt",
@@ -468,7 +484,8 @@
     "events": [
       "TickEvent.End"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/AlwaysWater.kt",
@@ -479,7 +496,8 @@
       "dev.eppopkaaddons.features.Feature"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/AmbientParticles.kt",
@@ -495,7 +513,8 @@
       "kotlin.random.Random"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/ChinaHat.kt",
@@ -517,7 +536,8 @@
     "events": [
       "RenderWorldEvent"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/Cosmetics.kt",
@@ -549,7 +569,8 @@
       "java.util.concurrent.ConcurrentHashMap"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/DvdBounce.kt",
@@ -574,7 +595,8 @@
     "events": [
       "RenderOverlayEvent"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/Halo.kt",
@@ -597,7 +619,8 @@
     "events": [
       "RenderWorldEvent"
     ],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/ItemAura.kt",
@@ -635,7 +658,8 @@
       "kotlin.math.sqrt"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/MoveHearts.kt",
@@ -658,7 +682,8 @@
       "net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement as FabricHudElement"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/MoveHotbar.kt",
@@ -701,7 +726,8 @@
       "net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement as FabricHudElement"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/RotatingItem.kt",
@@ -717,7 +743,8 @@
       "kotlin.math.sin"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/cosmetics/CosmeticData.kt",
@@ -728,7 +755,8 @@
       "kotlinx.serialization.Serializable"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/cosmetics/badges/BadgeManager.kt",
@@ -746,7 +774,8 @@
     "events": [],
     "external_urls": [
       "https://raw.githubusercontent.com/eppopka/badge-for-eppopkaaddons/main/badge.json"
-    ]
+    ],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/cosmetics/badges/BadgeText.kt",
@@ -761,7 +790,8 @@
       "java.util.UUID"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/cosmetics/halo/HaloLayer.kt",
@@ -789,7 +819,8 @@
       "kotlin.math.sin"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/cosmetics/halo/HaloModel.kt",
@@ -803,7 +834,8 @@
       "net.minecraft.client.renderer.entity.state.AvatarRenderState"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/cosmetics/text/AhoCorasick.kt",
@@ -821,7 +853,8 @@
     "events": [],
     "external_urls": [
       "https://github.com/skies-starred/library/blob/7a2ddc19f9e1c7356005ff317fbf0eba855935a5/src/main/kotlin/foo/starred/snowbird/api/text/replacer/AbstractTextReplacer.kt"
-    ]
+    ],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/cosmetics/text/TextReplacer.kt",
@@ -837,7 +870,8 @@
       "net.minecraft.network.chat.ComponentSerialization"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/cosmetics/wings/DragonWingsLayer.kt",
@@ -857,7 +891,8 @@
       "net.minecraft.resources.Identifier"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   },
   {
     "file": "impl/visual/cosmetics/wings/DragonWingsModel.kt",
@@ -873,6 +908,7 @@
       "kotlin.math.*"
     ],
     "events": [],
-    "external_urls": []
+    "external_urls": [],
+    "status": "PENDING_IMPLEMENTATION"
   }
 ]

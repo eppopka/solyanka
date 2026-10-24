@@ -54,6 +54,41 @@ object GuiKit {
             }
         }
     }
+    /** NoFrills-style color swatch and owo palette, embedded in the current panel. */
+    fun colorRow(width:Int,name:String,current:Int,update:(Int)->Unit):FlowLayout {
+        val container=UIContainers.verticalFlow(Sizing.fixed(width),Sizing.content()).apply { padding(Insets.of(5));gap(4) }
+        val swatch=UIComponents.box(Sizing.fixed(16),Sizing.fixed(16)).color(Color.ofArgb(current)).fill(true)
+        val picker=ColorPickerComponent().showAlpha(true).apply {
+            sizing(Sizing.fixed(minOf(180,width-20)),Sizing.fixed(110))
+            selectedColor(Color.ofArgb(current))
+        }
+        picker.onChanged().subscribe { color -> swatch.color(color);update(color.argb()) }
+        var expanded=false
+        val edit=button("Edit color",95) {}
+        edit.onPress {
+            expanded=!expanded
+            edit.message=Component.literal(if(expanded) "Close palette" else "Edit color")
+            if(expanded) container.child(picker) else container.removeChild(picker)
+        }
+        container.child(label(name).apply { horizontalSizing(Sizing.fixed(width-10)) })
+        container.child(UIContainers.horizontalFlow(Sizing.fixed(width-10),Sizing.content()).apply {
+            verticalAlignment(VerticalAlignment.CENTER);gap(5);child(swatch);child(edit)
+        })
+        return container
+    }
+    fun choiceRow(width:Int,name:String,choices:List<String>,initial:Int,update:(Int)->Unit):FlowLayout {
+        require(choices.isNotEmpty())
+        var selected=initial.coerceIn(choices.indices)
+        val choice=button(choices[selected],width-10) {}
+        choice.tooltip(Component.literal("Click to cycle options"))
+        choice.onPress {
+            selected=dev.solyanka.ui.SettingsCatalog.nextChoice(selected,choices.size)
+            choice.message=Component.literal(choices[selected]);update(selected)
+        }
+        return UIContainers.verticalFlow(Sizing.fixed(width),Sizing.content()).apply {
+            padding(Insets.of(5));gap(3);child(label(name));child(choice)
+        }
+    }
     fun description(width:Int,text:String) = UIContainers.verticalFlow(Sizing.fixed(width),Sizing.content()).apply {
         padding(Insets.of(5));child(label(text).apply { horizontalSizing(Sizing.fixed(width-10)) })
     }
