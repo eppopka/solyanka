@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.ArchiveExpansionTest" tests="60" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:50:59.192Z" hostname="222f7e72-264" time="0.124">
+  <properties/>
+  <testcase name="blocklist rejects command control characters()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.003"/>
+  <testcase name="invalid route range fails validation()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="three observations remain unconfirmed()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="old config gets all new defaults()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.002"/>
+  <testcase name="hotbar custom origin translates native center()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.002"/>
+  <testcase name="route rejects oversized numbers without overflow()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.002"/>
+  <testcase name="simon ready check retains highest stage()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="distant evidence never combines()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="normal expected click advances once()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.004"/>
+  <testcase name="reset clears confirmed targets()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.003"/>
+  <testcase name="four nearby observations confirm()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="wrong click protection preserves queue()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="bestiary validates input bounds()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.003"/>
+  <testcase name="cone vertices obey configured radius and height()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.002"/>
+  <testcase name="network and external actions default off()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="pip settings never persist window identity()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.002"/>
+  <testcase name="source special second button consumes two()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="simon evidence bounded against packet flood()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.002"/>
+  <testcase name="pet clock reversal resets history()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="pet never guesses xp from lore or level()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.002"/>
+  <testcase name="blocklist matches exact party finder line only()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="route will not skip to repeated future block()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="blocklist round trips compatible archive format()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.009"/>
+  <testcase name="pet rates require actual changed snapshots()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.002"/>
+  <testcase name="pet reads verified JSON xp()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="pet negative xp never accepted()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="nonfinite evidence ignored()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="halo shells bounded triangle count()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.008"/>
+  <testcase name="same tick duplicates blocked()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="route orders start then numbered visits()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.002"/>
+  <testcase name="two pet samples outside selected window cannot fabricate current rate()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="invalid new config rejected by codec()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.002"/>
+  <testcase name="pip validates bounded fps and size()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.002"/>
+  <testcase name="invalid cosmetic settings are rejected()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="blocklist rejects duplicate UUIDs()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="exact names do not match substrings()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="pet malformed info stays unknown()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="simon reset removes skip state and progress()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="corrupt blocklist preserved and writes blocked()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="wire cone retains edges without fill()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="pet xp decrease resets rate history()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="blocklist atomic store roundtrip()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="hotbar stays bounded on tiny viewport()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="old pet snapshots expire from rate window()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="simon skip removes and renumbers first step()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="route parses number notes and repeated uses()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="hotbar default transform is identity()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="shimmer off gives time invariant halo()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.003"/>
+  <testcase name="route start resets when revisited()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="simon flash duplicates are distinct steps()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="sneak overrides wrong click protection()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="new observations refresh evidence expiry()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.002"/>
+  <testcase name="bug expiry is exactly twenty ticks()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="blocklist UUID normalizes dashes and case()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="empty term list never matches()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="names split ignore blanks and case and formatting()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="route lookahead bounds segments()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.0"/>
+  <testcase name="cone has 32 faces and 40 outline edges()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="pet active lore identifies equipped pet()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.001"/>
+  <testcase name="halo geometry remains finite across time()" classname="dev.solyanka.utility.ArchiveExpansionTest" time="0.02"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

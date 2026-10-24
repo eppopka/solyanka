@@ -253,3 +253,7 @@ Archive MoveHotbar appearance settings/native item extraction adapted into a new
 rounded painter and horizontal/vertical layout; no AetherOSSettings runtime.
 ItemAura reversed-Z correction, enabled-only HUD editor and search/HUD navigation.
 External game assets retain their owners' terms; not licensed by this project's GPL.
+
+Hotbar 1.3.11: original eppopkaaddons CC0-1.0 HotbarPainter, HotbarLayout/Viewport/Selection, GlassRenderer, Rect and Render2D.drawRect ported from the user-supplied 26.2 project. Original files and SHA-256 provenance are retained in audit/original-hotbar-source. Only required helpers are imported; AetherOSSettings, clocks and unrelated project content remain excluded.
+
+1.3.12: Stray CC0 Cs2KnifeScreen layout/preview concepts and original SoftwareRender body adapted from pinned commit d91fcd4515b4eda647ee8fd7fa99408f473e5718. Selected source files and hashes are retained in audit/stray-knife-menu-source. First-person hand shader routing references Stray HeldItemShader and AvatarRendererMixin; solyanka reuses its existing native pipeline. UUID Item Bindings are a local integration. No Valve game assets are redistributed.

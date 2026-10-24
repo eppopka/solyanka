@@ -42,7 +42,8 @@ object FeatureCodec {
         fun overlay(base:JsonObject,value:JsonObject) {
             base.entrySet().toList().forEach { (key,default) ->
                 val v=value.get(key) ?: return@forEach
-                if(default.isJsonObject) { require(v.isJsonObject) { "$key must be an object" };overlay(default.asJsonObject,v.asJsonObject) }
+                if(default.isJsonArray) { require(v.isJsonArray) { "$key must be an array" };require(v.asJsonArray.size()<=128) { "$key exceeds 128 entries" };base.add(key,v.deepCopy()) }
+                else if(default.isJsonObject) { require(v.isJsonObject) { "$key must be an object" };overlay(default.asJsonObject,v.asJsonObject) }
                 else {
                     require(v.isJsonPrimitive) { "$key has invalid type" }
                     val kind=default.asJsonPrimitive;val actual=v.asJsonPrimitive

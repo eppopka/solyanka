@@ -21,7 +21,7 @@ assert 'RenderPass.close:()V' in body and 'RenderPass.drawIndexed:(IIIII)V' in b
 pass_text=dump('com.mojang.blaze3d.systems.RenderPass',verbose=True)
 match=re.search(r'public void drawIndexed\(int, int, int, int, int\);.*?(?=\n  public|\Z)',pass_text,re.S).group()
 assert 'indexCount' in match and 'instanceCount' in match and 'firstIndex' in match
-jar=str(p/'build/libs/solyanka-1.3.9.jar');compiled=dump('dev.solyanka.client.mixin.SkyboxMixin',jar,True)
+jar=str(p/'build/libs/solyanka-1.3.12.jar');compiled=dump('dev.solyanka.client.mixin.SkyboxMixin',jar,True)
 assert 'private com.mojang.blaze3d.pipeline.RenderTarget renderTarget;' in compiled
 for token in ['org.spongepowered.asm.mixin.Shadow','org.spongepowered.asm.mixin.Final','org.spongepowered.asm.mixin.Unique','com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation']:assert token in compiled,token
 assert '(Lnet/minecraft/client/renderer/DynamicUniforms;Lorg/joml/Matrix4f;Lcom/llamalad7/mixinextras/injector/wrapoperation/Operation;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;' in compiled
@@ -31,7 +31,7 @@ assert 'getMainRenderTarget' not in feature and 'getModelViewStack' not in featu
 assert 'cancellable' not in hook and 'ci.cancel' not in hook
 for token in ['withBindGroupLayout','withVertexBinding(0,DefaultVertexFormat.POSITION_TEX_COLOR)','BlendFactor.ONE,BlendFactor.ONE','vertices.slice()','pass.drawIndexed(6,1,36,0,0)','owned.clear()','manager.release(it)','quads?.close()']:assert token in feature,token
 assert 'host.showPanel(SettingsPanel(' in ui and 'model.updateGeneral' in ui and 'setScreen' not in ui
-assert len(json.loads((p/'src/main/resources/solyanka.client.mixins.json').read_text())['client'])==44
+assert len(json.loads((p/'src/main/resources/solyanka.client.mixins.json').read_text())['client'])==45
 assets=[]
 manifest=json.loads((p/'audit/stray-skybox-source-manifest.json').read_text())
 for r in manifest:
@@ -43,5 +43,5 @@ assert len(assets)==14
 with zipfile.ZipFile(jar) as z:
  for a in assets:
   key='assets/solyanka/textures/sky/end/'+a['file'];assert hashlib.sha256(z.read(key)).hexdigest()==a['sha256']
-result=dict(targets=targets,end_transform_callsites=1,shadow_render_target_verified=True,compiled_wrap_handler_signature_verified=True,native_five_arg_draw_order_checked=True,native_end_sky_not_cancelled=True,private_matrix_copy=True,all_allocations_before_pass=True,embedded_instant_settings=True,asset_count=14,raw_texture_bytes=sum(a['width']*a['height']*4 for a in assets),assets=assets,mixin_classes=44,in_game_tested_here=False,mixin_application_tested_here=False,gpu_sodium_iris_tested_here=False)
+result=dict(targets=targets,end_transform_callsites=1,shadow_render_target_verified=True,compiled_wrap_handler_signature_verified=True,native_five_arg_draw_order_checked=True,native_end_sky_not_cancelled=True,private_matrix_copy=True,all_allocations_before_pass=True,embedded_instant_settings=True,asset_count=14,raw_texture_bytes=sum(a['width']*a['height']*4 for a in assets),assets=assets,mixin_classes=45,in_game_tested_here=False,mixin_application_tested_here=False,gpu_sodium_iris_tested_here=False)
 (p/'validation/skybox-static.json').write_text(json.dumps(result,indent=2)+'\n');print('Skybox methods/operation verified:',len(targets),'; imported textures:',len(assets),'; static evidence only')

@@ -3,6 +3,8 @@ package dev.solyanka.client.cs2;
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.solyanka.client.SolyankaClient;
 import dev.solyanka.utility.Cs2KnifeSettings;
+import dev.solyanka.utility.KnifeChoice;
+import dev.solyanka.utility.KnifeBindings;
 import dev.solyanka.client.cs2.anim.*;
 import dev.solyanka.client.cs2.s2.*;
 import dev.solyanka.client.cs2.skin.*;
@@ -187,9 +189,9 @@ public final class Cs2Knives {
  public static Cs2Library library() {return library;}
  public static Knife current() {return current;}
  public static List<Cs2Library.Knife> knives(){return library==null?List.of():List.copyOf(library.knives().values());}
- public static boolean applies(ItemStack stack){return enabled() && !failedUpload && current!=null && matches(stack);}
- public static boolean matches(ItemStack stack){String rule=settings().getApplyTo();if(rule.equals("empty"))return stack==null||stack.isEmpty();if(stack==null||stack.isEmpty())return false;return rule.equals("held")||stack.is(ItemTags.SWORDS)||stack.is(ItemTags.AXES);}
- private static String key(Cs2KnifeSettings s){return s.getKnife()+"|"+s.getFinish()+"|"+s.getSeed()+"|"+Math.round(s.getWear()*10000);}
+ public static boolean applies(ItemStack stack){return enabled() && !failedUpload && current!=null && current.key.equals(choice(stack).key()) && matches(stack);}
+ public static boolean matches(ItemStack stack){if(KnifeBindings.binding(settings(),Cs2ItemIdentity.uuid(stack))!=null)return true;String rule=settings().getApplyTo();if(rule.equals("empty"))return stack==null||stack.isEmpty();if(stack==null||stack.isEmpty())return false;return rule.equals("held")||stack.is(ItemTags.SWORDS)||stack.is(ItemTags.AXES);}
+ public static KnifeChoice choice(ItemStack stack){return KnifeBindings.choice(settings(),Cs2ItemIdentity.uuid(stack));}
  public static void tick(Minecraft mc) {
   if(!enabled())return;
   var s=settings();boolean inspect=false;
@@ -204,18 +206,49 @@ public final class Cs2Knives {
   }
   if(opening!=null&&opening.isDone()) {try {var o=opening.join();if(o.generation==generation){library=o.library;viewmodel=o.rig;status=library==null?"Assets missing or invalid. Download the Stray pack, or set a local CS2 folder.":"Knife assets ready";}else if(o.library!=null)WORKER.execute(o.library::close);}catch(CompletionException e){status="Could not read CS2; see latest.log";LOG.warn(status,e);}finally {opening=null;}}
   if(library==null || mc.player==null || failedUpload)return;
-  String key=key(s);
+  var selected=choice(mc.player.getMainHandItem());
+  String key=selected.key();
   if(!key.equals(requestedKey)){requestedKey=key;changedAt=System.nanoTime();}
   if(pending!=null&&pending.isDone()) {try {var b=pending.join();if(b.generation==generation && b.key.equals(requestedKey) && b.knife!=null){upload(b.knife);current=b.knife;CACHE.put(b.key,b.knife);status="Loaded "+b.knife.id;Cs2Viewmodel.draw();}}catch(RuntimeException e){failedUpload=true;current=null;status="Knife load/upload failed; vanilla retained. See latest.log";LOG.warn(status,e);}finally {pending=null;}}
   if(current!=null&&current.key.equals(key))return;
-  if(pending!=null||Objects.equals(key,attemptedKey)||System.nanoTime()-changedAt<250_000_000L)return;
-  attemptedKey=key;Knife cached=CACHE.get(key);
+  if(pending!=null)return;
+  Knife cached=CACHE.get(key);
   if(cached!=null){try {upload(cached);current=cached;status="Loaded "+cached.id;Cs2Viewmodel.draw();}catch(RuntimeException e){failedUpload=true;current=null;LOG.warn("Knife cached upload failed",e);}return;}
-  int g=generation;status="Building knife...";
+  if(Objects.equals(key,attemptedKey)||System.nanoTime()-changedAt<250_000_000L)return;
+  attemptedKey=key;int g=generation;status="Building knife...";
   // Serial worker owns all decoder reads; obsolete results cannot publish after reload/disable.
   Cs2Library source=library;NmSkeleton rig=viewmodel;
-  pending=CompletableFuture.supplyAsync(()->new Built(build(source,rig,g,key,s.getKnife(),s.getFinish(),s.getSeed(),(float)s.getWear()),key,g),WORKER);
+  pending=CompletableFuture.supplyAsync(()->new Built(build(source,rig,g,key,selected.getKnife(),selected.getFinish(),selected.getSeed(),(float)selected.getWear()),key,g),WORKER);
  }
+ public record PreviewImage(int width,int height,int[] pixels) {}
+ /** At most two menu jobs are requested at a time by KnifePreviewCache. No network. */
+ public static CompletableFuture<PreviewImage> preview(String knifeId,String finish,int seed,float wear,boolean thumbnail) {
+  var lib=library;int g=generation;
+  if(lib==null)return CompletableFuture.completedFuture(null);
+  return CompletableFuture.supplyAsync(()->{
+   if(g!=generation || lib!=library)return null;
+   try {
+    if(thumbnail) {
+     var tex=lib.preview(knifeId,finish);
+     if(tex!=null && tex.w>0 && tex.h>0 && tex.w<=512 && tex.h<=512) {
+      int w=Math.max(1,Math.round(tex.w*Math.min(1f,192f/tex.w))),h=Math.max(1,Math.round(tex.h*Math.min(1f,192f/tex.w)));int[] pixels=new int[w*h];
+      for(int y=0;y<h;y++)for(int x=0;x<w;x++){int at=((y*tex.h/h)*tex.w+(x*tex.w/w))*4;pixels[y*w+x]=channel(tex.px[at+3])<<24|channel(tex.px[at])<<16|channel(tex.px[at+1])<<8|channel(tex.px[at+2]);}
+      return g==generation?new PreviewImage(w,h,pixels):null;
+     }
+     return null;
+    }
+    var info=lib.knives().get(knifeId);if(info==null)return null;
+    var model=new S2Model(lib.assets().resource(info.model()));validateModel(model);
+    var material=new KnifeMaterial(lib.assets(),model.parts.get(0).material);
+    var kit=finish.isEmpty()?null:lib.kit(finish);
+    var skin=Composer.compose(lib.assets(),material,kit,seed,wear,512);
+    int[] pixels=dev.solyanka.client.cs2.render.SoftwareRender.render(model,skin,384,256,180f);
+    return g==generation?new PreviewImage(384,256,pixels):null;
+   }catch(RuntimeException e){LOG.debug("Knife preview unavailable for {} / {}",knifeId,finish,e);return null;}
+  },WORKER);
+ }
+ private static int channel(float n){return Math.max(0,Math.min(255,Math.round(n*255)));}
+ public static int assetGeneration(){return generation;}
  private static Cs2Library openSource(String mode,String path) {
   Cs2Library local=mode.equals("pack")?null:Cs2Library.open(path);
   if(local!=null||mode.equals("install"))return local;
@@ -235,7 +268,8 @@ public final class Cs2Knives {
 		try {
 			Cs2Library.Knife info = lib.knives().get(knifeId);
 			if (info == null) {
-				info = lib.knives().values().stream().findFirst().orElse(null);
+				if(jobGeneration==generation)status="Selected knife is unavailable in these assets";
+                return null;
 			}
 			if (info == null) {
 				if(jobGeneration==generation) status = "No knives found in Counter-Strike 2.";

@@ -1,5 +1,5 @@
 {
-  "version": "1.3.9",
+  "version": "1.3.12",
   "targets": [
     {
       "class_name": "net.minecraft.client.renderer.ItemInHandRenderer",
@@ -39,7 +39,7 @@
   "editor_uses_live_resolution": true,
   "embedded_instant_settings": true,
   "archive_source_hashes_verified": true,
-  "mixin_classes": 44,
+  "mixin_classes": 45,
   "in_game_tested_here": false,
   "mixin_application_tested_here": false,
   "gpu_sodium_iris_tested_here": false

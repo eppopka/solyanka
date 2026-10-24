@@ -1,0 +1,57 @@
+Starting a Gradle Daemon, 6 stopped Daemons could not be reused, use --status for details
+
+> Configure project :
+Fabric Loom: 1.18.4
+
+> Task :clean
+> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :processResources
+> Task :processClientResources NO-SOURCE
+> Task :processIncludeJars
+> Task :sourcesJar
+> Task :processTestResources NO-SOURCE
+> Task :validateAccessWidener UP-TO-DATE
+
+> Task :compileKotlin
+w: file:///data/solyanka/src/main/kotlin/dev/solyanka/utility/ItemAuraMesh.kt:35:28 Redundant call of conversion method.
+
+> Task :compileJava
+> Task :classes
+
+> Task :compileClientKotlin
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonMap.kt:65:14 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt:52:48 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt:61:139 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt:82:25 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt:94:140 Unnecessary non-null assertion (!!) on a non-null receiver of type 'Vec3'.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt:99:13 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt:99:36 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt:115:43 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonWaypoints.kt:53:17 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonWaypoints.kt:60:113 Unnecessary non-null assertion (!!) on a non-null receiver of type 'RoomFacing'.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/HeldItemCosmetic.kt:96:185 'static field LOCATION_ITEMS: Identifier' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/HuntingFeatures.kt:75:15 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/SimonSolver.kt:69:47 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/SimonSolver.kt:80:13 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+
+> Task :compileClientJava
+> Task :clientClasses
+> Task :jar
+> Task :assemble
+> Task :compileTestKotlin
+> Task :compileTestJava NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :test
+> Task :check
+> Task :build
+
+[Incubating] Problems report is available at: file:///data/solyanka/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 56s
+12 actionable tasks: 11 executed, 1 up-to-date

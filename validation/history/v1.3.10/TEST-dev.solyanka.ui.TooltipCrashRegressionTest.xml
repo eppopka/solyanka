@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.ui.TooltipCrashRegressionTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:50:59.149Z" hostname="222f7e72-264" time="0.002">
+  <properties/>
+  <testcase name="plain labels normalize absent hover style at lookup boundary()" classname="dev.solyanka.ui.TooltipCrashRegressionTest" time="0.0"/>
+  <testcase name="common label factory uses protected plain labels()" classname="dev.solyanka.ui.TooltipCrashRegressionTest" time="0.001"/>
+  <testcase name="style guard does not disable library tooltip rendering()" classname="dev.solyanka.ui.TooltipCrashRegressionTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

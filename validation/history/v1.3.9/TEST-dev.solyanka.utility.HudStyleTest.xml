@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.HudStyleTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:42:39.024Z" hostname="222f7e72-264" time="0.02">
+  <properties/>
+  <testcase name="new style config rejects wrong types and fractional widths()" classname="dev.solyanka.utility.HudStyleTest" time="0.003"/>
+  <testcase name="scoreboard HUD editor entry has dedicated immutable layout()" classname="dev.solyanka.utility.HudStyleTest" time="0.001"/>
+  <testcase name="sidebar sizing bounds rows and width()" classname="dev.solyanka.utility.HudStyleTest" time="0.0"/>
+  <testcase name="rounded panel rows mirror vertically()" classname="dev.solyanka.utility.HudStyleTest" time="0.0"/>
+  <testcase name="chat pane applies scale without changing native hitboxes()" classname="dev.solyanka.utility.HudStyleTest" time="0.001"/>
+  <testcase name="new scale opacity and halo ranges validated()" classname="dev.solyanka.utility.HudStyleTest" time="0.001"/>
+  <testcase name="chat pane uses vanilla 200 tick lifetime and respects scroll()" classname="dev.solyanka.utility.HudStyleTest" time="0.0"/>
+  <testcase name="chat hooks preserve message security and vanilla text interaction()" classname="dev.solyanka.utility.HudStyleTest" time="0.001"/>
+  <testcase name="halo runs wide faint to narrow stronger within bounded passes()" classname="dev.solyanka.utility.HudStyleTest" time="0.0"/>
+  <testcase name="scoreboard uses team objective hidden entries and formatting()" classname="dev.solyanka.utility.HudStyleTest" time="0.001"/>
+  <testcase name="old visual settings gain new bounded defaults()" classname="dev.solyanka.utility.HudStyleTest" time="0.002"/>
+  <testcase name="source distance scale shrinks to a readable minimum()" classname="dev.solyanka.utility.HudStyleTest" time="0.0"/>
+  <testcase name="alpha multiplies existing alpha without changing RGB()" classname="dev.solyanka.utility.HudStyleTest" time="0.0"/>
+  <testcase name="nameplate retains styled components and source scaling()" classname="dev.solyanka.utility.HudStyleTest" time="0.002"/>
+  <testcase name="new styles roundtrip with old features unchanged()" classname="dev.solyanka.utility.HudStyleTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

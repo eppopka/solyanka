@@ -17,7 +17,7 @@ render=re.search(r'public void render\(net.minecraft.client.DeltaTracker, boolea
 assert render.index('Method renderLevel:')<render.index('GuiRenderer.render:()V')
 pass_text=dump('com.mojang.blaze3d.systems.RenderPass',verbose=True);draw=re.search(r'public void draw\(int, int, int, int\);.*?(?=\n  public|\Z)',pass_text,re.S).group();assert all(n in draw for n in ['vertexCount','instanceCount','firstVertex','firstInstance'])
 verify('com.mojang.blaze3d.systems.CommandEncoder','copyTextureToTexture','(Lcom/mojang/blaze3d/textures/GpuTexture;Lcom/mojang/blaze3d/textures/GpuTexture;IIIIIII)V')
-jar=str(p/'build/libs/solyanka-1.3.9.jar');mixin=dump('dev.solyanka.client.mixin.TemporalBlurMixin',jar,True)
+jar=str(p/'build/libs/solyanka-1.3.12.jar');mixin=dump('dev.solyanka.client.mixin.TemporalBlurMixin',jar,True)
 for token in ['private com.mojang.blaze3d.pipeline.RenderTarget mainRenderTarget;','org.spongepowered.asm.mixin.Shadow','org.spongepowered.asm.mixin.Final','TemporalBlur.apply:(Lcom/mojang/blaze3d/pipeline/RenderTarget;)V','TemporalBlur.close:()V']:assert token in mixin,token
 s=p/'src/client/kotlin/dev/solyanka/client';blur=(s/'feature/TemporalBlur.kt').read_text();hud=(s/'feature/ArchiveHuds.kt').read_text();client=(s/'SolyankaClient.kt').read_text();ui=(s/'ui/ReleaseOneUi.kt').read_text()
 for token in ['false,format)','GpuFormat.RGBA8_UNORM,GpuFormat.RGBA16_FLOAT','copy(next,main);read=next;write=previous','pass.draw(3,1,0,0)','now-lastFrame>500_000_000L','RenderSystem.isOnRenderThread()','if(!seeded','params?.close()','destroyBuffers()']:assert token in blur,token
@@ -29,7 +29,7 @@ assert 'if (action == GLFW.GLFW_REPEAT) return token in ownedInputs' in client
 for token in ['c.gui.screen()!=null','!c.isWindowActive','sendSystemMessage','SimpleSoundInstance.forUI','soundPending=false']:assert token in hud,token
 assert 'sendCommand' not in hud and 'sendChat' not in hud
 assert 'host.showPanel(SettingsPanel(' in ui and 'model.updateGeneral' in ui and 'panel.inputRow(' in ui and 'setScreen' not in ui
-reg=json.loads((p/'src/main/resources/solyanka.client.mixins.json').read_text())['client'];assert len(reg)==44
+reg=json.loads((p/'src/main/resources/solyanka.client.mixins.json').read_text())['client'];assert len(reg)==45
 with zipfile.ZipFile(jar) as z:
  for mode in ['accum_mix','accum_max']:
   key=f'assets/solyanka/shaders/post/{mode}.fsh';assert z.read(key)==(p/'src/main/resources'/key).read_bytes()
@@ -37,5 +37,5 @@ with zipfile.ZipFile(jar) as z:
 archive=json.loads((p/'audit/archive-inventory.json').read_text());manifest=json.loads((p/'audit/v1-source-manifest.json').read_text())
 for path in ['impl/general/Timer.kt','impl/visual/DvdBounce.kt']:
  a=next(r for r in archive if r['file']==path);m=next(r for r in manifest if r['file']==path);assert a['sha256']==m['sha256'];assert a['status']=='IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING'
-result=dict(targets=targets,owning_main_target_shadow_verified=True,compiled_tail_and_cleanup_callbacks=True,native_draw_parameter_order_checked=True,world_render_before_gui=True,history_targets_depthless_and_matching_format=True,first_frame_reseed_guard=True,history_long_gap_guard=True,zero_strength_releases_history=True,history_formats_supported=['RGBA8_UNORM','RGBA16_FLOAT'],history_pixel_budget=8388608,release_repeat_input_ownership_preserved=True,timer_local_feedback_only=True,archive_source_hashes_verified=True,new_gui_embedded_instant_save=True,mixin_classes=44,in_game_tested_here=False,mixin_application_tested_here=False,gpu_sodium_iris_tested_here=False)
+result=dict(targets=targets,owning_main_target_shadow_verified=True,compiled_tail_and_cleanup_callbacks=True,native_draw_parameter_order_checked=True,world_render_before_gui=True,history_targets_depthless_and_matching_format=True,first_frame_reseed_guard=True,history_long_gap_guard=True,zero_strength_releases_history=True,history_formats_supported=['RGBA8_UNORM','RGBA16_FLOAT'],history_pixel_budget=8388608,release_repeat_input_ownership_preserved=True,timer_local_feedback_only=True,archive_source_hashes_verified=True,new_gui_embedded_instant_save=True,mixin_classes=45,in_game_tested_here=False,mixin_application_tested_here=False,gpu_sodium_iris_tested_here=False)
 (p/'validation/v1-static.json').write_text(json.dumps(result,indent=2)+'\n');print('v1.0 native hook methods checked:',len(targets),'; blur target/draw order and timer input guards verified; static only')

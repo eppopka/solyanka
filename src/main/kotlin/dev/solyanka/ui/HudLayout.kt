@@ -38,7 +38,9 @@ object HudLayout {
     fun visibleEntries(f:FeatureSettings,enabled:Set<String>,width:Int=960,height:Int=540)=entries(f,width,height).filter {owner(it.key) in enabled && it.hud.enabled && (it.key!="archive.route" || f.route.progress)}
     fun update(f:FeatureSettings,key:String,width:Int=960,height:Int=540,change:(HudSpec)->HudSpec):FeatureSettings {
         val entry=entries(f,width,height).firstOrNull {it.key==key} ?: error("Unknown HUD: $key")
-        val h=change(entry.hud);h.validate()
+        val changed=change(entry.hud)
+        val h=if(key=="archive.hotbar" && f.moveHotbar.referenceSizing)changed.copy(scale=if(changed.scale==entry.hud.scale)f.moveHotbar.hud.scale else (changed.scale/HotbarLayout.referenceScale(f.moveHotbar,width,height)).coerceIn(.5,4.0))else changed
+        h.validate()
         return when {
             key.startsWith("timer.")->f.copy(timers=f.timers.withHud(key.substringAfter('.'),h))
             key.startsWith("player.")->f.copy(player=f.player.withHud(key.substringAfter('.'),h))

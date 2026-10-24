@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.ui.HotbarRecoveryTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-24T21:19:23.619Z" hostname="74ce5fce-01b" time="0.043">
+  <properties/>
+  <testcase name="hidden old config delegates original native HUD instead of suppressing it()" classname="dev.solyanka.ui.HotbarRecoveryTest" time="0.011"/>
+  <testcase name="selector removed and right click cannot hide HUDs()" classname="dev.solyanka.ui.HotbarRecoveryTest" time="0.001"/>
+  <testcase name="recovery is available in editor and settings without selecting invisible HUD()" classname="dev.solyanka.ui.HotbarRecoveryTest" time="0.001"/>
+  <testcase name="large custom hotbars are fitted for ordinary GUI sizes and both orientations()" classname="dev.solyanka.ui.HotbarRecoveryTest" time="0.012"/>
+  <testcase name="editor controls do not block dragging a bottom aligned hotbar()" classname="dev.solyanka.ui.HotbarRecoveryTest" time="0.001"/>
+  <testcase name="archive appearance reset matches declared defaults without moving layout()" classname="dev.solyanka.ui.HotbarRecoveryTest" time="0.001"/>
+  <testcase name="style selection preserves settings and translucent gradient avoids double fill()" classname="dev.solyanka.ui.HotbarRecoveryTest" time="0.001"/>
+  <testcase name="restore shows and centers hotbar without changing appearance()" classname="dev.solyanka.ui.HotbarRecoveryTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

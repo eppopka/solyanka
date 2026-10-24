@@ -3,7 +3,7 @@ from pathlib import Path
 import json,re,subprocess,zipfile,hashlib
 p=Path(__file__).resolve().parents[1]
 cp=str(Path.home()/'.gradle/caches/fabric-loom/26.2/minecraft-client.jar')
-jar=str(p/'build/libs/solyanka-1.3.9.jar');cache={}
+jar=str(p/'build/libs/solyanka-1.3.12.jar');cache={}
 def dump(cls,classpath=cp,verbose=False):
  key=(cls,classpath,verbose)
  if key not in cache:cache[key]=subprocess.check_output(['java','-m','jdk.jdeps/com.sun.tools.javap.Main','-p','-s','-c']+(['-v'] if verbose else [])+['-classpath',classpath,cls],text=True)
@@ -37,14 +37,14 @@ for token in ['HudElementRegistry.replaceElement','original.extractRenderState(g
 assert client.index('FeatureRuntime.register()')<client.index('Suppression.register()')<client.index('VanillaHearts.register()')
 assert 'key,width,height,block' in editor
 assert 'host.showPanel(SettingsPanel(' in ui and 'model.updateGeneral' in ui and 'setScreen' not in ui
-reg=json.loads((p/'src/main/resources/solyanka.client.mixins.json').read_text())['client'];assert len(reg)==44
+reg=json.loads((p/'src/main/resources/solyanka.client.mixins.json').read_text())['client'];assert len(reg)==45
 with zipfile.ZipFile(jar) as z:
- assert json.loads(z.read('fabric.mod.json'))['version']=='1.3.9'
+ assert json.loads(z.read('fabric.mod.json'))['version']=='1.3.12'
  for n in ['dev/solyanka/client/feature/ArchiveVisuals.class','dev/solyanka/client/feature/VanillaHearts.class','dev/solyanka/client/mixin/RotatingItemMixin.class','dev/solyanka/client/ui/ArchiveVisualUi.class','dev/solyanka/utility/HeartLayout.class','dev/solyanka/utility/RotatingItemLogic.class','dev/solyanka/utility/AmbientParticleLogic.class']:assert n in z.namelist(),n
  assert not any('AetherOS' in n for n in z.namelist())
 archive=json.loads((p/'audit/archive-inventory.json').read_text());manifest=json.loads((p/'audit/archive-visual-source-manifest.json').read_text());assert len(manifest)==3
 for m in manifest:
  a=next(r for r in archive if r['file']==m['file']);assert a['sha256']==m['sha256'] and a['module']==m['module'];assert a['status']=='IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING'
-result=dict(version='1.3.9',targets=targets,api_targets=apis,native_item_transform_callsites=5,compiled_injection_signature_verified=True,empty_hand_and_map_paths_bypass_hook=True,source_particle_types_available=8,client_only_bounded_spawns=True,heart_original_element_delegated=True,heart_pose_restored_in_finally=True,existing_hud_suppression_wrappers_preserved=True,editor_uses_live_resolution=True,embedded_instant_settings=True,archive_source_hashes_verified=True,mixin_classes=44,in_game_tested_here=False,mixin_application_tested_here=False,gpu_sodium_iris_tested_here=False)
+result=dict(version='1.3.12',targets=targets,api_targets=apis,native_item_transform_callsites=5,compiled_injection_signature_verified=True,empty_hand_and_map_paths_bypass_hook=True,source_particle_types_available=8,client_only_bounded_spawns=True,heart_original_element_delegated=True,heart_pose_restored_in_finally=True,existing_hud_suppression_wrappers_preserved=True,editor_uses_live_resolution=True,embedded_instant_settings=True,archive_source_hashes_verified=True,mixin_classes=45,in_game_tested_here=False,mixin_application_tested_here=False,gpu_sodium_iris_tested_here=False)
 (p/'validation/archive-visual-static.json').write_text(json.dumps(result,indent=2)+'\n')
 print('Archive visuals: 1 native injection target, 5 callsites, 3 API methods, 8 particle types; compiled callback and wrapper guards checked; static only')

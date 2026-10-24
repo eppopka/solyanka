@@ -1,7 +1,7 @@
 """Exercise the compiled source parsers on generated fixtures; no CS2 assets."""
 from pathlib import Path
 import subprocess,tempfile,json
-p=Path(__file__).resolve().parents[1];jar=p/'build/libs/solyanka-1.3.9.jar'
+p=Path(__file__).resolve().parents[1];jar=p/'build/libs/solyanka-1.3.12.jar'
 with tempfile.TemporaryDirectory()as temp:
  w=Path(temp);plain=(b'solyanka source parser fixture\n'*500)+bytes(range(256));(w/'plain').write_bytes(plain)
  subprocess.run(['zstd','-q','-f',str(w/'plain'),'-o',str(w/'plain.zst')],check=True)

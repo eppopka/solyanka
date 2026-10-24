@@ -281,7 +281,7 @@ object SolyankaClient : ClientModInitializer {
                 })))
         }
         initialized = true
-        logger.info("solyanka 1.3.9 initialized for Minecraft 26.2")
+        logger.info("solyanka 1.3.12 initialized for Minecraft 26.2")
     }
 
     /** Validate and persist first; do not activate an invalid or unwritable UI draft. */

@@ -1,9 +1,9 @@
-"""Offline 1.3.9 regression: synthetic pack files, reversed-Z pixels and explicit UI/download contracts.
+"""Offline 1.3.12 regression: synthetic pack files, reversed-Z pixels and explicit UI/download contracts.
 No real asset download, Fabric launch, Mixin application, native GUI or GPU acceptance.
 """
 from pathlib import Path
 import subprocess,tempfile,struct,zlib,json,re,html,zipfile
-p=Path(__file__).resolve().parents[1];jar=p/'build/libs/solyanka-1.3.9.jar'
+p=Path(__file__).resolve().parents[1];jar=p/'build/libs/solyanka-1.3.12.jar'
 def pack(rows,mutate=None):
  blobs=[zlib.compress(data)for name,typ,w,h,data in rows];size=sum(23+len(n.encode())for n,*_ in rows);offset=16+size;idx=bytearray()
  for (name,typ,w,h,data),blob in zip(rows,blobs):
@@ -40,8 +40,14 @@ assert 'Cs2AssetDownload.start()'not in loader and 'openSource(mode,path)'in loa
 for token in ['Redirect.NEVER','done>SIZE','done!=SIZE','SHA256.equals','Files.deleteIfExists(temp)','LinkOption.NOFOLLOW_LINKS','setDaemon(true)','revision.incrementAndGet()']:assert token in down,token
 assert down.index('!SHA256.equals')<down.index('Files.move(temp,target')
 aura=(p/'src/client/kotlin/dev/solyanka/client/feature/ItemAura.kt').read_text();assert 'CompareOp.GREATER_THAN_OR_EQUAL' in aura and 'LESS_THAN_OR_EQUAL'not in aura
+editor=(p/'src/client/kotlin/dev/solyanka/client/ui/HudEditorScreen.kt').read_text()
+assert 'Selected HUD'not in editor and 'enabled=!it.enabled'not in editor and 'height-43'not in editor
+assert 'Restore Hotbar'in editor and 'Positioning.absolute((width-175).coerceAtLeast(0),28)'in editor
+hotbar=(p/'src/client/kotlin/dev/solyanka/client/feature/VanillaHotbar.kt').read_text()
+assert '|| !s.hud.enabled'in hotbar and 'scale(at.scale.toFloat(),at.scale.toFloat())'in hotbar
+assert 'HotbarPainter.background(g,layout,look,seconds)'in hotbar and 'ChromeDraw.panel('not in hotbar
 with zipfile.ZipFile(jar)as z:
  assert not any(n.endswith(('.pack','.vpk','.vtex_c','.vmdl_c'))for n in z.namelist())
  for name in ['dev/solyanka/client/cs2/pack/Cs2Pack.class','dev/solyanka/client/cs2/Cs2AssetDownload.class','dev/solyanka/client/feature/VanillaHotbar.class']:assert name in z.namelist()
-result=dict(version='1.3.9',synthetic_pack_checks=10,reversed_z_native_default_verified=True,halo_world_depth_fixed=True,through_walls_bypass_tested=True,depth_pixels=pixels,download_explicit_only=True,download_pinned_size_and_hash=True,download_cancellation=True,assets_bundled=False,actual_asset_download_tested=False,native_gui_visual_tested=False,in_game_tested=False,actual_gpu_tested=False)
+result=dict(version='1.3.12',synthetic_pack_checks=10,reversed_z_native_default_verified=True,hotbar_restore_button=True,hud_selector_removed=True,hud_right_click_hide_removed=True,bottom_hotbar_drag_unblocked=True,hotbar_native_fallback_when_hidden=True,hotbar_gradient_double_fill_removed=True,halo_world_depth_fixed=True,through_walls_bypass_tested=True,depth_pixels=pixels,download_explicit_only=True,download_pinned_size_and_hash=True,download_cancellation=True,assets_bundled=False,actual_asset_download_tested=False,native_gui_visual_tested=False,in_game_tested=False,actual_gpu_tested=False)
 (p/'validation/gui-hotbar-assets.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

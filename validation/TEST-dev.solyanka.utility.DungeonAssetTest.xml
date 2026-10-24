@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="dev.solyanka.utility.DungeonAssetTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:42:38.614Z" hostname="222f7e72-264" time="0.016">
+<testsuite name="dev.solyanka.utility.DungeonAssetTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-24T21:19:24.184Z" hostname="74ce5fce-01b" time="0.013">
   <properties/>
-  <testcase name="beam solutions are six-coordinate pairs and known solver rooms are single tile()" classname="dev.solyanka.utility.DungeonAssetTest" time="0.005"/>
+  <testcase name="beam solutions are six-coordinate pairs and known solver rooms are single tile()" classname="dev.solyanka.utility.DungeonAssetTest" time="0.004"/>
   <testcase name="all Ice Fill variants have valid identifier pairs and routes()" classname="dev.solyanka.utility.DungeonAssetTest" time="0.002"/>
-  <testcase name="bundled room and solver data match pinned Odin bytes()" classname="dev.solyanka.utility.DungeonAssetTest" time="0.009"/>
+  <testcase name="bundled room and solver data match pinned Odin bytes()" classname="dev.solyanka.utility.DungeonAssetTest" time="0.005"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

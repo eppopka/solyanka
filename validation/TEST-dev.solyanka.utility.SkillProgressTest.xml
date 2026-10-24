@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="dev.solyanka.utility.SkillProgressTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:42:39.170Z" hostname="222f7e72-264" time="0.02">
+<testsuite name="dev.solyanka.utility.SkillProgressTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-24T21:19:24.711Z" hostname="74ce5fce-01b" time="0.017">
   <properties/>
-  <testcase name="malformed impossible progress preserves last good snapshot()" classname="dev.solyanka.utility.SkillProgressTest" time="0.005"/>
+  <testcase name="malformed impossible progress preserves last good snapshot()" classname="dev.solyanka.utility.SkillProgressTest" time="0.003"/>
   <testcase name="ratio mode captures gain progress and table-derived level()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
-  <testcase name="level caches do not bleed across skills()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
+  <testcase name="level caches do not bleed across skills()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
   <testcase name="optional timeout uses monotonic time and zero keeps latest()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
   <testcase name="unknown server denominator is preserved without claiming a table level()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
-  <testcase name="table returned to callers cannot mutate future inference()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
+  <testcase name="table returned to callers cannot mutate future inference()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
   <testcase name="MAXED and dungeon alias are recognized()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
-  <testcase name="reset clears snapshot and learned skill data()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
-  <testcase name="all supported skills parse names and have correct table lengths()" classname="dev.solyanka.utility.SkillProgressTest" time="0.005"/>
+  <testcase name="reset clears snapshot and learned skill data()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
+  <testcase name="all supported skills parse names and have correct table lengths()" classname="dev.solyanka.utility.SkillProgressTest" time="0.002"/>
   <testcase name="percent only never fabricates an absolute XP amount without evidence()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
-  <testcase name="formatted unicode and compact quantities are accepted()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
-  <testcase name="menu observations are bounded valid level hints()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
+  <testcase name="formatted unicode and compact quantities are accepted()" classname="dev.solyanka.utility.SkillProgressTest" time="0.003"/>
+  <testcase name="menu observations are bounded valid level hints()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
   <testcase name="percent mode uses observed tab level or earlier ratio()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
   <testcase name="quantity parser handles suffixes and rejects unsafe values()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>

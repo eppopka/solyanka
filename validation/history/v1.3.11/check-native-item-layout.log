@@ -1,0 +1,5 @@
+Fixed native layouts accepted: 6; uniforms=[UniformDescription[name=Globals, type=UNIFORM_BUFFER, gpuFormat=null], UniformDescription[name=DynamicTransforms, type=UNIFORM_BUFFER, gpuFormat=null], UniformDescription[name=Projection, type=UNIFORM_BUFFER, gpuFormat=null], UniformDescription[name=Fog, type=UNIFORM_BUFFER, gpuFormat=null], UniformDescription[name=Lighting, type=UNIFORM_BUFFER, gpuFormat=null]]; samplers=[Sampler0, Sampler1, Sampler2, Sampler3, Sampler4, Sampler5]
+Knife native layouts accepted; samplers=[Sampler0, Sampler2, Sampler3]
+Aura native layouts accepted
+Old layout reproduced: Duplicate bind name 'Globals' in bind group layout 5
+

@@ -35,7 +35,7 @@ public class Cs2FirstPersonMixin {
 			return;
 		}
 		// Replay the draw only when the slot or item type changes, not when the server resends the stack.
-		Object equipKey = player.getInventory().getSelectedSlot() + ":" + itemStack.getItem();
+		Object equipKey = player.getInventory().getSelectedSlot() + ":" + itemStack.getItem()+":"+dev.solyanka.client.cs2.Cs2ItemIdentity.uuid(itemStack);
 		if (Cs2Viewmodel.render(player, player.getMainArm(), swingProgress, equipKey, poseStack, collector, light)) {
 			ci.cancel();
 		}

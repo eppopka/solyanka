@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.ui.PanelInteractionTest" tests="20" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:50:59.090Z" hostname="222f7e72-264" time="0.02">
+  <properties/>
+  <testcase name="oversized panel never gets negative coordinates()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.001"/>
+  <testcase name="new open supersedes pending close()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.0"/>
+  <testcase name="release ends window movement()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.002"/>
+  <testcase name="settings failures are logged without claiming crash diagnosis()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.005"/>
+  <testcase name="close supersedes queued open()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.001"/>
+  <testcase name="header drag never remounts or writes feature settings()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.0"/>
+  <testcase name="drag clamps bottom and right()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.001"/>
+  <testcase name="resize clamps stored position and cancels drag()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.001"/>
+  <testcase name="slider or body click cannot start window drag()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.0"/>
+  <testcase name="resize preserves position where possible()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.0"/>
+  <testcase name="header drag retains grab offset()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.001"/>
+  <testcase name="dispose clears queued work()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.0"/>
+  <testcase name="drag clamps top and left()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.0"/>
+  <testcase name="invalid pointer cannot corrupt state()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.001"/>
+  <testcase name="latest open request wins()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.0"/>
+  <testcase name="right click cannot start window drag()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.0"/>
+  <testcase name="opening only queues navigation()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.001"/>
+  <testcase name="palette construction is lazy and after explicit edit action()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.0"/>
+  <testcase name="screen navigation is deferred until frame boundary()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.003"/>
+  <testcase name="panel starts centered()" classname="dev.solyanka.ui.PanelInteractionTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

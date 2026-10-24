@@ -26,12 +26,12 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     private var cursorX=0;private var cursorY=0
     private var searchBox:FlatTextbox?=null
     private var focusSearch=false
-    private var panel:SettingsPanel?=null
+    private var panel:EmbeddedPanel?=null
     private var toggleError:String?=null
-    private val navigation=PanelNavigation<SettingsPanel>()
+    private val navigation=PanelNavigation<EmbeddedPanel>()
     private var panelPosition:PanelDrag.Point?=null
     private val logger=org.slf4j.LoggerFactory.getLogger("solyanka/gui")
-    fun showPanel(next:SettingsPanel) {navigation.open(next)}
+    fun showPanel(next:EmbeddedPanel) {navigation.open(next)}
     fun closePanel() {navigation.close()}
     private fun commitNavigation() {
         val request=navigation.take() ?: return
@@ -50,7 +50,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
             toggleError="Settings could not open — details in logs/latest.log"
         }
     }
-    private fun panelInput(action:(SettingsPanel)->Unit):Boolean {
+    private fun panelInput(action:(EmbeddedPanel)->Unit):Boolean {
         val current=panel ?: return false
         try {action(current)} catch(e:Exception) {
             logger.error("Settings panel input failed",e);navigation.close()
@@ -107,7 +107,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     override fun drawComponentTooltip(g:GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
         if(panel==null) super.drawComponentTooltip(g,mx,my,delta)
     }
-    override fun getFocused():net.minecraft.client.gui.components.events.GuiEventListener? = panel?.adapter ?: super.getFocused()
+    override fun getFocused():net.minecraft.client.gui.components.events.GuiEventListener? = panel?.focused() ?: super.getFocused()
     override fun extractRenderState(g:GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
         commitNavigation()
         if(focusSearch && panel==null) {
@@ -129,13 +129,14 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
         }
     }
     override fun mouseScrolled(x:Double,y:Double,horizontal:Double,vertical:Double):Boolean {
-        if(panelInput {it.adapter.mouseScrolled(x,y,horizontal,vertical)})return true
+        if(panelInput {it.mouseScrolled(x,y,horizontal,vertical)})return true
         if(!::mainScroll.isInitialized) return super.mouseScrolled(x,y,horizontal,vertical)
         val hovered=categoryScrolls.firstOrNull { it.isInBoundingBox(x,y) }
         return hovered?.onMouseScroll(x,y,vertical*2) ?: mainScroll.onMouseScroll(x,y,vertical*2)
     }
     override fun keyPressed(event:KeyEvent):Boolean {
         if(event.key()==GLFW.GLFW_KEY_F && event.modifiers() and GLFW.GLFW_MOD_CONTROL != 0) {
+            (panel as? dev.solyanka.client.ui.KnifeBrowserPanel)?.let {it.focusSearch();return true}
             navigation.close();focusSearch=true;return true
         }
         if(panelInput {it.keyPressed(event)})return true

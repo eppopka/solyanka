@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/camberX/Stray",
+  "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+  "license": "CC0-1.0",
+  "files": {
+    "Cs2KnifeScreen.java": "23844fe486379f7aaacc623364e309d54df1c23bc9bdcc5da838aa2880a78a10",
+    "SoftwareRender.java": "170e81229e9bf29161a0a8f7b05de6be2e3b659eabf2347c66b49e8e8cdb8be5",
+    "HeldItemShader.java": "60f54bc8093e14228037f7f9f5e301a1b5fd93dc03753eb6a9f2b5a22079816c",
+    "AvatarRendererMixin.java": "8c4a88f2ebb6f5675384ae6e25e23147a38065590b4deed5600354a4a2e295cd"
+  }
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.InputPolicyTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:50:59.783Z" hostname="222f7e72-264" time="0.009">
+  <properties/>
+  <testcase name="tab context does not reuse missing or dead class data()" classname="dev.solyanka.utility.InputPolicyTest" time="0.003"/>
+  <testcase name="container opt in works globally or per bind()" classname="dev.solyanka.utility.InputPolicyTest" time="0.001"/>
+  <testcase name="modifier matching ignores lock keys but not extra modifiers()" classname="dev.solyanka.utility.InputPolicyTest" time="0.0"/>
+  <testcase name="island and class filters are case insensitive and fail closed()" classname="dev.solyanka.utility.InputPolicyTest" time="0.0"/>
+  <testcase name="empty filter lists do not require context()" classname="dev.solyanka.utility.InputPolicyTest" time="0.0"/>
+  <testcase name="offline or unfocused input never fires()" classname="dev.solyanka.utility.InputPolicyTest" time="0.0"/>
+  <testcase name="tab context parser finds area and exact player class()" classname="dev.solyanka.utility.InputPolicyTest" time="0.001"/>
+  <testcase name="keyboard and mouse identities cannot collide()" classname="dev.solyanka.utility.InputPolicyTest" time="0.0"/>
+  <testcase name="enabled key in focused world matches()" classname="dev.solyanka.utility.InputPolicyTest" time="0.0"/>
+  <testcase name="anvils other screens and focused text are always blocked()" classname="dev.solyanka.utility.InputPolicyTest" time="0.001"/>
+  <testcase name="disabled unbound and different keys never match()" classname="dev.solyanka.utility.InputPolicyTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

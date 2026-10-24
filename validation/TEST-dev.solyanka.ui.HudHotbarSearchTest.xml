@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="dev.solyanka.ui.HudHotbarSearchTest" tests="22" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:42:38.119Z" hostname="222f7e72-264" time="0.079">
+<testsuite name="dev.solyanka.ui.HudHotbarSearchTest" tests="22" skipped="0" failures="0" errors="0" timestamp="2026-10-24T21:19:23.663Z" hostname="74ce5fce-01b" time="0.086">
   <properties/>
-  <testcase name="selection moves smoothly without overshooting and resets on stalls()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.002"/>
-  <testcase name="style presets are visibly distinct and preserve layout()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
+  <testcase name="selection moves smoothly without overshooting and resets on stalls()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
+  <testcase name="style presets are visibly distinct and preserve layout()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.0"/>
   <testcase name="hotbar geometry contains all slots and optional side cells()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.003"/>
-  <testcase name="vertical geometry transposes horizontal positions()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.0"/>
-  <testcase name="aura uses reverse Z compare without writing hand depth()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.003"/>
-  <testcase name="selection interpolation reaches exact end slots()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
-  <testcase name="knife source is explicit and old configs default to offline safe auto()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
-  <testcase name="halo and fills respect reversed scene depth and preserve explicit bypass()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.008"/>
-  <testcase name="no enabled modules means empty editor without changing catalog()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.016"/>
+  <testcase name="vertical geometry transposes horizontal positions()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
+  <testcase name="aura uses reverse Z compare without writing hand depth()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.0"/>
+  <testcase name="selection interpolation reaches exact end slots()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.0"/>
+  <testcase name="knife source is explicit and old configs default to offline safe auto()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.002"/>
+  <testcase name="halo and fills respect reversed scene depth and preserve explicit bypass()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.009"/>
+  <testcase name="no enabled modules means empty editor without changing catalog()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
   <testcase name="search shortcut is handled before modal input and focus is deferred()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.003"/>
   <testcase name="route progress switch also filters editor()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
-  <testcase name="old hotbar settings retain vanilla safe defaults()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.003"/>
-  <testcase name="HUD position numbers replaced by direct editor navigation()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.004"/>
-  <testcase name="every style and layout roundtrips()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.015"/>
-  <testcase name="every HUD owner resolves to a registered module()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.002"/>
+  <testcase name="old hotbar settings retain vanilla safe defaults()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
+  <testcase name="HUD position numbers replaced by direct editor navigation()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.003"/>
+  <testcase name="every style and layout roundtrips()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.04"/>
+  <testcase name="every HUD owner resolves to a registered module()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.004"/>
   <testcase name="one module exposes only its own enabled HUDs()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
-  <testcase name="HUD editor handles empty selection and disappearance()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.0"/>
-  <testcase name="search suggestion clears when typing and mentions shortcut()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.0"/>
-  <testcase name="hotbar native decorations survive and followers do not reset animation()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.0"/>
+  <testcase name="HUD editor handles empty selection and disappearance()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
+  <testcase name="search suggestion clears when typing and mentions shortcut()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
+  <testcase name="hotbar native decorations survive and followers do not reset animation()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
   <testcase name="hidden sub HUD stays out even when parent is enabled()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
   <testcase name="style validation rejects malformed ranges()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.0"/>
-  <testcase name="download UI requires confirmation and exposes cancellation()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.003"/>
+  <testcase name="download UI requires confirmation and exposes cancellation()" classname="dev.solyanka.ui.HudHotbarSearchTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

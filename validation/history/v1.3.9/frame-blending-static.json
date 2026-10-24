@@ -1,0 +1,23 @@
+{
+  "translated_glsl_compiled": true,
+  "linked": true,
+  "uniform_block_bytes": 64,
+  "pixel_cases": 16,
+  "failures": [],
+  "spatial_orientation_checked": true,
+  "software_backend": "Chromium SwiftShader",
+  "native_gpu_tested": false,
+  "version": "1.3.9",
+  "source_hashes_verified": true,
+  "history_budget_bytes": 100663296,
+  "history_max_targets": 24,
+  "sampler_limit": 12,
+  "raw_frame_capture_before_composite": true,
+  "gui_band_cache_limit": 128,
+  "feature_list_visible_behind_settings": true,
+  "gui_fps_measured_in_game": false,
+  "inventory_classic_style_adapted": true,
+  "inventory_frost_blur_ported": false,
+  "minecraft_launched_here": false,
+  "sodium_iris_tested_here": false
+}

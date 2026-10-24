@@ -11,8 +11,8 @@ data class ItemAuraSettings(val style:Int=1,val shape:Int=3,val count:Int=20,val
  }
 }
 
-data class Cs2KnifeSettings(val source:String="auto",val path:String="",val knife:String="weapon_knife_karambit",val finish:String="",val seed:Int=0,val wear:Double=.05,val applyTo:String="weapons",val animations:Boolean=true,val inspectKey:Int=70,val thirdPerson:Boolean=true,val offsetX:Double=0.0,val offsetY:Double=0.0,val distance:Double=0.0) {
- fun validate() {require(source in listOf("auto","install","pack"));require(path.length<=4096 && knife.matches(Regex("[a-zA-Z0-9_]{1,128}")) && finish.matches(Regex("[a-zA-Z0-9_]{0,128}")))
+data class Cs2KnifeSettings(val source:String="auto",val path:String="",val knife:String="weapon_knife_karambit",val finish:String="",val seed:Int=0,val wear:Double=.05,val applyTo:String="weapons",val animations:Boolean=true,val inspectKey:Int=70,val thirdPerson:Boolean=true,val offsetX:Double=0.0,val offsetY:Double=0.0,val distance:Double=0.0,val bindings:List<KnifeItemBinding> = emptyList()) {
+ fun validate() {KnifeBindings.validate(bindings);require(source in listOf("auto","install","pack"));require(path.length<=4096 && knife.matches(Regex("[a-zA-Z0-9_]{1,128}")) && finish.matches(Regex("[a-zA-Z0-9_]{0,128}")))
   require(seed in 0..1000 && wear.isFinite() && wear in 0.0..1.0 && applyTo in listOf("weapons","held","empty") && inspectKey in -1..348)
   listOf(offsetX,offsetY,distance).forEach {require(it.isFinite() && it in -2.0..2.0)}
  }

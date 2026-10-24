@@ -1,3 +1,25 @@
+# 1.3.12
+
+- Added embedded searchable CS2 knife/finish-photo browser, composed preview, seed/wear controls and View tab.
+- Added Item Bindings: persistent per-item custom-data UUID knife/finish/seed/wear profiles, explicit edit/global modes and safe loading transitions.
+- Added optional first-person Hand / Arm Held Item Shader hook; existing hand-side gates and default-off behavior retained.
+- Preserved advanced asset setup/download behind Assets / More, instant saving and visible module list.
+- 640 JVM tests and 22 offline validation scripts passed. Native in-game visual acceptance remains pending; see docs/FEATURES_1.3.12.md.
+
+# 1.3.11
+
+- Replaced the approximate hotbar painter with the supplied original HotbarPainter and GlassRenderer implementations.
+- Adopted original auxiliary geometry, floating-point selection, glass coating/sheen, rounded ring borders, clipped gradients, shimmer and whole-panel effects.
+- Added opt-in 960x540 reference sizing with editor scale conversion; retained legacy coordinates and all recovery fixes.
+- Added original-source parity/provenance tests. No AetherOSSettings or unrelated archive modules imported.
+
+# 1.3.10
+
+- Removed Selected HUD and right-click hiding; moved editor controls away from the bottom hotbar.
+- Added Restore Hotbar, safe native fallback for old hidden hotbars, fitted effective scaling and impl.zip appearance defaults.
+- Style changes retain appearance controls; gradients no longer composite over a second opaque background layer.
+- Exact original painter is still unavailable from the supplied archive; see release scope.
+
 # 1.3.9
 
 - Fixed reversed-Z depth testing for Halo, China Hat triangles and shared filled world overlays. Through Walls remains an explicit bypass.

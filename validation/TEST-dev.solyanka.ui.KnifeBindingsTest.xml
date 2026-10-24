@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.ui.KnifeBindingsTest" tests="20" skipped="0" failures="0" errors="0" timestamp="2026-10-24T21:19:23.802Z" hostname="74ce5fce-01b" time="0.05">
+  <properties/>
+  <testcase name="binding array has strict outer type and bounded size()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.002"/>
+  <testcase name="canonical UUID accepts dashed and undashed case insensitively()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.0"/>
+  <testcase name="native hand hook is narrowly scoped and uses original player skin()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.0"/>
+  <testcase name="choice key matches Java rounding used for composed skin cache()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.005"/>
+  <testcase name="hand shader defaults off and respects both side gates()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.003"/>
+  <testcase name="all binding fields round trip through feature codec()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.008"/>
+  <testcase name="binding config survives save and reload without enabling modules()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.011"/>
+  <testcase name="preview uses real asset photos and original software renderer()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.002"/>
+  <testcase name="disabled binding falls back without deleting saved choice()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.0"/>
+  <testcase name="browser is embedded searchable and contains item bindings tab()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.0"/>
+  <testcase name="invalid binding fields are rejected before saving()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.0"/>
+  <testcase name="binding count is bounded()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.002"/>
+  <testcase name="unbound or missing UUID selects global defaults()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.0"/>
+  <testcase name="malformed identity never resolves()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.0"/>
+  <testcase name="bindings retain skin wear and seed together()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.002"/>
+  <testcase name="two items of same type can select different knife models()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.0"/>
+  <testcase name="wrong previous knife cannot render while new UUID model loads()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.002"/>
+  <testcase name="legacy config loads with no bindings and no arm shader()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.002"/>
+  <testcase name="preview work is bounded serialized and does not replace live knife()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.002"/>
+  <testcase name="duplicate UUID aliases rejected()" classname="dev.solyanka.ui.KnifeBindingsTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

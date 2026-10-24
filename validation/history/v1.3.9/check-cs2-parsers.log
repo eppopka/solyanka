@@ -1,0 +1,2 @@
+8 synthetic parser checks passed: LZ4 literals/overlap, KV1, BC1, VPK index/read/miss, Zstd
+

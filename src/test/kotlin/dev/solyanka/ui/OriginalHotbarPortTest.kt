@@ -1,0 +1,21 @@
+/* SPDX-License-Identifier: GPL-3.0-only */
+package dev.solyanka.ui
+import dev.solyanka.utility.*
+import dev.solyanka.utility.archivehotbar.HotbarViewport
+import dev.solyanka.utility.archivehotbar.HotbarSelection as OriginalSelection
+import java.nio.file.Path
+import kotlin.test.*
+import org.junit.jupiter.api.Test
+class OriginalHotbarPortTest {
+ private fun text(s:String)=Path.of(s).toFile().readText()
+ @Test fun `original painter implementation is unchanged beyond package and imports`() {val a=text("audit/original-hotbar-source/HotbarPainter.kt").substringAfter("object HotbarPainter");val b=text("src/client/kotlin/dev/solyanka/client/feature/hotbar/HotbarPainter.kt").substringAfter("object HotbarPainter");assertEquals(a,b)}
+ @Test fun `original glass renderer implementation is unchanged`() {assertEquals(text("audit/original-hotbar-source/GlassRenderer.kt").substringAfter("object GlassRenderer"),text("src/client/kotlin/dev/solyanka/client/feature/hotbar/GlassRenderer.kt").substringAfter("object GlassRenderer"))}
+ @Test fun `original pure helpers unchanged beyond package`() {assertEquals(text("audit/original-hotbar-source/HotbarLayout.kt").substringAfter("import kotlin.math.exp"),text("src/main/kotlin/dev/solyanka/utility/archivehotbar/HotbarLayout.kt").substringAfter("import kotlin.math.exp"))}
+ @Test fun `shared integer geometry agrees with original including auxiliary gaps`() {for(style in listOf("vanilla","minimal","glass","neon"))for(vertical in listOf(false,true))for(off in listOf(false,true))for(before in listOf(false,true))for(attack in listOf(false,true)){val s=MoveHotbarSettings(style=style,vertical=vertical);val a=HotbarLayout.originalGeometry(s,off,before,attack);val b=HotbarLayout.geometry(s,off,before,attack);assertEquals(a.width.toInt(),b.width);assertEquals(a.height.toInt(),b.height);for(i in 0..8){assertEquals(a.slot(i.toFloat()).x.toInt(),b.slots[i].x);assertEquals(a.slot(i.toFloat()).y.toInt(),b.slots[i].y)}}}
+ @Test fun `auxiliary uses four pixel gap not padded extra panel`() {val s=MoveHotbarSettings(style="glass",padding=12,slotGap=10);val a=HotbarLayout.geometry(s,true,true,true);val b=HotbarLayout.geometry(s);assertEquals(52,a.width-b.width);assertEquals(12,a.offhand!!.x);assertEquals(38,a.slots[0].x)}
+ @Test fun `viewport uses original 960 by 540 reference and retains aspect`() {val a=HotbarViewport.fromGui(960,540);assertEquals(1f,a.scale);val b=HotbarViewport.fromGui(480,270);assertEquals(.5f,b.scale);assertEquals(960f,b.width);assertEquals(540f,b.height);val c=HotbarViewport.fromGui(1200,540);assertEquals(1f,c.scale);assertEquals(1200f,c.width)}
+ @Test fun `reference sizing is opt in for old configs and enabled by original defaults`() {assertFalse(FeatureCodec.decode(com.google.gson.JsonObject()).moveHotbar.referenceSizing);val s=HotbarLayout.archiveDefaults(MoveHotbarSettings());assertTrue(s.referenceSizing);assertEquals(.5,HotbarLayout.referenceScale(s,480,270));val a=HotbarLayout.editorHud(s,480,270);assertEquals(.5,a.scale);assertEquals(1.0,s.hud.scale)}
+ @Test fun `reference sized dragging preserves requested scale and resizing converts units`() {val f=FeatureSettings(moveHotbar=HotbarLayout.archiveDefaults(MoveHotbarSettings()));val d=HudLayout.update(f,"archive.hotbar",480,270){it.copy(x=40,y=60)};assertEquals(1.0,d.moveHotbar.hud.scale);assertEquals(40,d.moveHotbar.hud.x);val r=HudLayout.update(f,"archive.hotbar",480,270){it.copy(scale=.75)};assertEquals(1.5,r.moveHotbar.hud.scale);r.validate()}
+ @Test fun `original selection smooths to target and supports explicit reset`() {val s=OriginalSelection();assertEquals(0f,s.update(0,0f,16f,true));val p=s.update(8,.016f,16f,true);assertTrue(p>0&&p<8);repeat(200){s.update(8,.016f,16f,true)};assertEquals(8f,s.value);s.reset();assertEquals(3f,s.update(3,.016f,16f,true))}
+ @Test fun `excluded global settings never become hotbar runtime dependency`() {for(path in listOf("HotbarPainter.kt","GlassRenderer.kt","HotbarPrimitives.kt"))assertFalse("AetherOSSettings" in text("src/client/kotlin/dev/solyanka/client/feature/hotbar/$path"));assertFalse("AetherOSSettings" in text("src/client/kotlin/dev/solyanka/client/feature/VanillaHotbar.kt"));assertTrue("HotbarPainter.selection(g,layout.slot(selected),look)" in text("src/client/kotlin/dev/solyanka/client/feature/VanillaHotbar.kt"))}
+}

@@ -9,12 +9,13 @@ object HeldItemUi {
    val s=model.general.features.heldItem
    fun update(block:(HeldItemSettings)->HeldItemSettings) {model.updateGeneral {it.copy(features=it.features.copy(heldItem=block(it.features.heldItem)))};panel.refreshStatus()}
    buildList {
-    add(GuiKit.description(w,"Stray Smoke, Stars, Portal and Galaxy shaders for first-person item quads. Item Name HUD is separate. Vanilla glint remains. Does not replace arms, maps or special model renderers; silhouette post-outline is not ported. No server/item changes. /solyanka helditemstatus reports readiness and replacement counts."))
+    add(GuiKit.description(w,"Stray Smoke, Stars, Portal and Galaxy shaders for first-person item quads. Item Name HUD is separate. Vanilla glint remains. Optional first-person hand/arm shader; does not replace maps or special item model renderers; silhouette post-outline is not ported. No server/item changes. /solyanka helditemstatus reports readiness and replacement counts."))
     add(GuiKit.choiceRow(w,"Effect",HeldItemPolicy.labels,HeldItemPolicy.styles.indexOf(s.style),readCurrent={HeldItemPolicy.styles.indexOf(model.general.features.heldItem.style)}) {i->update {it.copy(style=HeldItemPolicy.styles[i])}})
     add(GuiKit.colorRow(w,"Tint (RGB)",s.color) {v->update {it.copy(color=v)}})
     add(GuiKit.sliderRow(w,"Fill",s.fill,NumberRange(.08,.85,.01),"Tint strength; Portal/Galaxy also use this for transparency.") {v->update {it.copy(fill=v)}})
     add(GuiKit.sliderRow(w,"Intensity",s.intensity,NumberRange(.1,1.5,.05)) {v->update {it.copy(intensity=v)}})
     add(GuiKit.sliderRow(w,"Animation Speed",s.speed,NumberRange(0.0,4.0,.05),"0 freezes shader time; visual only.") {v->update {it.copy(speed=v)}})
+    add(GuiKit.toggleRow(w,"Apply to Hand / Arm",s.arms) {v->update {it.copy(arms=v)}})
     add(GuiKit.toggleRow(w,"Right Hand",s.rightHand) {v->update {it.copy(rightHand=v)}})
     add(GuiKit.toggleRow(w,"Left Hand",s.leftHand) {v->update {it.copy(leftHand=v)}})
    }

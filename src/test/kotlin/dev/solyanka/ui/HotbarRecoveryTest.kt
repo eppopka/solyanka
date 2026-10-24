@@ -1,0 +1,17 @@
+/* SPDX-License-Identifier: GPL-3.0-only */
+package dev.solyanka.ui
+import dev.solyanka.utility.*
+import java.nio.file.Path
+import kotlin.test.*
+import org.junit.jupiter.api.Test
+class HotbarRecoveryTest {
+ private fun source(path:String)=Path.of("src/client/kotlin/dev/solyanka/client/$path").toFile().readText()
+ @Test fun `selector removed and right click cannot hide HUDs`() {val s=source("ui/HudEditorScreen.kt");assertFalse("Selected HUD" in s);assertFalse("selectionButton" in s);assertFalse("enabled=!it.enabled" in s);assertTrue("RMB: select" in s)}
+ @Test fun `recovery is available in editor and settings without selecting invisible HUD`() {for(path in listOf("ui/HudEditorScreen.kt","ui/HotbarUi.kt")){val s=source(path);assertTrue("Restore Hotbar" in s);assertTrue("HotbarLayout.restore(" in s)}}
+ @Test fun `restore shows and centers hotbar without changing appearance`() {val s=MoveHotbarSettings(customPosition=true,hud=HudSpec(enabled=false,x=9999,y=9999,scale=4.0),style="neon",backgroundOpacity=.33,keepOnScreen=false);val n=HotbarLayout.restore(s);n.validate();assertTrue(n.hud.enabled);assertFalse(n.customPosition);assertTrue(n.keepOnScreen);assertEquals(1.0,n.hud.scale);assertEquals(s.style,n.style);assertEquals(s.backgroundOpacity,n.backgroundOpacity);assertTrue(HudLayout.visibleEntries(FeatureSettings(moveHotbar=n),setOf("custom.move_hotbar")).any {it.key=="archive.hotbar"})}
+ @Test fun `archive appearance reset matches declared defaults without moving layout`() {val s=MoveHotbarSettings(customPosition=true,hud=HudSpec(x=34,y=70,scale=1.5),style="neon",glow=false,slotGap=10);val n=HotbarLayout.archiveDefaults(s);assertEquals("glass",n.style);assertTrue(n.glow);assertTrue(n.shadow);assertTrue(n.gradient);assertEquals(.7,n.backgroundOpacity);assertEquals(2,n.slotGap);assertEquals(3,n.padding);assertEquals(s.hud,n.hud);assertFalse(n.moveItemName);n.validate()}
+ @Test fun `large custom hotbars are fitted for ordinary GUI sizes and both orientations`() {for(w in listOf(320,640,960))for(h in listOf(240,360,540))for(vertical in listOf(false,true)){val s=MoveHotbarSettings(customPosition=true,hud=HudSpec(x=9999,y=9999,scale=4.0),style="glass",vertical=vertical,slotGap=10,padding=12,effectRadius=12);val g=HotbarLayout.geometry(s,true,true,true);val a=HotbarLayout.anchor(s,w,h,g);assertTrue(a.scale<=s.hud.scale);assertTrue(a.x>=0 && a.y>=0);assertTrue(a.x+g.width*a.scale<=w+1,"$w $h $vertical $a");assertTrue(a.y+g.height*a.scale<=h+1,"$w $h $vertical $a");assertEquals(4.0,s.hud.scale)}}
+ @Test fun `hidden old config delegates original native HUD instead of suppressing it`() {val s=source("feature/VanillaHotbar.kt");val fallback=s.substringBefore("else if(s.hud.enabled");assertTrue("|| !s.hud.enabled" in fallback);assertTrue("original.extractRenderState(g,d)" in fallback);assertTrue("scale(at.scale.toFloat(),at.scale.toFloat())" in s)}
+ @Test fun `editor controls do not block dragging a bottom aligned hotbar`() {val s=source("ui/HudEditorScreen.kt");assertFalse("y()>=height-43" in s);assertFalse("y>=height-43" in s);assertTrue("Positioning.absolute((width-175).coerceAtLeast(0),28)" in s);assertTrue("click.y() in 28.0..51.0" in s)}
+ @Test fun `style selection preserves settings and translucent gradient avoids double fill`() {val ui=source("ui/HotbarUi.kt");assertFalse("HotbarLayout.preset(" in ui);assertTrue("Use Original Hotbar Defaults" in ui);assertFalse("toggle(\"HUD Visible\"" in ui);assertTrue("HotbarPainter.background(g,layout,look,seconds)" in source("feature/VanillaHotbar.kt"))}
+}

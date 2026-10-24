@@ -31,6 +31,7 @@ object HeldItemCosmetic {
  @Volatile private var status="Not prepared"
  @Volatile private var eligible=0L
  @Volatile private var replacements=0L
+ @Volatile private var armReplacements=0L
  @Volatile private var notReady=0L
  @Volatile private var incompatible=0L
  private var announced=false
@@ -46,12 +47,12 @@ object HeldItemCosmetic {
  }
  private val pipeline get()=pipelineDelegate.value
  fun register() {pipelineDelegate.value}
- fun retry() {ready=false;failed=false;compiled=false;eligible=0;replacements=0;notReady=0;incompatible=0;announced=false;status="Waiting for world render"}
+ fun retry() {ready=false;failed=false;compiled=false;eligible=0;replacements=0;armReplacements=0;notReady=0;incompatible=0;announced=false;status="Waiting for world render"}
  fun suspend() {ready=false;cleanup=true;status="Disabled"}
  fun requestCleanup() {ready=false;cleanup=true}
  fun diagnostics():String {
   val s=S.currentGeneral().features.heldItem
-  return "Held Item: enabled=${S.isEnabled(S.HELD_ITEM)}, effect=${s.style}, right=${s.rightHand}, left=${s.leftHand}, ready=$ready, status=$status, eligible=$eligible, replaced=$replacements, notReady=$notReady, incompatible=$incompatible"
+  return "Held Item: enabled=${S.isEnabled(S.HELD_ITEM)}, effect=${s.style}, right=${s.rightHand}, left=${s.leftHand}, arms=${s.arms}, armReplacements=$armReplacements, ready=$ready, status=$status, eligible=$eligible, replaced=$replacements, notReady=$notReady, incompatible=$incompatible"
  }
  /** Before GameRenderer.renderLevel creates/prepares first-person draws. No dependency on client ticks. */
  fun prepareFrame() {
@@ -101,6 +102,19 @@ object HeldItemCosmetic {
    .withTexture("Sampler3",AbstractEndPortalRenderer.END_SKY_LOCATION).withTexture("Sampler4",AbstractEndPortalRenderer.END_PORTAL_LOCATION)
    .withTexture("Sampler5",configId).useLightmap().affectsCrumbling().setOutline(RenderSetup.OutlineProperty.NONE).createRenderSetup())
   types[atlas]=type;replaced();return type
+ }
+ /** AvatarRenderer.renderHand only: no third-person player recoloring. */
+ @Synchronized @JvmStatic fun wrapArm(original:RenderType,skin:Identifier,right:Boolean):RenderType {
+  val s=S.currentGeneral().features.heldItem
+  if(!S.isEnabled(S.HELD_ITEM) || !HeldItemPolicy.arm(right,s) || !ready)return original
+  if(original.pipeline().vertexFormatBindings.firstOrNull()!=DefaultVertexFormat.ENTITY || original.pipeline().primitiveTopology!=PrimitiveTopology.QUADS)return original
+  types[skin]?.let {armReplacements++;return it}
+  if(types.size>=64)return original
+  val type=RenderType.create("solyanka_hand_shader",RenderSetup.builder(pipeline)
+   .withTexture("Sampler0",skin).withTexture("Sampler1",ItemFeatureRenderer.ENCHANTED_GLINT_ITEM)
+   .withTexture("Sampler3",AbstractEndPortalRenderer.END_SKY_LOCATION).withTexture("Sampler4",AbstractEndPortalRenderer.END_PORTAL_LOCATION)
+   .withTexture("Sampler5",configId).useLightmap().setOutline(RenderSetup.OutlineProperty.NONE).createRenderSetup())
+  types[skin]=type;armReplacements++;return type
  }
  private fun replaced() {
   replacements++

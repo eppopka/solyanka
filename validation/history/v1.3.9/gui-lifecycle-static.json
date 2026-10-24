@@ -1,0 +1,17 @@
+{
+  "version": "1.3.9",
+  "navigation_deferred": true,
+  "new_panel_mounted_before_old_disposal": true,
+  "title_bar_drag": true,
+  "drag_does_not_remount": true,
+  "palette_created_on_demand": true,
+  "transparent_world_background": true,
+  "instant_save_preserved": true,
+  "ui_errors_logged": true,
+  "held_item_crash_report_received": true,
+  "held_item_root_cause_confirmed": true,
+  "held_item_crash_reproduced": false,
+  "crash_fix_verified": false,
+  "minecraft_gui_launched_here": false,
+  "visual_in_game_acceptance": false
+}

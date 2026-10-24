@@ -18,10 +18,10 @@ for cls in ['net.minecraft.client.gui.components.ChatComponent$DrawingBackground
  text=dump(cls);assert 'GuiGraphicsExtractor.fill:(IIIII)V' in text and 'handleTagIcon(' in text and 'handleTag(' in text
 assert 'ScreenRectangle.transformAxisAligned:' in dump('net.minecraft.client.gui.GuiGraphicsExtractor')
 verify('net.minecraft.world.scores.TeamColor','displaySlot','()Lnet/minecraft/world/scores/DisplaySlot;')
-jar=p/'build/libs/solyanka-1.3.9.jar'
+jar=p/'build/libs/solyanka-1.3.12.jar'
 mod=subprocess.check_output(['java','-m','jdk.jdeps/com.sun.tools.javap.Main','-p','-c','-classpath',str(jar),'dev.solyanka.client.mixin.ThemedChatMixin'],text=True)
 assert mod.count('ThemedChat.end:(Z)V')>=2 and 'Exception table:' in mod
-reg=json.loads((p/'src/main/resources/solyanka.client.mixins.json').read_text())['client'];assert len(reg)==44
+reg=json.loads((p/'src/main/resources/solyanka.client.mixins.json').read_text())['client'];assert len(reg)==45
 source=p/'src/client/kotlin/dev/solyanka/client'
 assert 'handleTag' not in (source/'mixin/ThemedChatFillMixin.kt').read_text()
 assert 'setRectangle' not in (source/'feature/ThemedChat.kt').read_text()

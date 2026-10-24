@@ -1,0 +1,30 @@
+[
+  {
+    "kind": "field",
+    "class": "net/minecraft/client/renderer/RenderPipelines",
+    "name": "LINES_SNIPPET",
+    "descriptor": "Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;",
+    "static_member_exists": true
+  },
+  {
+    "kind": "method",
+    "class": "net/minecraft/client/renderer/RenderPipelines",
+    "name": "register",
+    "descriptor": "(Lcom/mojang/blaze3d/pipeline/RenderPipeline;)Lcom/mojang/blaze3d/pipeline/RenderPipeline;",
+    "static_member_exists": true
+  },
+  {
+    "kind": "method",
+    "class": "net/minecraft/client/renderer/rendertype/RenderType",
+    "name": "create",
+    "descriptor": "(Ljava/lang/String;Lnet/minecraft/client/renderer/rendertype/RenderSetup;)Lnet/minecraft/client/renderer/rendertype/RenderType;",
+    "static_member_exists": true
+  },
+  {
+    "kind": "field",
+    "class": "net/minecraft/client/renderer/RenderPipelines",
+    "name": "DEBUG_FILLED_SNIPPET",
+    "descriptor": "Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;",
+    "static_member_exists": true
+  }
+]

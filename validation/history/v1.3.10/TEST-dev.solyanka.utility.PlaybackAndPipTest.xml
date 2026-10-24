@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.PlaybackAndPipTest" tests="17" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:50:59.862Z" hostname="222f7e72-264" time="0.009">
+  <properties/>
+  <testcase name="source classic palette is explicit and preserves layout and behavior()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.001"/>
+  <testcase name="scoreboard removes decorative title and matching editor padding()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.0"/>
+  <testcase name="float clock packed exactly through native ARGB into RGBA()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.001"/>
+  <testcase name="native shader consumes local phase not world clock()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.0"/>
+  <testcase name="same application other window is never auto selected()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.001"/>
+  <testcase name="local clock matches native twenty minute phase units()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.0"/>
+  <testcase name="zero speed freezes at current phase and resumes smoothly()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.001"/>
+  <testcase name="clock texture rejects invalid phases()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.0"/>
+  <testcase name="capture titles are UI labels not lifetime guards()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.0"/>
+  <testcase name="disabled samples freeze then resume without catchup()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.0"/>
+  <testcase name="local phase never loops at native clock boundary()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.0"/>
+  <testcase name="unknown creation time keeps handle PID guards()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.0"/>
+  <testcase name="identity survives title change by not storing title()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.0"/>
+  <testcase name="reused window or process ID cannot replace known lifetime()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.0"/>
+  <testcase name="nanoTime negative origin and signed wrap supported()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.0"/>
+  <testcase name="clock rejects nonfinite and invalid speed()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.001"/>
+  <testcase name="speed edits change velocity without snapping phase()" classname="dev.solyanka.utility.PlaybackAndPipTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

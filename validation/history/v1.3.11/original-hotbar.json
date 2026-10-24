@@ -1,0 +1,13 @@
+{
+  "version": "1.3.11",
+  "original_painter_body_equal": true,
+  "original_rounded_renderer_body_equal": true,
+  "original_pure_helpers_equal": true,
+  "source_hashes_verified": true,
+  "compiled_painter_wiring_verified": true,
+  "archive_reference_sizing_opt_in": true,
+  "excluded_global_settings_not_imported": true,
+  "native_visual_tested": false,
+  "in_game_tested": false,
+  "gpu_performance_tested": false
+}

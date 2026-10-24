@@ -1,0 +1,20 @@
+[
+  {
+    "part": "cs2.pack.00",
+    "status": 200,
+    "url": "https://raw.githubusercontent.com/camberX/Stray/cs2-data/cs2.pack.00",
+    "content_length": "45000000"
+  },
+  {
+    "part": "cs2.pack.01",
+    "status": 200,
+    "url": "https://raw.githubusercontent.com/camberX/Stray/cs2-data/cs2.pack.01",
+    "content_length": "45000000"
+  },
+  {
+    "part": "cs2.pack.02",
+    "status": 200,
+    "url": "https://raw.githubusercontent.com/camberX/Stray/cs2-data/cs2.pack.02",
+    "content_length": "44557137"
+  }
+]

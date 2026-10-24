@@ -1,0 +1,15 @@
+{
+  "version": "1.3.11",
+  "reported_version": "1.3.0",
+  "dependency_version": "owo 0.13.1+26.2",
+  "dependency_unguarded_style_call_confirmed": true,
+  "compiled_local_fallback_to_empty_style": true,
+  "non_null_style_retained": true,
+  "normal_tooltip_rendering_inherited": true,
+  "global_mixin_added": false,
+  "crash_report_received": true,
+  "reported_null_path_addressed": true,
+  "live_crash_reproduced": false,
+  "in_game_fix_confirmed": false,
+  "raw_user_report_bundled": false
+}

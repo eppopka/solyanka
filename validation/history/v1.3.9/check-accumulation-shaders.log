@@ -1,0 +1,20 @@
+{
+  "translation": "Desktop GLSL 330 to ES 300 with precision declarations; native screenquad vertex shader unchanged apart from ES version",
+  "software_backend": "Chromium SwiftShader",
+  "reports": [
+    {
+      "mode": "accum_mix",
+      "compiled": true,
+      "linked": true
+    },
+    {
+      "mode": "accum_max",
+      "compiled": true,
+      "linked": true
+    }
+  ],
+  "pixel_tests": 24,
+  "pixel_failures": [],
+  "minecraft_pipeline_tested": false,
+  "actual_gpu_tested": false
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.ui.OriginalHotbarPortTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-24T21:19:23.852Z" hostname="74ce5fce-01b" time="0.012">
+  <properties/>
+  <testcase name="original selection smooths to target and supports explicit reset()" classname="dev.solyanka.ui.OriginalHotbarPortTest" time="0.001"/>
+  <testcase name="original glass renderer implementation is unchanged()" classname="dev.solyanka.ui.OriginalHotbarPortTest" time="0.001"/>
+  <testcase name="viewport uses original 960 by 540 reference and retains aspect()" classname="dev.solyanka.ui.OriginalHotbarPortTest" time="0.001"/>
+  <testcase name="original pure helpers unchanged beyond package()" classname="dev.solyanka.ui.OriginalHotbarPortTest" time="0.0"/>
+  <testcase name="original painter implementation is unchanged beyond package and imports()" classname="dev.solyanka.ui.OriginalHotbarPortTest" time="0.001"/>
+  <testcase name="reference sized dragging preserves requested scale and resizing converts units()" classname="dev.solyanka.ui.OriginalHotbarPortTest" time="0.003"/>
+  <testcase name="auxiliary uses four pixel gap not padded extra panel()" classname="dev.solyanka.ui.OriginalHotbarPortTest" time="0.0"/>
+  <testcase name="excluded global settings never become hotbar runtime dependency()" classname="dev.solyanka.ui.OriginalHotbarPortTest" time="0.001"/>
+  <testcase name="reference sizing is opt in for old configs and enabled by original defaults()" classname="dev.solyanka.ui.OriginalHotbarPortTest" time="0.002"/>
+  <testcase name="shared integer geometry agrees with original including auxiliary gaps()" classname="dev.solyanka.ui.OriginalHotbarPortTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

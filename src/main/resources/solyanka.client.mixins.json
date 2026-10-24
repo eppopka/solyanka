@@ -46,7 +46,8 @@
     "RotatingItemMixin",
     "Cs2FirstPersonMixin",
     "Cs2ThirdPersonMixin",
-    "ItemAuraPassMixin"
+    "ItemAuraPassMixin",
+    "HeldItemArmMixin"
   ],
   "injectors": {
     "defaultRequire": 1

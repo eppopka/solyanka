@@ -18,4 +18,4 @@ with tempfile.TemporaryDirectory() as tmp:
  assert "Knife native layouts accepted; samplers=[Sampler0, Sampler2, Sampler3]" in out
  assert "Aura native layouts accepted" in out
  print(out)
- (p/'validation/native-item-layout.json').write_text(json.dumps(dict(version='1.3.9',old_duplicate_reproduced=True,corrected_layout_accepted=True,knife_and_aura_layouts_accepted=True,native_bind_group_validator_used=True,black_screen_log_root_cause_confirmed=True,in_game_startup_verified=False,gpu_compilation_tested=False),indent=2)+'\n')
+ (p/'validation/native-item-layout.json').write_text(json.dumps(dict(version='1.3.12',old_duplicate_reproduced=True,corrected_layout_accepted=True,knife_and_aura_layouts_accepted=True,native_bind_group_validator_used=True,black_screen_log_root_cause_confirmed=True,in_game_startup_verified=False,gpu_compilation_tested=False),indent=2)+'\n')

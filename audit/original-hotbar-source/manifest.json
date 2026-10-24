@@ -1,0 +1,14 @@
+{
+  "source": "user supplied eppopkaaddons-26.2-project.zip",
+  "license": "CC0-1.0",
+  "archive_sha256": "0eb7fcf906cd3dc64aa15c5d387c72344d141e7773149f2a9ab7dbca152197c2",
+  "files": {
+    "LICENSE": "6d489af6292662d9e36d34ce49423784984a5f6e41d7b58f49b01264df59fa03",
+    "MoveHotbar.kt": "5b999dfbaea5569d00b932142052c98648f8ce358b8598f09cb6d182dabf3f6d",
+    "GlassRenderer.kt": "2805119ef4ed1831e5e06bcc54ce5158958ff552fe086370c7edfd24d7471d01",
+    "HotbarLayout.kt": "df10fd59cbf246fa85e98e94e82f2aee065fcb2f88aa733b795de4016575aa4b",
+    "HotbarPainter.kt": "1c5a61550d47d75819f598635332ba142d8b6ad1de0896fc6850e204cfb86909",
+    "SpatialPrimitives.kt": "3dde338e142af42a9bda3b4efb43316ac3ea2d7bb12093185dd6459d77404e48",
+    "Render2D.kt": "316a8e94a3f9fccdcfef0c9f23a08ee7d39f61e519b11094fa4728569467e56e"
+  }
+}

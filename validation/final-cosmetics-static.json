@@ -1,5 +1,5 @@
 {
-  "version": "1.3.9",
+  "version": "1.3.12",
   "targets": [
     {
       "class_name": "net.minecraft.client.renderer.ItemInHandRenderer",
@@ -21,7 +21,7 @@
     }
   ],
   "source_hashes_verified": true,
-  "mixin_classes": 44,
+  "mixin_classes": 45,
   "registered_modules": 57,
   "aura_after_hand_flush": true,
   "aura_capture_once_before_pop": true,

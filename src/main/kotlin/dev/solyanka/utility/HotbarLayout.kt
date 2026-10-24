@@ -6,7 +6,7 @@ data class MoveHotbarSettings(val customPosition:Boolean=false,val hud:HudSpec=H
  val backgroundColor:Int=0xff0c1119.toInt(),val backgroundOpacity:Double=.7,val gradient:Boolean=true,val gradientColor:Int=0xff1a2230.toInt(),val gradientAcross:Boolean=false,
  val accentColor:Int=0xff5e9fe8.toInt(),val selectionOpacity:Double=.22,val selectionRadius:Double=4.0,val smoothSelection:Boolean=true,val slideSpeed:Double=16.0,
  val shadow:Boolean=true,val shadowStrength:Double=.65,val glow:Boolean=true,val glowStrength:Double=.45,val effectRadius:Int=6,val shimmer:Boolean=false,val rainbowAccent:Boolean=false,val effectSpeed:Double=1.0,
- val itemScale:Double=1.0,val pickupAnimation:Boolean=true,val showOffhand:Boolean=true,val keepOnScreen:Boolean=true) {
+ val referenceSizing:Boolean=false,val itemScale:Double=1.0,val pickupAnimation:Boolean=true,val showOffhand:Boolean=true,val keepOnScreen:Boolean=true) {
  fun validate(){hud.validate();require(style in listOf("vanilla","minimal","glass","neon"));require(slotGap in 0..10 && padding in 0..12 && effectRadius in 1..12)
   fun n(v:Double,a:Double,b:Double){require(v.isFinite()&&v in a..b)}
   n(cornerRadius,0.0,16.0);n(borderWidth,0.0,3.0);n(backgroundOpacity,0.0,1.0);n(selectionOpacity,0.0,1.0);n(selectionRadius,0.0,12.0);n(slideSpeed,4.0,40.0);n(shadowStrength,0.0,1.0);n(glowStrength,0.0,1.0);n(effectSpeed,.15,3.0);n(itemScale,.5,1.5)
@@ -23,20 +23,28 @@ class HotbarSelection {
 object HotbarLayout {
  const val WIDTH=182;const val HEIGHT=22
  fun geometry(s:MoveHotbarSettings,offhand:Boolean=false,offhandBefore:Boolean=true,attack:Boolean=false):StyledHotbarLayout {
-  val slot=if(s.style=="vanilla")20 else 22;val pad=if(s.style=="vanilla")1 else s.padding;val gap=if(s.style=="vanilla")0 else s.slotGap;val step=slot+gap;val across=slot+pad*2;val length=slot*9+gap*8+pad*2
-  val extra=across+maxOf(4,gap);val before=(if(offhand&&offhandBefore)extra else 0)+(if(attack&&!offhandBefore)extra else 0);val total=length+(if(offhand)extra else 0)+(if(attack)extra else 0)
-  fun box(along:Int,size:Int=across)=if(s.vertical)HotbarCell(0,along,across,size)else HotbarCell(along,0,size,across)
-  val main=box(before,length)
-  val slots=(0..8).map {i->if(s.vertical)HotbarCell(pad,before+pad+i*step,slot,slot)else HotbarCell(before+pad+i*step,pad,slot,slot)}
-  val off=if(offhand)box(if(offhandBefore)0 else before+length+maxOf(4,gap))else null
-  val atk=if(attack)box(if(!offhandBefore)0 else before+length+maxOf(4,gap))else null
-  return StyledHotbarLayout(if(s.vertical)across else total,if(s.vertical)total else across,main,slots,off,atk,step,s.vertical)
+  val a=originalGeometry(s,offhand,offhandBefore,attack)
+  fun cell(b:dev.solyanka.utility.archivehotbar.HotbarBox)=HotbarCell(b.x.roundToInt(),b.y.roundToInt(),b.width.roundToInt(),b.height.roundToInt())
+  return StyledHotbarLayout(a.width.roundToInt(),a.height.roundToInt(),cell(a.mainPanel),(0..8).map {cell(a.slot(it.toFloat()))},a.offhand?.let(::cell),a.attackIndicator?.let(::cell),(a.slotSize+a.gap).roundToInt(),s.vertical)
  }
+ fun originalGeometry(s:MoveHotbarSettings,offhand:Boolean=false,offhandBefore:Boolean=true,attack:Boolean=false)=dev.solyanka.utility.archivehotbar.HotbarLayout(s.vertical,if(s.style=="vanilla")20f else 22f,if(s.style=="vanilla")0f else s.slotGap.toFloat(),if(s.style=="vanilla")1f else s.padding.toFloat(),offhand,offhandBefore,attack)
+ fun referenceScale(s:MoveHotbarSettings,w:Int,h:Int)=if(s.referenceSizing)dev.solyanka.utility.archivehotbar.HotbarViewport.fromGui(w,h).scale.toDouble() else 1.0
+
  fun anchor(s:MoveHotbarSettings,w:Int,h:Int,g:StyledHotbarLayout):HudSpec {
-  val scale=s.hud.scale;val bw=(g.width*scale).roundToInt();val bh=(g.height*scale).roundToInt()
-  val at=if(s.customPosition)s.hud else s.hud.copy(x=((w-bw)/2).coerceAtLeast(0),y=(h-bh).coerceAtLeast(0))
-  return if(s.keepOnScreen)at.copy(x=at.x.coerceIn(0,(w-bw).coerceAtLeast(0)),y=at.y.coerceIn(0,(h-bh).coerceAtLeast(0)))else at
+  // Fit the complete layout and effect margins on ordinary Minecraft GUI viewports.
+  // Requested scale stays in config; editor and gameplay share the effective scale.
+  val margin=if(s.style=="vanilla" && !s.vertical && !s.referenceSizing)0 else if(s.shadow || s.glow)s.effectRadius+2 else 2
+  val requested=s.hud.scale*referenceScale(s,w,h)
+  val scale=if(s.keepOnScreen)minOf(requested,w.coerceAtLeast(1).toDouble()/(g.width+2*margin),h.coerceAtLeast(1).toDouble()/(g.height+2*margin)).coerceAtLeast(.001)else requested
+  val bw=ceil(g.width*scale).toInt();val bh=ceil(g.height*scale).toInt();val edge=ceil(margin*scale).toInt()
+  val at=if(s.customPosition)s.hud.copy(scale=scale)else s.hud.copy(scale=scale,x=((w-bw)/2).coerceAtLeast(0),y=(h-bh-edge).coerceAtLeast(0))
+  return if(s.keepOnScreen)at.copy(x=at.x.coerceIn(minOf(edge,(w-bw).coerceAtLeast(0)),(w-bw-edge).coerceAtLeast(edge)),y=at.y.coerceIn(minOf(edge,(h-bh).coerceAtLeast(0)),(h-bh-edge).coerceAtLeast(edge)))else at
  }
+ /** One-click recovery preserves appearance but cannot leave a HUD hidden or offscreen. */
+ fun restore(s:MoveHotbarSettings)=s.copy(customPosition=false,keepOnScreen=true,hud=s.hud.copy(enabled=true,x=389,y=518,scale=1.0))
+ /** Defaults explicitly declared by impl.zip MoveHotbar.kt; original painter is retained in client/feature/hotbar. */
+ fun archiveDefaults(s:MoveHotbarSettings)=MoveHotbarSettings(customPosition=s.customPosition,hud=s.hud.copy(enabled=true),style="glass",moveItemName=false,referenceSizing=true)
+
  fun preset(s:MoveHotbarSettings,style:String):MoveHotbarSettings=when(style) {
   "minimal"->s.copy(style=style,gradient=false,backgroundOpacity=.45,cornerRadius=2.0,borderWidth=0.0,shadow=false,glow=false)
   "glass"->s.copy(style=style,gradient=true,backgroundOpacity=.7,cornerRadius=6.0,borderWidth=1.0,shadow=true,glow=false)
@@ -47,7 +55,7 @@ object HotbarLayout {
  fun editorHud(s:MoveHotbarSettings,w:Int,h:Int)=anchor(s,w,h,geometry(s))
  data class Transform(val x:Double,val y:Double,val scale:Double)
  fun transform(s:MoveHotbarSettings,w:Int,h:Int):Transform {
-  val at=editorHud(s,w,h);val scale=s.hud.scale
+  val at=editorHud(s,w,h);val scale=at.scale
   val x=at.x.coerceIn(0,(w-WIDTH*scale).toInt().coerceAtLeast(0));val y=at.y.coerceIn(0,(h-HEIGHT*scale).toInt().coerceAtLeast(0))
   return Transform(x-(w/2-91)*scale,y-(h-22)*scale,scale)
  }

@@ -41,7 +41,7 @@
     "assets/minecraft/shaders/include/projection.glsl",
     "assets/minecraft/shaders/include/sample_lightmap.glsl"
   ],
-  "mixin_classes": 44,
+  "mixin_classes": 45,
   "in_game_tested_here": false,
   "mixin_application_tested_here": false,
   "native_gpu_tested_here": false

@@ -23,7 +23,7 @@ class SettingsPanel(
     private val status:()->String?,
     private val info:()->String?={null},
     private val content:(SettingsPanel,Int)->List<UIComponent>
-) {
+):EmbeddedPanel {
     lateinit var adapter:OwoUIAdapter<FlowLayout>;private set
     private lateinit var scroll:ScrollContainer<FlowLayout>
     private lateinit var statusLabel:LabelComponent
@@ -35,21 +35,21 @@ class SettingsPanel(
     private lateinit var frame:FlowLayout
     private lateinit var header:FlowLayout
     private var initialPosition:PanelDrag.Point?=null
-    fun position()=drag.position
-    fun placeAt(point:PanelDrag.Point?) {initialPosition=point}
+    override fun position()=drag.position
+    override fun placeAt(point:PanelDrag.Point?) {initialPosition=point}
     private fun reposition() {drag.position?.let {frame.positioning(Positioning.absolute(it.x,it.y))}}
-    fun render(g:net.minecraft.client.gui.GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
+    override fun render(g:net.minecraft.client.gui.GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
         val currentInfo=info();if(currentInfo!=lastInfo){lastInfo=currentInfo;refreshStatus()}
         adapter.extractRenderState(g,mx,my,delta);adapter.drawTooltip(g,mx,my,delta)
     }
-    fun mouseDragged(event:MouseButtonEvent,dx:Double,dy:Double):Boolean {
+    override fun mouseDragged(event:MouseButtonEvent,dx:Double,dy:Double):Boolean {
         if(drag.dragging) {drag.move(event.x(),event.y());reposition();return true}
         return adapter.mouseDragged(event,dx,dy)
     }
-    fun mouseReleased(event:MouseButtonEvent):Boolean {
+    override fun mouseReleased(event:MouseButtonEvent):Boolean {
         val moved=drag.end();val handled=adapter.mouseReleased(event);return moved || handled
     }
-    fun mount(width:Int,height:Int) {
+    override fun mount(width:Int,height:Int) {
         if(::adapter.isInitialized) adapter.dispose()
         capture=null
         adapter=OwoUIAdapter.createWithoutScreen(0,0,width,height) { w,h -> UIContainers.verticalFlow(w,h) }
@@ -83,13 +83,15 @@ class SettingsPanel(
         reposition();root.child(frame);refreshStatus();adapter.inflateAndMount()
         drag.layout(width,height,frame.width(),frame.height());reposition()
     }
+    override fun focused():net.minecraft.client.gui.components.events.GuiEventListener?=if(::adapter.isInitialized)adapter else null
+    override fun mouseScrolled(x:Double,y:Double,horizontal:Double,vertical:Double)=adapter.mouseScrolled(x,y,horizontal,vertical)
     fun refreshStatus() {
         if(!::statusLabel.isInitialized) return
         val error=status()
         statusLabel.text(Component.literal(if(error==null) info() ?: "" else "Not saved: $error"))
         statusLabel.color(Color.ofArgb(if(error==null) GuiKit.MUTED else 0xffff5555.toInt()))
     }
-    fun dispose() { capture=null;drag.end();if(::adapter.isInitialized) adapter.dispose() }
+    override fun dispose() { capture=null;drag.end();if(::adapter.isInitialized) adapter.dispose() }
     fun inputRow(width:Int,device:InputDevice,key:Int,updated:(InputDevice,Int)->Unit):FlowLayout {
         var currentDevice=device;var currentKey=key
         val button=GuiKit.button(keyName(device,key),125) {}
@@ -111,8 +113,8 @@ class SettingsPanel(
         val pending=capture ?: return
         capture=null;pending.accept(device,key);pending.button.message=Component.literal(keyName(device,key))
     }
-    fun charTyped(event:CharacterEvent):Boolean = if(capture!=null || blockCharacter) true else adapter.charTyped(event)
-    fun keyPressed(event:KeyEvent):Boolean {
+    override fun charTyped(event:CharacterEvent):Boolean = if(capture!=null || blockCharacter) true else adapter.charTyped(event)
+    override fun keyPressed(event:KeyEvent):Boolean {
         blockCharacter=false
         capture?.let { pending ->
             blockCharacter=true
@@ -129,7 +131,7 @@ class SettingsPanel(
         }
         return adapter.keyPressed(event)
     }
-    fun mouseClicked(event:MouseButtonEvent,doubled:Boolean):Boolean {
+    override fun mouseClicked(event:MouseButtonEvent,doubled:Boolean):Boolean {
         if(capture==null && ::header.isInitialized && drag.begin(event.x(),event.y(),event.button(),header.isInBoundingBox(event.x(),event.y()) && event.x()<header.x()+header.width()-68)) {
             adapter.rootComponent.focusHandler()?.focus(null,UIComponent.FocusSource.MOUSE_CLICK);return true
         }

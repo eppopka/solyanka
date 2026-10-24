@@ -1,0 +1,19 @@
+{
+  "translation": "GLSL 330 imports expanded; ES 300 precision and explicit vec2 cast in vanilla light.glsl added for offline WebGL2 check",
+  "reports": [
+    {
+      "name": "vsh",
+      "compiled": true,
+      "log": ""
+    },
+    {
+      "name": "fsh",
+      "compiled": true,
+      "log": ""
+    }
+  ],
+  "linked": true,
+  "log": "",
+  "minecraft_pipeline_tested": false,
+  "actual_gpu_tested": false
+}

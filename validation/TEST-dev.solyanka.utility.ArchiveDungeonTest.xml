@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="dev.solyanka.utility.ArchiveDungeonTest" tests="34" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:42:38.303Z" hostname="222f7e72-264" time="0.042">
+<testsuite name="dev.solyanka.utility.ArchiveDungeonTest" tests="34" skipped="0" failures="0" errors="0" timestamp="2026-10-24T21:19:23.921Z" hostname="74ce5fce-01b" time="0.048">
   <properties/>
   <testcase name="reset cancels an unsent request()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
-  <testcase name="always water forces rain and removes roof clipping only in extraction policy()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
-  <testcase name="signed fractional malformed and overflowing counts are ignored()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.004"/>
-  <testcase name="zero personal secrets is a real result()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.002"/>
-  <testcase name="always water disabled preserves original rain and height()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
-  <testcase name="weather override preserves client guard and gives always water priority()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
-  <testcase name="announcement handles zero and negative time origins()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
+  <testcase name="always water forces rain and removes roof clipping only in extraction policy()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
+  <testcase name="signed fractional malformed and overflowing counts are ignored()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.002"/>
+  <testcase name="zero personal secrets is a real result()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
+  <testcase name="always water disabled preserves original rain and height()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
+  <testcase name="weather override preserves client guard and gives always water priority()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
+  <testcase name="announcement handles zero and negative time origins()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.002"/>
   <testcase name="negative monotonic epochs work without sentinel collision()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
-  <testcase name="request waits exactly one second after completion()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
-  <testcase name="maximum integer count does not overflow()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
+  <testcase name="request waits exactly one second after completion()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
+  <testcase name="maximum integer count does not overflow()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
   <testcase name="response deadline starts at actual request rather than completion()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
   <testcase name="run start marker is exact and formatting agnostic()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
-  <testcase name="announcement waits half a second and sends once()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
-  <testcase name="only results after the request are accepted()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.005"/>
-  <testcase name="result at the deadline is rejected and still reports timeout()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
-  <testcase name="secret counter settings migrate with announcements off()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
+  <testcase name="announcement waits half a second and sends once()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
+  <testcase name="only results after the request are accepted()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
+  <testcase name="result at the deadline is rejected and still reports timeout()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
+  <testcase name="secret counter settings migrate with announcements off()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.002"/>
   <testcase name="announcement reset drops old run data()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
   <testcase name="duplicate finish headers do not postpone or duplicate request()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
-  <testcase name="exactly one result is consumed per run()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
+  <testcase name="exactly one result is consumed per run()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
   <testcase name="server actions have fixed commands no aliases and opt in announcements()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
   <testcase name="a request is impossible before a completion event()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
   <testcase name="completion accepts normal master and entrance source headers()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
   <testcase name="grouped and color coded server counts parse()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
-  <testcase name="reset cancels a waiting response and permits the next run()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
-  <testcase name="counter only observes non overlay game messages including canceled path()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
-  <testcase name="announcement disabled at result time cannot later send()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
-  <testcase name="both announcement channels roundtrip()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.004"/>
-  <testcase name="settings stay embedded and successful counter changes save immediately()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
+  <testcase name="reset cancels a waiting response and permits the next run()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
+  <testcase name="counter only observes non overlay game messages including canceled path()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.002"/>
+  <testcase name="announcement disabled at result time cannot later send()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.003"/>
+  <testcase name="both announcement channels roundtrip()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.003"/>
+  <testcase name="settings stay embedded and successful counter changes save immediately()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.002"/>
   <testcase name="completion rejects spoof prefixed and unsupported header fragments()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
   <testcase name="a backwards supplied test clock cannot accelerate dispatch()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
-  <testcase name="timeout occurs once at the ten second boundary()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
+  <testcase name="timeout occurs once at the ten second boundary()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.005"/>
   <testcase name="unknown channel and wrong types fail validation()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
-  <testcase name="party player team totals and percentage lines are not personal results()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.003"/>
+  <testcase name="party player team totals and percentage lines are not personal results()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.001"/>
   <testcase name="announcement opt out cancels a pending message permanently()" classname="dev.solyanka.utility.ArchiveDungeonTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

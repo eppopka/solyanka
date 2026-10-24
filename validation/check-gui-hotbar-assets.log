@@ -1,7 +1,13 @@
 {
-  "version": "1.3.9",
+  "version": "1.3.12",
   "synthetic_pack_checks": 10,
   "reversed_z_native_default_verified": true,
+  "hotbar_restore_button": true,
+  "hud_selector_removed": true,
+  "hud_right_click_hide_removed": true,
+  "bottom_hotbar_drag_unblocked": true,
+  "hotbar_native_fallback_when_hidden": true,
+  "hotbar_gradient_double_fill_removed": true,
   "halo_world_depth_fixed": true,
   "through_walls_bypass_tested": true,
   "depth_pixels": {
