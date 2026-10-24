@@ -1,5 +1,6 @@
 {
   "schemaVersion": 1,
+  "icon": "assets/solyanka/icon.png",
   "id": "solyanka",
   "version": "${version}",
   "name": "solyanka",
