@@ -1,0 +1,142 @@
+{
+  "targets": [
+    {
+      "class_name": "net.minecraft.client.renderer.SkyRenderer",
+      "method": "extractRenderState",
+      "descriptor": "(Lnet/minecraft/client/multiplayer/ClientLevel;FLnet/minecraft/client/Camera;Lnet/minecraft/client/renderer/state/level/SkyRenderState;)V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.renderer.SkyRenderer",
+      "method": "renderEndSky",
+      "descriptor": "()V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.renderer.SkyRenderer",
+      "method": "close",
+      "descriptor": "()V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.renderer.DynamicUniforms",
+      "method": "writeTransform",
+      "descriptor": "(Lorg/joml/Matrix4f;)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;",
+      "target_exists": true
+    }
+  ],
+  "end_transform_callsites": 1,
+  "shadow_render_target_verified": true,
+  "compiled_wrap_handler_signature_verified": true,
+  "native_five_arg_draw_order_checked": true,
+  "native_end_sky_not_cancelled": true,
+  "private_matrix_copy": true,
+  "all_allocations_before_pass": true,
+  "embedded_instant_settings": true,
+  "asset_count": 14,
+  "raw_texture_bytes": 100663296,
+  "assets": [
+    {
+      "file": "face_2.png",
+      "sha256": "02e44cd78921478987bae68ab4399c92dabac774020bab1de7c047f6ed246526",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 122061
+    },
+    {
+      "file": "face_4.png",
+      "sha256": "46b98242fed6e0adb32efc1e96bb580ae0ab58683f29fa2a2e654f5d8d078580",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 565444
+    },
+    {
+      "file": "face_3.png",
+      "sha256": "d308811843e499aa1cf5e08c9cadda421d27dd26faa027a2b14a392a11393c82",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 532783
+    },
+    {
+      "file": "face_1.png",
+      "sha256": "5513ebbe886387c5022e1bf00b359c0b2ff263045f51de314b62ec1267c260b0",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 649918
+    },
+    {
+      "file": "face_0.png",
+      "sha256": "1da52511ef5c12debc59c526e3f3036c4e551999e24c7bb6375e4beb1bf130f5",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 593145
+    },
+    {
+      "file": "face_5.png",
+      "sha256": "4a7b7c77df8044d7bc30ebca66ee83932704259c8c180adcdd1831dcfc80a9e2",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 579020
+    },
+    {
+      "file": "hole_1.png",
+      "sha256": "191602f270f01788630dafd1b7bd9b63146debc85e18a0c7de65eb7604a358b2",
+      "width": 1536,
+      "height": 1536,
+      "bytes": 1020955
+    },
+    {
+      "file": "hole_0.png",
+      "sha256": "b8a1ec5f5ade0c5ac7200a7894b930e8939b7e57dacafac806c4a2d8c1999e9b",
+      "width": 1536,
+      "height": 1536,
+      "bytes": 1019976
+    },
+    {
+      "file": "hole_2.png",
+      "sha256": "9faabfd3cc99768e2f7bbde3cad9c8c9cb18a8a959f79f6e6f7ac7bd673a7dd6",
+      "width": 1536,
+      "height": 1536,
+      "bytes": 1021223
+    },
+    {
+      "file": "hole_3.png",
+      "sha256": "019a8b41dd585c77534c276a6723ef97cbb44caa049452857e9a62f26787cfff",
+      "width": 1536,
+      "height": 1536,
+      "bytes": 1021993
+    },
+    {
+      "file": "hole_5.png",
+      "sha256": "df8b029f5ce355d1e18d27c3cc57beafe2452097b4c9823ae38bb6eab7da2716",
+      "width": 1536,
+      "height": 1536,
+      "bytes": 1021925
+    },
+    {
+      "file": "hole_4.png",
+      "sha256": "46465627e7803ffaad98877023d318c0334aeb9e77ded595372500e7feac577b",
+      "width": 1536,
+      "height": 1536,
+      "bytes": 1021745
+    },
+    {
+      "file": "hole_6.png",
+      "sha256": "b77e8321836620bfcaedffdab10aaf2e734a4f3172a98977a4211bfc0660b27a",
+      "width": 1536,
+      "height": 1536,
+      "bytes": 1022750
+    },
+    {
+      "file": "hole_7.png",
+      "sha256": "7478ccad92fd267592b08894bc14c42e80f266746984ccff918a2b894fdbc252",
+      "width": 1536,
+      "height": 1536,
+      "bytes": 1022909
+    }
+  ],
+  "mixin_classes": 39,
+  "in_game_tested_here": false,
+  "mixin_application_tested_here": false,
+  "gpu_sodium_iris_tested_here": false
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.HeldItemTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-24T16:46:37.528Z" hostname="222f7e72-264" time="0.015">
+  <properties/>
+  <testcase name="shader source reads bounded data texture and retains upstream effects()" classname="dev.solyanka.utility.HeldItemTest" time="0.001"/>
+  <testcase name="render hook changes only main item preparation not foil or outlines()" classname="dev.solyanka.utility.HeldItemTest" time="0.0"/>
+  <testcase name="invalid modes numbers and nonfinite values fail validation()" classname="dev.solyanka.utility.HeldItemTest" time="0.001"/>
+  <testcase name="texture lifecycle bounded cache and vanilla fallbacks are explicit()" classname="dev.solyanka.utility.HeldItemTest" time="0.0"/>
+  <testcase name="data texture quantization stays bounded over slider values()" classname="dev.solyanka.utility.HeldItemTest" time="0.001"/>
+  <testcase name="each shader style encodes an exact byte not a float variant()" classname="dev.solyanka.utility.HeldItemTest" time="0.0"/>
+  <testcase name="independent hand switches do not infer dominant arm()" classname="dev.solyanka.utility.HeldItemTest" time="0.0"/>
+  <testcase name="zero speed and intensity endpoints encode exactly()" classname="dev.solyanka.utility.HeldItemTest" time="0.0"/>
+  <testcase name="all four modes validate roundtrip with old feature defaults()" classname="dev.solyanka.utility.HeldItemTest" time="0.009"/>
+  <testcase name="hand policy excludes inventory ground third person and missing contexts()" classname="dev.solyanka.utility.HeldItemTest" time="0.001"/>
+  <testcase name="typed codec rejects null string numbers and wrong booleans()" classname="dev.solyanka.utility.HeldItemTest" time="0.001"/>
+  <testcase name="tint RGB survives and fill controls packed alpha()" classname="dev.solyanka.utility.HeldItemTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

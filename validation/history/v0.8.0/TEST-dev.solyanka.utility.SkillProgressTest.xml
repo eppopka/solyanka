@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.SkillProgressTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-24T11:57:30.710Z" hostname="2d8e288e-7a4" time="0.025">
+  <properties/>
+  <testcase name="malformed impossible progress preserves last good snapshot()" classname="dev.solyanka.utility.SkillProgressTest" time="0.004"/>
+  <testcase name="ratio mode captures gain progress and table-derived level()" classname="dev.solyanka.utility.SkillProgressTest" time="0.004"/>
+  <testcase name="level caches do not bleed across skills()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
+  <testcase name="optional timeout uses monotonic time and zero keeps latest()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
+  <testcase name="unknown server denominator is preserved without claiming a table level()" classname="dev.solyanka.utility.SkillProgressTest" time="0.003"/>
+  <testcase name="table returned to callers cannot mutate future inference()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
+  <testcase name="MAXED and dungeon alias are recognized()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
+  <testcase name="reset clears snapshot and learned skill data()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
+  <testcase name="all supported skills parse names and have correct table lengths()" classname="dev.solyanka.utility.SkillProgressTest" time="0.004"/>
+  <testcase name="percent only never fabricates an absolute XP amount without evidence()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
+  <testcase name="formatted unicode and compact quantities are accepted()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
+  <testcase name="menu observations are bounded valid level hints()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
+  <testcase name="percent mode uses observed tab level or earlier ratio()" classname="dev.solyanka.utility.SkillProgressTest" time="0.001"/>
+  <testcase name="quantity parser handles suffixes and rejects unsafe values()" classname="dev.solyanka.utility.SkillProgressTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

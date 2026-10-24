@@ -256,7 +256,9 @@
     ],
     "module": "render.skybox",
     "risk": "Sky extraction, tint, textures and shader compatibility",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.10.0-dev",
+    "notes": "Source six-face End textures and 8-frame black-hole crossfade, Vanilla End/Dimension Default, sky tint palette/strength and speed controls. Native sky target/bind groups/5-arg draw port. No terrain/lightmap tint or world-color match. Skyless dimensions opt-in. Native runtime/GPU acceptance pending. See docs/M9.md."
   },
   {
     "source": "Stray",
@@ -311,7 +313,9 @@
     ],
     "module": "render.motion_blur",
     "risk": "GPU resources, resize, temporal reset, Iris integration",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "1.3.3",
+    "notes": "Frame Blending plus Accumulation Mix/Max. Source finite exposure/refresh weighting and 12-sampler compaction, raw frames, lazy depthless history/output capped at 96 MiB for Frame Blending. Velocity/pre-entity/F5 and hybrid still unported. Native runtime/GPU acceptance pending. See GUI_1.3.3.md."
   },
   {
     "source": "Stray",
@@ -359,7 +363,8 @@
     ],
     "module": "render.pip",
     "risk": "Actual feature captures another desktop window; Win32/JNA backend",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "notes": "docs/M13.md: exact-target Windows PrintWindow-only local capture; Windows runtime untested."
   },
   {
     "source": "Stray",
@@ -395,8 +400,8 @@
     "module": "hud.inventory",
     "risk": "Item renderer and HUD positions",
     "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
-    "release": "0.6.0-dev",
-    "notes": "Prior release adaptation; see README 0.6.0 and audit/stray-hud-source-manifest.json. In-game acceptance pending."
+    "release": "1.3.3",
+    "notes": "Classic source-derived panel/slot palette and compact text, two-quad wells, per-player-tick filled count cache; shared live/editor renderer. Custom font/frost/glass/Hypr/starfield/loadouts unported. Existing settings retained. See GUI_1.3.3.md."
   },
   {
     "source": "Stray",
@@ -487,7 +492,8 @@
     ],
     "module": "cosmetic.cs2_knife",
     "risk": "Model/material/shader assets and their provenance need separate review",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED",
+    "notes": "Audited VPK/library/model loader: depends on player-owned CS2 install and a multi-file Source 2 model/skin/animation backend, still unported. No Valve assets bundled and no fake vanilla-sword replacement."
   },
   {
     "source": "Stray",
@@ -498,6 +504,8 @@
     ],
     "module": "cosmetic.held_item",
     "risk": "Separate HUD/shader behavior from knife and item-name features",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "0.9.0-dev",
+    "notes": "Four first-person baked-item shader styles (Smoke/Stars/Portal/Galaxy), tint/fill/intensity/speed and independent hands. Arms, silhouette framebuffer pass and special model renderers are not ported. No entity/GUI fill. See docs/M8.md."
   }
 ]

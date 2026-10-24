@@ -93,8 +93,8 @@ CS2 assets, PiP backend or whole framework is bundled.
 
 0.5.0 user archive derivative: impl.zip impl/dungeon/MimicChest.kt.
 User-provided eppopkaaddons implementation; transformed to solyanka shared
-world snapshots, Kotlin/26.2 settings and 20-tick loaded-chunk scan. Other
-archive implementations/helpers are not incorporated or claimed complete.
+world snapshots, Kotlin/26.2 settings and 20-tick loaded-chunk scan. Other archive implementations/helpers were not incorporated in that batch;
+subsequent archive HUD adaptations are listed below. No whole-archive claim.
 
 0.5.1 GUI adaptation additionally references NoFrills hud/ColorPickerScreen.java,
 hud/clickgui/components/EnumButton.java and config/SettingColor.java at the
@@ -143,3 +143,88 @@ ChatComponentMixin.java audited. NametagRenderer.java and BlockOutlineGlow.java
 reviewed for visual refinement. Rounded styling retains vanilla text/fonts;
 no source remote badges, frost blur or chat animation. Block halo is layered
 geometry, not framebuffer blur. See docs/M7.md and source manifest.
+
+Held-item batch 0.9.0, Stray CC0 commit d91fcd4515b4eda647ee8fd7fa99408f473e5718:
+HeldItemShader.java, ItemFeatureRendererMixin.java, StrayConfig.java and the
+held_item.vsh/fsh procedural shaders adapted for 26.2 bind groups and item submits.
+Parameters are carried by a 2x1 RGBA8 texture instead of global GL uniform hooks.
+Only first-person baked item fill is ported; no arms or silhouette post-outline.
+Built-in end-sky/portal textures are referenced from the installed game, not bundled.
+CS2 VPK/model/skin entry points audited, not ported; no Valve assets included.
+See audit/stray-held-item-source-manifest.json and docs/M8.md.
+
+Skybox batch 0.10.0, Stray CC0 commit d91fcd4515b4eda647ee8fd7fa99408f473e5718:
+WorldTint.java (sky-only subset), SkyRendererMixin.java, EndSkyDecor.java and
+StrayConfig.java adapted for the native 26.2 sky target, bind groups, vertex slices
+and five-argument indexed draws. Fourteen sky PNGs from assets/stray/textures/sky/end
+are included unchanged under the upstream CC0 dedication (same license text in
+licenses/Stray-CC0.txt). No terrain/lightmap tint or match-to-world link is ported.
+Tint preserves sunrise alpha; skyless dimensions require opt-in. Added independent
+speed controls and feature-owned GPU cleanup. See docs/M9.md and
+ audit/stray-skybox-source-manifest.json for exact files, source URLs and hashes.
+
+v1.0.0: Stray CC0 commit d91fcd4515b4eda647ee8fd7fa99408f473e5718.
+Adapted FrameBlendingManager accumulation subset, deferred GameRenderer hook,
+MotionBlurShaders parameter mapping and accumulation_max/mix fragment shaders.
+Native 26.2 pipelines replace private post-chain accessor rewiring. Only two
+matching-format depthless targets; no 24-frame pool, velocity/hybrid reprojection,
+refresh scaling or weighted frame-blending claim. Removed unused shader inputs.
+
+User-provided impl.zip SHA-256:
+94833f79bfeb5a6213ab719f321412848b22ca180ed7e64105ee4d707d39edf3.
+Adapted impl/general/Timer.kt (TimerClock) and impl/visual/DvdBounce.kt.
+Changed package/module/config/input/HUD/audio integration, native font/panels,
+local solyanka branding, reset lifecycle, monotonic flash and tiny-window guards.
+No archive framework, custom font/glass backend or AetherOSSettings is incorporated.
+Source hashes/URLs and exact scope: audit/v1-source-manifest.json and docs/M10.md.
+
+1.1.0 archive visual batch: impl/visual/AmbientParticles.kt, RotatingItem.kt and
+MoveHearts.kt from the same user-provided archive SHA-256 above. Retained eight
+particle distributions/types, five item-motion formulas/offsets, and health/armor
+HUD-wrapper behavior. Adapted package/settings/lifecycle, native 26.2 transform
+injection and Fabric wrappers; added responsive default marker, bounds and
+finally-restored poses. No AetherOSSettings code or archive UI framework included.
+Exact hashes and scope: audit/archive-visual-source-manifest.json, docs/M11.md.
+
+1.2.0 archive batch: impl/dungeon/SecretCounter.kt and impl/visual/AlwaysWater.kt
+from the same user-provided archive. Adapted one-shot personal-stats state,
+request/response/announcement timing and the documented indoor-rain intent.
+Changed timing to monotonic, chat branding, Auto Announce default (off), lifecycle
+and native 26.2 client weather extraction; absent archive weather mixins were not
+copied. Exact source hashes/scope: audit/archive-dungeon-source-manifest.json.
+Run lifecycle markers reference NoammAddons CC0 commit
+b552eb85050c9d12ff3aabf11ab0c793d1565361, DungeonListener.kt; only exact Mort start
+and narrowed Catacombs completion grammar are adapted, not framework code.
+CC0 dedication retained in licenses/NoammAddons-CC0.txt. See docs/M12.md.
+
+1.3.0 combined archive adaptations: BestiaryESP, InvisibugESP, TikiESP, ChinaHat,
+Halo, SimonSays, PetDisplay, MoveHotbar and numbered-route extensions of
+OdinDungeonWaypoints from the same user-supplied impl.zip. Missing archive
+framework helpers are independently replaced; no AetherOSSettings included.
+ShitterList is an independent compatible implementation of the archive-described
+workflow (credited original concept: qwertycry/Shitterlist); no code copied from
+that upstream repository, whose root LICENSE was not available during this audit.
+
+Windows capture adapts Stray PipWin32 (CC0), camberX and contributors, commit
+d91fcd4515b4eda647ee8fd7fa99408f473e5718. Changes include exact HWND/PID/title
+identity, PrintWindow-only behavior, bounded capture surfaces, single-worker GDI
+ownership, session-only explicit selection, and independent texture lifecycle.
+See audit/combined-source-manifest.json and docs/M13.md. No Valve assets included.
+
+1.3.1 GUI modifications: deferred embedded-panel navigation, bounded title-bar
+dragging, lazy native palette construction and rounded dark theme. Original
+NoFrills-derived GUI attribution remains above. No new upstream assets copied.
+
+1.3.2: local PlainLabel null-style compatibility guard for owo 0.13.1 / MC 26.2
+hover rendering. No third-party library bytecode or global Mixin modified.
+
+1.3.3 rendering adaptations:
+Stray (camberX and contributors), CC0-1.0, pinned commit
+ d91fcd4515b4eda647ee8fd7fa99408f473e5718:
+FrameBlendingManager exposure weighting/12-sampler compaction and frame_blending.fsh;
+InventoryHudRenderer layout/cache, HudChrome classic slot wells, GuiDraw and Theme palette.
+See audit/stray-ui-blur-source-manifest.json for exact paths, source hashes and URLs.
+Local adaptations use lazy depthless history within a 96 MiB budget, native 26.2
+bind groups, existing config/HUD editor, rounded scanline coalescing and modal
+GUI extraction suppression. No Stray frost blur, fonts, starfield, velocity or
+hybrid reprojection is included by this patch.

@@ -62,7 +62,7 @@ class SettingsCatalogTest {
         assertFalse(client("nofrills/NoFrillsClickGui.kt").contains("Surface.VANILLA_TRANSLUCENT"))
         val kit=client("nofrills/GuiKit.kt")
         assertTrue(kit.contains("ColorPickerComponent()"));assertTrue(kit.contains("UIComponents.box("))
-        assertTrue(kit.contains("Edit color"));assertTrue(kit.contains("container.child(picker)"))
+        assertTrue(kit.contains("Edit color"));assertTrue(kit.contains("container.child(palette)"))
         assertFalse(kit.contains("setScreen"));assertTrue(panel.contains("Not saved:"))
     }
     @Test fun `player settings and nested hud editor have no player preview`() {

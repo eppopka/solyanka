@@ -1,0 +1,66 @@
+{
+  "version": "0.10.0-dev",
+  "minecraft": "26.2",
+  "build": "SUCCESS",
+  "tests": {
+    "tests": 343,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "registered_modules": 37,
+  "new_modules": [
+    "render.skybox"
+  ],
+  "mixin_classes": 39,
+  "unique_target_methods_rechecked": 52,
+  "world_target_methods_checked": 4,
+  "compiled_nullable_outline_guard": true,
+  "instant_save": true,
+  "settings_embedded_in_same_screen": true,
+  "hud_editor_elements": 18,
+  "hide_xp_level_and_bar_independent": true,
+  "aetheros_settings_excluded": true,
+  "remaining_stray_features": [
+    "Motion Blur",
+    "Picture in Picture",
+    "CS2 Knife"
+  ],
+  "remaining_archive_feature_objects": 21,
+  "in_game_tested_here": false,
+  "mixin_application_tested_here": false,
+  "gpu_sodium_iris_tested_here": false,
+  "full_requested_feature_set_complete": false,
+  "source_blur_parity": false,
+  "chat_animation_ported": false,
+  "chat_security_handlers_preserved": true,
+  "nametags_preserve_styled_components": true,
+  "block_outline_layered_halo": true,
+  "jar_sha256": "6fbe5523771ffd28b138e657d6adb3d5f2c3f652106ce0c34a71933e6358a834",
+  "sources_jar_sha256": "8b3bf03847913f2acbb7b6bab84b6dbdf7f5a99a35b4909b0ab7966c9561a05a",
+  "held_item_styles": [
+    "smoke",
+    "stars",
+    "portal",
+    "galaxy"
+  ],
+  "held_item_first_person_baked_quads_only": true,
+  "held_item_arms_and_silhouette_ported": false,
+  "translated_offline_glsl_linked": true,
+  "held_item_config_texture_pixels": 2,
+  "held_item_atlas_cache_limit": 64,
+  "cs2_knife_ported": false,
+  "skybox_styles": [
+    "decorated_end",
+    "end",
+    "dimension"
+  ],
+  "skybox_source_assets": 14,
+  "skybox_raw_texture_bytes": 100663296,
+  "skybox_native_target_owned": true,
+  "skybox_global_matrix_stack_modified": false,
+  "skybox_gpu_cleanup": true,
+  "skybox_terrain_world_tint_ported": false,
+  "skybox_live_visuals_verified": false,
+  "baseline_note": "Older unchanged ABI/AW evidence retained; clean Gradle AW check and current descriptor checks. Static checks do not establish Mixin application or rendering compatibility. See docs/M6.md, docs/M7.md, docs/M8.md and docs/M9.md."
+}

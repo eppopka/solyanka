@@ -27,6 +27,7 @@ object WaypointUi {
    buildList {
     add(GuiKit.description(w,"Local Odin-compatible JSON or Base64+GZIP packs; clipboard import/export only, no URL fetching. No secret pack is bundled. Place/edit waypoints manually: Allow Edits + right click a block (click again removes); normal block use is blocked in edit mode. /solyanka waypoint add <title> sets a title."))
     add(GuiKit.description(w,"Packs: ${runCatching {DungeonWaypoints.names().joinToString()}.getOrDefault("unavailable")}. Selected Packs: comma-separated names. Edit Pack must exist; select it to see edits. Unknown/unloaded room geometry fails closed. Disable Allow Edits for normal play."))
+    add(GuiKit.button("Route Lines / Progress",w){RouteUi.open(host,model)})
     draft.entrySet().forEach {(field,value) ->val label=field.replace(Regex("([a-z])([A-Z])"),"$1 $2").replaceFirstChar {it.uppercase()}
      if(field=="color") add(GuiKit.colorRow(w,label,value.asInt) {change(field,JsonPrimitive(it))})
      else if(field=="type") add(GuiKit.choiceRow(w,label,dev.solyanka.ui.SettingsCatalog.waypointTypes,value.asInt) {change(field,JsonPrimitive(it))})

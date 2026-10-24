@@ -1,0 +1,154 @@
+[
+  {
+    "file": "src/client/java/dev/stray/client/visual/WorldTint.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/visual/WorldTint.java",
+    "sha256": "7709cc511d9e9530435ed05efee161028bc01aca3114ce70480532b7d098dbfe",
+    "license": "CC0-1.0",
+    "scope": "sky-only subset adapted; terrain/world tint not ported here"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/mixin/SkyRendererMixin.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/mixin/SkyRendererMixin.java",
+    "sha256": "fc9d2bdf9b244440352e5dfea6c65b3745b55fa0361a5d5cbbc287dcad6c5ba9",
+    "license": "CC0-1.0",
+    "scope": "sky-only subset adapted; terrain/world tint not ported here"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/visual/EndSkyDecor.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/visual/EndSkyDecor.java",
+    "sha256": "3efd8de29ccc97c0e1b5e84d7f1a9efa70aba1d913bf3b0863f42b90fb09f220",
+    "license": "CC0-1.0",
+    "scope": "sky-only subset adapted; terrain/world tint not ported here"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/config/StrayConfig.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/config/StrayConfig.java",
+    "sha256": "1b3a8246a9112314551c8db0e58c03e2b578749a0dc5c3919a0eb3b7fa2c92d5",
+    "license": "CC0-1.0",
+    "scope": "sky-only subset adapted; terrain/world tint not ported here"
+  },
+  {
+    "file": "LICENSE",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/LICENSE",
+    "sha256": "6d489af6292662d9e36d34ce49423784984a5f6e41d7b58f49b01264df59fa03",
+    "license": "CC0-1.0",
+    "scope": "sky-only subset adapted; terrain/world tint not ported here"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/face_2.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/face_2.png",
+    "sha256": "02e44cd78921478987bae68ab4399c92dabac774020bab1de7c047f6ed246526",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/face_4.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/face_4.png",
+    "sha256": "46b98242fed6e0adb32efc1e96bb580ae0ab58683f29fa2a2e654f5d8d078580",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/face_3.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/face_3.png",
+    "sha256": "d308811843e499aa1cf5e08c9cadda421d27dd26faa027a2b14a392a11393c82",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/face_1.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/face_1.png",
+    "sha256": "5513ebbe886387c5022e1bf00b359c0b2ff263045f51de314b62ec1267c260b0",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/face_0.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/face_0.png",
+    "sha256": "1da52511ef5c12debc59c526e3f3036c4e551999e24c7bb6375e4beb1bf130f5",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/face_5.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/face_5.png",
+    "sha256": "4a7b7c77df8044d7bc30ebca66ee83932704259c8c180adcdd1831dcfc80a9e2",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/hole_1.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/hole_1.png",
+    "sha256": "191602f270f01788630dafd1b7bd9b63146debc85e18a0c7de65eb7604a358b2",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/hole_0.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/hole_0.png",
+    "sha256": "b8a1ec5f5ade0c5ac7200a7894b930e8939b7e57dacafac806c4a2d8c1999e9b",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/hole_2.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/hole_2.png",
+    "sha256": "9faabfd3cc99768e2f7bbde3cad9c8c9cb18a8a959f79f6e6f7ac7bd673a7dd6",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/hole_3.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/hole_3.png",
+    "sha256": "019a8b41dd585c77534c276a6723ef97cbb44caa049452857e9a62f26787cfff",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/hole_5.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/hole_5.png",
+    "sha256": "df8b029f5ce355d1e18d27c3cc57beafe2452097b4c9823ae38bb6eab7da2716",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/hole_4.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/hole_4.png",
+    "sha256": "46465627e7803ffaad98877023d318c0334aeb9e77ded595372500e7feac577b",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/hole_6.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/hole_6.png",
+    "sha256": "b77e8321836620bfcaedffdab10aaf2e734a4f3172a98977a4211bfc0660b27a",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  },
+  {
+    "file": "src/client/resources/assets/stray/textures/sky/end/hole_7.png",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/textures/sky/end/hole_7.png",
+    "sha256": "7478ccad92fd267592b08894bc14c42e80f266746984ccff918a2b894fdbc252",
+    "license": "CC0-1.0",
+    "scope": "unchanged source sky texture"
+  }
+]

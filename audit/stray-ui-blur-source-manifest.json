@@ -1,0 +1,74 @@
+[
+  {
+    "file": "src/client/java/dev/stray/client/render/InventoryHudRenderer.java",
+    "local_file": "audit/stray-temporal-hud-source/InventoryHudRenderer.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "060964cf2b6483c9693a64401937ad27a5a3d481e0297a1f756aad01bfc1a330",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/render/InventoryHudRenderer.java",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/visual/motionblur/FrameBlendingManager.java",
+    "local_file": "audit/stray-temporal-hud-source/FrameBlendingManager.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "9d6436bb73c1e026fedfdbef40bd6f4485fbaca38e34ed793e361172ebb1c3fd",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/visual/motionblur/FrameBlendingManager.java",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/visual/motionblur/MotionBlurShaders.java",
+    "local_file": "audit/stray-temporal-hud-source/MotionBlurShaders.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "6a86fc41eda10516b052d344786f0255e124cea68d52ea9356cdc487c3118c3e",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/visual/motionblur/MotionBlurShaders.java",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/visual/motionblur/FrameTimer.java",
+    "local_file": "audit/stray-temporal-hud-source/FrameTimer.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "11d4ff4998c27d4512ac96d459431bff68fc64e6738904b8d600369413c5ebbf",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/visual/motionblur/FrameTimer.java",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/visual/motionblur/MonitorInfoProvider.java",
+    "local_file": "audit/stray-temporal-hud-source/MonitorInfoProvider.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "2d86955295a0b89f0dc325b7046912ee949b83805bde093bcfd2c210e5930360",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/visual/motionblur/MonitorInfoProvider.java",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/render/HudChrome.java",
+    "local_file": "audit/stray-temporal-hud-source/HudChrome.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "81c80b810120e25ae325c88f1b0f15a902567e236b3af53edc194bd58353a00b",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/render/HudChrome.java",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/render/GuiDraw.java",
+    "local_file": "audit/stray-temporal-hud-source/GuiDraw.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "afdb8c965a68c3fda5f747e55a5a40ced941b76ae6cb6ade4c09a878bf877def",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/render/GuiDraw.java",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/ui/Theme.java",
+    "local_file": "audit/stray-temporal-hud-source/Theme.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "bff483104c1f9b0cc1d0db8a8610b7856e6e28df5c6a66f7a7c03979a5af6c44",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/ui/Theme.java",
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "src/client/resources/assets/stray/shaders/post/frame_blending.fsh",
+    "local_file": "audit/stray-temporal-hud-source/frame_blending.fsh",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "sha256": "906d3a24f6bfcf529085d7056a6f74ac786d47516b9513ca4b1e4cd598fdbc38",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/shaders/post/frame_blending.fsh",
+    "license": "CC0-1.0"
+  }
+]

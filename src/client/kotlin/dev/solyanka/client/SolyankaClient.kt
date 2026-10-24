@@ -8,6 +8,13 @@ import dev.solyanka.client.ui.ConfigUi
 import dev.solyanka.client.feature.ChatTweaks
 import dev.solyanka.client.feature.InfoTooltips
 import dev.solyanka.client.feature.FeatureRuntime
+import dev.solyanka.client.feature.TemporalBlur
+import dev.solyanka.client.feature.SecretCounter
+import dev.solyanka.client.feature.ArchiveVisuals
+import dev.solyanka.client.feature.VanillaHearts
+import dev.solyanka.client.feature.ArchiveHuds
+import dev.solyanka.client.feature.SkyboxVisual
+import dev.solyanka.client.feature.HeldItemCosmetic
 import dev.solyanka.client.feature.ScoreboardHud
 import dev.solyanka.client.feature.WorldVisuals
 import dev.solyanka.client.feature.TitaniumScanner
@@ -60,6 +67,26 @@ object SolyankaClient : ClientModInitializer {
     const val KEYBINDS = "utility.command_keybinds"
     const val SHORTCUTS = "utility.command_shortcuts"
 
+    const val BLOCKLIST="custom.shitter_list"
+    const val MOVE_HOTBAR="custom.move_hotbar"
+    const val PIP="render.picture_in_picture"
+    const val PET="custom.pet_display"
+    const val SIMON="custom.simon_says"
+    const val BESTIARY="custom.bestiary_esp"
+    const val INVISIBUG="custom.invisibug_esp"
+    const val TIKI="custom.tiki_esp"
+    const val CHINA_HAT="custom.china_hat"
+    const val HALO="custom.halo"
+    const val SECRET_COUNTER="custom.secret_counter"
+    const val ALWAYS_WATER="custom.always_water"
+    const val AMBIENT_PARTICLES="custom.ambient_particles"
+    const val ROTATING_ITEM="custom.rotating_item"
+    const val MOVE_HEARTS="custom.move_hearts"
+    const val MOTION_BLUR="render.motion_blur"
+    const val STOPWATCH="custom.stopwatch"
+    const val DVD="custom.dvd_bounce"
+    const val SKYBOX="render.skybox"
+    const val HELD_ITEM="cosmetic.held_item"
     const val SCOREBOARD="hud.scoreboard"
     const val THEMED_CHAT="hud.themed_chat"
     const val PLAYER_GLOW="render.player_glow"
@@ -130,14 +157,49 @@ object SolyankaClient : ClientModInitializer {
         listOf(AMBIENCE to "Ambience",ASPECT to "Aspect",FOG to "Fog").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {})}
         listOf(PLAYER_GLOW to "Player Glow",NAMETAGS to "Nametags",BLOCK_OUTLINE to "Block Outline",TITANIUM to "Titanium ESP").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {override fun onDisable() {WorldVisuals.reset();if(id==TITANIUM) TitaniumScanner.reset()}})}
         listOf(SCOREBOARD to "Scoreboard",THEMED_CHAT to "Themed Chat").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.HUD)) {})}
+        modules.register(object : Module(ModuleInfo(HELD_ITEM,"Held Item Shader",Category.RENDER)) {override fun onEnable() {HeldItemCosmetic.retry()};override fun onDisable() {HeldItemCosmetic.suspend()}})
+        modules.register(object : Module(ModuleInfo(SKYBOX,"Skybox",Category.RENDER)) {override fun onEnable() {SkyboxVisual.retry()};override fun onDisable() {SkyboxVisual.requestCleanup()};override fun onReset(reason:ResetReason) {SkyboxVisual.requestCleanup()}})
+        modules.register(object : Module(ModuleInfo(MOTION_BLUR,"Motion Blur",Category.RENDER)) {override fun onEnable() {TemporalBlur.retry()};override fun onDisable() {TemporalBlur.requestCleanup()};override fun onReset(reason:ResetReason) {TemporalBlur.requestCleanup()}})
+        modules.register(object : Module(ModuleInfo(STOPWATCH,"Stopwatch",Category.HUD)) {override fun onDisable() {ArchiveHuds.resetTimer()};override fun onReset(reason:ResetReason) {ArchiveHuds.resetTimer()}})
+        modules.register(object : Module(ModuleInfo(DVD,"DVD Bounce",Category.HUD)) {override fun onDisable() {ArchiveHuds.resetDvd()};override fun onReset(reason:ResetReason) {ArchiveHuds.resetDvd()}})
+        modules.register(object : Module(ModuleInfo(AMBIENT_PARTICLES,"Ambient Particles",Category.RENDER)) {})
+        modules.register(object : Module(ModuleInfo(ROTATING_ITEM,"Rotating Item",Category.RENDER)) {override fun onEnable() {ArchiveVisuals.resetRotation()};override fun onDisable() {ArchiveVisuals.resetRotation()};override fun onReset(reason:ResetReason) {ArchiveVisuals.resetRotation()}})
+        modules.register(object : Module(ModuleInfo(MOVE_HEARTS,"Move Hearts",Category.HUD)) {})
+        modules.register(object : Module(ModuleInfo(SECRET_COUNTER,"Secret Counter",Category.DUNGEON)) {override fun onEnable() {SecretCounter.reset()};override fun onDisable() {SecretCounter.reset()};override fun onReset(reason:ResetReason) {SecretCounter.reset()}})
+        modules.register(object : Module(ModuleInfo(ALWAYS_WATER,"Always Water",Category.RENDER)) {})
+        listOf(BESTIARY to "Bestiary ESP",INVISIBUG to "Invisibug ESP",TIKI to "Tiki ESP",CHINA_HAT to "ChinaHat",HALO to "Halo").forEach {(id,name)->
+            modules.register(object:Module(ModuleInfo(id,name,if(id in setOf(CHINA_HAT,HALO)) Category.COSMETIC else Category.HUNTING)) {
+                override fun onDisable() {dev.solyanka.client.feature.HuntingFeatures.reset()}
+                override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.HuntingFeatures.reset()}
+            })
+        }
+        modules.register(object:Module(ModuleInfo(SIMON,"Simon Says",Category.SOLVER)) {
+            override fun onDisable() {dev.solyanka.client.feature.SimonSolver.reset()}
+            override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.SimonSolver.reset()}
+        })
+        modules.register(object:Module(ModuleInfo(PET,"Pet Display",Category.HUD)) {
+            override fun onDisable() {dev.solyanka.client.feature.PetDisplay.reset()}
+            override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.PetDisplay.reset()}
+        })
+        modules.register(object:Module(ModuleInfo(PIP,"Picture in Picture",Category.RENDER)) {
+            override fun onDisable() {dev.solyanka.client.feature.PictureInPicture.reset()}
+            override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.PictureInPicture.reset()}
+        })
+        modules.register(object:Module(ModuleInfo(MOVE_HOTBAR,"Move Hotbar",Category.HUD)) {})
+        modules.register(object:Module(ModuleInfo(BLOCKLIST,"ShitterList",Category.DUNGEON)) {
+            override fun onDisable() {dev.solyanka.client.feature.ShitterList.reset()}
+            override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.ShitterList.reset()}
+        })
         config.load()
         profile = config.profile()
         general = config.general()
         InfoTooltips.register()
         FeatureRuntime.register()
-        ExtraHuds.register();WorldVisuals.register();ScoreboardHud.register()
+        dev.solyanka.client.feature.PictureInPicture.register();dev.solyanka.client.feature.PetDisplay.register();dev.solyanka.client.feature.ShitterList.register();SecretCounter.register();dev.solyanka.client.feature.SimonSolver.register()
+        ArchiveHuds.register();ExtraHuds.register();WorldVisuals.register();ScoreboardHud.register()
         PriceTooltips.register()
         Suppression.register()
+        dev.solyanka.client.feature.VanillaHotbar.register();VanillaHearts.register() // Wrap existing visibility filters; never bypass their decisions.
         DungeonPuzzles.register();DungeonMap.register();DungeonWaypoints.register()
         modules.all().forEach { module ->
             try { module.setEnabled(config.enabled(module.info.id)) }
@@ -146,6 +208,7 @@ object SolyankaClient : ClientModInitializer {
         settingsKey = KeyMappingHelper.registerKeyMapping(KeyMapping("key.solyanka.settings", GLFW.GLFW_KEY_RIGHT_SHIFT,
             KeyMapping.Category.register(Identifier.fromNamespaceAndPath("solyanka", "general"))))
         ClientTickEvents.END_CLIENT_TICK.register { client ->
+            dev.solyanka.client.feature.PictureInPicture.tick();TemporalBlur.tick();ArchiveHuds.tick();SkyboxVisual.tick()
             val world = client.level
             if (world !== previousWorld) {
                 modules.reset(if (world == null) ResetReason.DISCONNECTED else ResetReason.WORLD_CHANGED)
@@ -164,7 +227,7 @@ object SolyankaClient : ClientModInitializer {
                 openSettingsRequested = false
                 client.setScreenAndShow(ConfigUi.create(null))
             }
-            if (world != null && client.player != null) { FeatureRuntime.tick(client); ExtraHuds.tick(client);WorldVisuals.reset();TitaniumScanner.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
+            if (world != null && client.player != null) { FeatureRuntime.tick(client);dev.solyanka.client.feature.ShitterList.tick();dev.solyanka.client.feature.PetDisplay.tick();dev.solyanka.client.feature.SimonSolver.tick();dev.solyanka.client.feature.HuntingFeatures.tick(client);SecretCounter.tick(); ArchiveVisuals.tick(client);ExtraHuds.tick(client);HeldItemCosmetic.tick();WorldVisuals.reset();TitaniumScanner.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
         }
         ClientSendMessageEvents.ALLOW_COMMAND.register { command ->
             if (bypassExpansion || !isEnabled(SHORTCUTS)) true
@@ -179,7 +242,7 @@ object SolyankaClient : ClientModInitializer {
         }
         ClientLifecycleEvents.CLIENT_STOPPING.register {
             config.save(states(), profile, general)
-            modules.shutdown(); FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset();WorldVisuals.reset();TitaniumScanner.reset(); ownedInputs.clear(); previousWorld = null; initialized = false
+            modules.shutdown(); dev.solyanka.client.feature.ShitterList.close(); dev.solyanka.client.feature.PictureInPicture.close();TemporalBlur.close();ArchiveHuds.resetTimer();ArchiveHuds.resetDvd(); SkyboxVisual.close(); HeldItemCosmetic.close(); FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset();WorldVisuals.reset();TitaniumScanner.reset(); ownedInputs.clear(); previousWorld = null; initialized = false
         }
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             dispatcher.register(literal("solyanka")
@@ -210,7 +273,7 @@ object SolyankaClient : ClientModInitializer {
                 })))
         }
         initialized = true
-        logger.info("solyanka 0.8.0 initialized for Minecraft 26.2")
+        logger.info("solyanka 1.2.0 initialized for Minecraft 26.2")
     }
 
     /** Validate and persist first; do not activate an invalid or unwritable UI draft. */
@@ -242,6 +305,7 @@ object SolyankaClient : ClientModInitializer {
             if(ChatTweaks.copy(client,device,key)) { ownedInputs.add(token);return true }
         } catch(e:Exception) { logger.error("Chat copy failure",e) }
         if (DungeonWaypoints.editorInput(device,key)) {ownedInputs.add(token);return true}
+        if (ArchiveHuds.input(device,key)) {ownedInputs.add(token);return true}
         if (!isEnabled(KEYBINDS)) return false
         try {
             val screen = client.gui.screen()

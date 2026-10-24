@@ -39,7 +39,11 @@
     "VisualEntityRendererMixin",
     "ThemedChatMixin",
     "ThemedChatFillMixin",
-    "ThemedChatScreenMixin"
+    "ThemedChatScreenMixin",
+    "HeldItemFeatureMixin",
+    "SkyboxMixin",
+    "TemporalBlurMixin",
+    "RotatingItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -30,6 +30,12 @@ object FeatureUi {
     fun open(id:String,host:NoFrillsClickGui,model:InstantSettings) {
         val v=View(host,model)
         when(id) {
+            SolyankaClient.BLOCKLIST,SolyankaClient.MOVE_HOTBAR,SolyankaClient.PIP,SolyankaClient.PET,SolyankaClient.SIMON,SolyankaClient.BESTIARY,SolyankaClient.INVISIBUG,SolyankaClient.TIKI,SolyankaClient.CHINA_HAT,SolyankaClient.HALO->HuntingUi.open(id,host,model)
+            SolyankaClient.SECRET_COUNTER,SolyankaClient.ALWAYS_WATER->ArchiveDungeonUi.open(id,host,model)
+            SolyankaClient.AMBIENT_PARTICLES,SolyankaClient.ROTATING_ITEM,SolyankaClient.MOVE_HEARTS->ArchiveVisualUi.open(id,host,model)
+            SolyankaClient.MOTION_BLUR,SolyankaClient.STOPWATCH,SolyankaClient.DVD->ReleaseOneUi.open(id,host,model)
+            SolyankaClient.SKYBOX->SkyboxUi.open(host,model)
+            SolyankaClient.HELD_ITEM->HeldItemUi.open(host,model)
             SolyankaClient.SCOREBOARD,SolyankaClient.THEMED_CHAT->HudStyleUi.open(id,host,model)
             SolyankaClient.PLAYER_GLOW,SolyankaClient.NAMETAGS,SolyankaClient.BLOCK_OUTLINE,SolyankaClient.TITANIUM->WorldVisualUi.open(id,host,model)
             SolyankaClient.INVENTORY_HUD,SolyankaClient.ITEM_NAME_HUD,SolyankaClient.SKILL_HUD->ExtraHudUi.open(id,host,model)

@@ -1,5 +1,4 @@
-To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
-Daemon will be stopped at the end of the build 
+Starting a Gradle Daemon, 1 stopped Daemon could not be reused, use --status for details
 
 > Configure project :
 Fabric Loom: 1.18.4
@@ -25,11 +24,14 @@ w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonPu
 w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt:99:13 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
 w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt:99:36 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
 w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt:115:43 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
-w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonWaypoints.kt:51:17 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
-w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonWaypoints.kt:58:113 Unnecessary non-null assertion (!!) on a non-null receiver of type 'RoomFacing'.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonWaypoints.kt:53:17 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/DungeonWaypoints.kt:60:113 Unnecessary non-null assertion (!!) on a non-null receiver of type 'RoomFacing'.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/HuntingFeatures.kt:75:15 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/SimonSolver.kt:69:47 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
+w: file:///data/solyanka/src/client/kotlin/dev/solyanka/client/feature/SimonSolver.kt:80:13 'fun hasChunkAt(pos: BlockPos): Boolean' is deprecated. Deprecated in Java.
 
-> Task :compileClientJava NO-SOURCE
-> Task :clientClasses UP-TO-DATE
+> Task :compileClientJava
+> Task :clientClasses
 > Task :jar
 > Task :assemble
 > Task :compileTestKotlin
@@ -47,5 +49,5 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/9.7.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 45s
-10 actionable tasks: 9 executed, 1 up-to-date
+BUILD SUCCESSFUL in 55s
+11 actionable tasks: 10 executed, 1 up-to-date

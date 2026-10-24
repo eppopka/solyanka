@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.EnvironmentLogicTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-24T15:42:08.146Z" hostname="92f9206d-8b0" time="0.007">
+  <properties/>
+  <testcase name="Sodium uses native distance ramp without unsupported shader patch()" classname="dev.solyanka.utility.EnvironmentLogicTest" time="0.001"/>
+  <testcase name="secret drop filter does not classify ordinary mob drops()" classname="dev.solyanka.utility.EnvironmentLogicTest" time="0.001"/>
+  <testcase name="fog minimum view and valid ordered distances()" classname="dev.solyanka.utility.EnvironmentLogicTest" time="0.0"/>
+  <testcase name="zero density remains transparent and color uses RGB()" classname="dev.solyanka.utility.EnvironmentLogicTest" time="0.0"/>
+  <testcase name="environment settings validate range and numeric types()" classname="dev.solyanka.utility.EnvironmentLogicTest" time="0.005"/>
+  <testcase name="weather returns source levels without changing no-change input()" classname="dev.solyanka.utility.EnvironmentLogicTest" time="0.0"/>
+  <testcase name="clock choices preserve source constants and no-change()" classname="dev.solyanka.utility.EnvironmentLogicTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

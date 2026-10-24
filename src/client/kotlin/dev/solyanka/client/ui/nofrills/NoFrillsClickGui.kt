@@ -26,16 +26,42 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     private var cursorX=0;private var cursorY=0
     private var panel:SettingsPanel?=null
     private var toggleError:String?=null
-    fun showPanel(next:SettingsPanel) {
-        uiAdapter.rootComponent.focusHandler()?.focus(null,UIComponent.FocusSource.MOUSE_CLICK)
-        panel?.dispose();panel=next;next.mount(width,height)
+    private val navigation=PanelNavigation<SettingsPanel>()
+    private var panelPosition:PanelDrag.Point?=null
+    private val logger=org.slf4j.LoggerFactory.getLogger("solyanka/gui")
+    fun showPanel(next:SettingsPanel) {navigation.open(next)}
+    fun closePanel() {navigation.close()}
+    private fun commitNavigation() {
+        val request=navigation.take() ?: return
+        val next=request.panel
+        if(next==null) {
+            panelPosition=panel?.position() ?: panelPosition
+            panel?.dispose();panel=null;populate();return
+        }
+        try {
+            // Build first; a failing settings constructor leaves the previous UI usable.
+            next.placeAt(panel?.position() ?: panelPosition);next.mount(width,height)
+            uiAdapter.rootComponent.focusHandler()?.focus(null,UIComponent.FocusSource.MOUSE_CLICK)
+            panel?.dispose();panel=next;toggleError=null
+        } catch(e:Exception) {
+            runCatching {next.dispose()};logger.error("Cannot open settings panel",e)
+            toggleError="Settings could not open — details in logs/latest.log"
+        }
     }
-    fun closePanel() { panel?.dispose();panel=null;populate() }
+    private fun panelInput(action:(SettingsPanel)->Unit):Boolean {
+        val current=panel ?: return false
+        try {action(current)} catch(e:Exception) {
+            logger.error("Settings panel input failed",e);navigation.close()
+            toggleError="Settings input failed — see logs/latest.log"
+        }
+        return true
+    }
     override fun createAdapter():OwoUIAdapter<FlowLayout> = OwoUIAdapter.create(this) { w,h -> UIContainers.verticalFlow(w,h) }
     override fun build(root:FlowLayout) {
         // Transparent root: opening the GUI or a settings panel does not dim the world.
         columns=UIContainers.horizontalFlow(Sizing.content(),Sizing.fill(100))
-        mainScroll=UIContainers.horizontalScroll(Sizing.fill(100),Sizing.fill(78),columns)
+        mainScroll=UIContainers.horizontalScroll(Sizing.fixed((width-16).coerceAtLeast(1)),Sizing.fixed((height-92).coerceAtLeast(35)),columns)
+        mainScroll.positioning(Positioning.absolute(8,32))
         mainScroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.WHITE)))
         root.child(mainScroll)
         val search=FlatTextbox(Sizing.fixed(minOf(200,(width-100).coerceAtLeast(80))))
@@ -52,7 +78,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
         val groups=GuiCatalog.search(query)
         if(groups.isEmpty()) columns.child(GuiKit.label("No matching features").apply { margins(Insets.of(8)) })
         groups.forEach { (name,features) ->
-            val w=maxOf(100,features.maxOf { Minecraft.getInstance().font.width(it.name)+12 })
+            val w=maxOf(136,features.maxOf { Minecraft.getInstance().font.width(it.name)+26 })
             val cards=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content())
             features.forEach { info -> cards.child(FeatureCard(info,w,
                 toggle={
@@ -60,17 +86,17 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
                     val failure=SolyankaClient.applySettings(SolyankaClient.currentProfile(),states)
                     toggleError=failure
                 },
-                settings=if(info.id=="core.diagnostics") null else ({ ConfigUi.openSettings(info.id,this) })
+                settings=if(info.id=="core.diagnostics") null else ({ try {ConfigUi.openSettings(info.id,this)} catch(e:Exception) {logger.error("Cannot prepare settings for ${info.id}",e);toggleError="Settings unavailable — see logs/latest.log"} })
             )) }
             val scroll=UIContainers.verticalScroll(Sizing.fixed(w),Sizing.fill(90),cards)
             scroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.BLUE)))
             categoryScrolls.add(scroll)
             val header=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content()).apply {
-                alignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER);padding(Insets.of(3));surface(Surface.flat(GuiKit.BLUE))
-                child(GuiKit.label(name).apply { horizontalTextAlignment(HorizontalAlignment.CENTER) })
+                alignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER);padding(Insets.of(6));surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.RAISED,GuiKit.LINE,5)}
+                child(GuiKit.label(name.uppercase()).apply { horizontalTextAlignment(HorizontalAlignment.CENTER) })
             }
             columns.child(UIContainers.verticalFlow(Sizing.fixed(w),Sizing.fill(100)).apply {
-                margins(Insets.of(5,0,3,0));child(header);child(scroll)
+                margins(Insets.of(3,0,4,4));gap(4);child(header);child(scroll)
             })
         }
     }
@@ -79,47 +105,56 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     }
     override fun getFocused():net.minecraft.client.gui.components.events.GuiEventListener? = panel?.adapter ?: super.getFocused()
     override fun extractRenderState(g:GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
-        super.extractRenderState(g,mx,my,delta);cursorX=mx;cursorY=my
-        g.text(font,"solyanka • Minecraft 26.2",3,height-43,GuiKit.BLUE)
+        commitNavigation()
+        // A modal panel owns input and rendering; do not extract the obscured 55-card tree.
+        if(panel==null) super.extractRenderState(g,mx,my,delta)
+        cursorX=mx;cursorY=my
+        g.text(font,"solyanka",12,12,GuiKit.WHITE)
+        if(width>290)g.text(font,"CLIENT UTILITIES  /  26.2",83,12,GuiKit.MUTED)
+        g.text(font,if(panel==null) "Right-click a feature to configure" else "Drag the settings title bar to move it",8,height-43,GuiKit.MUTED)
         g.text(font,"Left click: toggle  |  Right click: settings",3,height-32,GuiKit.WHITE)
         toggleError?.let { g.text(font,"Not saved: $it",3,height-54,0xffff5555.toInt()) }
-        panel?.adapter?.let { it.extractRenderState(g,mx,my,delta);it.drawTooltip(g,mx,my,delta) }
+        val current=panel
+        if(current!=null)try {current.render(g,mx,my,delta)} catch(e:Exception) {
+            logger.error("Settings panel rendering failed",e);navigation.close()
+            toggleError="Settings rendering failed — see logs/latest.log"
+        }
     }
     override fun mouseScrolled(x:Double,y:Double,horizontal:Double,vertical:Double):Boolean {
-        panel?.let { it.adapter.mouseScrolled(x,y,horizontal,vertical);return true }
+        if(panelInput {it.adapter.mouseScrolled(x,y,horizontal,vertical)})return true
         if(!::mainScroll.isInitialized) return super.mouseScrolled(x,y,horizontal,vertical)
         val hovered=categoryScrolls.firstOrNull { it.isInBoundingBox(x,y) }
         return hovered?.onMouseScroll(x,y,vertical*2) ?: mainScroll.onMouseScroll(x,y,vertical*2)
     }
     override fun keyPressed(event:KeyEvent):Boolean {
-        panel?.let { it.keyPressed(event);return true }
+        if(panelInput {it.keyPressed(event)})return true
         if(event.key()==GLFW.GLFW_KEY_PAGE_UP || event.key()==GLFW.GLFW_KEY_PAGE_DOWN) {
             return mouseScrolled(cursorX.toDouble(),cursorY.toDouble(),0.0,if(event.key()==GLFW.GLFW_KEY_PAGE_UP) 4.0 else -4.0)
         }
         return super.keyPressed(event)
     }
     override fun mouseClicked(event:MouseButtonEvent,doubled:Boolean):Boolean {
-        panel?.let { it.mouseClicked(event,doubled);return true }
+        if(panelInput {it.mouseClicked(event,doubled)})return true
         return super.mouseClicked(event,doubled)
     }
     override fun mouseReleased(event:MouseButtonEvent):Boolean {
-        panel?.let { it.adapter.mouseReleased(event);return true }
+        if(panelInput {it.mouseReleased(event)})return true
         return super.mouseReleased(event)
     }
     override fun mouseDragged(event:MouseButtonEvent,dx:Double,dy:Double):Boolean {
-        panel?.let { it.adapter.mouseDragged(event,dx,dy);return true }
+        if(panelInput {it.mouseDragged(event,dx,dy)})return true
         return super.mouseDragged(event,dx,dy)
     }
     override fun charTyped(event:CharacterEvent):Boolean {
-        panel?.let { it.charTyped(event);return true }
+        if(panelInput {it.charTyped(event)})return true
         return super.charTyped(event)
     }
     override fun resize(width:Int,height:Int) { super.resize(width,height);panel?.mount(width,height) }
     // Navigation returns fresh screen instances; release owned native cursor handles.
-    override fun dispose() { panel?.dispose();panel=null;super.dispose();uiAdapter=null }
+    override fun dispose() { navigation.clear();panel?.dispose();panel=null;super.dispose();uiAdapter=null }
     override fun removed() { super.removed();dispose() }
     override fun onClose() {
-        if(panel!=null) { closePanel();return }
+        if(panel!=null || navigation.pending()) { closePanel();return }
         val client=Minecraft.getInstance()
         if(previous!=null) client.setScreenAndShow(previous) else client.gui.setScreen(null)
     }
@@ -129,13 +164,13 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
     FlowLayout(Sizing.fixed(width),Sizing.content(),Algorithm.VERTICAL) {
     private val title=GuiKit.label(info.name)
     init {
-        title.margins(Insets.of(3,2,5,5));title.tooltip(Component.literal(info.description));child(title);paint()
+        title.margins(Insets.of(6,6,10,10));title.tooltip(Component.literal(info.description));child(title);paint()
     }
     private fun paint() {
         val active=SolyankaClient.isEnabled(info.id)
-        title.text(Component.literal(info.name).withColor(if(active) 0x5ca0bf else 0xdddddd))
-        if(active) surface(Surface.flat(0xaa101010.toInt()).and { g,c -> g.fill(c.x(),c.y(),c.x()+2,c.y()+c.height(),GuiKit.WHITE) })
-        else surface(Surface.flat(0xaa000000.toInt()))
+        title.text(Component.literal(info.name).withColor(if(active) 0xb8e9ff else 0xc3cede))
+        if(active) surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),0xf0243948.toInt(),0xff527c96.toInt(),4);g.fill(c.x()+4,c.y()+5,c.x()+6,c.y()+c.height()-5,GuiKit.BLUE)}
+        else surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.PANEL,GuiKit.LINE,4)}
     }
     override fun onMouseDown(click:MouseButtonEvent,doubled:Boolean):Boolean {
         return when(click.button()) {

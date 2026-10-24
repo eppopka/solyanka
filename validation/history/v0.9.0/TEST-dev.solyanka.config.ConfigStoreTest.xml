@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.config.ConfigStoreTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-10-24T12:19:58.791Z" hostname="2d8e288e-7a4" time="0.371">
+  <properties/>
+  <testcase name="missing file yields disabled defaults and can be saved()" classname="dev.solyanka.config.ConfigStoreTest" time="0.064"/>
+  <testcase name="instant new HUD edits reach disk and reject invalid scale()" classname="dev.solyanka.config.ConfigStoreTest" time="0.131"/>
+  <testcase name="corrupt config is not overwritten()" classname="dev.solyanka.config.ConfigStoreTest" time="0.002"/>
+  <testcase name="non boolean module state disables writes()" classname="dev.solyanka.config.ConfigStoreTest" time="0.004"/>
+  <testcase name="successful save leaves no temporary files()" classname="dev.solyanka.config.ConfigStoreTest" time="0.003"/>
+  <testcase name="unknown config settings and modules survive save()" classname="dev.solyanka.config.ConfigStoreTest" time="0.001"/>
+  <testcase name="invalid new feature config disables writes without replacing file()" classname="dev.solyanka.config.ConfigStoreTest" time="0.008"/>
+  <testcase name="future schema is left untouched()" classname="dev.solyanka.config.ConfigStoreTest" time="0.003"/>
+  <testcase name="old config gains safe defaults without dropping command settings()" classname="dev.solyanka.config.ConfigStoreTest" time="0.018"/>
+  <testcase name="invalid transient instant edit leaves last successful disk value()" classname="dev.solyanka.config.ConfigStoreTest" time="0.035"/>
+  <testcase name="invalid general section disables writes and preserves original()" classname="dev.solyanka.config.ConfigStoreTest" time="0.006"/>
+  <testcase name="invalid new general draft cannot replace last good config()" classname="dev.solyanka.config.ConfigStoreTest" time="0.003"/>
+  <testcase name="command only saves preserve general settings and unknown nested fields()" classname="dev.solyanka.config.ConfigStoreTest" time="0.017"/>
+  <testcase name="instant edit reaches disk before editor is closed()" classname="dev.solyanka.config.ConfigStoreTest" time="0.012"/>
+  <testcase name="new feature save preserves older profile chat and unknown HUD fields()" classname="dev.solyanka.config.ConfigStoreTest" time="0.016"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

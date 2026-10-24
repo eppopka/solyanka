@@ -3,7 +3,7 @@
   "id": "solyanka",
   "version": "${version}",
   "name": "solyanka",
-  "description": "Minecraft 26.2 utility mod: Odin dungeon/HUD adapters, NoFrills utilities/experiments, Stray styled HUD/chat/environment/world visuals and instant-save GUI. Full feature backlog remains in progress.",
+  "description": "Minecraft 26.2 utility mod: Odin dungeon/HUD adapters, NoFrills utilities/experiments, archive personal secrets/indoor rain/stopwatch/DVD/native-health HUDs, ambient particles and rotating items, Stray temporal accumulation blur/skybox/held-item shaders/styled HUD/chat/environment/world visuals and instant-save GUI. Full feature backlog remains in progress.",
   "environment": "client",
   "license": "GPL-3.0-only",
   "entrypoints": {

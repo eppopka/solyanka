@@ -8,6 +8,11 @@ import org.spongepowered.asm.mixin.injection.*
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 @Mixin(ClientPacketListener::class)
 abstract class DungeonEventMixin {
+ @Inject(method=["handleBlockUpdate"],at=[At(value="INVOKE",target="Lnet/minecraft/network/protocol/game/ClientboundBlockUpdatePacket;getPos()Lnet/minecraft/core/BlockPos;",ordinal=0)])
+ private fun solyankaSimonBlock(p:net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket,ci:CallbackInfo) {dev.solyanka.client.feature.SimonSolver.observe(p.pos,p.blockState)}
+ @Inject(method=["handleChunkBlocksUpdate"],at=[At(value="INVOKE",target="Lnet/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket;runUpdates(Ljava/util/function/BiConsumer;)V")])
+ private fun solyankaSimonSection(p:net.minecraft.network.protocol.game.ClientboundSectionBlocksUpdatePacket,ci:CallbackInfo) {p.runUpdates {pos,state->dev.solyanka.client.feature.SimonSolver.observe(pos.immutable(),state)}}
+
  @Inject(method=["handleEntityEvent"],at=[At("TAIL")])
  private fun solyankaEntityEvent(p:ClientboundEntityEventPacket,ci:CallbackInfo) {val level=Minecraft.getInstance().level ?: return;dev.solyanka.client.feature.DungeonPuzzles.event(p.getEntity(level),p.eventId.toInt())}
 

@@ -22,7 +22,6 @@ import kotlin.math.roundToInt
 object ExtraHuds {
     val skills=SkillProgress()
     private var lastLevelTick=Int.MIN_VALUE
-    private val armorSlots=listOf(EquipmentSlot.HEAD,EquipmentSlot.CHEST,EquipmentSlot.LEGS,EquipmentSlot.FEET)
     fun reset() {skills.reset();lastLevelTick=Int.MIN_VALUE}
     fun tick(client:Minecraft) {
         if(!SolyankaClient.isEnabled(SolyankaClient.SKILL_HUD) || !FeatureRuntime.context.skyblock) {reset();return}
@@ -50,39 +49,7 @@ object ExtraHuds {
     }
     private fun panel(g:GuiGraphicsExtractor,w:Int,h:Int,enabled:Boolean,color:Int) {if(enabled) {g.fill(0,0,w,h,color);dev.solyanka.client.ui.nofrills.GuiKit.border(g,0,0,w,h,0xff5ca0bf.toInt())}}
     private fun inventory(g:GuiGraphicsExtractor,s:InventoryHudSettings,sample:Boolean=false,x:Int?=null,y:Int?=null) {
-        val c=Minecraft.getInstance();val player=c.player;val m=InventoryHudLayout.metrics(s)
-        frame(g,s.hud,m.width,m.height,x,y) {
-            panel(g,m.width,m.height,s.background,s.backgroundColor)
-            if(!s.minimal) {
-                g.text(c.font,"INVENTORY",m.pad+4,m.pad+1,s.hud.color,true)
-                if(s.count) {
-                    val filled=if(sample) "9/41" else ((0..35).count {player?.inventory?.getItem(it)?.isEmpty==false}+armorSlots.count {player?.getItemBySlot(it)?.isEmpty==false}+if(player?.offhandItem?.isEmpty==false) 1 else 0).toString()+"/41"
-                    g.text(c.font,filled,m.width-m.pad-c.font.width(filled),m.pad+1,s.hud.color,true)
-                }
-            }
-            fun slot(stack:ItemStack,sx:Int,sy:Int,seed:Int,empty:String="",selected:Boolean=false) {
-                if(!s.minimal) {
-                    g.fill(sx,sy,sx+18,sy+18,0x66202020)
-                    dev.solyanka.client.ui.nofrills.GuiKit.border(g,sx,sy,18,18,if(selected) 0xff5ca0bf.toInt() else 0xff444444.toInt())
-                }
-                if(!stack.isEmpty) {g.item(stack,sx+1,sy+1,seed);g.itemDecorations(c.font,stack,sx+1,sy+1)}
-                else if(empty.isNotEmpty()) g.text(c.font,empty,sx+5,sy+5,0xff777777.toInt(),false)
-            }
-            if(s.armor) {
-                val sampleArmor=listOf(Items.DIAMOND_HELMET,Items.DIAMOND_CHESTPLATE,Items.DIAMOND_LEGGINGS,Items.DIAMOND_BOOTS)
-                armorSlots.forEachIndexed {i,e->slot(if(sample) ItemStack(sampleArmor[i]) else player?.getItemBySlot(e) ?: ItemStack.EMPTY,m.pad+i*20,m.armorY,100+i,listOf("H","C","L","B")[i])}
-                slot(if(sample) ItemStack(Items.SHIELD) else player?.offhandItem ?: ItemStack.EMPTY,m.pad+100,m.armorY,104,"O")
-            }
-            InventoryHudLayout.mainSlots().forEach {index->
-                val i=index-9
-                val stack=if(sample && i<3) ItemStack(listOf(Items.DIAMOND,Items.EMERALD,Items.ENDER_PEARL)[i]) else if(sample) ItemStack.EMPTY else player?.inventory?.getItem(index) ?: ItemStack.EMPTY
-                slot(stack,m.pad+i%9*20,m.mainY+i/9*20,index)
-            }
-            if(s.hotbar) {
-                g.fill(m.pad,m.hotbarY-3,m.width-m.pad,m.hotbarY-2,0xff444444.toInt())
-                InventoryHudLayout.hotbarSlots().forEach {i->slot(if(sample && i==0) ItemStack(Items.DIAMOND_SWORD) else if(sample) ItemStack.EMPTY else player?.inventory?.getItem(i) ?: ItemStack.EMPTY,m.pad+i*20,m.hotbarY,i,selected=if(sample) i==0 else player?.inventory?.selectedSlot==i)}
-            }
-        }
+        StrayInventoryHud.draw(g,s,sample,x,y)
     }
     private fun itemName(g:GuiGraphicsExtractor,s:ItemNameHudSettings,sample:Boolean=false,x:Int?=null,y:Int?=null) {
         val c=Minecraft.getInstance();val stack=c.player?.mainHandItem

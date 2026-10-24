@@ -1,0 +1,55 @@
+{
+  "targets": [
+    {
+      "class_name": "net.minecraft.client.gui.components.ChatComponent",
+      "method": "extractRenderState",
+      "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;IIILnet/minecraft/client/gui/components/ChatComponent$DisplayMode;Z)V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.gui.components.ChatComponent$DrawingBackgroundGraphicsAccess",
+      "method": "fill",
+      "descriptor": "(IIIII)V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.gui.components.ChatComponent$DrawingFocusedGraphicsAccess",
+      "method": "fill",
+      "descriptor": "(IIIII)V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.gui.screens.ChatScreen",
+      "method": "extractRenderState",
+      "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.gui.components.ChatComponent",
+      "method": "getWidth",
+      "descriptor": "()I",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.gui.components.ChatComponent",
+      "method": "getScale",
+      "descriptor": "()D",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.gui.components.ChatComponent",
+      "method": "getLineHeight",
+      "descriptor": "()I",
+      "target_exists": true
+    }
+  ],
+  "input_fill_callsites": 1,
+  "scissor_transforms_gui_pose": true,
+  "compiled_chat_scope_has_finally": true,
+  "vanilla_security_handlers_not_cancelled": true,
+  "vanilla_text_and_hitboxes_not_shifted": true,
+  "nametags_keep_components": true,
+  "block_halo_is_geometry_not_framebuffer_blur": true,
+  "in_game_tested_here": false,
+  "mixin_application_tested_here": false
+}

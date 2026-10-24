@@ -1,6 +1,6 @@
-# Feature matrix — 0.8.0-dev
+# Feature matrix — 1.2.0
 
-35 registered modules; `/solyanka gui` edits the existing HUD layouts (not a new gameplay module). IMPLEMENTED means code/build-tested, **not** full upstream parity or in-game acceptance. All requested features except the user-excluded AetherOSSettings remain in scope; no placeholder toggles. Read M4.md for provider, editor, rendering and score adaptations.
+45 registered modules; `/solyanka gui` edits the existing HUD layouts (not a new gameplay module). IMPLEMENTED means code/build-tested, **not** full upstream parity or in-game acceptance. All requested features except the user-excluded AetherOSSettings remain in scope; no placeholder toggles. Read M4.md for provider, editor, rendering and score adaptations.
 
 | Source | Feature | Module | Current status |
 |---|---|---|---|
@@ -25,11 +25,11 @@
 | NoFrills | No Cursor Reset | `utility.cursor` | Adapted implementation; in-game pending |
 | NoFrills | No Loading Screen | `utility.loading_screen` | Adapted implementation; in-game pending |
 | NoFrills | Experiment Solver | `solver.experiments` | Adapted implementation; in-game pending |
-| Stray | Skybox | `render.skybox` | Pending implementation |
+| Stray | Skybox | `render.skybox` | Source six-face/animated black-hole End sky and tint; native 26.2 port; in-game pending |
 | Stray | Ambience | `render.ambience` | Adapted implementation; in-game pending |
 | Stray | Fog | `render.fog` | Adapted implementation; in-game pending |
 | Stray | Aspect | `render.aspect` | Adapted implementation; in-game pending |
-| Stray | Motion Blur | `render.motion_blur` | Pending implementation |
+| Stray | Motion Blur | `render.motion_blur` | Accumulation Mix/Max adapted; velocity/frame-blend/hybrid pending; in-game pending |
 | Stray | Player Glow | `render.player_glow` | Native silhouette adaptation; source blur styles pending; in-game pending |
 | Stray | Nametags | `render.nametags` | Rounded styled player plates; in-game pending |
 | Stray | Block Outline | `render.block_outline` | Adapted contour/fill/soft halo; source framebuffer blur pending; in-game pending |
@@ -41,11 +41,11 @@
 | Stray | Item Name | `hud.item_name` | Adapted implementation; in-game pending |
 | Stray | Themed Chat | `hud.themed_chat` | Adapted pane/input; frost blur/animation pending; in-game pending |
 | Stray | CS2 Knife | `cosmetic.cs2_knife` | Pending implementation |
-| Stray | Held Item | `cosmetic.held_item` | Pending implementation |
+| Stray | Held Item | `cosmetic.held_item` | Four first-person item shader styles; arms/silhouette/special models pending; in-game pending |
 
 ## Archive (impl.zip)
 
-Mimic Chest (`custom.mimic_chest`) is an adapted implementation. 21 other feature objects, including the separate OdinDungeonWaypoints route steps, remain pending. AetherOSSettings is explicitly excluded. See audit/archive-inventory.json for all 34 Kotlin files and their helper dependencies. No entire archive integration claim.
+Mimic Chest (`custom.mimic_chest`), Timer/Stopwatch (`custom.stopwatch`), DVD Bounce (`custom.dvd_bounce`), Ambient Particles (`custom.ambient_particles`), Rotating Item (`custom.rotating_item`), Move Hearts (`custom.move_hearts`), Secret Counter (`custom.secret_counter`) and Always Water (`custom.always_water`) are adapted implementations. 14 other feature objects, including the separate OdinDungeonWaypoints route steps, remain pending. AetherOSSettings is explicitly excluded. See audit/archive-inventory.json for all 34 Kotlin files and their helper dependencies. No entire archive integration claim.
 
 ## Pinned source entry points
 
@@ -200,7 +200,7 @@ The archive contains **34 Kotlin files**, including **23 detected Feature object
 |---|---|
 | `impl/dungeon/MimicChest.kt` | Chest/entity evidence, world overlays; reconcile with Odin Mimic without losing options. |
 | `impl/dungeon/OdinDungeonWaypoints.kt` | Room-local transforms, Odin codec, route steps, editor input, secret events and persistence; reconcile both waypoint implementations. |
-| `impl/dungeon/SecretCounter.kt` | Chat/dungeon run events and state persistence. |
+| `impl/dungeon/SecretCounter.kt` | Adapted personal stats request/result state, local report and opt-in announcement; server acceptance pending; M12.md. |
 | `impl/dungeon/ShitterList.kt` | Local list/commands, Mojang profile lookups; retain MIT-derived attribution; use bounded background I/O. |
 | `impl/dungeon/SimonSays.kt` | Packet/block observations, button state, render hints; inspect interaction modes and cancellation. |
 | `impl/general/AetherOSSettings.kt` | EXCLUDED by user request; audit entry only. Do not implement. |
@@ -211,13 +211,13 @@ The archive contains **34 Kotlin files**, including **23 detected Feature object
 | `impl/hunting/TikiESP.kt` | Tower recognition, loaded block/entity state and overlays. |
 | `impl/qol/AutoRag.kt` | Automated casting, slot swapping and optional pet selection; explicit opt-in and server-rule warning. |
 | `impl/qol/AutoReel.kt` | Automated use-item input on REEL labels; opt-in, cooldown, pending-action cancellation on world changes. |
-| `impl/visual/AlwaysWater.kt` | Feature is a hook-facing toggle; external consumer/mixin absent from archive. |
-| `impl/visual/AmbientParticles.kt` | Particle settings/hook-facing feature; external consumer must be recovered. |
+| `impl/visual/AlwaysWater.kt` | Declared indoor-rain intent adapted using native 26.2 weather hooks; missing source mixins not copied; in-game pending; M12.md. |
+| `impl/visual/AmbientParticles.kt` | Adapted eight native styles and bounded tick spawning; in-game pending; M11.md. |
 | `impl/visual/ChinaHat.kt` | World geometry and player pose. |
 | `impl/visual/Cosmetics.kt` | Render-state hooks, badge metadata, halo/wings models, text replacement; external services/assets need review. |
 | `impl/visual/DvdBounce.kt` | HUD text, bounds and resize behavior. |
 | `impl/visual/Halo.kt` | World geometry, blend/depth state and player positioning. |
 | `impl/visual/ItemAura.kt` | Item rendering, capture buffers, GUI/font and GPU integration. |
-| `impl/visual/MoveHearts.kt` | HUD editor and vanilla hearts hooks absent from archive. |
+| `impl/visual/MoveHearts.kt` | Adapted Fabric native health/armor wrappers and HUD editor; in-game pending; M11.md. |
 | `impl/visual/MoveHotbar.kt` | Custom hotbar rendering, layout/editor, status indicators and config. |
-| `impl/visual/RotatingItem.kt` | Held-item transform hook consumer must be recovered. |
+| `impl/visual/RotatingItem.kt` | Adapted five patterns and native 26.2 item-transform hook; in-game pending; M11.md. |

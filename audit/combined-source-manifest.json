@@ -1,0 +1,74 @@
+{
+  "archive": [
+    {
+      "file": "impl/dungeon/OdinDungeonWaypoints.kt",
+      "sha256": "f84bd75d88e0c105e0c8441ec7023805138e11245d8bfd4b84f1475671470060",
+      "module": "dungeon.waypoints",
+      "scope": "Extends existing Odin module: number/note/multiuse title parsing, START, sequential non-jumping cursor, route lookahead, collected filtering and editable HUD. Missing archive RouteSteps helper independently replaced."
+    },
+    {
+      "file": "impl/dungeon/ShitterList.kt",
+      "sha256": "6d839228dde57a32fffefb65e0bceb9906c944e7dcbda8c1be4eb887d61bf030",
+      "module": "custom.shitter_list",
+      "scope": "Independent compatible local UUID list, /sl add/remove/list/importlegacy, bounded opt-in Mojang lookup, PF local warning and opt-in delayed kick. No upstream code copied. Original /sl parse and short aliases not ported."
+    },
+    {
+      "file": "impl/dungeon/SimonSays.kt",
+      "sha256": "14d9082cc82bff9d1b48d2387a62659bdd1c939fa6c5e25f53b8bc82d380df9b",
+      "module": "custom.simon_says",
+      "scope": "Manual F7/M7 P3 solver, pre-update flashes, click guard, progress and break/restart alerts. Triggerbot/Auto Start/custom WAV/title/format not ported."
+    },
+    {
+      "file": "impl/general/BestiaryESP.kt",
+      "sha256": "0d22f6fb47d5a380f8b9284893c94f1cb4aa21f76252242db3470e4257ace310",
+      "module": "custom.bestiary_esp",
+      "scope": "Periodic bounded stand/mob correlation, native glow and nearest tracer; validates changed name/exact policy."
+    },
+    {
+      "file": "impl/general/PetDisplay.kt",
+      "sha256": "e575c24fd06dcee8bd38c6c2675391fa5ca82c6a62521e6b62d7d4d03ace430c",
+      "module": "custom.pet_display",
+      "scope": "Pets-menu snapshots, unique-identity cache, total JSON XP and changed-snapshot rates, active highlight, summon/Autopet tracking and title. Live curve/progress, loadout hook and all polish not ported."
+    },
+    {
+      "file": "impl/hunting/InvisibugESP.kt",
+      "sha256": "46389c996907227e0b7f8f2d39dd61ab9c2ecb78a748bc33afd5354dee119770",
+      "module": "custom.invisibug_esp",
+      "scope": "Exact CRIT+marker signature, four observations, bounded evidence, 20-tick TTL, Galatea guard."
+    },
+    {
+      "file": "impl/hunting/TikiESP.kt",
+      "sha256": "c7e6740f73c9ffe1caaa246098236c76f1f46c9e8b5a352e21841c5da095bc8f",
+      "module": "custom.tiki_esp",
+      "scope": "Three-skull textures, loaded scan, fills/lines/labels and three particle patterns. Auto Black Hole not ported."
+    },
+    {
+      "file": "impl/visual/ChinaHat.kt",
+      "sha256": "4aca34c8241041efb49eccf26a109e4815d78b1da9a02422994f591be89dacdf",
+      "module": "custom.china_hat",
+      "scope": "Cone fill, opaque rim/spokes, rainbow and first-person/depth options; native triangles."
+    },
+    {
+      "file": "impl/visual/Halo.kt",
+      "sha256": "3f00035bed09eb61fadbe5a90d247d954e453bd955b7e84200378bf197125edd",
+      "module": "custom.halo",
+      "scope": "Three nested torus shells, shimmer, bob, rainbow, disc. Native unculled triangles; no framebuffer bloom."
+    },
+    {
+      "file": "impl/visual/MoveHotbar.kt",
+      "sha256": "5b999dfbaea5569d00b932142052c98648f8ce358b8598f09cb6d182dabf3f6d",
+      "module": "custom.move_hotbar",
+      "scope": "Native hotbar translation/scale and optional native item-name/info/XP followers. Custom skins/vertical layout/selection animation not ported."
+    }
+  ],
+  "stray": [
+    {
+      "file": "src/client/java/dev/stray/client/pip/PipWin32.java",
+      "sha256": "75b105448c1cda84075b515691df3702db1bcf7fe23d3980b3e09b6d67f9ecbb",
+      "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+      "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/pip/PipWin32.java",
+      "license": "CC0-1.0; nested third-party notices retained"
+    }
+  ],
+  "source_parity_complete": false
+}

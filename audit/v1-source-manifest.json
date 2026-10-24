@@ -1,0 +1,97 @@
+[
+  {
+    "source": "Stray",
+    "file": "src/client/java/dev/stray/client/visual/motionblur/FrameBlendingManager.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/visual/motionblur/FrameBlendingManager.java",
+    "sha256": "9d6436bb73c1e026fedfdbef40bd6f4485fbaca38e34ed793e361172ebb1c3fd",
+    "scope": "accumulation subset adapted; velocity/hybrid/frame-blend not ported",
+    "license": "CC0-1.0"
+  },
+  {
+    "source": "Stray",
+    "file": "src/client/java/dev/stray/client/visual/motionblur/MotionBlurShaders.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/visual/motionblur/MotionBlurShaders.java",
+    "sha256": "6a86fc41eda10516b052d344786f0255e124cea68d52ea9356cdc487c3118c3e",
+    "scope": "accumulation subset adapted; velocity/hybrid/frame-blend not ported",
+    "license": "CC0-1.0"
+  },
+  {
+    "source": "Stray",
+    "file": "src/client/java/dev/stray/client/mixin/GameRendererMixin.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/mixin/GameRendererMixin.java",
+    "sha256": "a28432d35a0e76d2b6d4d32602012e4911d068c60e176294604ec051434ff286",
+    "scope": "accumulation subset adapted; velocity/hybrid/frame-blend not ported",
+    "license": "CC0-1.0"
+  },
+  {
+    "source": "Stray",
+    "file": "src/client/resources/assets/stray/shaders/post/accumulation_max.fsh",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/shaders/post/accumulation_max.fsh",
+    "sha256": "728dcb5b364e740e0deb2ed33143b40b1e15f0580f672d908da4f5f39226bfec",
+    "scope": "accumulation subset adapted; velocity/hybrid/frame-blend not ported",
+    "license": "CC0-1.0"
+  },
+  {
+    "source": "Stray",
+    "file": "src/client/resources/assets/stray/shaders/post/accumulation_mix.fsh",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/shaders/post/accumulation_mix.fsh",
+    "sha256": "23e3084d62b678249915c3ef73e567bd3b5f4848d05f1e04ba9527d27702f211",
+    "scope": "accumulation subset adapted; velocity/hybrid/frame-blend not ported",
+    "license": "CC0-1.0"
+  },
+  {
+    "source": "Stray",
+    "file": "src/client/resources/assets/stray/post_effect/accumulation_max.json",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/post_effect/accumulation_max.json",
+    "sha256": "f56c5d8637f36f701cabd5403483de89a220d143f6b5f8b1dbd71f094be7c8b4",
+    "scope": "accumulation subset adapted; velocity/hybrid/frame-blend not ported",
+    "license": "CC0-1.0"
+  },
+  {
+    "source": "Stray",
+    "file": "src/client/resources/assets/stray/post_effect/accumulation_mix.json",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/post_effect/accumulation_mix.json",
+    "sha256": "3c827929fe1a5c07dbc3f0bf6887d6fc61307c4cd4701b858d682e9a0d4ba652",
+    "scope": "accumulation subset adapted; velocity/hybrid/frame-blend not ported",
+    "license": "CC0-1.0"
+  },
+  {
+    "source": "Stray",
+    "file": "src/client/java/dev/stray/client/visual/motionblur/BlurStrengthCalculator.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/visual/motionblur/BlurStrengthCalculator.java",
+    "sha256": "4ff01f9c8e4771cbb49f75d4d4e502bffe087347d73ccb4a3eebecd6de19cf93",
+    "scope": "accumulation subset adapted; velocity/hybrid/frame-blend not ported",
+    "license": "CC0-1.0"
+  },
+  {
+    "source": "Stray",
+    "file": "src/client/java/dev/stray/client/visual/motionblur/CameraState.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/visual/motionblur/CameraState.java",
+    "sha256": "71587d7ddb83974a12490087e0e7e5dd4ac208cc11621ccfa92f9764caadd6fd",
+    "scope": "accumulation subset adapted; velocity/hybrid/frame-blend not ported",
+    "license": "CC0-1.0"
+  },
+  {
+    "source": "user-provided impl.zip",
+    "file": "impl/general/Timer.kt",
+    "archive_sha256": "94833f79bfeb5a6213ab719f321412848b22ca180ed7e64105ee4d707d39edf3",
+    "sha256": "d13843f48aeb9132b09255c95e9660c4ef65733594592e51e1caa9e3a0f75fa1",
+    "scope": "logic adapted into GPL-3.0-only solyanka; native font/HUD/input/sound; see M10.md"
+  },
+  {
+    "source": "user-provided impl.zip",
+    "file": "impl/visual/DvdBounce.kt",
+    "archive_sha256": "94833f79bfeb5a6213ab719f321412848b22ca180ed7e64105ee4d707d39edf3",
+    "sha256": "47173f69bead35757eb660946cb7ce384da7cbbb8b0647b27ef16401968866b4",
+    "scope": "logic adapted into GPL-3.0-only solyanka; native font/HUD/input/sound; see M10.md"
+  }
+]

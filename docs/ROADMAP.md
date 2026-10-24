@@ -1,4 +1,17 @@
-# Current roadmap — 0.5.0-dev
+# Current roadmap — 1.2.0
+
+Current delivery: 45 registered modules; Odin/NoFrills requested categories and many Stray features adapted, plus eight archive feature objects. Build/static verification is distinct from runtime acceptance. See FEATURE_MATRIX.md and PENDING_FEATURES.md for exact scope.
+
+Next unresolved work:
+1. Archive dungeon state: SimonSays and OdinDungeonWaypoints route-step extensions.
+2. Archive PetDisplay, Bestiary/Invisibug/Tiki ESP, MoveHotbar and remaining cosmetics.
+3. Stray Picture in Picture, CS2 knife backend and remaining blur algorithms.
+4. Source option/behavior parity, prices/provider coverage and live native/Mixin/Sodium/Iris acceptance.
+5. Automatic-action archive features require explicit opt-in and server-rule warnings. AetherOSSettings stays excluded.
+
+## Historical roadmap (original milestone ordering)
+
+# Historical roadmap — 0.5.0-dev
 
 Delivered 14 additional real modules: remaining seven requested Odin feature categories, three NoFrills categories, three Stray environment categories and archive Mimic Chest. These are adapted implementations, not full parity/acceptance. All remaining scope is retained.
 

@@ -1,3 +1,34 @@
+# 1.2.0 — personal secrets and indoor rain
+
+- Added archive Secret Counter with one post-run stats request, bounded personal-result window and local feedback; chat announcements explicitly opt-in.
+- Added Always Water declared indoor-rain behavior using native client-only rain/type/roof extraction adapters; no blocks, server weather or heightmap mutation.
+- 45 modules, 41 Mixin classes, 20 HUD editor entries. Eight archive objects adapted, 14 pending; AetherOSSettings excluded.
+- Existing instant-save undimmed settings and `.gitignore` preserved. No full implementation, server or native GPU acceptance claim; docs/M12.md.
+
+# 1.1.0 — archive visual batch
+
+- Added Ambient Particles: eight source styles with amount/radius sliders and native client-only spawning.
+- Added Rotating Item: all five source patterns, speed/amplitude and mirrored hand offsets.
+- Added Move Hearts: native vanilla health/optional armor transform, responsive reset and HUD editor support.
+- 43 modules, 41 mixins and 20 HUD editor entries; embedded instant-save UI and `.gitignore` preserved.
+- Six archive feature objects adapted, 16 remaining (AetherOSSettings excluded). No full parity/runtime/GPU acceptance claim; see docs/M11.md.
+
+# 1.0.0 — requested release milestone
+
+- Added Stray Accumulation Mix/Max temporal Motion Blur; velocity/frame-blend/hybrid modes remain pending.
+- Added archive Stopwatch/Timer with key/mouse capture, local stop report and HUD editor support.
+- Added archive DVD Bounce with source motion/colors and optional counter/sound/flash.
+- 40 modules, 40 mixins, 19 HUD editor entries. Masters off by default; existing instant-save GUI and `.gitignore` preserved.
+- Not full feature completion or runtime/GPU acceptance. See docs/M10.md and PENDING_FEATURES.md.
+
+# 0.10.0-dev — Skybox
+
+- Added source-derived decorated End sky, six cube faces and eight-frame animated black-hole patch.
+- Added Vanilla End/Dimension Default styles, sky tint palette/strength, rotation/animation sliders and skyless-dimension opt-in.
+- Ported sky rendering to native 26.2 target ownership, bind groups, vertex slices and indexed draws; added feature-owned GPU cleanup.
+- Preserved embedded instant-save GUI, HUD editor, existing features, `.gitignore` and AetherOSSettings exclusion.
+- Build/static validation only; native rendering and Sodium/Iris acceptance pending. See docs/M9.md.
+
 # 0.6.0-dev — XP-bar visibility and Stray HUD batch
 
 - Added independent Player Display Hide XP Bar, preserving mount/locator bars and the existing XP-level option.

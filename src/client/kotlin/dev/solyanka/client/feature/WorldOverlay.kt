@@ -11,11 +11,15 @@ import net.minecraft.world.phys.*
 
 object WorldOverlay {
  data class Segment(val a:Vec3,val b:Vec3,val color:Int,val depth:Boolean=true,val width:Float=3f)
+ data class Triangle(val a:Vec3,val b:Vec3,val c:Vec3,val color:Int,val depth:Boolean=true)
  data class Fill(val box:AABB,val color:Int,val depth:Boolean=true)
  data class Label(val pos:Vec3,val text:String,val color:Int=-1,val depth:Boolean=true,val scale:Float=1f)
  private data class Snapshot(val segments:List<Segment>,val fills:List<Fill>,val labels:List<Label>)
  @Volatile private var channels:Map<String,Snapshot> = emptyMap()
  private fun fillType(depth:Boolean)=RenderType.create("solyanka_fills_$depth",RenderSetup.builder(RenderPipelines.register(RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET).withLocation("solyanka/fills_$depth").withCull(false).withDepthStencilState(DepthStencilState(if(depth) CompareOp.LESS_THAN_OR_EQUAL else CompareOp.ALWAYS_PASS,false)).withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT)).build())).createRenderSetup())
+ private fun triangleType(depth:Boolean)=RenderType.create("solyanka_triangles_$depth",RenderSetup.builder(RenderPipelines.register(RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET).withLocation("solyanka/triangles_$depth").withVertexBinding(0,com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_COLOR).withPrimitiveTopology(com.mojang.blaze3d.PrimitiveTopology.TRIANGLES).withCull(false).withDepthStencilState(DepthStencilState(if(depth) CompareOp.LESS_THAN_OR_EQUAL else CompareOp.ALWAYS_PASS,false)).withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT)).build())).createRenderSetup())
+ private val triangleDepth by lazy {triangleType(true)}
+ private val triangleEsp by lazy {triangleType(false)}
  private val fillDepth by lazy {fillType(true)}
  private val fillEsp by lazy {fillType(false)}
  private val esp by lazy { RenderType.create("solyanka_lines_esp",RenderSetup.builder(RenderPipelines.register(RenderPipeline.builder(RenderPipelines.LINES_SNIPPET).withLocation("solyanka/lines_esp").withDepthStencilState(DepthStencilState(CompareOp.ALWAYS_PASS,false)).withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT)).build())).createRenderSetup()) }
@@ -31,8 +35,14 @@ object WorldOverlay {
   val values=channels.values.toList();val snapshot=values.flatMap {it.segments}.toMutableList();val camera=c.levelState().cameraRenderState.pos
   val filled=values.flatMap {it.fills}.toMutableList();val text=values.flatMap {it.labels}
   BlockSelection.collect(c,snapshot,filled)
+  val triangles=mutableListOf<Triangle>();ArchiveCosmetics.collect(c,snapshot,triangles)
   val pose=c.poseStack();pose.pushPose()
   try { pose.translate(-camera.x,-camera.y,-camera.z)
+   triangles.groupBy {it.depth}.forEach { (depth,list)->
+    c.submitNodeCollector().submitCustomGeometry(pose,if(depth) triangleDepth else triangleEsp) {matrix,buffer->
+     list.forEach {t->listOf(t.a,t.b,t.c).forEach {v->buffer.addVertex(matrix,v.x.toFloat(),v.y.toFloat(),v.z.toFloat()).setColor(t.color)}}
+    }
+   }
    filled.groupBy {it.depth}.forEach { (depth,list) ->
     c.submitNodeCollector().submitCustomGeometry(pose,if(depth) fillDepth else fillEsp) { matrix,buffer ->
      list.forEach { f -> val b=f.box

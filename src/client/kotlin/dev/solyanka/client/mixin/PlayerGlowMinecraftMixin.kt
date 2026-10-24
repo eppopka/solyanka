@@ -9,5 +9,5 @@ import org.spongepowered.asm.mixin.injection.callback.*
 @Mixin(Minecraft::class)
 abstract class PlayerGlowMinecraftMixin {
  @Inject(method=["shouldEntityAppearGlowing"],at=[At("RETURN")],cancellable=true)
- private fun solyankaGlow(e:Entity,ci:CallbackInfoReturnable<Boolean>) {if(WorldVisuals.glow(e)) ci.returnValue=true}
+ private fun solyankaGlow(e:Entity,ci:CallbackInfoReturnable<Boolean>) {if(WorldVisuals.glow(e) || dev.solyanka.client.feature.HuntingFeatures.glow(e)) ci.returnValue=true}
 }

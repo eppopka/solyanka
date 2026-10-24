@@ -52,6 +52,7 @@ object Experiments {
   if(menu!=null) logic.click(slot.index)
  }
  fun overlay(g:GuiGraphicsExtractor,slot:Slot,x:Int,y:Int) {
+  PetDisplay.overlay(g,slot,x,y)
   if(menu==null || slot.index !in previous) return
   val id=slot.index;val first=id in logic.next();val second=id in logic.second()
   val color=logic.colors[id] ?: if(!logic.remember && first) 0x7000ff00 else if(!logic.remember && second) 0x70ffff00 else null

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.ReleaseOneTest" tests="30" skipped="0" failures="0" errors="0" timestamp="2026-10-24T16:46:37.689Z" hostname="222f7e72-264" time="0.021">
+  <properties/>
+  <testcase name="stopwatch editor changes do not touch other HUDs or binding()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.001"/>
+  <testcase name="third press resets and fourth starts again()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.001"/>
+  <testcase name="zero blur is current frame identity()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="dvd one axis collision changes color without corner count()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.001"/>
+  <testcase name="blur uses disjoint history targets and native target format()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.001"/>
+  <testcase name="dvd paused time does not create catch up motion()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="timer binding distinguishes keyboard mouse and unbound()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="stopwatch idle first press starts without reporting()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="timer protects against backwards supplied clock()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="history memory budget permits 4k but not unbounded sizes()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.001"/>
+  <testcase name="blur rejects unported modes and invalid strengths()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="timer binding validation matches supported GLFW ranges()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="reset running timer removes all timing state()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.001"/>
+  <testcase name="accumulation factors match source multipliers()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.001"/>
+  <testcase name="all blur modes roundtrip and remain bounded()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.005"/>
+  <testcase name="dvd reset and negative monotonic epoch cannot flash before hit()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="stop press reports once and freezes elapsed()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="max never dims a current highlight()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="archive duration format keeps hours above 24 and milliseconds()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="dvd validates text dimensions radius and speed()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="tiny window never manufactures corner counts or sound events()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="dvd coordinates stay bounded over resize and repeated bounces()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.001"/>
+  <testcase name="timer input precedes command module gate and is world only()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="new feature defaults migrate from old empty objects()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.001"/>
+  <testcase name="dvd first frame establishes time without a movement jump()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="new sections reject wrong types without erasing defaults()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.002"/>
+  <testcase name="mix holds stationary values and stays between inputs()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <testcase name="zero duration stop is not confused with no report()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.001"/>
+  <testcase name="dvd source velocity and frame clamp are retained()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.001"/>
+  <testcase name="dvd simultaneous axis hit flashes and counts once()" classname="dev.solyanka.utility.ReleaseOneTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

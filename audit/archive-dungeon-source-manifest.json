@@ -1,0 +1,29 @@
+[
+  {
+    "source": "user-provided impl.zip",
+    "archive_sha256": "94833f79bfeb5a6213ab719f321412848b22ca180ed7e64105ee4d707d39edf3",
+    "file": "impl/dungeon/SecretCounter.kt",
+    "sha256": "fceb8f4d7f597c2996de9c362497ec0852eea0f7ebb24b43596fe2aa1ba3f184",
+    "module": "custom.secret_counter",
+    "scope": "One post-run stats request, personal response gate, local report and opt-in chat; docs/M12.md.",
+    "license": "User-provided addon adaptation in GPL-3.0-only project"
+  },
+  {
+    "source": "user-provided impl.zip",
+    "archive_sha256": "94833f79bfeb5a6213ab719f321412848b22ca180ed7e64105ee4d707d39edf3",
+    "file": "impl/visual/AlwaysWater.kt",
+    "sha256": "7bfafc81e7e434082031578a42f58fab670edabcc64be3edfeb51ad88587dd5e",
+    "module": "custom.always_water",
+    "scope": "Documented source intent adapted via native client rain/precipitation/roof extraction; external source mixins absent; docs/M12.md.",
+    "license": "User-provided addon adaptation in GPL-3.0-only project"
+  },
+  {
+    "source": "NoammAddons",
+    "commit": "b552eb85050c9d12ff3aabf11ab0c793d1565361",
+    "file": "src/main/kotlin/com/github/noamm9/utils/dungeons/DungeonListener.kt",
+    "source_url": "https://github.com/noamm9/noammaddons/blob/b552eb85050c9d12ff3aabf11ab0c793d1565361/src/main/kotlin/com/github/noamm9/utils/dungeons/DungeonListener.kt",
+    "sha256": "07c14e410380c0373a5171d79e2a7a664372ef9e36f40d7a11dcae2790fc781d",
+    "license": "CC0-1.0",
+    "scope": "Mort start and Catacombs completion message marker adaptation only; stricter valid floor grammar. No framework code copied."
+  }
+]

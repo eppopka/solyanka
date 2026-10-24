@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="dev.solyanka.utility.MarketCacheTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-24T11:57:30.586Z" hostname="2d8e288e-7a4" time="0.014">
+<testsuite name="dev.solyanka.utility.MarketCacheTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-24T16:46:37.567Z" hostname="222f7e72-264" time="0.012">
   <properties/>
   <testcase name="failed or invalid Hypixel response never becomes prices()" classname="dev.solyanka.utility.MarketCacheTest" time="0.001"/>
   <testcase name="empty or unknown-only cache can be read safely()" classname="dev.solyanka.utility.MarketCacheTest" time="0.001"/>
-  <testcase name="fractional negative or overflowing stored costs are rejected()" classname="dev.solyanka.utility.MarketCacheTest" time="0.0"/>
-  <testcase name="local cache round trips full integer precision()" classname="dev.solyanka.utility.MarketCacheTest" time="0.007"/>
+  <testcase name="fractional negative or overflowing stored costs are rejected()" classname="dev.solyanka.utility.MarketCacheTest" time="0.001"/>
+  <testcase name="local cache round trips full integer precision()" classname="dev.solyanka.utility.MarketCacheTest" time="0.005"/>
   <testcase name="recipes require positive integer quantities and complete ingredients()" classname="dev.solyanka.utility.MarketCacheTest" time="0.0"/>
   <testcase name="Hypixel bids and asks map to correct player-facing labels()" classname="dev.solyanka.utility.MarketCacheTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>

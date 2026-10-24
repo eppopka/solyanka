@@ -1,0 +1,55 @@
+{
+  "version": "0.9.0-dev",
+  "minecraft": "26.2",
+  "build": "SUCCESS",
+  "tests": {
+    "tests": 323,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "registered_modules": 36,
+  "new_modules": [
+    "cosmetic.held_item"
+  ],
+  "mixin_classes": 38,
+  "unique_target_methods_rechecked": 48,
+  "world_target_methods_checked": 4,
+  "compiled_nullable_outline_guard": true,
+  "instant_save": true,
+  "settings_embedded_in_same_screen": true,
+  "hud_editor_elements": 18,
+  "hide_xp_level_and_bar_independent": true,
+  "aetheros_settings_excluded": true,
+  "remaining_stray_features": [
+    "Skybox",
+    "Motion Blur",
+    "Picture in Picture",
+    "CS2 Knife"
+  ],
+  "remaining_archive_feature_objects": 21,
+  "in_game_tested_here": false,
+  "mixin_application_tested_here": false,
+  "gpu_sodium_iris_tested_here": false,
+  "full_requested_feature_set_complete": false,
+  "source_blur_parity": false,
+  "chat_animation_ported": false,
+  "chat_security_handlers_preserved": true,
+  "nametags_preserve_styled_components": true,
+  "block_outline_layered_halo": true,
+  "jar_sha256": "3ed478f7e4ab3449a9a1fc3ade3fb2c5cde28b573fa9a2ae8ea31d4ffdf35aae",
+  "sources_jar_sha256": "b3b7cfbbf33ecfd3c1700165fdcfb77359c3ee929ec770333fa8f4be44d39dc7",
+  "held_item_styles": [
+    "smoke",
+    "stars",
+    "portal",
+    "galaxy"
+  ],
+  "held_item_first_person_baked_quads_only": true,
+  "held_item_arms_and_silhouette_ported": false,
+  "translated_offline_glsl_linked": true,
+  "held_item_config_texture_pixels": 2,
+  "held_item_atlas_cache_limit": 64,
+  "cs2_knife_ported": false,
+  "baseline_note": "Older unchanged ABI/AW evidence retained; clean Gradle AW check and current descriptor checks. Static checks do not establish Mixin application or rendering compatibility. See docs/M6.md, docs/M7.md and docs/M8.md."
+}

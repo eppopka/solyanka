@@ -1,3 +1,18 @@
+# v1.2 Secret Counter / Always Water acceptance
+
+See `M12.md`: run completion → one stats request → exact personal result or timeout;
+Current/Party announcements separately opt-in, cancellation on leaving/disable/run reset;
+client rain indoors, precedence against Ambience and restore after disable. Test native first,
+then Sodium/Iris/shaders. Runtime/server behavior remains unverified here.
+
+# v1.1 archive visual acceptance
+
+See `M11.md` for the full checklist: eight Ambient Particles styles and native particle settings;
+Rotating Item patterns/both hands/maps/use animations/Held Item Shader combinations;
+Move Hearts native absorption/status/multirow/armor, HUD dragging/reset/resize and existing
+Player Display/No Render precedence. All masters should default off; config edits save instantly.
+These checks require a launched client. Build/static verification is not visual acceptance.
+
 # In-game handoff — 0.5.0-dev
 
 **Not performed here.** Compilation/tests/static signatures do not establish Mixin transformation, in-game render correctness or Sodium/Iris compatibility. Use exact MC26.2/Java25/runtime pins in README. Remove older JARs; back up config and packs first.

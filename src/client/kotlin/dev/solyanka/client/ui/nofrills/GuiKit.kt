@@ -13,9 +13,13 @@ import net.minecraft.network.chat.Component
 import dev.solyanka.ui.NumberRange
 
 object GuiKit {
-    const val BLUE = 0xff5ca0bf.toInt()
-    const val WHITE = 0xffffffff.toInt()
-    const val DARK = 0xff101010.toInt()
+    const val BLUE = 0xff7dd3fc.toInt()
+    const val WHITE = 0xffedf4fd.toInt()
+    const val DARK = 0xff16202e.toInt()
+    const val PANEL = 0xf51a2332.toInt()
+    const val RAISED = 0xff263448.toInt()
+    const val LINE = 0xff435870.toInt()
+    const val MUTED = 0xffb2c2d8.toInt()
     fun border(g: GuiGraphicsExtractor,x:Int,y:Int,w:Int,h:Int,color:Int) {
         g.fill(x,y,x+w,y+1,color);g.fill(x,y+h-1,x+w,y+h,color)
         g.fill(x,y+1,x+1,y+h-1,color);g.fill(x+w-1,y+1,x+w,y+h-1,color)
@@ -23,16 +27,15 @@ object GuiKit {
     fun button(text:String,width:Int=70,white:Boolean=false,action:()->Unit): ButtonComponent =
         styleButton(UIComponents.button(Component.literal(text)) { action() },width,white)
     private fun styleButton(button:ButtonComponent,width:Int,white:Boolean=false):ButtonComponent = button.apply {
-            sizing(Sizing.fixed(width),Sizing.fixed(18))
+            sizing(Sizing.fixed(width),Sizing.fixed(20))
             textShadow(false)
             renderer { g,b,_ ->
-                g.fill(b.x,b.y,b.x+b.width,b.y+b.height,DARK)
-                border(g,b.x,b.y,b.width,b.height,if(white) WHITE else BLUE)
+                dev.solyanka.client.feature.ChromeDraw.panel(g,b.x,b.y,b.width,b.height,RAISED,if(white) LINE else BLUE,4)
             }
         }
     fun label(text:String) = PlainLabel(Component.literal(text)).apply { color(Color.ofArgb(WHITE)) }
     fun row(width:Int): FlowLayout = UIContainers.horizontalFlow(Sizing.fixed(width),Sizing.content()).apply {
-        padding(Insets.of(5));verticalAlignment(VerticalAlignment.CENTER);gap(5)
+        padding(Insets.of(5));verticalAlignment(VerticalAlignment.CENTER);gap(6)
     }
     fun textRow(width:Int,name:String,value:String,help:String="",update:(String)->Unit): FlowLayout {
         val box=FlatTextbox(Sizing.fixed(width-18)).apply {
@@ -43,12 +46,12 @@ object GuiKit {
         }
     }
     fun toggleRow(width:Int,name:String,current:Boolean,help:String="",update:(Boolean)->Unit): FlowLayout = row(width).apply {
-        child(label(name).apply { tooltip(Component.literal(help)) })
+        child(label(name).apply { horizontalSizing(Sizing.fixed((width-80).coerceAtLeast(20)));tooltip(Component.literal(help)) })
         child(toggle(current,update))
     }
     fun toggle(initial:Boolean,update:(Boolean)->Unit):ButtonComponent {
         var current=initial
-        fun text()=Component.literal(if(current) "Enabled" else "Disabled").withColor(if(current) 0x55ff55 else 0xff5555)
+        fun text()=Component.literal(if(current) "Enabled" else "Disabled").withColor(if(current) 0x80e0b0 else 0xf3acac)
         return button("",58) {}.apply {
             message=text()
             onPress {
@@ -60,17 +63,25 @@ object GuiKit {
     fun colorRow(width:Int,name:String,current:Int,update:(Int)->Unit):FlowLayout {
         val container=UIContainers.verticalFlow(Sizing.fixed(width),Sizing.content()).apply { padding(Insets.of(5));gap(4) }
         val swatch=UIComponents.box(Sizing.fixed(16),Sizing.fixed(16)).color(Color.ofArgb(current)).fill(true)
-        val picker=ColorPickerComponent().showAlpha(true).apply {
-            sizing(Sizing.fixed(minOf(180,width-20)),Sizing.fixed(110))
-            selectedColor(Color.ofArgb(current))
-        }
-        picker.onChanged().subscribe { color -> swatch.color(color);update(color.argb()) }
+        // Do not initialize an unused native HSV widget while opening module settings.
+        var picker:ColorPickerComponent?=null
+        var selected=current
         var expanded=false
-        val edit=button("Edit color",95) {}
+        val edit=button("Edit color",105) {}
         edit.onPress {
-            expanded=!expanded
-            edit.message=Component.literal(if(expanded) "Close palette" else "Edit color")
-            if(expanded) container.child(picker) else container.removeChild(picker)
+            if(expanded) {
+                picker?.let {container.removeChild(it)};expanded=false;edit.message=Component.literal("Edit color")
+            } else try {
+                val palette=picker ?: ColorPickerComponent().showAlpha(true).apply {
+                    sizing(Sizing.fixed(minOf(220,(width-20).coerceAtLeast(80))),Sizing.fixed(110))
+                    selectedColor(Color.ofArgb(selected))
+                    onChanged().subscribe {color->selected=color.argb();swatch.color(color);update(selected)}
+                }.also {picker=it}
+                container.child(palette);expanded=true;edit.message=Component.literal("Close palette")
+            } catch(e:Exception) {
+                org.slf4j.LoggerFactory.getLogger("solyanka/gui").error("Cannot open color palette for $name",e)
+                edit.message=Component.literal("Palette failed")
+            }
         }
         container.child(label(name).apply { horizontalSizing(Sizing.fixed(width-10)) })
         container.child(UIContainers.horizontalFlow(Sizing.fixed(width-10),Sizing.content()).apply {
@@ -126,11 +137,16 @@ object GuiKit {
         }
     }
     fun description(width:Int,text:String) = UIContainers.verticalFlow(Sizing.fixed(width),Sizing.content()).apply {
-        padding(Insets.of(5));child(label(text).apply { horizontalSizing(Sizing.fixed(width-10)) })
+        padding(Insets.of(6));child(label(text).apply { color(Color.ofArgb(MUTED));horizontalSizing(Sizing.fixed((width-12).coerceAtLeast(1))) })
     }
 }
 
 class PlainLabel(text:Component):LabelComponent(text) {
+    // owo 0.13.1 passes styleAt() straight to MC 26.2's non-null hover API.
+    // Padding, blank labels and gaps between wrapped lines legitimately have no style.
+    // EMPTY preserves the normal configured tooltip and rich-text hover path.
+    override fun styleAt(mouseX:Int,mouseY:Int):net.minecraft.network.chat.Style =
+        super.styleAt(mouseX,mouseY) ?: net.minecraft.network.chat.Style.EMPTY
     override fun onMouseDown(click:MouseButtonEvent,doubled:Boolean)=false
 }
 
@@ -138,7 +154,7 @@ class FlatTextbox(size:Sizing):TextBoxComponent(size) {
     init { verticalSizing(Sizing.fixed(18));setMaxLength(256) }
     override fun extractWidgetRenderState(g:GuiGraphicsExtractor,mouseX:Int,mouseY:Int,delta:Float) {
         g.fill(x(),y(),x()+width()+4,y()+height(),GuiKit.DARK)
-        GuiKit.border(g,x(),y(),width()+4,height(),GuiKit.BLUE)
+        GuiKit.border(g,x(),y(),width()+4,height(),GuiKit.LINE)
         g.scissorStack.push(ScreenRectangle(x(),y(),width(),height()))
         try { super.extractWidgetRenderState(g,mouseX,mouseY,delta) }
         finally { g.scissorStack.pop() }

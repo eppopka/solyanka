@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.MarketCacheTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-24T14:49:43.644Z" hostname="92f9206d-8b0" time="0.011">
+  <properties/>
+  <testcase name="failed or invalid Hypixel response never becomes prices()" classname="dev.solyanka.utility.MarketCacheTest" time="0.001"/>
+  <testcase name="empty or unknown-only cache can be read safely()" classname="dev.solyanka.utility.MarketCacheTest" time="0.003"/>
+  <testcase name="fractional negative or overflowing stored costs are rejected()" classname="dev.solyanka.utility.MarketCacheTest" time="0.001"/>
+  <testcase name="local cache round trips full integer precision()" classname="dev.solyanka.utility.MarketCacheTest" time="0.003"/>
+  <testcase name="recipes require positive integer quantities and complete ingredients()" classname="dev.solyanka.utility.MarketCacheTest" time="0.001"/>
+  <testcase name="Hypixel bids and asks map to correct player-facing labels()" classname="dev.solyanka.utility.MarketCacheTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

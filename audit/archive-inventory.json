@@ -84,7 +84,9 @@
       "WorldChangeEvent"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "dungeon.waypoints",
+    "notes": "docs/M13.md: Extends existing Odin module: number/note/multiuse title parsing, START, sequential non-jumping cursor, route lookahead, collected filtering and editable HUD. Missing archive RouteSteps helper independently replaced."
   },
   {
     "file": "impl/dungeon/SecretCounter.kt",
@@ -112,7 +114,10 @@
       "WorldChangeEvent"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.secret_counter",
+    "release": "1.2.0",
+    "notes": "One post-run stats request, personal response gate, local report and opt-in chat; docs/M12.md."
   },
   {
     "file": "impl/dungeon/ShitterList.kt",
@@ -150,7 +155,9 @@
       "https://github.com/qwertycry/Shitterlist",
       "https://sessionserver.mojang.com/session/minecraft/profile/$formatted"
     ],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.shitter_list",
+    "notes": "docs/M13.md: Independent compatible local UUID list, /sl add/remove/list/importlegacy, bounded opt-in Mojang lookup, PF local warning and opt-in delayed kick. No upstream code copied. Original /sl parse and short aliases not ported."
   },
   {
     "file": "impl/dungeon/SimonSays.kt",
@@ -198,7 +205,9 @@
       "WorldChangeEvent"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.simon_says",
+    "notes": "docs/M13.md: Manual F7/M7 P3 solver, pre-update flashes, click guard, progress and break/restart alerts. Triggerbot/Auto Start/custom WAV/title/format not ported."
   },
   {
     "file": "impl/dungeon/waypoints/OdinWaypointCodec.kt",
@@ -246,7 +255,8 @@
     ],
     "events": [],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "EXCLUDED_BY_USER",
+    "notes": "Explicit prior user instruction"
   },
   {
     "file": "impl/general/BestiaryESP.kt",
@@ -282,7 +292,9 @@
       "WorldChangeEvent"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.bestiary_esp",
+    "notes": "docs/M13.md: Periodic bounded stand/mob correlation, native glow and nearest tracer; validates changed name/exact policy."
   },
   {
     "file": "impl/general/PetDisplay.kt",
@@ -329,7 +341,9 @@
       "WorldChangeEvent"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.pet_display",
+    "notes": "docs/M13.md: Pets-menu snapshots, unique-identity cache, total JSON XP and changed-snapshot rates, active highlight, summon/Autopet tracking and title. Live curve/progress, loadout hook and all polish not ported."
   },
   {
     "file": "impl/general/Timer.kt",
@@ -354,7 +368,10 @@
       "MouseClickEvent"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "1.0.0",
+    "module": "custom.stopwatch",
+    "notes": "Monotonic three-press clock, world-only key/mouse binding, local report, native HUD and editor; reset on world changes. See M10.md."
   },
   {
     "file": "impl/hunting/InvisibugESP.kt",
@@ -388,7 +405,9 @@
       "WorldChangeEvent"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.invisibug_esp",
+    "notes": "docs/M13.md: Exact CRIT+marker signature, four observations, bounded evidence, 20-tick TTL, Galatea guard."
   },
   {
     "file": "impl/hunting/TikiESP.kt",
@@ -427,7 +446,9 @@
       "WorldChangeEvent"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.tiki_esp",
+    "notes": "docs/M13.md: Three-skull textures, loaded scan, fills/lines/labels and three particle patterns. Auto Black Hole not ported."
   },
   {
     "file": "impl/qol/AutoRag.kt",
@@ -462,7 +483,8 @@
       "MainThreadPacketReceivedEvent.Pre"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "EXCLUDED_BY_USER",
+    "notes": "Explicit combined-update exclusion"
   },
   {
     "file": "impl/qol/AutoReel.kt",
@@ -485,7 +507,8 @@
       "TickEvent.End"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "EXCLUDED_BY_USER",
+    "notes": "Explicit combined-update exclusion"
   },
   {
     "file": "impl/visual/AlwaysWater.kt",
@@ -497,7 +520,10 @@
     ],
     "events": [],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.always_water",
+    "release": "1.2.0",
+    "notes": "Documented source intent adapted via native client rain/precipitation/roof extraction; external source mixins absent; docs/M12.md."
   },
   {
     "file": "impl/visual/AmbientParticles.kt",
@@ -514,7 +540,10 @@
     ],
     "events": [],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.ambient_particles",
+    "release": "1.1.0",
+    "notes": "Eight native particle styles, bounded source distribution; docs/M11.md."
   },
   {
     "file": "impl/visual/ChinaHat.kt",
@@ -537,7 +566,9 @@
       "RenderWorldEvent"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.china_hat",
+    "notes": "docs/M13.md: Cone fill, opaque rim/spokes, rainbow and first-person/depth options; native triangles."
   },
   {
     "file": "impl/visual/Cosmetics.kt",
@@ -570,7 +601,8 @@
     ],
     "events": [],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "EXCLUDED_BY_USER",
+    "notes": "User clarified only module named Cosmetics is excluded"
   },
   {
     "file": "impl/visual/DvdBounce.kt",
@@ -596,7 +628,10 @@
       "RenderOverlayEvent"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "release": "1.0.0",
+    "module": "custom.dvd_bounce",
+    "notes": "Source movement/color/counter with native text/panel/sound, monotonic flash, tiny-window guards and resets. Custom font/glass renderer not ported. See M10.md."
   },
   {
     "file": "impl/visual/Halo.kt",
@@ -620,7 +655,9 @@
       "RenderWorldEvent"
     ],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.halo",
+    "notes": "docs/M13.md: Three nested torus shells, shimmer, bob, rainbow, disc. Native unculled triangles; no framebuffer bloom."
   },
   {
     "file": "impl/visual/ItemAura.kt",
@@ -683,7 +720,10 @@
     ],
     "events": [],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.move_hearts",
+    "release": "1.1.0",
+    "notes": "Native health/optional armor transform, responsive default and editor; docs/M11.md."
   },
   {
     "file": "impl/visual/MoveHotbar.kt",
@@ -727,7 +767,9 @@
     ],
     "events": [],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.move_hotbar",
+    "notes": "docs/M13.md: Native hotbar translation/scale and optional native item-name/info/XP followers. Custom skins/vertical layout/selection animation not ported."
   },
   {
     "file": "impl/visual/RotatingItem.kt",
@@ -744,7 +786,10 @@
     ],
     "events": [],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
+    "module": "custom.rotating_item",
+    "release": "1.1.0",
+    "notes": "Five source transform patterns and mirrored offsets; native 26.2 hook; docs/M11.md."
   },
   {
     "file": "impl/visual/cosmetics/CosmeticData.kt",

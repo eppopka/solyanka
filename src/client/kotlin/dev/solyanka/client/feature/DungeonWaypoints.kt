@@ -17,11 +17,13 @@ object DungeonWaypoints {
  private val store by lazy {WaypointStore(FabricLoader.getInstance().configDir.resolve("solyanka-waypoints"))}
  private var packs=emptyMap<String,WayPack>();private var signature="";private val clicked=mutableSetOf<String>()
  var error:String?=null;private set
+ private val routeCursors=mutableMapOf<String,Int>();private var routeScope="";private var routeText:String?=null;private var routeAt=0L
  private var lastEther:BlockPos?=null;private var lastEtherTime=0L
  private fun cfg()=SolyankaClient.currentGeneral().features.waypoints
- fun reset() {clicked.clear();lastEther=null;lastEtherTime=0;signature="";packs=emptyMap();error=null}
+ fun reset() {routeCursors.clear();routeScope="";routeText=null;clicked.clear();lastEther=null;lastEtherTime=0;signature="";packs=emptyMap();error=null}
  fun names():List<String> = store.names()
  fun reload() {
+  routeCursors.clear();routeText=null
   val next=linkedMapOf<String,WayPack>();val errors=mutableListOf<String>()
   try {if(store.names().isEmpty()) store.write("default",emptyMap(),true)} catch(e:Exception) {errors.add(e.message ?: "Cannot create default pack")}
   cfg().selectedPacks.split(',').map(String::trim).distinct().forEach {name->try {next[name]=store.load(name)} catch(e:Exception) {errors.add("$name: ${e.message}")}}
@@ -32,7 +34,7 @@ object DungeonWaypoints {
  fun delete(name:String) {store.delete(name);reload()}
  fun import(name:String,text:String) {val pack=WaypointCodec.decode(text);store.write(name,pack,true);reload()}
  fun export(name:String)=WaypointCodec.encode(store.load(name),true)
- fun resetClicked() {clicked.clear();DungeonPuzzles.invalidate()}
+ fun resetClicked() {routeCursors.clear();routeText=null;clicked.clear();DungeonPuzzles.invalidate()}
  private fun editable(change:(MutableMap<String,List<Waypoint>>,DungeonPuzzles.Room)->Unit) {
   require(SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS)) {"Enable Dungeon Waypoints first"}
   require(cfg().allowEdits) {"Enable Allow Edits first"}
@@ -64,9 +66,27 @@ object DungeonWaypoints {
  }
  private fun key(pack:String,room:String,index:Int,instance:DungeonPuzzles.Room)="$pack:$room:$index:${instance.origin}"
  fun geometry(r:DungeonPuzzles.Room?,lines:MutableList<WorldOverlay.Segment>,fills:MutableList<WorldOverlay.Fill>,labels:MutableList<WorldOverlay.Label>) {
+  routeText=null;routeAt=System.nanoTime()
   if(!SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || r?.origin==null || r.facing==null) return
   if(signature!=cfg().selectedPacks) reload()
-  val s=cfg()
+  val s=cfg();val route=SolyankaClient.currentGeneral().features.route
+  val scope="${r.name}:${r.origin}:${r.facing}";if(scope!=routeScope){routeCursors.clear();routeScope=scope}
+  val player=Minecraft.getInstance().player
+  packs.forEach {(pack,rooms)->
+   val ways=rooms[r.name].orEmpty();val entries=RouteLogic.entries(ways)
+   if(entries.isNotEmpty() && player!=null) {
+    fun point(e:RouteLogic.Entry)=Vec3.atCenterOf(r.real(ways[e.waypoint].blockPos)!!)
+    val near=entries.filter {point(it).distanceToSqr(player.position())<=route.radius*route.radius}.map {it.waypoint}.toSet()
+    val cursor=RouteLogic.advance(entries,routeCursors[pack] ?: -1,near);routeCursors[pack]=cursor
+    if(route.progress && routeText==null)routeText="Route: ${if(cursor>=0) (if(entries[cursor].number==0) "START" else entries[cursor].number.toString()) else "—"}/${entries.maxOf {it.number}}"
+    val remaining=if(route.skipCollected)entries.filter {key(pack,r.name,it.waypoint,r) !in clicked} else entries
+    val current=if(cursor<0)-1 else remaining.indexOfLast {it.number<=entries[cursor].number}
+    if(route.lines)RouteLogic.segments(remaining,current,route).forEach {(a,b)->
+     val color=if(route.rainbow) (java.awt.Color.HSBtoRGB(((System.nanoTime()/4_000_000_000.0)%1).toFloat(),.75f,1f) and 0xffffff) or (route.color and -0x1000000) else route.color
+     lines.add(WorldOverlay.Segment(point(a),point(b),color,!route.throughWalls,route.width.toFloat()))
+    }
+   }
+  }
   packs.forEach { (pack,rooms)->rooms[r.name]?.forEachIndexed {i,w->
    if(key(pack,r.name,i,r) in clicked) return@forEachIndexed
    val b=WaypointLogic.box(w.aabb,w.blockPos,r.origin,r.facing);val box=AABB(b.minX,b.minY,b.minZ,b.maxX,b.maxY,b.maxZ);val depth=w.depth && !s.globalEsp
@@ -102,7 +122,14 @@ object DungeonWaypoints {
  }
  fun pickup(e:net.minecraft.world.entity.item.ItemEntity) {val player=Minecraft.getInstance().player ?: return;if(WaypointLogic.secretDrop(e.item.hoverName.string) && e.distanceTo(player)<=6) secret(e.blockPosition(),3)}
  fun teleport(pos:Vec3) {val target=lastEther ?: return;if(System.nanoTime()-lastEtherTime<=1_000_000_000L && pos.distanceTo(Vec3.atLowerCornerOf(target))<=3) {secret(target,0,WayType.ETHERWARP);lastEther=null;lastEtherTime=0}}
- fun register() {UseBlockCallback.EVENT.register {player,level,hand,hit ->
+ fun register() {
+  net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.attachElementBefore(net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements.CHAT,net.minecraft.resources.Identifier.fromNamespaceAndPath("solyanka","route")) {g,_->
+   val c=Minecraft.getInstance();val s=SolyankaClient.currentGeneral().features.route;val h=s.hud;val text=routeText
+   if(text!=null && System.nanoTime()-routeAt<500_000_000L && s.progress && h.enabled && SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) && FeatureRuntime.context.dungeon && !FeatureRuntime.context.boss && c.level!=null && !c.gui.hud.isHidden && c.gui.screen() !is dev.solyanka.client.ui.HudEditorScreen) {
+    g.pose().pushMatrix();try{g.pose().translate(h.x.toFloat(),h.y.toFloat());g.pose().scale(h.scale.toFloat(),h.scale.toFloat());g.text(c.font,text,0,0,h.color,true)}finally{g.pose().popMatrix()}
+   }
+  }
+  UseBlockCallback.EVENT.register {player,level,hand,hit ->
   if(level.isClientSide && player===Minecraft.getInstance().player && !cfg().allowEdits) {
    val block=level.getBlockState(hit.blockPos).block
    val skull=if(block is net.minecraft.world.level.block.SkullBlock) (level.getBlockEntity(hit.blockPos) as? net.minecraft.world.level.block.entity.SkullBlockEntity)?.ownerProfile?.partialProfile()?.id()?.toString() else null

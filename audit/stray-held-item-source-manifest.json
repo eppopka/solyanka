@@ -1,0 +1,58 @@
+[
+  {
+    "file": "src/client/java/dev/stray/client/visual/HeldItemShader.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/visual/HeldItemShader.java",
+    "sha256": "60f54bc8093e14228037f7f9f5e301a1b5fd93dc03753eb6a9f2b5a22079816c",
+    "scope": "adapted subset; see docs/M8.md"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/mixin/ItemFeatureRendererMixin.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/mixin/ItemFeatureRendererMixin.java",
+    "sha256": "f6431993241337993cb6dc25e9529c728f6485336ee1cd2e5a9cd24ce9533e66",
+    "scope": "adapted subset; see docs/M8.md"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/config/StrayConfig.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/config/StrayConfig.java",
+    "sha256": "1b3a8246a9112314551c8db0e58c03e2b578749a0dc5c3919a0eb3b7fa2c92d5",
+    "scope": "adapted subset; see docs/M8.md"
+  },
+  {
+    "file": "src/client/resources/assets/stray/shaders/core/held_item.vsh",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/shaders/core/held_item.vsh",
+    "sha256": "bb941445d471d7a82e8855329ce03b56f5217e927f6b0ea50c0a94ddfc77d42b",
+    "scope": "adapted subset; see docs/M8.md"
+  },
+  {
+    "file": "src/client/resources/assets/stray/shaders/core/held_item.fsh",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/shaders/core/held_item.fsh",
+    "sha256": "689e2864581f373d3764f0927625d95cedbcfa85980ce38f6d40c60068058a14",
+    "scope": "adapted subset; see docs/M8.md"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/Cs2Knives.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/Cs2Knives.java",
+    "sha256": "9b6b658843be2341f2ce9d4643fefcbbe7c9730cfce64175f7f3416af29e471a",
+    "scope": "audited only; CS2 backend not ported"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/Cs2Library.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/Cs2Library.java",
+    "sha256": "7b6248a74aaee8b1adde92e2a242f9796f6e26b9c2290070a0336cb896f3cbe6",
+    "scope": "audited only; CS2 backend not ported"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/Cs2Viewmodel.java",
+    "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/Cs2Viewmodel.java",
+    "sha256": "5dc6a0484cf1731108ededf6de4b666b027541ba86c335df3e171f38094680ea",
+    "scope": "audited only; CS2 backend not ported"
+  }
+]

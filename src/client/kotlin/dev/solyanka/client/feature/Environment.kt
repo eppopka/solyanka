@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.fog.FogData
 import net.fabricmc.loader.api.FabricLoader
 object Environment {
  fun settings()=SolyankaClient.currentGeneral().features.environment
+ fun alwaysWater()=SolyankaClient.isEnabled(SolyankaClient.ALWAYS_WATER) && Minecraft.getInstance().level!=null
  fun ambience()=SolyankaClient.isEnabled(SolyankaClient.AMBIENCE) && Minecraft.getInstance().level!=null
  fun aspect(value:Float)=if(SolyankaClient.isEnabled(SolyankaClient.ASPECT) && Minecraft.getInstance().level!=null) value*settings().aspectRatio.toFloat() else value
  fun fog(data:FogData,distance:Int,atmospheric:Boolean) {

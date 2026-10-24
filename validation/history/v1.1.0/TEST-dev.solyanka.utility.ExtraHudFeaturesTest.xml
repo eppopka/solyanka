@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.ExtraHudFeaturesTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-24T15:03:59.266Z" hostname="92f9206d-8b0" time="0.012">
+  <properties/>
+  <testcase name="old XP level setting remains independent on migration()" classname="dev.solyanka.utility.ExtraHudFeaturesTest" time="0.001"/>
+  <testcase name="new HUD and XP settings round trip with strict types()" classname="dev.solyanka.utility.ExtraHudFeaturesTest" time="0.002"/>
+  <testcase name="XP bar hiding requires its own option module and SkyBlock()" classname="dev.solyanka.utility.ExtraHudFeaturesTest" time="0.001"/>
+  <testcase name="inventory slot lists are complete unique and exclude equipped slots()" classname="dev.solyanka.utility.ExtraHudFeaturesTest" time="0.0"/>
+  <testcase name="instant edit writes new HUD config without enabling its master()" classname="dev.solyanka.utility.ExtraHudFeaturesTest" time="0.003"/>
+  <testcase name="inventory dimensions follow every armor hotbar and minimal combination()" classname="dev.solyanka.utility.ExtraHudFeaturesTest" time="0.0"/>
+  <testcase name="runtime source gates XP-only class and excludes Aether module()" classname="dev.solyanka.utility.ExtraHudFeaturesTest" time="0.002"/>
+  <testcase name="settings preserve unknown fields across an upgrade()" classname="dev.solyanka.utility.ExtraHudFeaturesTest" time="0.002"/>
+  <testcase name="new HUDs participate in editor and preserve unrelated fields()" classname="dev.solyanka.utility.ExtraHudFeaturesTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

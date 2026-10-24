@@ -31,13 +31,13 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
     }
     private var dragging:String?=null
     private var offsetX=0.0;private var offsetY=0.0
-    private fun entries()=HudLayout.entries(SolyankaClient.currentGeneral().features)
+    private fun entries()=HudLayout.entries(SolyankaClient.currentGeneral().features,width,height)
     private fun ordered()=entries().sortedBy {it.key==selected}
     private fun bounds(entry:HudEntry)=HudLayout.bounds(entry,entry.lines.maxOf {font.width(it)},width,height)
     private fun at(x:Double,y:Double)=ordered().asReversed().firstOrNull {bounds(it).contains(x,y)}
     private fun change(key:String,block:(HudSpec)->HudSpec) {
         // Always start from live state: an earlier failed write must not leak into a later drag.
-        model.updateGeneral { SolyankaClient.currentGeneral().copy(features=HudLayout.update(SolyankaClient.currentGeneral().features,key,block)) }
+        model.updateGeneral { SolyankaClient.currentGeneral().copy(features=HudLayout.update(SolyankaClient.currentGeneral().features,key,width,height,block)) }
     }
     override fun createAdapter():OwoUIAdapter<FlowLayout> = OwoUIAdapter.create(this) {w,h->UIContainers.verticalFlow(w,h)}
     override fun build(root:FlowLayout) {
@@ -60,7 +60,7 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
             val b=bounds(entry);val active=entry.hud.enabled
             g.fill(b.x,b.y,b.x+b.width,b.y+b.height,if(entry.key==selected) 0x88213946.toInt() else 0x66101010)
             GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else 0xff666666.toInt())
-            if(dev.solyanka.client.feature.ExtraHuds.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ScoreboardHud.editor(g,entry.key,b.x,b.y)) {
+            if(dev.solyanka.client.feature.VanillaHearts.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ArchiveHuds.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ExtraHuds.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ScoreboardHud.editor(g,entry.key,b.x,b.y)) {
                 GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else 0xff666666.toInt())
                 return@forEach
             }

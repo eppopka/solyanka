@@ -1,0 +1,29 @@
+[
+  {
+    "source": "user-provided impl.zip",
+    "archive_sha256": "94833f79bfeb5a6213ab719f321412848b22ca180ed7e64105ee4d707d39edf3",
+    "file": "impl/visual/AmbientParticles.kt",
+    "sha256": "c72666c99de9578adf41fb5bb0e81ad6ba905512d7f92e1c8560583791cfbf3b",
+    "module": "custom.ambient_particles",
+    "scope": "Eight native particle styles, bounded source distribution; docs/M11.md.",
+    "license": "User-provided addon adaptation in GPL-3.0-only project; no upstream framework bundled"
+  },
+  {
+    "source": "user-provided impl.zip",
+    "archive_sha256": "94833f79bfeb5a6213ab719f321412848b22ca180ed7e64105ee4d707d39edf3",
+    "file": "impl/visual/MoveHearts.kt",
+    "sha256": "bfea8f4dc705e23b30d7c026300947151eb215ae8927bf79d8d5544aff44b810",
+    "module": "custom.move_hearts",
+    "scope": "Native health/optional armor transform, responsive default and editor; docs/M11.md.",
+    "license": "User-provided addon adaptation in GPL-3.0-only project; no upstream framework bundled"
+  },
+  {
+    "source": "user-provided impl.zip",
+    "archive_sha256": "94833f79bfeb5a6213ab719f321412848b22ca180ed7e64105ee4d707d39edf3",
+    "file": "impl/visual/RotatingItem.kt",
+    "sha256": "6157572931bf83f57f694799ef56c655c96442bb070def7a6986d9ab39443d4c",
+    "module": "custom.rotating_item",
+    "scope": "Five source transform patterns and mirrored offsets; native 26.2 hook; docs/M11.md.",
+    "license": "User-provided addon adaptation in GPL-3.0-only project; no upstream framework bundled"
+  }
+]

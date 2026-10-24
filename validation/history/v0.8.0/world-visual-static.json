@@ -1,0 +1,37 @@
+{
+  "compiled_outline_callback_null_checked": true,
+  "targets": [
+    {
+      "class_name": "net.minecraft.client.Minecraft",
+      "method": "shouldEntityAppearGlowing",
+      "descriptor": "(Lnet/minecraft/world/entity/Entity;)Z",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.renderer.entity.EntityRenderer",
+      "method": "extractRenderState",
+      "descriptor": "(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/client/renderer/entity/state/EntityRenderState;F)V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.renderer.entity.EntityRenderer",
+      "method": "affectedByCulling",
+      "descriptor": "(Lnet/minecraft/world/entity/Entity;)Z",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.renderer.entity.EntityRenderer",
+      "method": "submitNameDisplay",
+      "descriptor": "(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;I)V",
+      "target_exists": true
+    }
+  ],
+  "state_outline_color_field": true,
+  "base_extraction_calls_minecraft_glow_query": true,
+  "duck_state_interface_compiled": true,
+  "nullable_outline_guard": true,
+  "xp_targets_rechecked": 2,
+  "mixin_classes": 37,
+  "in_game_tested_here": false,
+  "mixin_application_tested_here": false
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.ArchiveVisualTest" tests="30" skipped="0" failures="0" errors="0" timestamp="2026-10-24T16:46:37.298Z" hostname="222f7e72-264" time="0.044">
+  <properties/>
+  <testcase name="wave keeps offsets and adds only Y bob and Z tilt()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.005"/>
+  <testcase name="rotation rejects unknown modes and out of range values()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.001"/>
+  <testcase name="heart default follows window dimensions without changing config()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="new sections reject type errors and retain old independent values()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.002"/>
+  <testcase name="left hand mirrors only the horizontal offset()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="default heart transform is identity on native baseline()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="rotation mode labels and keys cover all five source modes()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.001"/>
+  <testcase name="clockwise and counterclockwise source degrees are opposed()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="three new settings roundtrip without touching previous features()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.005"/>
+  <testcase name="rotation speed multiplier matches source and wraps()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.001"/>
+  <testcase name="editor hearts geometry matches the live baseline size()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="native heart wrapper delegates and restores the pose stack()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="first editor scale change uses current screen not default resolution()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="new settings use atomic model commits and reject a failed save()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.001"/>
+  <testcase name="new settings migrate from an empty legacy config()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.001"/>
+  <testcase name="spin uses twice the roll rate around Y only()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="heart editor supports explicit origin without auto reset()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.001"/>
+  <testcase name="heart scale transform maps native baseline to the saved coordinates()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.001"/>
+  <testcase name="heart settings reject invalid HUD coordinates and scale()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="particle sample distribution stays inside source bounds()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.008"/>
+  <testcase name="ambient settings reject unsupported styles and unbounded density()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="heart coordinates and tiny windows are bounded()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.001"/>
+  <testcase name="negative elapsed time behaves as the reset epoch()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="seeded particle samples are reproducible and not constant()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="ambient spawning is world paused bounded and client only()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.001"/>
+  <testcase name="every source particle style is exposed and roundtrips()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.01"/>
+  <testcase name="long running animation remains finite in every mode()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <testcase name="new visual settings are embedded and use sliders and choice rows()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.001"/>
+  <testcase name="successful heart change commits immediately without a save button()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.001"/>
+  <testcase name="chaotic math matches source frequencies and amplitudes()" classname="dev.solyanka.utility.ArchiveVisualTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

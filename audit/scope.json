@@ -5,6 +5,24 @@
       "path": "impl/general/AetherOSSettings.kt",
       "reason": "Explicit user instruction: Do not add AetherOSSettings from impl.zip",
       "implement": false
+    },
+    {
+      "source": "impl.zip",
+      "path": "impl/qol/AutoRag.kt",
+      "reason": "Explicit combined-update exclusion",
+      "implement": false
+    },
+    {
+      "source": "impl.zip",
+      "path": "impl/qol/AutoReel.kt",
+      "reason": "Explicit combined-update exclusion",
+      "implement": false
+    },
+    {
+      "source": "impl.zip",
+      "path": "impl/visual/Cosmetics.kt",
+      "reason": "User clarified only module named Cosmetics is excluded",
+      "implement": false
     }
   ],
   "requested_rest_remains_in_scope": true
