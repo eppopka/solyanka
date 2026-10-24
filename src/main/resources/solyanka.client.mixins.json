@@ -43,7 +43,10 @@
     "HeldItemFeatureMixin",
     "SkyboxMixin",
     "TemporalBlurMixin",
-    "RotatingItemMixin"
+    "RotatingItemMixin",
+    "Cs2FirstPersonMixin",
+    "Cs2ThirdPersonMixin",
+    "ItemAuraPassMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.SkyboxTest" tests="20" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:05:02.621Z" hostname="222f7e72-264" time="0.725">
+  <properties/>
+  <testcase name="animation stays bounded at negative and large times()" classname="dev.solyanka.utility.SkyboxTest" time="0.001"/>
+  <testcase name="time inputs cannot generate NaN uniforms()" classname="dev.solyanka.utility.SkyboxTest" time="0.0"/>
+  <testcase name="eight frame animation ping pongs at exact source boundaries()" classname="dev.solyanka.utility.SkyboxTest" time="0.0"/>
+  <testcase name="all styles validate and roundtrip with old config defaults()" classname="dev.solyanka.utility.SkyboxTest" time="0.006"/>
+  <testcase name="skyless dimensions require independent opt in()" classname="dev.solyanka.utility.SkyboxTest" time="0.0"/>
+  <testcase name="sky hook keeps native end draw and never cancels sky fog guards()" classname="dev.solyanka.utility.SkyboxTest" time="0.0"/>
+  <testcase name="disabled and dimension default never force End()" classname="dev.solyanka.utility.SkyboxTest" time="0.0"/>
+  <testcase name="source geometry has seven quads and consistent UV winding()" classname="dev.solyanka.utility.SkyboxTest" time="0.001"/>
+  <testcase name="typed codec rejects null and mismatched skybox fields()" classname="dev.solyanka.utility.SkyboxTest" time="0.002"/>
+  <testcase name="rotation matches source rate modulo full revolution()" classname="dev.solyanka.utility.SkyboxTest" time="0.001"/>
+  <testcase name="black hole patch is centered on inverse tilted source direction()" classname="dev.solyanka.utility.SkyboxTest" time="0.0"/>
+  <testcase name="invalid settings and nonfinite values fail()" classname="dev.solyanka.utility.SkyboxTest" time="0.0"/>
+  <testcase name="six cube faces exactly cover source radius and opposing centers()" classname="dev.solyanka.utility.SkyboxTest" time="0.001"/>
+  <testcase name="renderer resolves uploads before opening pass and uses source crossfade blends()" classname="dev.solyanka.utility.SkyboxTest" time="0.0"/>
+  <testcase name="decoration requires master and decorated style()" classname="dev.solyanka.utility.SkyboxTest" time="0.0"/>
+  <testcase name="zero speed fixes rotation and black hole at source start()" classname="dev.solyanka.utility.SkyboxTest" time="0.0"/>
+  <testcase name="tint preserves sunrise alpha including absence and ignores picker alpha()" classname="dev.solyanka.utility.SkyboxTest" time="0.0"/>
+  <testcase name="tint round to nearest matches source channel mixing()" classname="dev.solyanka.utility.SkyboxTest" time="0.005"/>
+  <testcase name="tint disabled or zero strength is identity()" classname="dev.solyanka.utility.SkyboxTest" time="0.0"/>
+  <testcase name="source textures have expected native dimensions and alpha()" classname="dev.solyanka.utility.SkyboxTest" time="0.701"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

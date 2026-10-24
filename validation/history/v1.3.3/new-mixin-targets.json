@@ -1,0 +1,206 @@
+[
+  {
+    "class": "net.minecraft.client.gui.screens.inventory.AbstractContainerScreen",
+    "method": "extractSlot",
+    "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/inventory/Slot;II)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.gui.screens.inventory.AbstractContainerScreen",
+    "method": "slotClicked",
+    "descriptor": "(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.gui.screens.inventory.AbstractContainerScreen",
+    "method": "extractTooltip",
+    "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;II)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.gui.Hud",
+    "method": "extractBossOverlay",
+    "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.gui.Hud",
+    "method": "extractEffects",
+    "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.gui.Hud",
+    "method": "extractSelectedItemName",
+    "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.gui.Hud",
+    "method": "extractConfusionOverlay",
+    "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;F)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.gui.Hud",
+    "method": "extractVignette",
+    "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/Entity;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.renderer.extract.LevelExtractor",
+    "method": "isEntityVisible",
+    "descriptor": "(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/client/renderer/culling/Frustum;DDD)Z",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.renderer.entity.EntityRenderer",
+    "method": "extractRenderState",
+    "descriptor": "(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/client/renderer/entity/state/EntityRenderState;F)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.gui.screens.inventory.EffectsInInventory",
+    "method": "extractRenderState",
+    "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;II)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen",
+    "method": "initButton",
+    "descriptor": "()V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.multiplayer.ClientLevel",
+    "method": "addBreakingBlockEffect",
+    "descriptor": "(Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.multiplayer.ClientLevel",
+    "method": "addDestroyBlockEffect",
+    "descriptor": "(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.multiplayer.ClientPacketListener",
+    "method": "handleParticleEvent",
+    "descriptor": "(Lnet/minecraft/network/protocol/game/ClientboundLevelParticlesPacket;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.multiplayer.ClientPacketListener",
+    "method": "handleContainerSetSlot",
+    "descriptor": "(Lnet/minecraft/network/protocol/game/ClientboundContainerSetSlotPacket;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.multiplayer.ClientPacketListener",
+    "method": "handleContainerContent",
+    "descriptor": "(Lnet/minecraft/network/protocol/game/ClientboundContainerSetContentPacket;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.renderer.ScreenEffectRenderer",
+    "method": "submit",
+    "descriptor": "(ZZFLnet/minecraft/client/renderer/SubmitNodeCollector;Z)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.renderer.entity.layers.StuckInBodyLayer",
+    "method": "submit",
+    "descriptor": "(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/AvatarRenderState;FF)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.renderer.GameRenderer",
+    "method": "renderLevel",
+    "descriptor": "(Lnet/minecraft/client/DeltaTracker;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.renderer.fog.FogRenderer",
+    "method": "setupFog",
+    "descriptor": "(Lnet/minecraft/client/Camera;ILnet/minecraft/client/DeltaTracker;FLnet/minecraft/client/multiplayer/ClientLevel;)Lnet/minecraft/client/renderer/fog/FogData;",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.renderer.entity.EntityRenderer",
+    "method": "extractNameTags",
+    "descriptor": "(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/client/renderer/entity/state/EntityRenderState;F)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.multiplayer.ClientPacketListener",
+    "method": "handleEntityEvent",
+    "descriptor": "(Lnet/minecraft/network/protocol/game/ClientboundEntityEventPacket;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.multiplayer.ClientPacketListener",
+    "method": "handleMovePlayer",
+    "descriptor": "(Lnet/minecraft/network/protocol/game/ClientboundPlayerPositionPacket;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.multiplayer.ClientPacketListener",
+    "method": "handleTakeItemEntity",
+    "descriptor": "(Lnet/minecraft/network/protocol/game/ClientboundTakeItemEntityPacket;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.multiplayer.ClientPacketListener",
+    "method": "handleRemoveEntities",
+    "descriptor": "(Lnet/minecraft/network/protocol/game/ClientboundRemoveEntitiesPacket;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.multiplayer.ClientPacketListener",
+    "method": "handleSoundEvent",
+    "descriptor": "(Lnet/minecraft/network/protocol/game/ClientboundSoundPacket;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.ClientClockManager",
+    "method": "getTotalTicks",
+    "descriptor": "(Lnet/minecraft/core/Holder;)J",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.world.level.Level",
+    "method": "getRainLevel",
+    "descriptor": "(F)F",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.world.level.Level",
+    "method": "getThunderLevel",
+    "descriptor": "(F)F",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.renderer.WeatherEffectRenderer",
+    "method": "extractRenderState",
+    "descriptor": "(Lnet/minecraft/client/multiplayer/ClientLevel;FLnet/minecraft/world/phys/Vec3;Lnet/minecraft/client/renderer/state/level/WeatherRenderState;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.renderer.WeatherEffectRenderer",
+    "method": "render",
+    "descriptor": "(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/client/renderer/state/level/WeatherRenderState;)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.renderer.Projection",
+    "method": "setupPerspective",
+    "descriptor": "(FFFFF)V",
+    "target_exists": true
+  },
+  {
+    "class": "net.minecraft.client.Camera",
+    "method": "createProjectionMatrixForCulling",
+    "descriptor": "()Lorg/joml/Matrix4f;",
+    "target_exists": true
+  }
+]

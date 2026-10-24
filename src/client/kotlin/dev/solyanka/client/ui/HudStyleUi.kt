@@ -17,10 +17,15 @@ object HudStyleUi {
    } catch(e:Exception) {error=e.message ?: "Invalid setting"};panel.refreshStatus()}
    buildList {
     add(GuiKit.description(w,if(key=="scoreboardHud") "Rounded sidebar with team-colored objective selection and original styled names/scores. Move and scale with /solyanka gui. Long rows are clipped to avoid score overlap. No invented live data." else "One rounded pane plus styled input. Vanilla text, links, hover, scroll, suggestions and message-security tags remain intact. No frost blur or slide animation; click hitboxes stay unchanged."))
+    add(GuiKit.button("Apply Stray classic colors",w) {
+     model.updateGeneral {old->old.copy(features=if(key=="scoreboardHud") old.features.copy(scoreboardHud=dev.solyanka.utility.StrayClassicStyle.scoreboard(old.features.scoreboardHud)) else old.features.copy(themedChat=dev.solyanka.utility.StrayClassicStyle.chat(old.features.themedChat)))}
+     host.closePanel();open(id,host,model)
+    })
     fun controls(obj:JsonObject,prefix:String="") {
      obj.entrySet().forEach {(field,value)->
-      if(value.isJsonObject) return@forEach
-      val path=prefix+field;val label=field.replace(Regex("([a-z])([A-Z])"),"$1 $2").replaceFirstChar {it.uppercase()}
+      if(value.isJsonObject || prefix=="hud." && field in setOf("x","y","scale")) return@forEach
+      if(key=="scoreboardHud" && field=="accentColor") return@forEach // Legacy saved field, no decorative header.
+      val path=prefix+field;val label=if(key=="scoreboardHud" && field=="header") "Objective title" else field.replace(Regex("([a-z])([A-Z])"),"$1 $2").replaceFirstChar {it.uppercase()}
       if(value.asJsonPrimitive.isBoolean) add(GuiKit.toggleRow(w,label,value.asBoolean) {change(path,JsonPrimitive(it))})
       else if(field.endsWith("Color") || field=="color") add(GuiKit.colorRow(w,label,value.asInt) {change(path,JsonPrimitive(it))})
       else {
@@ -29,6 +34,7 @@ object HudStyleUi {
       }
      }
     }
+    if(key=="scoreboardHud") add(HudNavigation.button(w))
     section.getAsJsonObject("hud")?.let {controls(it,"hud.")};controls(section)
    }
   })

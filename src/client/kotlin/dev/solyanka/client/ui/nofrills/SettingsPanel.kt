@@ -21,11 +21,13 @@ class SettingsPanel(
     private val title:String,
     private val back:()->Unit,
     private val status:()->String?,
+    private val info:()->String?={null},
     private val content:(SettingsPanel,Int)->List<UIComponent>
 ) {
     lateinit var adapter:OwoUIAdapter<FlowLayout>;private set
     private lateinit var scroll:ScrollContainer<FlowLayout>
     private lateinit var statusLabel:LabelComponent
+    private var lastInfo:String?=null
     private data class Capture(val button:ButtonComponent,val device:InputDevice,val key:Int,val accept:(InputDevice,Int)->Unit)
     private var capture:Capture?=null
     private var blockCharacter=false
@@ -37,6 +39,7 @@ class SettingsPanel(
     fun placeAt(point:PanelDrag.Point?) {initialPosition=point}
     private fun reposition() {drag.position?.let {frame.positioning(Positioning.absolute(it.x,it.y))}}
     fun render(g:net.minecraft.client.gui.GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
+        val currentInfo=info();if(currentInfo!=lastInfo){lastInfo=currentInfo;refreshStatus()}
         adapter.extractRenderState(g,mx,my,delta);adapter.drawTooltip(g,mx,my,delta)
     }
     fun mouseDragged(event:MouseButtonEvent,dx:Double,dy:Double):Boolean {
@@ -83,8 +86,8 @@ class SettingsPanel(
     fun refreshStatus() {
         if(!::statusLabel.isInitialized) return
         val error=status()
-        statusLabel.text(Component.literal(if(error==null) "" else "Not saved: $error"))
-        statusLabel.color(Color.ofArgb(if(error==null) 0xff55ff55.toInt() else 0xffff5555.toInt()))
+        statusLabel.text(Component.literal(if(error==null) info() ?: "" else "Not saved: $error"))
+        statusLabel.color(Color.ofArgb(if(error==null) GuiKit.MUTED else 0xffff5555.toInt()))
     }
     fun dispose() { capture=null;drag.end();if(::adapter.isInitialized) adapter.dispose() }
     fun inputRow(width:Int,device:InputDevice,key:Int,updated:(InputDevice,Int)->Unit):FlowLayout {

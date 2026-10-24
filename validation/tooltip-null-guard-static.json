@@ -1,5 +1,5 @@
 {
-  "version": "1.3.3",
+  "version": "1.3.9",
   "reported_version": "1.3.0",
   "dependency_version": "owo 0.13.1+26.2",
   "dependency_unguarded_style_call_confirmed": true,

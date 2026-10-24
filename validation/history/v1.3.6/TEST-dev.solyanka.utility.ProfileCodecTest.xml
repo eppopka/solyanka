@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.ProfileCodecTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-24T17:44:36.950Z" hostname="222f7e72-264" time="0.01">
+  <properties/>
+  <testcase name="unknown profile and row fields are retained by stable ID()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.002"/>
+  <testcase name="typed profile round trips()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.002"/>
+  <testcase name="v1 foundation config migrates additively()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.002"/>
+  <testcase name="malformed profile preserves original file and denies writes()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.001"/>
+  <testcase name="wrong types and fractional keys are rejected()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.0"/>
+  <testcase name="failed validation cannot mutate file or in memory settings()" classname="dev.solyanka.utility.ProfileCodecTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

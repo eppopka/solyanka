@@ -30,6 +30,7 @@ object FeatureUi {
     fun open(id:String,host:NoFrillsClickGui,model:InstantSettings) {
         val v=View(host,model)
         when(id) {
+            SolyankaClient.ITEM_AURA,SolyankaClient.CS2_KNIFE->FinalCosmeticsUi.open(id,host,model)
             SolyankaClient.BLOCKLIST,SolyankaClient.MOVE_HOTBAR,SolyankaClient.PIP,SolyankaClient.PET,SolyankaClient.SIMON,SolyankaClient.BESTIARY,SolyankaClient.INVISIBUG,SolyankaClient.TIKI,SolyankaClient.CHINA_HAT,SolyankaClient.HALO->HuntingUi.open(id,host,model)
             SolyankaClient.SECRET_COUNTER,SolyankaClient.ALWAYS_WATER->ArchiveDungeonUi.open(id,host,model)
             SolyankaClient.AMBIENT_PARTICLES,SolyankaClient.ROTATING_ITEM,SolyankaClient.MOVE_HEARTS->ArchiveVisualUi.open(id,host,model)
@@ -58,9 +59,9 @@ object FeatureUi {
                 add(GuiKit.toggleRow(w,"Show Prefix",s.prefix) { value -> update { it.copy(prefix=value) } })
                 add(GuiKit.toggleRow(w,"Goldor Start Timer",s.startTimer,"64 server ticks after Storm's closing line.") { value -> update { it.copy(startTimer=value) } })
                 s.huds().forEach { (id,h) ->
-                    add(GuiKit.hudRow(w,timerName(id),h.enabled,"Position / Scale",110,
+                    add(GuiKit.hudRow(w,timerName(id),h.enabled,"HUD Editor",100,
                         { value -> update { current -> current.withHud(id,current.huds().getValue(id).copy(enabled=value)) } },
-                        { hud(v,true,id) }))
+                        { net.minecraft.client.Minecraft.getInstance().setScreenAndShow(HudEditorScreen()) }))
                 }
             }
         })
@@ -85,7 +86,7 @@ object FeatureUi {
                 add(GuiKit.toggleRow(w,"Hide Zero Overflow",s.hideZeroOverflow) { value -> update { it.copy(hideZeroOverflow=value) } })
                 add(GuiKit.toggleRow(w,"Show Icons",s.icons) { value -> update { it.copy(icons=value) } })
                 s.huds().forEach { (id,h) ->
-                    add(GuiKit.hudRow(w,id.replaceFirstChar { it.uppercase() },h.enabled,"Position / Scale / Color",145,
+                    add(GuiKit.hudRow(w,id.replaceFirstChar { it.uppercase() },h.enabled,"Layout / Color",110,
                         { value -> update { current -> current.withHud(id,current.huds().getValue(id).copy(enabled=value)) } },
                         { hud(v,false,id) }))
                 }
@@ -99,10 +100,8 @@ object FeatureUi {
             fun apply(f:FeatureSettings,block:(HudSpec)->HudSpec)=if(timer) f.copy(timers=f.timers.withHud(id,block(f.timers.huds().getValue(id)))) else f.copy(player=f.player.withHud(id,block(f.player.huds().getValue(id))))
             val key=(if(timer) "timer" else "player")+".$id"
             buildList {
-                add(GuiKit.description(w,"GUI-scaled pixels; rendering clamps to the visible screen. Scale 0.5–4."))
-                add(v.number(panel,w,"$key.x","X",h.x.toString()) { f,n -> apply(f) { it.copy(x=whole(n,"X")) } })
-                add(v.number(panel,w,"$key.y","Y",h.y.toString()) { f,n -> apply(f) { it.copy(y=whole(n,"Y")) } })
-                add(v.number(panel,w,"$key.scale","Scale",h.scale.toString()) { f,n -> apply(f) { it.copy(scale=n) } })
+                add(GuiKit.description(w,"Drag and resize enabled HUDs with /solyanka gui. Color saves instantly."))
+                add(HudNavigation.button(w))
                 if(!timer) add(GuiKit.colorRow(w,"Color",h.color) { color ->
                     v.change(panel) { f -> apply(f) { it.copy(color=color) } }
                 })

@@ -1,0 +1,15 @@
+{
+  "new_modules": [
+    "hud.inventory",
+    "hud.item_name",
+    "hud.skill_progress"
+  ],
+  "source_api_checks": {
+    "GuiGraphicsExtractor.item": "(ItemStack,int,int,int)",
+    "GuiGraphicsExtractor.itemDecorations": "(Font,ItemStack,int,int)",
+    "VanillaHudElements.HELD_ITEM_TOOLTIP": true
+  },
+  "editor_entries": 17,
+  "aetheros_settings_excluded": true,
+  "in_game_tested_here": false
+}

@@ -33,9 +33,9 @@ class GuiPerformanceTest {
   assertEquals(emptyList(),PanelGeometry.bands(0,50,7));assertEquals(emptyList(),PanelGeometry.bands(5,0,7))
   assertEquals(PanelGeometry.fillCalls(PanelGeometry.bands(400,420,7)),PanelGeometry.fillCalls(PanelGeometry.bands(400,4200,7)))
  }
- @Test fun `modal settings skip background category extraction`() {
+ @Test fun `feature list remains rendered behind modal settings`() {
   val s=Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt").readText()
-  assertTrue("if(panel==null) super.extractRenderState(g,mx,my,delta)" in s)
+  assertTrue("super.extractRenderState(g,mx,my,delta)" in s);assertFalse("if(panel==null) super.extractRenderState" in s)
   assertTrue("current.render(g,mx,my,delta)" in s)
  }
 }

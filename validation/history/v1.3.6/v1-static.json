@@ -1,0 +1,49 @@
+{
+  "targets": [
+    {
+      "class_name": "net.minecraft.client.renderer.GameRenderer",
+      "method": "renderLevel",
+      "descriptor": "(Lnet/minecraft/client/DeltaTracker;)V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.renderer.GameRenderer",
+      "method": "close",
+      "descriptor": "()V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.renderer.GameRenderer",
+      "method": "resize",
+      "descriptor": "(II)V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.renderer.GameRenderer",
+      "method": "resetData",
+      "descriptor": "()V",
+      "target_exists": true
+    }
+  ],
+  "owning_main_target_shadow_verified": true,
+  "compiled_tail_and_cleanup_callbacks": true,
+  "native_draw_parameter_order_checked": true,
+  "world_render_before_gui": true,
+  "history_targets_depthless_and_matching_format": true,
+  "first_frame_reseed_guard": true,
+  "history_long_gap_guard": true,
+  "zero_strength_releases_history": true,
+  "history_formats_supported": [
+    "RGBA8_UNORM",
+    "RGBA16_FLOAT"
+  ],
+  "history_pixel_budget": 8388608,
+  "release_repeat_input_ownership_preserved": true,
+  "timer_local_feedback_only": true,
+  "archive_source_hashes_verified": true,
+  "new_gui_embedded_instant_save": true,
+  "mixin_classes": 44,
+  "in_game_tested_here": false,
+  "mixin_application_tested_here": false,
+  "gpu_sodium_iris_tested_here": false
+}

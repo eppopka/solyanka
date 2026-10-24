@@ -1,3 +1,24 @@
+# 1.3.9
+
+- Fixed reversed-Z depth testing for Halo, China Hat triangles and shared filled world overlays. Through Walls remains an explicit bypass.
+- Added depth-routing and software occlusion regression checks; native visual acceptance remains unverified.
+
+# 1.3.8 — Knife assets, depth and HUD workflow
+
+- Explicit confirmed Stray pack download with progress/cancel, pinned size/SHA-256, bounded reader and generation-safe reload; no assets bundled or automatic network fetch.
+- Corrected ItemAura for 26.2 reversed-Z, preserving no-depth-write and late hand pass.
+- Central HUD Editor buttons replace numeric screen layout controls; editor filters enabled modules/visible HUDs and handles empty state.
+- Ctrl+F focuses search through deferred navigation; placeholder clears while typing.
+- MoveHotbar Vanilla/Minimal/Glass/Neon presets, horizontal/vertical layout, chrome/effects, smooth selection and native item decorations. Exact source-painter parity remains partial.
+- See docs/FEATURES_1.3.8.md for setup, intentional differences and unverified native runtime/visual acceptance.
+
+# 1.3.7 — PiP, shader timing and scoreboard fixes
+
+- PiP selection survives browser-tab/window-title changes; application-labelled picker, explicit HWND/process selection and no desktop fallback retained.
+- Held Item local monotonic phase replaces world-clock animation; speed edits preserve phase and zero speed freezes; no duplicate Globals layout.
+- Removed decorative SCOREBOARD and reserved row; actual objective title remains configurable. Added opt-in source classic color palette for scoreboard/chat.
+- Native Windows capture, Minecraft rendering and visual/FPS acceptance still require in-game testing; see docs/FEATURES_1.3.7.md.
+
 # 1.2.0 — personal secrets and indoor rain
 
 - Added archive Secret Counter with one post-run stats request, bounded personal-result window and local feedback; chat announcements explicitly opt-in.

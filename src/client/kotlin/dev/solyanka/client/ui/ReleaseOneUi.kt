@@ -21,10 +21,7 @@ object ReleaseOneUi {
       add(GuiKit.description(w,"First press starts, second stops and reports locally in chat, third resets. World-only key/mouse binding, independent of Command Keybinds. No chat/server command sent. /solyanka gui moves/scales this HUD. Resets on disable or world change."))
       add(panel.inputRow(w,InputDevice.valueOf(s.device),s.key) {d,k->update {it.copy(stopwatch=it.stopwatch.copy(device=d.name,key=k))}})
       add(GuiKit.toggleRow(w,"HUD Visible",s.hud.enabled) {v->update {it.copy(stopwatch=it.stopwatch.copy(hud=it.stopwatch.hud.copy(enabled=v)))}})
-      for(field in listOf("x","y","scale")) {
-       val value=when(field) {"x"->s.hud.x.toDouble();"y"->s.hud.y.toDouble();else->s.hud.scale}
-       add(GuiKit.sliderRow(w,field.replaceFirstChar {it.uppercase()},value,SettingsNumbers.range("hud",field,host.width,host.height,value)) {v->update {f->val h=f.stopwatch.hud;f.copy(stopwatch=f.stopwatch.copy(hud=when(field) {"x"->h.copy(x=v.toInt());"y"->h.copy(y=v.toInt());else->h.copy(scale=v)}))}})
-      }
+      add(HudNavigation.button(w))
       add(GuiKit.colorRow(w,"Text Color",s.hud.color) {v->update {it.copy(stopwatch=it.stopwatch.copy(hud=it.stopwatch.hud.copy(color=v)))}})
      }
      else->{val s=model.general.features.dvd

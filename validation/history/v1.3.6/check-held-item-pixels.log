@@ -1,0 +1,40 @@
+{
+  "translation": "GLSL 330 native includes expanded and translated to ES 300 for software testing",
+  "linked": true,
+  "native_vertex_shader_used": true,
+  "style_cases": [
+    {
+      "style": 0,
+      "changed_pixels": 1024,
+      "animated_pixels": 1022,
+      "frozen_pixel_differences": 0,
+      "cutout_discarded_pixels": 1024
+    },
+    {
+      "style": 1,
+      "changed_pixels": 1024,
+      "animated_pixels": 1024,
+      "frozen_pixel_differences": 0,
+      "cutout_discarded_pixels": 1024
+    },
+    {
+      "style": 2,
+      "changed_pixels": 1024,
+      "animated_pixels": 242,
+      "frozen_pixel_differences": 0,
+      "cutout_discarded_pixels": 1024
+    },
+    {
+      "style": 3,
+      "changed_pixels": 1024,
+      "animated_pixels": 1007,
+      "frozen_pixel_differences": 0,
+      "cutout_discarded_pixels": 1024
+    }
+  ],
+  "pixel_render_cases": 20,
+  "failures": [],
+  "minecraft_pipeline_tested": false,
+  "actual_gpu_tested": false,
+  "backend": "Chromium SwiftShader"
+}

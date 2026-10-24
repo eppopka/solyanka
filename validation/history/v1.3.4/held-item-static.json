@@ -1,0 +1,45 @@
+{
+  "targets": [
+    {
+      "class_name": "net.minecraft.client.renderer.feature.ItemFeatureRenderer",
+      "method": "prepareMainSubmit",
+      "descriptor": "(Lnet/minecraft/client/renderer/feature/ItemFeatureRenderer$Submit;)V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.resources.model.geometry.BakedQuad$MaterialInfo",
+      "method": "itemRenderType",
+      "descriptor": "()Lnet/minecraft/client/renderer/rendertype/RenderType;",
+      "target_exists": true
+    }
+  ],
+  "main_material_callsites": 1,
+  "compiled_handler_signature_verified": true,
+  "main_only": true,
+  "native_image_setPixel_accepts_argb": true,
+  "render_thread_only_texture_upload": true,
+  "render_head_preparation_verified": true,
+  "pipeline_registered_at_client_init": true,
+  "native_compile_result_checked": true,
+  "opaque_fill_matches_stray": true,
+  "settings_initialized_before_first_upload": true,
+  "diagnostic_command": true,
+  "upstream_head_rechecked": true,
+  "shader_symptom_root_cause_confirmed": false,
+  "wrap_creates_metadata_only": true,
+  "pipeline_prepared_before_ready": true,
+  "synchronized_bounded_atlas_cache": true,
+  "native_includes_resolved": [
+    "assets/minecraft/shaders/include/dynamictransforms.glsl",
+    "assets/minecraft/shaders/include/fog.glsl",
+    "assets/minecraft/shaders/include/globals.glsl",
+    "assets/minecraft/shaders/include/light.glsl",
+    "assets/minecraft/shaders/include/matrix.glsl",
+    "assets/minecraft/shaders/include/projection.glsl",
+    "assets/minecraft/shaders/include/sample_lightmap.glsl"
+  ],
+  "mixin_classes": 41,
+  "in_game_tested_here": false,
+  "mixin_application_tested_here": false,
+  "native_gpu_tested_here": false
+}

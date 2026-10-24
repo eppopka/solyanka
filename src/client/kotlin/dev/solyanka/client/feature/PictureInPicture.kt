@@ -25,7 +25,7 @@ object PictureInPicture {
  fun supported()=PipWin32.available()
  fun windows():List<PipWin32.WindowInfo> = if(!supported())emptyList() else runCatching {PipWin32.list()}.getOrElse {status="Window listing failed";emptyList()}
  fun choose(info:PipWin32.WindowInfo?) {
-  reset();if(info!=null && S.isEnabled(S.PIP)){selected.set(Target(info,++generation));status="Selected: ${info.title()}"}
+  reset();if(info!=null && S.isEnabled(S.PIP)){selected.set(Target(info,++generation));status="Selected: ${info.label()}"}
  }
  fun reset(){generation++;selected.set(null);nextFrame.set(null);shown=null;status=if(supported())"Select a window" else "Windows only";releaseTexture()}
  private fun releaseTexture(){if(texture!=null)Minecraft.getInstance().textureManager.release(id);texture=null;image=null;texW=0;texH=0}
@@ -43,8 +43,8 @@ object PictureInPicture {
       try {
        val size=IntArray(2);val pixels=PipWin32.capture(target.info,size,null)
        if(selected.get()===target){
-        if(pixels!=null){nextFrame.set(Frame(target,pixels,size[0],size[1]));status="Capturing: ${target.info.title()}"}
-        else {nextFrame.set(null);status="Capture unavailable — reselect if title changed"}
+        if(pixels!=null){nextFrame.set(Frame(target,pixels,size[0],size[1]));status="Capturing: ${target.info.application()}"}
+        else {nextFrame.set(null);status="Capture unavailable — restore window or reselect after closing"}
        }
       }catch(e:Throwable){if(selected.get()===target){nextFrame.set(null);status="Capture failed — reselect window"}}
      }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.ui.HudLayoutTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-24T17:09:37.691Z" hostname="222f7e72-264" time="0.018">
+  <properties/>
+  <testcase name="moving a player HUD keeps all other settings()" classname="dev.solyanka.ui.HudLayoutTest" time="0.005"/>
+  <testcase name="editor-like edits use immediate validated persistence()" classname="dev.solyanka.ui.HudLayoutTest" time="0.002"/>
+  <testcase name="bounds clamp using scaled text dimensions()" classname="dev.solyanka.ui.HudLayoutTest" time="0.002"/>
+  <testcase name="drag preserves pointer offset and stays on screen()" classname="dev.solyanka.ui.HudLayoutTest" time="0.001"/>
+  <testcase name="very small windows still have valid nonnegative bounds()" classname="dev.solyanka.ui.HudLayoutTest" time="0.001"/>
+  <testcase name="editor covers every implemented movable HUD()" classname="dev.solyanka.ui.HudLayoutTest" time="0.0"/>
+  <testcase name="invalid or unknown HUD edits are rejected()" classname="dev.solyanka.ui.HudLayoutTest" time="0.002"/>
+  <testcase name="timer visibility is independent from other timer HUDs()" classname="dev.solyanka.ui.HudLayoutTest" time="0.0"/>
+  <testcase name="map layout only changes stored map coordinates()" classname="dev.solyanka.ui.HudLayoutTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

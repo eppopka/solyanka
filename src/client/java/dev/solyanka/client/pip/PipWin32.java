@@ -28,7 +28,9 @@ import java.util.Locale;
  * GDI objects are reused so 60 FPS capture does not allocate every frame.
  */
 public final class PipWin32 {
- public record WindowInfo(String id,String title,int width,int height,int pid) {}
+ public record WindowInfo(String id,String title,int width,int height,int pid,long processStart,String application) {
+  public String label() {return application + " [" + pid + "] — " + title;}
+ }
 	private static final int MAX_EDGE = 640;
 	private static final int PW_RENDERFULLCONTENT = 2;
 	private static final int SRCCOPY = 0x00CC0020;
@@ -184,12 +186,28 @@ public final class PipWin32 {
 		com.sun.jna.ptr.IntByReference pid = new com.sun.jna.ptr.IntByReference();
   User32.INSTANCE.GetWindowThreadProcessId(hwnd,pid);
   if(pid.getValue()<=0)return null;
-  return new WindowInfo(Long.toUnsignedString(value), title, w, h,pid.getValue());
+  ProcessHandle.Info process = processInfo(pid.getValue());
+  String application = process == null ? "PID " + pid.getValue() : process.command().map(path -> {
+   int split = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+   return path.substring(split + 1);
+  }).orElse("PID " + pid.getValue());
+  return new WindowInfo(Long.toUnsignedString(value), title, w, h,pid.getValue(),processStart(process),application);
 	}
 
 	private static boolean sameTarget(HWND hwnd,WindowInfo target) {
-  WindowInfo current=describe(hwnd,selfHwnd());
-  return current!=null && current.id().equals(target.id()) && current.pid()==target.pid() && current.title().equals(target.title());
+  long value=nativeHwnd(hwnd);
+  if(value==0 || value==selfHwnd() || !User32.INSTANCE.IsWindowVisible(hwnd)) return false;
+  com.sun.jna.ptr.IntByReference pid=new com.sun.jna.ptr.IntByReference();
+  User32.INSTANCE.GetWindowThreadProcessId(hwnd,pid);
+  var current=new dev.solyanka.utility.PipTargetIdentity(Long.toUnsignedString(value),pid.getValue(),processStart(processInfo(pid.getValue())));
+  return new dev.solyanka.utility.PipTargetIdentity(target.id(),target.pid(),target.processStart()).matches(current);
+ }
+ private static ProcessHandle.Info processInfo(int pid) {
+  try {return ProcessHandle.of(pid).map(ProcessHandle::info).orElse(null);}
+  catch(SecurityException ignored) {return null;}
+ }
+ private static long processStart(ProcessHandle.Info info) {
+  return info==null ? -1L : info.startInstant().map(java.time.Instant::toEpochMilli).orElse(-1L);
  }
  private static boolean skipTitle(String title) {
 		String lower = title.toLowerCase(Locale.ROOT);

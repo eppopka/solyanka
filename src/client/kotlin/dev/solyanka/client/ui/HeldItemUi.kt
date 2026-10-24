@@ -9,7 +9,7 @@ object HeldItemUi {
    val s=model.general.features.heldItem
    fun update(block:(HeldItemSettings)->HeldItemSettings) {model.updateGeneral {it.copy(features=it.features.copy(heldItem=block(it.features.heldItem)))};panel.refreshStatus()}
    buildList {
-    add(GuiKit.description(w,"Stray Smoke, Stars, Portal and Galaxy shaders for first-person item quads. Item Name HUD is separate. Vanilla glint remains. Does not replace arms, maps or special model renderers; silhouette post-outline is not ported. No server/item changes."))
+    add(GuiKit.description(w,"Stray Smoke, Stars, Portal and Galaxy shaders for first-person item quads. Item Name HUD is separate. Vanilla glint remains. Does not replace arms, maps or special model renderers; silhouette post-outline is not ported. No server/item changes. /solyanka helditemstatus reports readiness and replacement counts."))
     add(GuiKit.choiceRow(w,"Effect",HeldItemPolicy.labels,HeldItemPolicy.styles.indexOf(s.style),readCurrent={HeldItemPolicy.styles.indexOf(model.general.features.heldItem.style)}) {i->update {it.copy(style=HeldItemPolicy.styles[i])}})
     add(GuiKit.colorRow(w,"Tint (RGB)",s.color) {v->update {it.copy(color=v)}})
     add(GuiKit.sliderRow(w,"Fill",s.fill,NumberRange(.08,.85,.01),"Tint strength; Portal/Galaxy also use this for transparency.") {v->update {it.copy(fill=v)}})

@@ -3,19 +3,19 @@ from pathlib import Path
 import json,zipfile,hashlib,subprocess,re,tempfile,html
 p=Path(__file__).resolve().parents[1]
 for r in json.loads((p/'audit/stray-ui-blur-source-manifest.json').read_text()):assert hashlib.sha256((p/r['local_file']).read_bytes()).hexdigest()==r['sha256']
-jar=p/'build/libs/solyanka-1.3.3.jar'
+jar=p/'build/libs/solyanka-1.3.9.jar'
 with zipfile.ZipFile(jar) as z:
  for name in ['FrameBlendHistory','PanelGeometry']:assert f'dev/solyanka/utility/{name}.class' in z.namelist()
  assert 'dev/solyanka/client/feature/StrayInventoryHud.class' in z.namelist()
  assert z.read('assets/solyanka/shaders/post/frame_blend.fsh')==(p/'src/main/resources/assets/solyanka/shaders/post/frame_blend.fsh').read_bytes()
- assert json.loads(z.read('fabric.mod.json'))['version']=='1.3.3'
+ assert json.loads(z.read('fabric.mod.json'))['version']=='1.3.9'
 blur=(p/'src/client/kotlin/dev/solyanka/client/feature/TemporalBlur.kt').read_text()
 for token in ['FrameBlendHistory.capacity','clock.push(stamp)','clock.samples(stamp,monitorRefresh(now),s.strength)','frames[index] ?: TextureTarget','64L)','bytes.putFloat(1f/total).putInt(samples.size)','for(i in 0 until 12)','FrameBlendParamsUniforms','frameOutput?.destroyBuffers()']:assert token in blur,token
 frame=blur.split('private fun drawFrames(',1)[1].split('private fun monitorRefresh(',1)[0]
 assert frame.index('copyTextureToTexture(main.colorTexture!!,raw.colorTexture!!')<frame.index('encoder.createRenderPass')<frame.index('copyTextureToTexture(out.colorTexture!!,main.colorTexture!!')
 assert frame.index('encoder.writeToBuffer')<frame.index('encoder.createRenderPass')
 chrome=(p/'src/client/kotlin/dev/solyanka/client/feature/ChromeDraw.kt').read_text();assert 'PanelGeometry.bands' in chrome and 'size>128' in chrome and 'for(row in 0 until h)' not in chrome
-screen=(p/'src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt').read_text();assert 'if(panel==null) super.extractRenderState' in screen
+screen=(p/'src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt').read_text();assert 'super.extractRenderState(g,mx,my,delta)' in screen and 'if(panel==null) super.extractRenderState' not in screen
 # Native API overload used for contextual item rendering. Compilation also checks it.
 native=Path.home()/'.gradle/caches/fabric-loom/26.2/minecraft-client.jar'
 sig=subprocess.check_output(['java','-m','jdk.jdeps/com.sun.tools.javap.Main','-p','-s','-classpath',str(native),'net.minecraft.client.gui.GuiGraphicsExtractor'],text=True)
@@ -46,5 +46,5 @@ with tempfile.TemporaryDirectory(prefix='solyanka-frame-blend-') as temp:
  f=Path(temp)/'test.html';f.write_text(page);r=subprocess.run(['chromium','--headless','--no-sandbox','--use-angle=swiftshader','--enable-unsafe-swiftshader','--dump-dom',f.as_uri()],capture_output=True,text=True,timeout=60)
  m=re.search(r'<pre id="result">(.*?)</pre>',r.stdout,re.S);assert m,r.stderr[-1000:];result=json.loads(html.unescape(m.group(1)))
 assert result.get('pixel_cases')==16 and not result['failures'],result
-result.update(version='1.3.3',source_hashes_verified=True,history_budget_bytes=96*1024*1024,history_max_targets=24,sampler_limit=12,raw_frame_capture_before_composite=True,gui_band_cache_limit=128,obscured_cards_not_extracted=True,gui_fps_measured_in_game=False,inventory_classic_style_adapted=True,inventory_frost_blur_ported=False,minecraft_launched_here=False,sodium_iris_tested_here=False)
+result.update(version='1.3.9',source_hashes_verified=True,history_budget_bytes=96*1024*1024,history_max_targets=24,sampler_limit=12,raw_frame_capture_before_composite=True,gui_band_cache_limit=128,feature_list_visible_behind_settings=True,gui_fps_measured_in_game=False,inventory_classic_style_adapted=True,inventory_frost_blur_ported=False,minecraft_launched_here=False,sodium_iris_tested_here=False)
 (p/'validation/frame-blending-static.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

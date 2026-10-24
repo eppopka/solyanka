@@ -86,6 +86,8 @@ object SolyankaClient : ClientModInitializer {
     const val STOPWATCH="custom.stopwatch"
     const val DVD="custom.dvd_bounce"
     const val SKYBOX="render.skybox"
+    const val ITEM_AURA="custom.item_aura"
+    const val CS2_KNIFE="cosmetic.cs2_knife"
     const val HELD_ITEM="cosmetic.held_item"
     const val SCOREBOARD="hud.scoreboard"
     const val THEMED_CHAT="hud.themed_chat"
@@ -127,6 +129,8 @@ object SolyankaClient : ClientModInitializer {
     fun isEnabled(id: String) = modules.get(id)?.enabled == true
 
     override fun onInitializeClient() {
+        dev.solyanka.client.cs2.render.KnifeRender.register()
+        HeldItemCosmetic.register() // Pipeline metadata is known before the first shader resource reload.
         modules.register(object : Module(ModuleInfo("core.diagnostics", "Lifecycle diagnostics", Category.CORE)) {
             private var ticks = 0L
             override fun onEnable() { logger.info("Diagnostics enabled") }
@@ -157,7 +161,9 @@ object SolyankaClient : ClientModInitializer {
         listOf(AMBIENCE to "Ambience",ASPECT to "Aspect",FOG to "Fog").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {})}
         listOf(PLAYER_GLOW to "Player Glow",NAMETAGS to "Nametags",BLOCK_OUTLINE to "Block Outline",TITANIUM to "Titanium ESP").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {override fun onDisable() {WorldVisuals.reset();if(id==TITANIUM) TitaniumScanner.reset()}})}
         listOf(SCOREBOARD to "Scoreboard",THEMED_CHAT to "Themed Chat").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.HUD)) {})}
-        modules.register(object : Module(ModuleInfo(HELD_ITEM,"Held Item Shader",Category.RENDER)) {override fun onEnable() {HeldItemCosmetic.retry()};override fun onDisable() {HeldItemCosmetic.suspend()}})
+        modules.register(object : Module(ModuleInfo(ITEM_AURA,"Item Aura",Category.RENDER)) {override fun onDisable() {dev.solyanka.client.feature.ItemAura.clear()};override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.ItemAura.clear()}})
+        modules.register(object : Module(ModuleInfo(CS2_KNIFE,"CS2 Knives",Category.RENDER)) {override fun onEnable() {dev.solyanka.client.cs2.Cs2Knives.reload()};override fun onDisable() {dev.solyanka.client.cs2.Cs2Knives.clear()};override fun onReset(reason:ResetReason) {dev.solyanka.client.cs2.Cs2Viewmodel.reset()}})
+        modules.register(object : Module(ModuleInfo(HELD_ITEM,"Held Item Shader",Category.RENDER)) {override fun onEnable() {HeldItemCosmetic.retry()};override fun onDisable() {HeldItemCosmetic.suspend()};override fun onReset(reason:ResetReason) {HeldItemCosmetic.requestCleanup()}})
         modules.register(object : Module(ModuleInfo(SKYBOX,"Skybox",Category.RENDER)) {override fun onEnable() {SkyboxVisual.retry()};override fun onDisable() {SkyboxVisual.requestCleanup()};override fun onReset(reason:ResetReason) {SkyboxVisual.requestCleanup()}})
         modules.register(object : Module(ModuleInfo(MOTION_BLUR,"Motion Blur",Category.RENDER)) {override fun onEnable() {TemporalBlur.retry()};override fun onDisable() {TemporalBlur.requestCleanup()};override fun onReset(reason:ResetReason) {TemporalBlur.requestCleanup()}})
         modules.register(object : Module(ModuleInfo(STOPWATCH,"Stopwatch",Category.HUD)) {override fun onDisable() {ArchiveHuds.resetTimer()};override fun onReset(reason:ResetReason) {ArchiveHuds.resetTimer()}})
@@ -208,7 +214,7 @@ object SolyankaClient : ClientModInitializer {
         settingsKey = KeyMappingHelper.registerKeyMapping(KeyMapping("key.solyanka.settings", GLFW.GLFW_KEY_RIGHT_SHIFT,
             KeyMapping.Category.register(Identifier.fromNamespaceAndPath("solyanka", "general"))))
         ClientTickEvents.END_CLIENT_TICK.register { client ->
-            dev.solyanka.client.feature.PictureInPicture.tick();TemporalBlur.tick();ArchiveHuds.tick();SkyboxVisual.tick()
+            dev.solyanka.client.cs2.Cs2Knives.tick(client);dev.solyanka.client.feature.PictureInPicture.tick();TemporalBlur.tick();ArchiveHuds.tick();SkyboxVisual.tick()
             val world = client.level
             if (world !== previousWorld) {
                 modules.reset(if (world == null) ResetReason.DISCONNECTED else ResetReason.WORLD_CHANGED)
@@ -227,7 +233,7 @@ object SolyankaClient : ClientModInitializer {
                 openSettingsRequested = false
                 client.setScreenAndShow(ConfigUi.create(null))
             }
-            if (world != null && client.player != null) { FeatureRuntime.tick(client);dev.solyanka.client.feature.ShitterList.tick();dev.solyanka.client.feature.PetDisplay.tick();dev.solyanka.client.feature.SimonSolver.tick();dev.solyanka.client.feature.HuntingFeatures.tick(client);SecretCounter.tick(); ArchiveVisuals.tick(client);ExtraHuds.tick(client);HeldItemCosmetic.tick();WorldVisuals.reset();TitaniumScanner.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
+            if (world != null && client.player != null) { FeatureRuntime.tick(client);dev.solyanka.client.feature.ShitterList.tick();dev.solyanka.client.feature.PetDisplay.tick();dev.solyanka.client.feature.SimonSolver.tick();dev.solyanka.client.feature.HuntingFeatures.tick(client);SecretCounter.tick(); ArchiveVisuals.tick(client);ExtraHuds.tick(client);WorldVisuals.reset();TitaniumScanner.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
         }
         ClientSendMessageEvents.ALLOW_COMMAND.register { command ->
             if (bypassExpansion || !isEnabled(SHORTCUTS)) true
@@ -242,7 +248,7 @@ object SolyankaClient : ClientModInitializer {
         }
         ClientLifecycleEvents.CLIENT_STOPPING.register {
             config.save(states(), profile, general)
-            modules.shutdown(); dev.solyanka.client.feature.ShitterList.close(); dev.solyanka.client.feature.PictureInPicture.close();TemporalBlur.close();ArchiveHuds.resetTimer();ArchiveHuds.resetDvd(); SkyboxVisual.close(); HeldItemCosmetic.close(); FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset();WorldVisuals.reset();TitaniumScanner.reset(); ownedInputs.clear(); previousWorld = null; initialized = false
+            dev.solyanka.client.cs2.Cs2Knives.shutdown();modules.shutdown(); dev.solyanka.client.feature.ShitterList.close(); dev.solyanka.client.feature.PictureInPicture.close();TemporalBlur.close();ArchiveHuds.resetTimer();ArchiveHuds.resetDvd(); SkyboxVisual.close(); HeldItemCosmetic.close(); FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset();WorldVisuals.reset();TitaniumScanner.reset(); ownedInputs.clear(); previousWorld = null; initialized = false
         }
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             dispatcher.register(literal("solyanka")
@@ -256,6 +262,8 @@ object SolyankaClient : ClientModInitializer {
                 })
                 .then(literal("gui").executes { openHudRequested=true;1 })
                 .then(literal("waypoint").then(literal("add").executes { ctx -> try {DungeonWaypoints.addTarget();ctx.source.sendFeedback(Component.literal("Waypoint saved"));1} catch(e:Exception) {ctx.source.sendError(Component.literal(e.message ?: "Cannot add waypoint"));0} }.then(argument("title",StringArgumentType.greedyString()).executes {ctx ->try {DungeonWaypoints.addTarget(StringArgumentType.getString(ctx,"title"));ctx.source.sendFeedback(Component.literal("Waypoint saved"));1} catch(e:Exception) {ctx.source.sendError(Component.literal(e.message ?: "Cannot add waypoint"));0}})))
+                .then(literal("knifestatus").executes { ctx -> ctx.source.sendFeedback(Component.literal(dev.solyanka.client.cs2.Cs2Knives.status()));1 })
+                .then(literal("helditemstatus").executes { ctx -> ctx.source.sendFeedback(Component.literal(HeldItemCosmetic.diagnostics()));1 })
                 .then(literal("status").executes { ctx ->
                     modules.all().forEach { ctx.source.sendFeedback(Component.literal("${it.info.id}: ${if (it.enabled) "on" else "off"}")) }
                     ctx.source.sendFeedback(Component.literal("${profile.binds.size} binds, ${profile.shortcuts.size} shortcuts. Other ports: pending.")); 1
@@ -273,7 +281,7 @@ object SolyankaClient : ClientModInitializer {
                 })))
         }
         initialized = true
-        logger.info("solyanka 1.2.0 initialized for Minecraft 26.2")
+        logger.info("solyanka 1.3.9 initialized for Minecraft 26.2")
     }
 
     /** Validate and persist first; do not activate an invalid or unwritable UI draft. */

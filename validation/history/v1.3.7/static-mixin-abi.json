@@ -1,0 +1,124 @@
+{
+  "scope": "Unchanged pre-0.5 handler checks from v0.4.0; new targets are in new-mixin-targets.json; no runtime transformation test",
+  "prior_checks": [
+    {
+      "mixin": "KeyboardHandlerMixin",
+      "target": "KeyboardHandler",
+      "method": "keyPress",
+      "descriptor": "(JILnet/minecraft/client/input/KeyEvent;)V",
+      "static_match": true,
+      "runtime_tested_here": false
+    },
+    {
+      "mixin": "MouseHandlerMixin",
+      "target": "MouseHandler",
+      "method": "onButton",
+      "descriptor": "(JLnet/minecraft/client/input/MouseButtonInfo;I)V",
+      "static_match": true,
+      "runtime_tested_here": false
+    },
+    {
+      "mixin": "ChatComponentMixin",
+      "targets": [
+        "addMessageToQueue",
+        "addMessageToDisplayQueue"
+      ],
+      "integer_constant": 100,
+      "matched_constant_sites": 2,
+      "static_match": true,
+      "runtime_tested_here": false
+    },
+    {
+      "mixin": "ChatComponentAccessor",
+      "fields": {
+        "trimmedMessages": "Ljava/util/List;",
+        "chatScrollbarPos": "I"
+      },
+      "static_match": true,
+      "runtime_tested_here": false
+    },
+    {
+      "mixin": "HudMixin",
+      "target": "Hud.onDisconnected",
+      "operation": "ChatComponent.clearMessages(Z)V",
+      "matched_sites": 1,
+      "static_match": true,
+      "runtime_tested_here": false
+    },
+    {
+      "mixin": "ClientCommonPacketListenerMixin",
+      "target": "net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl.handlePing",
+      "descriptor": "(Lnet/minecraft/network/protocol/common/ClientboundPingPacket;)V",
+      "operations": [
+        [
+          "PacketUtils.ensureRunningOnSameThread:",
+          1
+        ]
+      ],
+      "static_match": true,
+      "runtime_tested_here": false
+    },
+    {
+      "mixin": "AnimationFixMixin",
+      "target": "net.minecraft.client.multiplayer.ClientPacketListener.handleSetEntityData",
+      "descriptor": "(Lnet/minecraft/network/protocol/game/ClientboundSetEntityDataPacket;)V",
+      "operations": [
+        [
+          "SynchedEntityData.assignValues:(Ljava/util/List;)V",
+          1
+        ]
+      ],
+      "static_match": true,
+      "runtime_tested_here": false
+    },
+    {
+      "mixin": "ContainerClickMixin",
+      "target": "net.minecraft.client.gui.screens.inventory.AbstractContainerScreen.mouseClicked",
+      "descriptor": "(Lnet/minecraft/client/input/MouseButtonEvent;Z)Z",
+      "operations": [
+        [
+          "LocalPlayer.hasInfiniteMaterials:()Z",
+          1
+        ],
+        [
+          "Method slotClicked:(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V",
+          2
+        ]
+      ],
+      "static_match": true,
+      "runtime_tested_here": false
+    },
+    {
+      "mixin": "CursorMixin",
+      "target": "net.minecraft.client.MouseHandler.releaseMouse",
+      "descriptor": "()V",
+      "operations": [
+        [
+          "InputConstants.grabOrReleaseMouse:(Lcom/mojang/blaze3d/platform/Window;IDD)V",
+          1
+        ]
+      ],
+      "static_match": true,
+      "runtime_tested_here": false
+    },
+    {
+      "mixin": "ScreenStateMixin",
+      "target": "net.minecraft.client.gui.Gui.setScreen",
+      "descriptor": "(Lnet/minecraft/client/gui/screens/Screen;)V",
+      "operations": [],
+      "static_match": true,
+      "runtime_tested_here": false
+    },
+    {
+      "mixin": "LoadingScreenMixin",
+      "targets": [
+        "LevelLoadingScreen.extractRenderState",
+        "LevelLoadingScreen.extractBackground"
+      ],
+      "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V",
+      "static_match": true,
+      "visual_only": true,
+      "runtime_tested_here": false
+    }
+  ]
+}

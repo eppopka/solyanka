@@ -696,7 +696,9 @@
     ],
     "events": [],
     "external_urls": [],
-    "status": "PENDING_IMPLEMENTATION"
+    "status": "ADAPTED_NATIVE_26_2",
+    "implementation": "ItemAuraSettings.kt; ItemAuraMesh.kt; ItemAura.kt; ItemAuraPassMixin.kt; RotatingItemMixin.kt",
+    "notes": "Five source styles/sprites, trails, glow, rainbow, transforms, both hands, late hand pass, depth option; triangle ribbons and bounded geometry. Standalone live calibration inspector not ported. Native in-game acceptance pending."
   },
   {
     "file": "impl/visual/MoveHearts.kt",
@@ -769,7 +771,7 @@
     "external_urls": [],
     "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
     "module": "custom.move_hotbar",
-    "notes": "docs/M13.md: Native hotbar translation/scale and optional native item-name/info/XP followers. Custom skins/vertical layout/selection animation not ported."
+    "notes": "1.3.8: style presets, layout/chrome/effects and native item decorations added; exact painter, independent fading-name follower and reference viewport remain partial; native acceptance pending. No AetherOSSettings."
   },
   {
     "file": "impl/visual/RotatingItem.kt",

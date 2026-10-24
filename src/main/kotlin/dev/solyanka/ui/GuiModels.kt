@@ -8,8 +8,10 @@ import dev.solyanka.utility.*
 data class FeatureCardInfo(val id: String, val name: String, val category: String, val description: String)
 object GuiCatalog {
     val features = listOf(
+        FeatureCardInfo("custom.item_aura","Item Aura","Cosmetic","Archive first-person orbit rings, DNA helix, comet swarm, vortex and fireflies; gradient orbs, stars and trails."),
+        FeatureCardInfo("cosmetic.cs2_knife","CS2 Knives","Cosmetic","Stray Source 2 models, finishes and viewmodel animations from your local CS2 install or an explicitly downloaded verified Stray pack. No assets bundled."),
         FeatureCardInfo("custom.shitter_list","ShitterList","Dungeon","UUID-backed local blocklist, Party Finder warnings, opt-in kicks and Mojang lookups; /sl management."),
-        FeatureCardInfo("custom.move_hotbar","Move Hotbar","HUD","Move/scale native hotbar, optional item-name/info/XP followers. Source restyling/vertical mode pending."),
+        FeatureCardInfo("custom.move_hotbar","Move Hotbar","HUD","Archive Vanilla/Minimal/Glass/Neon hotbar, horizontal/vertical layouts, item decorations, selection animation and effects."),
         FeatureCardInfo("render.picture_in_picture","Picture in Picture","Render","Windows-only explicit window capture. Session-only target, no desktop fallback or title guessing."),
         FeatureCardInfo("custom.pet_display","Pet Display","HUD","Observed active pet, server total XP, snapshot-only XP rate and /pets sync. No guessed level curve."),
         FeatureCardInfo("custom.simon_says","Simon Says","Solver","F7/M7 P3 manual sequence tracking, priority highlights, numbers, progress and reset alerts. No automation yet."),

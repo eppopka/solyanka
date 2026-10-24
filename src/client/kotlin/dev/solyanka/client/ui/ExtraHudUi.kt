@@ -31,12 +31,7 @@ object ExtraHudUi {
                 }))
                 val hud=section.getAsJsonObject("hud")
                 add(GuiKit.toggleRow(w,"HUD Visible",hud["enabled"].asBoolean) {change("hud.enabled",JsonPrimitive(it))})
-                for(field in listOf("x","y","scale")) {
-                    val value=hud[field].asDouble
-                    add(GuiKit.sliderRow(w,field.replaceFirstChar {it.uppercase()},value,SettingsNumbers.range("hud",field,host.width,host.height,value)) {
-                        change("hud.$field",if(field=="scale") JsonPrimitive(it) else JsonPrimitive(it.toInt()))
-                    })
-                }
+                add(HudNavigation.button(w))
                 add(GuiKit.colorRow(w,"Text color",hud["color"].asInt) {change("hud.color",JsonPrimitive(it))})
                 section.entrySet().filter {it.key!="hud"}.forEach {(field,value)->
                     val label=field.replace(Regex("([a-z])([A-Z])"),"$1 $2").replaceFirstChar {it.uppercase()}

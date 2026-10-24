@@ -1,5 +1,5 @@
 {
-  "version": "1.3.3",
+  "version": "1.3.9",
   "targets": [
     {
       "class_name": "net.minecraft.client.multiplayer.ClientPacketListener",
@@ -19,9 +19,9 @@
   "no_desktop_fallback": true,
   "capture_worker_owns_gdi": true,
   "session_only_selection": true,
-  "registered_modules": 55,
+  "registered_modules": 57,
   "hud_editor_elements": 25,
-  "mixin_classes": 41,
+  "mixin_classes": 44,
   "in_game_tested_here": false,
   "mixin_application_tested_here": false,
   "windows_capture_tested_here": false,

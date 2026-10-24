@@ -45,7 +45,7 @@ class HeldItemTest {
  }
  @Test fun `texture lifecycle bounded cache and vanilla fallbacks are explicit`() {
   val f=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/HeldItemCosmetic.kt").toFile().readText()
-  for(token in listOf("NativeImage(2,1,false)","types.size>=64","!ready","RenderSystem.isOnRenderThread()","textureManager.release(configId)","if(last==s && texture!=null)","return original")) assertTrue(f.contains(token),token)
+  for(token in listOf("NativeImage(3,1,false)","types.size>=64","!ready","RenderSystem.isOnRenderThread()","textureManager.release(configId)","if(last==s && lastPhase==phase && texture!=null)","return original")) assertTrue(f.contains(token),token)
   assertEquals(1,Regex("RenderPipelines.register").findAll(f).count())
  }
 }

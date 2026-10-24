@@ -43,7 +43,7 @@ class ExtraHudFeaturesTest {
         for(armor in listOf(false,true)) for(hotbar in listOf(false,true)) for(minimal in listOf(false,true)) {
             val s=InventoryHudSettings(armor=armor,hotbar=hotbar,minimal=minimal);val m=InventoryHudLayout.metrics(s)
             assertEquals((if(minimal) 4 else 14)+178,m.width)
-            assertEquals((if(minimal) 4 else 28)+58+(if(armor) 23 else 0)+(if(hotbar) 23 else 0),m.height)
+            assertEquals((if(minimal) 4 else 14)+58+(if(armor) 23 else 0)+(if(hotbar) 23 else 0)+(if(!minimal && !armor) 11 else 0),m.height)
             assertTrue(m.mainY>=m.pad);if(hotbar) assertTrue(m.hotbarY>m.mainY)
         }
     }

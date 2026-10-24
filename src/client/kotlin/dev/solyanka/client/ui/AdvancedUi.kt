@@ -31,7 +31,7 @@ object AdvancedUi {
      SolyankaClient.ASPECT->"Horizontal projection multiplier: 1 is vanilla. Range 0.3–3; not a width:height ratio."
      SolyankaClient.FOG->"Start/end/density are fractions from 0–1. Density controls fog opacity; palette alpha is ignored. Sodium uses native fog uniforms; Iris parity is not included."
      SolyankaClient.DOORS->"Door colors follow Magical Map data and available-key chat. Optionally announce key spawns locally."
-     SolyankaClient.MAP_INFO->"Estimated score from tab/sidebar; '?' means incomplete data. Paul is a manual bonus. X/Y are GUI pixels. Portal needs a recognized Blood room rotation."
+     SolyankaClient.MAP_INFO->"Estimated score from tab/sidebar; '?' means incomplete data. Paul is a manual bonus. Use HUD Editor to move the display. Portal needs a recognized Blood room rotation."
      SolyankaClient.ICE->"Loaded-chunk room matching with rotation markers. Use optimized routes and choose whether outlines respect walls."
      SolyankaClient.BLAZE->"Blaze order and priority outlines. Connecting lines and depth testing apply only to Blaze."
      SolyankaClient.BEAMS->"Recognized-room lantern pairs. Depth testing applies to pair outlines; connecting beams remain visible through walls."
@@ -41,7 +41,8 @@ object AdvancedUi {
      SolyankaClient.EXPERIMENTS->"Private Island only. Next=green, following=yellow. Superpairs remembers revealed rewards. No automatic clicks."
      else->"Independent rendering filters, all off by default. Left click: next mode; right click: previous."
     }))
-    spec.fields.forEach { field ->
+    if(id==SolyankaClient.MAP_INFO) add(HudNavigation.button(w))
+    spec.fields.filterNot {id==SolyankaClient.MAP_INFO && it in setOf("x","y")}.forEach { field ->
      val value=section.get(field)
      val label=field.replace(Regex("([a-z])([A-Z])"),"$1 $2").replaceFirstChar { it.uppercase() }
      val choices=SettingsCatalog.choices[field]

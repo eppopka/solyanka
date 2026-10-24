@@ -10,7 +10,7 @@ uniform sampler2D Sampler0;
 uniform sampler2D Sampler1;
 uniform sampler2D Sampler3;
 uniform sampler2D Sampler4;
-uniform sampler2D Sampler5; // 2x1 settings texture; avoids global draw-uniform hooks.
+uniform sampler2D Sampler5; // 3x1 settings + local clock texture; avoids global draw-uniform hooks.
 
 in float sphericalVertexDistance;
 in float cylindricalVertexDistance;
@@ -124,7 +124,9 @@ void main() {
     float tintAmount = configColor.a;
     float amount = mix(0.10, 1.50, configParams.g);
     float style = floor(configParams.r * 255.0 + 0.5);
-    float shaderTime = GameTime * (configParams.b * 4.0);
+    // Exact float bytes from a monotonic local clock; never tied to world/server GameTime.
+    uvec4 clockBytes = uvec4(round(texelFetch(Sampler5, ivec2(2, 0), 0) * 255.0));
+    float shaderTime = uintBitsToFloat(clockBytes.r | (clockBytes.g << 8u) | (clockBytes.b << 16u) | (clockBytes.a << 24u));
     vec3 light = max(vertexColor.rgb, vec3(0.02));
     vec3 albedo = tex.rgb * light;
 #ifdef ESP_FILL

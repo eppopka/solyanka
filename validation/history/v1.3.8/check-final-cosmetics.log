@@ -1,0 +1,41 @@
+{
+  "version": "1.3.8",
+  "targets": [
+    {
+      "class_name": "net.minecraft.client.renderer.ItemInHandRenderer",
+      "method": "submitArmWithItem",
+      "descriptor": "(Lnet/minecraft/client/player/AbstractClientPlayer;FFLnet/minecraft/world/InteractionHand;FLnet/minecraft/world/item/ItemStack;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.renderer.GameRenderer",
+      "method": "renderItemInHand",
+      "descriptor": "(Lnet/minecraft/client/renderer/state/level/CameraRenderState;FLorg/joml/Matrix4fc;)V",
+      "target_exists": true
+    },
+    {
+      "class_name": "net.minecraft.client.renderer.entity.layers.ItemInHandLayer",
+      "method": "submitArmWithItem",
+      "descriptor": "(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
+      "target_exists": true
+    }
+  ],
+  "source_hashes_verified": true,
+  "mixin_classes": 44,
+  "registered_modules": 57,
+  "aura_after_hand_flush": true,
+  "aura_capture_once_before_pop": true,
+  "knife_local_install_only": false,
+  "knife_explicit_download": true,
+  "knife_stale_results_guarded": true,
+  "knife_cpu_weighted_skinning": true,
+  "knife_native_metal_shader": true,
+  "valve_assets_bundled": false,
+  "automatic_asset_download": false,
+  "verified_pack_loading": true,
+  "inventory_title_removed": true,
+  "inventory_compacted": true,
+  "in_game_tested": false,
+  "native_gpu_tested": false,
+  "cs2_install_available_here": false
+}

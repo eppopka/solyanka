@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.MarketExperimentTest" tests="19" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:05:02.430Z" hostname="222f7e72-264" time="0.064">
+  <properties/>
+  <testcase name="empty status and hidden cards never count as rewards()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.001"/>
+  <testcase name="experiment title and island guards()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <testcase name="settings fill strict defaults and bounded enum values()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.052"/>
+  <testcase name="new memory round resets ultra answers()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.004"/>
+  <testcase name="chrono records repeated pulses and ordered clicks()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <testcase name="reset clears all experimental state()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <testcase name="craft output count and cheapest acquisition()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <testcase name="indirect cycles terminate without stack overflow()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <testcase name="superpairs requires item name count and texture equality()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <testcase name="unknown ingredients are not free crafting()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.001"/>
+  <testcase name="ultra captures visible dyes and sorts by count()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <testcase name="all source pricing sections merge()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <testcase name="nonfinite and negative prices rejected()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <testcase name="super hidden known pair gets yellow and is remembered()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.001"/>
+  <testcase name="source quantity cases and malformed values()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <testcase name="chrono same color repeated remains distinct()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <testcase name="powerup color does not enter reward map()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.001"/>
+  <testcase name="malformed recipes are not valid estimates()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <testcase name="purchase cost parses only coin cost line()" classname="dev.solyanka.utility.MarketExperimentTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

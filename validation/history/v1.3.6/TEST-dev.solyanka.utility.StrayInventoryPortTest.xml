@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.StrayInventoryPortTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-24T17:44:37.727Z" hostname="222f7e72-264" time="0.002">
+  <properties/>
+  <testcase name="inventory port keeps Stray palette and two quad wells()" classname="dev.solyanka.utility.StrayInventoryPortTest" time="0.0"/>
+  <testcase name="preview and live HUD use the same port and restore poses()" classname="dev.solyanka.utility.StrayInventoryPortTest" time="0.0"/>
+  <testcase name="filled label is cached by player identity and tick()" classname="dev.solyanka.utility.StrayInventoryPortTest" time="0.0"/>
+  <testcase name="default inventory colors match classic Stray()" classname="dev.solyanka.utility.StrayInventoryPortTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

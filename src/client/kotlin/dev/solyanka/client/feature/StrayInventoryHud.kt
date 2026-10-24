@@ -34,7 +34,7 @@ object StrayInventoryHud {
   return countLabel
  }
  fun draw(g:GuiGraphicsExtractor,s:InventoryHudSettings,sample:Boolean=false,atX:Int?=null,atY:Int?=null) {
-  val c=Minecraft.getInstance();val player=c.player;if(!sample && player==null) return
+  val c=Minecraft.getInstance();val player=c.player;if(!sample && (player==null || c.gui.hud.isHidden || c.gui.screen() is net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<*>)) return
   val m=InventoryHudLayout.metrics(s);val scale=s.hud.scale.toFloat()
   val x=atX ?: s.hud.x.coerceIn(0,(c.window.guiScaledWidth-m.width*scale).roundToInt().coerceAtLeast(0))
   val y=atY ?: s.hud.y.coerceIn(0,(c.window.guiScaledHeight-m.height*scale).roundToInt().coerceAtLeast(0))
@@ -47,17 +47,15 @@ object StrayInventoryHud {
     g.pose().pushMatrix()
     try {g.pose().translate(tx,ty);g.pose().scale(.85f,.85f);g.text(c.font,text,0,0,color,false)} finally {g.pose().popMatrix()}
    }
-   if(!s.minimal) {
-    small("INVENTORY",(m.pad+4).toFloat(),(m.pad+1).toFloat(),s.hud.color)
-    if(s.count) {
-     val text=if(sample) "9/41" else filled()
-     small(text,m.width-m.pad-c.font.width(text)*.85f,(m.pad+1).toFloat(),MUTED)
-    }
+   if(!s.minimal && s.count) {
+    val text=if(sample) "9/41" else filled()
+    val cy=if(s.armor) m.armorY+5 else m.height-m.pad-9
+    small(text,m.width-m.pad-c.font.width(text)*.85f,cy.toFloat(),MUTED)
    }
    fun slot(stack:ItemStack,sx:Int,sy:Int,seed:Int,empty:String?=null,selected:Boolean=false) {
     if(!s.minimal) {
      // GuiDraw.well: outline underlay + inset fill, just two quads per slot.
-     g.fill(sx,sy,sx+18,sy+18,if(selected) ACCENT else LINE)
+     g.fill(sx,sy,sx+18,sy+18,if(selected) s.hud.color else LINE)
      g.fill(sx+1,sy+1,sx+17,sy+17,if(selected) HOVER else TRACK)
     }
     if(stack.isEmpty) {

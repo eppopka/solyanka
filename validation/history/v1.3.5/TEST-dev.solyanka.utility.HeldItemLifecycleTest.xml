@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.HeldItemLifecycleTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-24T17:19:47.708Z" hostname="222f7e72-264" time="0.005">
+  <properties/>
+  <testcase name="runtime status exposes fallback reasons without changing server state()" classname="dev.solyanka.utility.HeldItemLifecycleTest" time="0.001"/>
+  <testcase name="data texels initialized before constructor auto upload()" classname="dev.solyanka.utility.HeldItemLifecycleTest" time="0.0"/>
+  <testcase name="fill pipeline matches Stray opaque color state()" classname="dev.solyanka.utility.HeldItemLifecycleTest" time="0.0"/>
+  <testcase name="native pipeline validation precedes readiness and texture uploads()" classname="dev.solyanka.utility.HeldItemLifecycleTest" time="0.001"/>
+  <testcase name="pipeline metadata registers during client init not first render alone()" classname="dev.solyanka.utility.HeldItemLifecycleTest" time="0.0"/>
+  <testcase name="render head prepares resources with no tick dependency()" classname="dev.solyanka.utility.HeldItemLifecycleTest" time="0.001"/>
+  <testcase name="item snippet inherits globals without duplicate startup binding()" classname="dev.solyanka.utility.HeldItemLifecycleTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

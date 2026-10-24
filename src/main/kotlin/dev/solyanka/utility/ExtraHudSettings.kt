@@ -9,12 +9,13 @@ data class InventoryHudMetrics(val width:Int,val height:Int,val pad:Int,val armo
 object InventoryHudLayout {
     fun metrics(s:InventoryHudSettings):InventoryHudMetrics {
         val pad=if(s.minimal) 2 else 7
-        var y=pad+if(s.minimal) 0 else 14
+        var y=pad
         val armorY=y
         if(s.armor) y+=23
         val mainY=y;y+=58
         var hotbarY=y
         if(s.hotbar) {y+=23;hotbarY=y-18}
+        if(s.count && !s.minimal && !s.armor) y+=11
         return InventoryHudMetrics(pad*2+178,y+pad,pad,armorY,mainY,hotbarY)
     }
     private val main=(9..35).toList()

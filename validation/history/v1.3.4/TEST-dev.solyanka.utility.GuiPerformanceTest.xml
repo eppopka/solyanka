@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.GuiPerformanceTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-24T17:09:38.289Z" hostname="222f7e72-264" time="0.037">
+  <properties/>
+  <testcase name="feature list remains rendered behind modal settings()" classname="dev.solyanka.utility.GuiPerformanceTest" time="0.001"/>
+  <testcase name="empty panels submit nothing and geometry depends on corners not height()" classname="dev.solyanka.utility.GuiPerformanceTest" time="0.005"/>
+  <testcase name="coalesced bands retain every pixel and translucent layering()" classname="dev.solyanka.utility.GuiPerformanceTest" time="0.029"/>
+  <testcase name="tall settings panel no longer generates quads for every row()" classname="dev.solyanka.utility.GuiPerformanceTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

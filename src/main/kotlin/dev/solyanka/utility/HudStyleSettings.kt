@@ -16,7 +16,7 @@ object VisualChrome {
  fun halo(color:Int,width:Double,radius:Double,strength:Double):List<Pair<Float,Int>> = listOf(1.0 to .09,.7 to .15,.4 to .23).map {(r,a)->(width+radius*r*2).toFloat() to alpha(color,a*strength)}
 }
 object ScoreboardLayout {
- fun height(rows:Int,header:Boolean)=14+(if(header) 22 else 12)+rows.coerceIn(1,15)*10-2
+ fun height(rows:Int,header:Boolean)=14+(if(header) 14 else 0)+rows.coerceIn(1,15)*10-2
  fun width(content:Int,maxWidth:Int)=content.plus(24).coerceIn(100,maxWidth.coerceIn(100,400))
 }
 data class ChatPane(val x:Int,val y:Int,val width:Int,val height:Int)

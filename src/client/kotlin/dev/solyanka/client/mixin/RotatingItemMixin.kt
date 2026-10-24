@@ -16,4 +16,8 @@ abstract class RotatingItemMixin {
     private fun solyankaRotateItem(pose:PoseStack,arm:HumanoidArm,equipProgress:Float,ci:CallbackInfo) {
         ArchiveVisuals.transform(pose,arm)
     }
+    @Inject(method=["submitArmWithItem(Lnet/minecraft/client/player/AbstractClientPlayer;FFLnet/minecraft/world/InteractionHand;FLnet/minecraft/world/item/ItemStack;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V"],at=[At(value="INVOKE",target="Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V",shift=At.Shift.BEFORE)])
+    private fun solyankaCaptureAura(player:net.minecraft.client.player.AbstractClientPlayer,delta:Float,pitch:Float,hand:net.minecraft.world.InteractionHand,swing:Float,stack:net.minecraft.world.item.ItemStack,equip:Float,pose:PoseStack,collector:net.minecraft.client.renderer.SubmitNodeCollector,light:Int,ci:CallbackInfo) {
+        dev.solyanka.client.feature.ItemAura.captureHand(pose,hand,stack)
+    }
 }

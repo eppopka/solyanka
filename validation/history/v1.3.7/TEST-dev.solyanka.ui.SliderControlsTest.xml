@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.ui.SliderControlsTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:05:01.717Z" hostname="222f7e72-264" time="0.011">
+  <properties/>
+  <testcase name="sliders snap decimal steps without leaking floating point noise()" classname="dev.solyanka.ui.SliderControlsTest" time="0.001"/>
+  <testcase name="right click reverses mode and wraps at first option()" classname="dev.solyanka.ui.SliderControlsTest" time="0.001"/>
+  <testcase name="integer sliders produce valid whole values()" classname="dev.solyanka.ui.SliderControlsTest" time="0.0"/>
+  <testcase name="every advanced numeric field has either modes colors or a slider range()" classname="dev.solyanka.ui.SliderControlsTest" time="0.001"/>
+  <testcase name="position sliders preserve old coordinates beyond current window()" classname="dev.solyanka.ui.SliderControlsTest" time="0.001"/>
+  <testcase name="timed preview implementation and commands are removed()" classname="dev.solyanka.ui.SliderControlsTest" time="0.001"/>
+  <testcase name="UI contains sliders compact HUD rows and explicit right click handling()" classname="dev.solyanka.ui.SliderControlsTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

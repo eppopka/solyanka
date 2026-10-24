@@ -36,14 +36,13 @@ object ScoreboardHud {
   try {
    g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale)
    if(s.background) ChromeDraw.panel(g,0,0,layout.width,layout.height,s.backgroundColor,s.borderColor,6)
-   if(s.header) g.text(c.font,"SCOREBOARD",11,6,s.accentColor,false)
    fun textClipped(text:Component,tx:Int,ty:Int,right:Int,color:Int) {
     // Scissor respects the active GUI pose, retaining styled text without overlapping scores.
     g.enableScissor(tx,ty,right,ty+10)
     try {g.text(c.font,text,tx,ty,color,s.shadow)} finally {g.disableScissor()}
    }
-   textClipped(layout.title,11,if(s.header) 16 else 7,layout.width-7,s.hud.color)
-   var rowY=if(s.header) 31 else 21
+   if(s.header) textClipped(layout.title,11,7,layout.width-7,s.hud.color)
+   var rowY=if(s.header) 21 else 7
    layout.rows.forEach {row->
     val scoreWidth=if(s.scores) c.font.width(row.score) else 0;val scoreX=layout.width-7-scoreWidth
     textClipped(row.name,11,rowY,(if(scoreWidth>0) scoreX-8 else layout.width-7).coerceAtLeast(12),s.hud.color)

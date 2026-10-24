@@ -1,0 +1,344 @@
+[
+  {
+    "file": "src/client/java/dev/stray/client/cs2/Cs2Knives.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/Cs2Knives.java",
+    "sha256": "9b6b658843be2341f2ce9d4643fefcbbe7c9730cfce64175f7f3416af29e471a",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/Cs2Knives.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/Cs2Library.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/Cs2Library.java",
+    "sha256": "7b6248a74aaee8b1adde92e2a242f9796f6e26b9c2290070a0336cb896f3cbe6",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/Cs2Library.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/Cs2Viewmodel.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/Cs2Viewmodel.java",
+    "sha256": "5dc6a0484cf1731108ededf6de4b666b027541ba86c335df3e171f38094680ea",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/Cs2Viewmodel.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/GripDefaults.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/GripDefaults.java",
+    "sha256": "214cccb9bf1bb55fae28e5481f4b09bd608c55032e9a968fa53cb9fdbcb917b0",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/GripDefaults.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/THIRD_PARTY_NOTICES.md",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/THIRD_PARTY_NOTICES.md",
+    "sha256": "2a7f5fed1ea717d3a3feae6d4dabe6d014f07edb28451180107832956eae8657",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/THIRD_PARTY_NOTICES.md",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/anim/NmClip.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/anim/NmClip.java",
+    "sha256": "b7d06c37c464924df5979aff2e8d0b53c1f1e0bd963000f43a4215479b81d301",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/anim/NmClip.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/anim/NmSkeleton.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/anim/NmSkeleton.java",
+    "sha256": "02966d533af240e83f8a9b16e069e2431377dbf4eb8ed451b015a299e4799298",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/anim/NmSkeleton.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/anim/Pose.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/anim/Pose.java",
+    "sha256": "e0e432db3600b8e4c079e69b86b8c386ad7ca694a132722f960c2df0c1e27e1d",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/anim/Pose.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/pack/Cs2Pack.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/pack/Cs2Pack.java",
+    "sha256": "007c551cd60d6989ac20f8ed13ea858878d7b0d94b76488c9662d26abf0a1efc",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/pack/Cs2Pack.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/pack/Cs2PackBuilder.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/pack/Cs2PackBuilder.java",
+    "sha256": "b6d1ac839898ac1037f6809aae59f93b77e111bf529d5537fdd0a05624d66ccd",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/pack/Cs2PackBuilder.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/render/KnifeGpu.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/render/KnifeGpu.java",
+    "sha256": "e794c52c8cce16da958ff7c58132305953a8e215786711dc70d0c65be3327400",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/render/KnifeGpu.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/render/KnifeRender.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/render/KnifeRender.java",
+    "sha256": "e8d8f0a6c8123477f1670aeeef1c0f1984c859f2ce49f7cca4861a7afa56fd0e",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/render/KnifeRender.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/render/SoftwareRender.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/render/SoftwareRender.java",
+    "sha256": "170e81229e9bf29161a0a8f7b05de6be2e3b659eabf2347c66b49e8e8cdb8be5",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/render/SoftwareRender.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/Bcn.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Bcn.java",
+    "sha256": "9be1aa09395bf34eda6087632a612cf4071c5e1d0598816e0963a8673c9a68ed",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Bcn.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/Kv1.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Kv1.java",
+    "sha256": "afccb731b887a37a980d7212dce5edffe44c90d6cec64a2e6ef0c005f001c07a",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Kv1.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/Kv3.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Kv3.java",
+    "sha256": "b3156d538e9196ca9cc3cf9ba4910dbd1122ea06ce5260f7b478c2d795d5e56d",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Kv3.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/Lz4.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Lz4.java",
+    "sha256": "31474fdc0c178b290d803bd524db23011e27f1642d0c37746b2a1aa47e3cf1e6",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Lz4.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/Meshopt.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Meshopt.java",
+    "sha256": "1a538132f4b72b76c74f2072e60b2aace883d3aa0dc9f7961a0ddf4e5e8c4bc1",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Meshopt.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/Resource.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Resource.java",
+    "sha256": "1b25c4e6c04c83a05b5374f01ebba7120f896fa71105b858bb6bc0b812cd76ed",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Resource.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/S2Model.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/S2Model.java",
+    "sha256": "66c6c9884a5a4691290048147a9235618d70782a5d5ccae312c7475d7a2b4937",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/S2Model.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/Vpk.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Vpk.java",
+    "sha256": "8ac5cb3a5deba10b22c85baf23934d38936c5dda9885aa42bda7be79ad2e715f",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Vpk.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/Vtex.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Vtex.java",
+    "sha256": "dce1866bdf3070ba25a0ecf0106a1bfcb7b99c60de4347792537e6b152740d97",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Vtex.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/Zstd.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Zstd.java",
+    "sha256": "af9386910400a446b8eb4c89a5f0777ab7a0eaf43a1c116c5cee6f8f60c99ade",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Zstd.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/BitInputStream.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/BitInputStream.java",
+    "sha256": "158698e663dd764287f963ab6d5ad9f453736dbaaacf06844e30ac2abec22436",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/BitInputStream.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/BitOutputStream.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/BitOutputStream.java",
+    "sha256": "a977a62ac2cd81af68977422a87878e69c44b4e47a6f09f86f0e6c86faf5d897",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/BitOutputStream.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/Constants.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/Constants.java",
+    "sha256": "7cfc69f62dc3e6f8a9621de6430bd0a73502f483fa92f950ada6ee0ec8a0a765",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/Constants.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/FiniteStateEntropy.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/FiniteStateEntropy.java",
+    "sha256": "960a6d2509aa1eadc5e7956431b1dcbcea453f41c4bb6c1134730a029dcb08a9",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/FiniteStateEntropy.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/FrameHeader.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/FrameHeader.java",
+    "sha256": "468b209f48980f452b4f18e6e5e45585c000d6402043bf7712a09ef33d6f369f",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/FrameHeader.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/FseCompressionTable.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/FseCompressionTable.java",
+    "sha256": "fda66875a9894726577f764e72285e53b929aa20e6e4724c22c2ff3f39be22db",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/FseCompressionTable.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/FseTableReader.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/FseTableReader.java",
+    "sha256": "f0569d26e7cb7149d77e0278994f19ebec96ecd74be9f56521b3ef80352c804e",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/FseTableReader.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/Histogram.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/Histogram.java",
+    "sha256": "47d83d2c0f3a0fd7ba093fb89341474252f684b477503c8da74d67dd5b804525",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/Histogram.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/Huffman.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/Huffman.java",
+    "sha256": "043122082061ba7b415aea1c3df2cd60f8f4f10ecfb8d8e3620ff302da4f6e19",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/Huffman.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/MalformedInputException.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/MalformedInputException.java",
+    "sha256": "3693c01d507d6758fcfe57454672d61a2a01b312580d59385cfe3daff14a6b2d",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/MalformedInputException.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/UnsafeUtil.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/UnsafeUtil.java",
+    "sha256": "694269e424319ca98059b376b32c0493548e073a1ae7d8479cf029a3f2ade1d3",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/UnsafeUtil.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/Util.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/Util.java",
+    "sha256": "d1ef47e498eaa1aeb9fd77ad43579eb104e3af4a5d69f5295ec542b9932aebae",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/Util.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/XxHash64.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/XxHash64.java",
+    "sha256": "32d8901ea30fc82fc0ba7ddc34e5792216de73048ba052359000dee19045c19e",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/XxHash64.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/s2/zstd/ZstdFrameDecompressor.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/ZstdFrameDecompressor.java",
+    "sha256": "5b456c4ca04214b1d83646dc0baf8c6f25ff1fdd2f1d9f5607ca4d0af6a8c0b8",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/ZstdFrameDecompressor.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/skin/Assets.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/skin/Assets.java",
+    "sha256": "7c6017e7fcb87f0535ff5c574871229950a76794668e68be65c3ec20ec090eed",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/skin/Assets.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/skin/Composer.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/skin/Composer.java",
+    "sha256": "cd880f972b8127b2836e0c8200a80b4c14aadbb4aba01405af4eb775212e008a",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/skin/Composer.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/skin/KnifeMaterial.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/skin/KnifeMaterial.java",
+    "sha256": "5c4baa42679197392eafca98af6eb9e85b832352cfd8402d8e1bc56fd1ec4656",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/skin/KnifeMaterial.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/skin/PaintKit.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/skin/PaintKit.java",
+    "sha256": "cd1971ec5d8fdb099b92c2331adaa1889c3cb79066d567f1ab8b82e32a783bdd",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/skin/PaintKit.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/skin/Tex.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/skin/Tex.java",
+    "sha256": "c07a284e793acc4e6be2257cc46f83d9d0dc921ef3c04d619a17753ada0b0c05",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/skin/Tex.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/cs2/skin/ValveRandom.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/skin/ValveRandom.java",
+    "sha256": "a06f7ff479fde6873ddd47969841b033c0f302c2349bdc3109d57a41ce7fdb64",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/skin/ValveRandom.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/mixin/cs2/Cs2FirstPersonMixin.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/mixin/cs2/Cs2FirstPersonMixin.java",
+    "sha256": "7cc4bc3fe4d2541cd706da9bd07b1c8577021d5d7fd88a6d5026faa2dc072020",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/mixin/cs2/Cs2FirstPersonMixin.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/mixin/cs2/Cs2ThirdPersonMixin.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/mixin/cs2/Cs2ThirdPersonMixin.java",
+    "sha256": "3764bee3d64b0feaa2d26703805adb7f09fe81d595eb299072200e1727c9a4f7",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/mixin/cs2/Cs2ThirdPersonMixin.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/java/dev/stray/client/render/InventoryHudRenderer.java",
+    "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/render/InventoryHudRenderer.java",
+    "sha256": "060964cf2b6483c9693a64401937ad27a5a3d481e0297a1f756aad01bfc1a330",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/render/InventoryHudRenderer.java",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/resources/assets/stray/shaders/core/cs2_knife.fsh",
+    "local_file": "audit/final-cosmetics-source/src/client/resources/assets/stray/shaders/core/cs2_knife.fsh",
+    "sha256": "9e7aa7d78ae28a960b0a039f1f6e6bb4c8dfa223970e4be6f4adf3905f287fc3",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/shaders/core/cs2_knife.fsh",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "src/client/resources/assets/stray/shaders/core/cs2_knife.vsh",
+    "local_file": "audit/final-cosmetics-source/src/client/resources/assets/stray/shaders/core/cs2_knife.vsh",
+    "sha256": "1230b66463d36ecacd3bd6d115a900304f72737d04d562eee72fe2b0a9bbf1ae",
+    "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/shaders/core/cs2_knife.vsh",
+    "license": "CC0-1.0 or retained third-party headers"
+  },
+  {
+    "file": "impl/visual/ItemAura.kt",
+    "local_file": "audit/final-cosmetics-source/impl/visual/ItemAura.kt",
+    "sha256": "3e92a2f772f495288eb8134f9f955e8a8db73dff9e359636cd65ebafad4a1664",
+    "source": "user impl.zip"
+  }
+]

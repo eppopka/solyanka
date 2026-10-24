@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.FrameBlendHistoryTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:05:02.252Z" hostname="222f7e72-264" time="0.009">
+  <properties/>
+  <testcase name="zero strength and invalid refresh skip the pass()" classname="dev.solyanka.utility.FrameBlendHistoryTest" time="0.0"/>
+  <testcase name="reset frees clock state()" classname="dev.solyanka.utility.FrameBlendHistoryTest" time="0.0"/>
+  <testcase name="history targets fit the byte budget for all supported sizes()" classname="dev.solyanka.utility.FrameBlendHistoryTest" time="0.0"/>
+  <testcase name="below refresh one frame strength has no temporal tail()" classname="dev.solyanka.utility.FrameBlendHistoryTest" time="0.001"/>
+  <testcase name="exposure tracks actual frame times and refresh()" classname="dev.solyanka.utility.FrameBlendHistoryTest" time="0.0"/>
+  <testcase name="first frame is a single raw sample()" classname="dev.solyanka.utility.FrameBlendHistoryTest" time="0.0"/>
+  <testcase name="compaction preserves total weight with twelve samplers()" classname="dev.solyanka.utility.FrameBlendHistoryTest" time="0.001"/>
+  <testcase name="bad clock and capacity inputs fail before mutating history()" classname="dev.solyanka.utility.FrameBlendHistoryTest" time="0.001"/>
+  <testcase name="new default is frame blending but stored accumulation settings survive()" classname="dev.solyanka.utility.FrameBlendHistoryTest" time="0.002"/>
+  <testcase name="nonmonotonic clocks reseed()" classname="dev.solyanka.utility.FrameBlendHistoryTest" time="0.001"/>
+  <testcase name="ring overwrite never references unavailable slots()" classname="dev.solyanka.utility.FrameBlendHistoryTest" time="0.001"/>
+  <testcase name="long gap clears history instead of blending stale world()" classname="dev.solyanka.utility.FrameBlendHistoryTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

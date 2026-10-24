@@ -24,6 +24,8 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     private lateinit var mainScroll:ScrollContainer<FlowLayout>
     private val categoryScrolls=mutableListOf<ScrollContainer<FlowLayout>>()
     private var cursorX=0;private var cursorY=0
+    private var searchBox:FlatTextbox?=null
+    private var focusSearch=false
     private var panel:SettingsPanel?=null
     private var toggleError:String?=null
     private val navigation=PanelNavigation<SettingsPanel>()
@@ -65,9 +67,11 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
         mainScroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.WHITE)))
         root.child(mainScroll)
         val search=FlatTextbox(Sizing.fixed(minOf(200,(width-100).coerceAtLeast(80))))
-        search.text(query);search.setSuggestion("Search...")
+        searchBox=search
+        search.text(query);search.setSuggestion(if(query.isEmpty()) "Search... (Ctrl+F)" else null)
+        search.tooltip(Component.literal("Ctrl+F: focus feature search"))
         search.positioning(Positioning.relative(50,100));search.margins(Insets.of(0,3,0,0))
-        search.onChanged().subscribe { query=it;populate() };root.child(search)
+        search.onChanged().subscribe { query=it;search.setSuggestion(if(it.isEmpty()) "Search... (Ctrl+F)" else null);populate() };root.child(search)
         root.child(GuiKit.button("Done",55) { onClose() }.apply {
             positioning(Positioning.relative(100,100));margins(Insets.of(0,3,0,3))
         })
@@ -106,12 +110,16 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     override fun getFocused():net.minecraft.client.gui.components.events.GuiEventListener? = panel?.adapter ?: super.getFocused()
     override fun extractRenderState(g:GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
         commitNavigation()
-        // A modal panel owns input and rendering; do not extract the obscured 55-card tree.
-        if(panel==null) super.extractRenderState(g,mx,my,delta)
+        if(focusSearch && panel==null) {
+            searchBox?.let {box->uiAdapter.rootComponent.focusHandler()?.focus(box,UIComponent.FocusSource.MOUSE_CLICK);box.setFocused(true);box.moveCursorToEnd(false);box.setHighlightPos(0)}
+            focusSearch=false
+        }
+        // Keep the feature list visible behind modal settings; input/tooltips still belong to the panel.
+        super.extractRenderState(g,mx,my,delta)
         cursorX=mx;cursorY=my
         g.text(font,"solyanka",12,12,GuiKit.WHITE)
         if(width>290)g.text(font,"CLIENT UTILITIES  /  26.2",83,12,GuiKit.MUTED)
-        g.text(font,if(panel==null) "Right-click a feature to configure" else "Drag the settings title bar to move it",8,height-43,GuiKit.MUTED)
+        g.text(font,if(panel==null) "Right-click: settings | Ctrl+F: search" else "Drag the settings title bar to move it",8,height-43,GuiKit.MUTED)
         g.text(font,"Left click: toggle  |  Right click: settings",3,height-32,GuiKit.WHITE)
         toggleError?.let { g.text(font,"Not saved: $it",3,height-54,0xffff5555.toInt()) }
         val current=panel
@@ -127,6 +135,9 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
         return hovered?.onMouseScroll(x,y,vertical*2) ?: mainScroll.onMouseScroll(x,y,vertical*2)
     }
     override fun keyPressed(event:KeyEvent):Boolean {
+        if(event.key()==GLFW.GLFW_KEY_F && event.modifiers() and GLFW.GLFW_MOD_CONTROL != 0) {
+            navigation.close();focusSearch=true;return true
+        }
         if(panelInput {it.keyPressed(event)})return true
         if(event.key()==GLFW.GLFW_KEY_PAGE_UP || event.key()==GLFW.GLFW_KEY_PAGE_DOWN) {
             return mouseScrolled(cursorX.toDouble(),cursorY.toDouble(),0.0,if(event.key()==GLFW.GLFW_KEY_PAGE_UP) 4.0 else -4.0)

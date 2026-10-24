@@ -1,0 +1,14 @@
+{
+  "settings_use_createWithoutScreen": true,
+  "settings_navigation_calls_setScreen": false,
+  "settings_root_transparent": true,
+  "main_root_transparent": true,
+  "swatch_and_embedded_palette": true,
+  "bounded_sliders": true,
+  "explicit_right_click_previous": true,
+  "success_status_removed": true,
+  "hud_editor_command_deferred": true,
+  "new_world_settings_embedded": true,
+  "new_world_settings_typed_instant_save": true,
+  "in_game_tested_here": false
+}

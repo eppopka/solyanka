@@ -1,0 +1,30 @@
+{
+  "version": "1.3.6",
+  "targets": [
+    {
+      "class_name": "net.minecraft.client.multiplayer.ClientPacketListener",
+      "method": "handleBlockUpdate",
+      "descriptor": "(Lnet/minecraft/network/protocol/game/ClientboundBlockUpdatePacket;)V"
+    },
+    {
+      "class_name": "net.minecraft.client.multiplayer.ClientPacketListener",
+      "method": "handleChunkBlocksUpdate",
+      "descriptor": "(Lnet/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket;)V"
+    }
+  ],
+  "thread_guard_before_both_updates": true,
+  "compiled_injections": true,
+  "particle_evidence_before_suppression": true,
+  "exact_window_identity": true,
+  "no_desktop_fallback": true,
+  "capture_worker_owns_gdi": true,
+  "session_only_selection": true,
+  "registered_modules": 57,
+  "hud_editor_elements": 25,
+  "mixin_classes": 44,
+  "in_game_tested_here": false,
+  "mixin_application_tested_here": false,
+  "windows_capture_tested_here": false,
+  "gpu_sodium_iris_tested_here": false,
+  "full_requested_feature_set_complete": false
+}

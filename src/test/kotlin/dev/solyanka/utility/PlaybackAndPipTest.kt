@@ -1,0 +1,25 @@
+/* SPDX-License-Identifier: GPL-3.0-only */
+package dev.solyanka.utility
+import kotlin.test.*
+import org.junit.jupiter.api.Test
+import java.nio.file.Path
+class PlaybackAndPipTest {
+ private fun source(path:String)=Path.of(path).toFile().readText()
+ @Test fun `local clock matches native twenty minute phase units`() {val c=HeldItemClock();assertEquals(0f,c.sample(0,1.0));assertEquals(1f,c.sample(1_200_000_000_000,1.0))}
+ @Test fun `local phase never loops at native clock boundary`() {val c=HeldItemClock();c.sample(0,1.0);assertEquals(1.001f,c.sample(1_201_200_000_000,1.0));assertEquals(2f,c.sample(2_400_000_000_000,1.0))}
+ @Test fun `speed edits change velocity without snapping phase`() {val c=HeldItemClock();c.sample(0,1.0);assertEquals(1f,c.sample(1_200_000_000_000,4.0));assertEquals(5f,c.sample(2_400_000_000_000,0.0));assertEquals(5f,c.sample(3_600_000_000_000,0.0))}
+ @Test fun `zero speed freezes at current phase and resumes smoothly`() {val c=HeldItemClock();c.sample(0,1.0);val at=c.sample(1_200_000_000_000,0.0);assertEquals(at,c.sample(2_400_000_000_000,1.0));assertEquals(2f,c.sample(3_600_000_000_000,1.0))}
+ @Test fun `disabled samples freeze then resume without catchup`() {val c=HeldItemClock();c.sample(0,1.0);assertEquals(1f,c.sample(1_200_000_000_000,1.0,false));assertEquals(1f,c.sample(8_400_000_000_000,1.0));assertEquals(2f,c.sample(9_600_000_000_000,1.0))}
+ @Test fun `nanoTime negative origin and signed wrap supported`() {val c=HeldItemClock();c.sample(Long.MAX_VALUE-99,1.0);assertTrue(c.sample(Long.MIN_VALUE+100,1.0)>0);val d=HeldItemClock();d.sample(-1_200_000_000_000,1.0);assertEquals(1f,d.sample(0,1.0))}
+ @Test fun `clock rejects nonfinite and invalid speed`() {for(v in listOf(-1.0,5.0,Double.NaN,Double.POSITIVE_INFINITY))assertFails {HeldItemClock().sample(0,v)}}
+ @Test fun `float clock packed exactly through native ARGB into RGBA`() {for(f in listOf(0f,.0001f,.12345f,1f,16.75f,1000.123f)) {val p=HeldItemClock.texel(f);assertEquals(f.toRawBits(),HeldItemClock.decodeTexel(p).toRawBits());val bytes=listOf(p ushr 16 and 255,p ushr 8 and 255,p and 255,p ushr 24);val bits=bytes.foldIndexed(0) {i,acc,b->acc or (b shl (i*8))};assertEquals(f.toRawBits(),bits)}}
+ @Test fun `clock texture rejects invalid phases`() {for(f in listOf(Float.NaN,Float.POSITIVE_INFINITY,-1f))assertFails {HeldItemClock.texel(f)}}
+ @Test fun `identity survives title change by not storing title`() {val a=PipTargetIdentity("123",42,1000);assertTrue(a.matches(PipTargetIdentity("123",42,1000)));assertFalse(a.matches(null))}
+ @Test fun `same application other window is never auto selected`() {assertFalse(PipTargetIdentity("123",42,1000).matches(PipTargetIdentity("124",42,1000)))}
+ @Test fun `reused window or process ID cannot replace known lifetime`() {val a=PipTargetIdentity("123",42,1000);assertFalse(a.matches(PipTargetIdentity("123",43,1000)));assertFalse(a.matches(PipTargetIdentity("123",42,2000)));assertFalse(a.matches(PipTargetIdentity("123",42,-1)))}
+ @Test fun `unknown creation time keeps handle PID guards`() {val a=PipTargetIdentity("123",42,-1);assertTrue(a.matches(PipTargetIdentity("123",42,-1)));assertFalse(a.matches(PipTargetIdentity("124",42,-1)));assertFalse(PipTargetIdentity("",0,-1).matches(PipTargetIdentity("",0,-1)))}
+ @Test fun `scoreboard removes decorative title and matching editor padding`() {val f=source("src/client/kotlin/dev/solyanka/client/feature/ScoreboardHud.kt");assertFalse("\"SCOREBOARD\"" in f);assertTrue("if(s.header) textClipped(layout.title,11,7" in f);assertEquals(76,ScoreboardLayout.height(5,true));assertEquals(62,ScoreboardLayout.height(5,false))}
+ @Test fun `source classic palette is explicit and preserves layout and behavior`() {val s=ScoreboardHudSettings(hud=HudSpec(x=100,y=200,scale=1.5),scores=false,maxWidth=180);val next=StrayClassicStyle.scoreboard(s);assertEquals(s.hud.copy(color=0xfff2f4f7.toInt()),next.hud);assertEquals(0xff0b0e14.toInt(),next.backgroundColor);assertFalse(next.scores);assertEquals(180,next.maxWidth);val chat=ThemedChatSettings(opacity=.5,input=false);assertEquals(chat.copy(backgroundColor=StrayClassicStyle.WINDOW,borderColor=StrayClassicStyle.LINE,inputColor=StrayClassicStyle.WINDOW),StrayClassicStyle.chat(chat))}
+ @Test fun `native shader consumes local phase not world clock`() {val f=source("src/main/resources/assets/solyanka/shaders/core/held_item.fsh");assertTrue("uintBitsToFloat(clockBytes.r" in f);assertFalse("shaderTime = GameTime" in f);assertTrue("ivec2(2, 0)" in f);val runtime=source("src/client/kotlin/dev/solyanka/client/feature/HeldItemCosmetic.kt");assertTrue("System.nanoTime()" in runtime);assertTrue("lastPhase==phase" in runtime);assertFalse("GLOBALS_SNIPPET)" in runtime)}
+ @Test fun `capture titles are UI labels not lifetime guards`() {val f=source("src/client/java/dev/solyanka/client/pip/PipWin32.java");val body=f.substringAfter("private static boolean sameTarget(").substringBefore("private static ProcessHandle.Info");assertFalse("title()" in body);assertTrue("target.processStart()" in body);assertTrue("PrintWindow(hwnd" in f);assertFalse("GDI32.INSTANCE.BitBlt(" in f)}
+}

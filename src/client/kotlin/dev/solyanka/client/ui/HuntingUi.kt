@@ -20,21 +20,19 @@ object HuntingUi {
      toggle("Mojang Lookups",s.network,"Opt-in HTTPS profile lookup at api.mojang.com; only player names are sent."){it,v->it.copy(blocklist=it.blocklist.copy(network=v))};toggle("Auto Kick",s.autoKick){it,v->it.copy(blocklist=it.blocklist.copy(autoKick=v))};toggle("Party Warning",s.partyWarning){it,v->it.copy(blocklist=it.blocklist.copy(partyWarning=v))};number("Kick Delay (ms)",s.delayMs.toDouble(),100.0,3000.0,100.0){it,v->it.copy(blocklist=it.blocklist.copy(delayMs=v.toInt()))}
      dev.solyanka.client.feature.ShitterList.error?.let {add(GuiKit.description(w,it))}
     }
-    S.MOVE_HOTBAR->{val s=f.moveHotbar
-     add(GuiKit.description(w,"Moves and scales the native hotbar, including its original items, offhand, selection and attack indicator. Optional followers preserve vanilla fade/visibility; Player Display and No Render suppression still win. Vertical layout and archive custom skins are not yet ported."))
-     toggle("Custom Position",s.customPosition){it,v->it.copy(moveHotbar=it.moveHotbar.copy(customPosition=v))}
-     number("Scale",s.hud.scale,.5,4.0,.05){it,v->it.copy(moveHotbar=it.moveHotbar.copy(hud=it.moveHotbar.hud.copy(scale=v)))}
-     toggle("Item Name Follows",s.moveItemName){it,v->it.copy(moveHotbar=it.moveHotbar.copy(moveItemName=v))};toggle("Info Bar Follows",s.moveInfoBar){it,v->it.copy(moveHotbar=it.moveHotbar.copy(moveInfoBar=v))};toggle("XP Level Follows",s.moveXpLevel){it,v->it.copy(moveHotbar=it.moveHotbar.copy(moveXpLevel=v))}
-     add(GuiKit.button("Position / Scale — HUD Editor",w){net.minecraft.client.Minecraft.getInstance().setScreenAndShow(HudEditorScreen())})
-    }
+    S.MOVE_HOTBAR->{addAll(HotbarUi.controls(w,host,model,panel))}
     S.PIP->{val s=f.pip
-     add(GuiKit.description(w,"Windows only. Captures ONLY a window you explicitly select below, locally; no upload, desktop capture, fuzzy title fallback or automatic selection. Selection clears on disable/world change. Closing, minimizing or renaming the target clears the image. GPU/protected windows may return black or fail. PrintWindow can stall on an unresponsive application. Windows capture cannot be tested on this Linux build machine."))
+     add(GuiKit.description(w,"Windows only. Captures ONLY a window you explicitly select below, locally; no upload, desktop capture, fuzzy title fallback or automatic selection. Selection clears on disable/world change. Tab/title changes keep the selected application window. Closing or minimizing clears its image; restore to resume, reselect after closing. Multiple windows of one program remain separate; no automatic process-restart retargeting. The current browser tab is captured, not a pinned tab. GPU/protected windows may return black or fail. PrintWindow can stall on an unresponsive application. Windows capture cannot be tested on this Linux build machine."))
      add(GuiKit.description(w,dev.solyanka.client.feature.PictureInPicture.status))
      number("Capture FPS",s.fps.toDouble(),5.0,60.0,1.0){it,v->it.copy(pip=it.pip.copy(fps=v.toInt()))};number("Width",s.width.toDouble(),100.0,640.0,10.0){it,v->it.copy(pip=it.pip.copy(width=v.toInt()))}
      add(GuiKit.button("Refresh window list",w){open(id,host,model)})
      add(GuiKit.button("Stop / clear selection",w){dev.solyanka.client.feature.PictureInPicture.choose(null);open(id,host,model)})
-     dev.solyanka.client.feature.PictureInPicture.windows().take(64).forEach {window->add(GuiKit.button(window.title().take(70),w){dev.solyanka.client.feature.PictureInPicture.choose(window);open(id,host,model)})}
-     add(GuiKit.button("Position / Scale — HUD Editor",w){net.minecraft.client.Minecraft.getInstance().setScreenAndShow(HudEditorScreen())})
+     dev.solyanka.client.feature.PictureInPicture.windows().take(64).forEach {window->
+      val font=net.minecraft.client.Minecraft.getInstance().font;val full=window.label()
+      val label=if(font.width(full)>w-16) font.plainSubstrByWidth(full,(w-28).coerceAtLeast(0))+"..." else full
+      add(GuiKit.button(label,w){dev.solyanka.client.feature.PictureInPicture.choose(window);open(id,host,model)}.apply {tooltip(net.minecraft.network.chat.Component.literal(full))})
+     }
+     add(HudNavigation.button(w))
     }
     S.PET->{val s=f.pet
      add(GuiKit.description(w,"Open /pets once to observe the active pet. Total XP comes only from petInfo.exp; rates use changed server snapshots, never generic skill gains. Cache ambiguity stays unknown. Live level-progress curve and additional source polish are not yet ported. Sync is a manual server command."))
@@ -42,7 +40,7 @@ object HuntingUi {
      add(GuiKit.choiceRow(w,"Style",listOf("Minimal","Glass","Neon"),s.style,readCurrent={model.general.features.pet.style}){v->change {it.copy(pet=it.pet.copy(style=v))}})
      color("Accent",s.accent){it,v->it.copy(pet=it.pet.copy(accent=v))};color("Background",s.background){it,v->it.copy(pet=it.pet.copy(background=v))};number("Rate Window (minutes)",s.sampleMinutes.toDouble(),1.0,30.0,1.0){it,v->it.copy(pet=it.pet.copy(sampleMinutes=v.toInt()))}
      toggle("Highlight Active Pet",s.highlight){it,v->it.copy(pet=it.pet.copy(highlight=v))};color("Pet Highlight",s.highlightColor){it,v->it.copy(pet=it.pet.copy(highlightColor=v))};toggle("Autopet Title",s.autoTitle){it,v->it.copy(pet=it.pet.copy(autoTitle=v))};toggle("Title Dungeon Only",s.titleDungeonOnly){it,v->it.copy(pet=it.pet.copy(titleDungeonOnly=v))}
-     add(GuiKit.button("Position / Scale — HUD Editor",w){net.minecraft.client.Minecraft.getInstance().setScreenAndShow(HudEditorScreen())})
+     add(HudNavigation.button(w))
     }
     S.SIMON->{val s=f.simon
      add(GuiKit.description(w,"F7/M7 phase three; starts after Goldor's exact phase message. Tracks server lantern flashes before world replacement. Manual solver only: no Triggerbot/Auto Start yet. Sneak bypasses wrong-click prevention. Party alerts are opt-in."))
@@ -50,7 +48,7 @@ object HuntingUi {
      color("First Color",s.first){it,v->it.copy(simon=it.simon.copy(first=v))};color("Second Color",s.second){it,v->it.copy(simon=it.simon.copy(second=v))};color("Other Color",s.other){it,v->it.copy(simon=it.simon.copy(other=v))}
      toggle("Outline",s.outline){it,v->it.copy(simon=it.simon.copy(outline=v))};toggle("Through Walls",s.throughWalls){it,v->it.copy(simon=it.simon.copy(throughWalls=v))};toggle("Button Numbers",s.numbers){it,v->it.copy(simon=it.simon.copy(numbers=v))};color("Number Color",s.numberColor){it,v->it.copy(simon=it.simon.copy(numberColor=v))}
      toggle("Progress Display",s.progress){it,v->it.copy(simon=it.simon.copy(progress=v))};toggle("Reset Alerts",s.alerts){it,v->it.copy(simon=it.simon.copy(alerts=v))};toggle("Party Alerts",s.partyAlerts,"Sends fixed SS restart/break messages to party chat. Off by default."){it,v->it.copy(simon=it.simon.copy(partyAlerts=v))};toggle("Alert Sound",s.sound){it,v->it.copy(simon=it.simon.copy(sound=v))}
-     add(GuiKit.button("Position / Scale — HUD Editor",w){net.minecraft.client.Minecraft.getInstance().setScreenAndShow(HudEditorScreen())})
+     add(HudNavigation.button(w))
     }
     S.BESTIARY->{val s=f.bestiary
      add(GuiKit.description(w,"Comma-separated mob nameplate terms. Rechecks loaded stands and resolves their nearby mob. Uses native silhouette glow; no entity changes or server packets. Leave names empty to match nothing."))

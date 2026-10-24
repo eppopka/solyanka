@@ -13,7 +13,7 @@ object RouteUi {
    add(GuiKit.sliderRow(w,"Line Width",s.width,NumberRange(1.0,6.0,.5)){v->update{it.copy(width=v)}});add(GuiKit.toggleRow(w,"Rainbow Line",s.rainbow){v->update{it.copy(rainbow=v)}})
    add(GuiKit.toggleRow(w,"Through Walls",s.throughWalls){v->update{it.copy(throughWalls=v)}});add(GuiKit.toggleRow(w,"Skip Collected",s.skipCollected){v->update{it.copy(skipCollected=v)}});add(GuiKit.toggleRow(w,"Follow Progress",s.follow){v->update{it.copy(follow=v)}})
    add(GuiKit.sliderRow(w,"Step Radius",s.radius,NumberRange(1.0,15.0,.5)){v->update{it.copy(radius=v)}});add(GuiKit.sliderRow(w,"Segments Ahead",s.ahead.toDouble(),NumberRange(1.0,20.0,1.0)){v->update{it.copy(ahead=v.toInt())}});add(GuiKit.toggleRow(w,"Route Progress HUD",s.progress){v->update{it.copy(progress=v)}})
-   add(GuiKit.button("Position / Scale — HUD Editor",w){net.minecraft.client.Minecraft.getInstance().setScreenAndShow(HudEditorScreen())})
+   add(HudNavigation.button(w))
   }})
  }
 }

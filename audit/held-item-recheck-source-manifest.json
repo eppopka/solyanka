@@ -1,0 +1,39 @@
+{
+  "commit": "d91fcd4515b4eda647ee8fd7fa99408f473e5718",
+  "upstream_commit_date": "2026-10-23T15:59:53Z",
+  "github_head_query": "https://api.github.com/repos/camberX/Stray/commits?per_page=1",
+  "head_matches_previous_pin": true,
+  "license": "CC0-1.0",
+  "files": [
+    {
+      "file": "src/client/java/dev/stray/client/visual/HeldItemShader.java",
+      "local_file": "audit/held-item-recheck-source/HeldItemShader.java",
+      "sha256": "60f54bc8093e14228037f7f9f5e301a1b5fd93dc03753eb6a9f2b5a22079816c",
+      "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/visual/HeldItemShader.java"
+    },
+    {
+      "file": "src/client/java/dev/stray/client/mixin/ItemFeatureRendererMixin.java",
+      "local_file": "audit/held-item-recheck-source/ItemFeatureRendererMixin.java",
+      "sha256": "f6431993241337993cb6dc25e9529c728f6485336ee1cd2e5a9cd24ce9533e66",
+      "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/mixin/ItemFeatureRendererMixin.java"
+    },
+    {
+      "file": "src/client/resources/assets/stray/shaders/core/held_item.fsh",
+      "local_file": "audit/held-item-recheck-source/held_item.fsh",
+      "sha256": "689e2864581f373d3764f0927625d95cedbcfa85980ce38f6d40c60068058a14",
+      "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/shaders/core/held_item.fsh"
+    },
+    {
+      "file": "src/client/resources/assets/stray/shaders/core/held_item.vsh",
+      "local_file": "audit/held-item-recheck-source/held_item.vsh",
+      "sha256": "bb941445d471d7a82e8855329ce03b56f5217e927f6b0ea50c0a94ddfc77d42b",
+      "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/resources/assets/stray/shaders/core/held_item.vsh"
+    },
+    {
+      "file": "gradle.properties",
+      "local_file": "audit/held-item-recheck-source/gradle.properties",
+      "sha256": "64848c5a8147290902871541b861ab55a72c8d46cb5e8a0c5922373447d644ad",
+      "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/gradle.properties"
+    }
+  ]
+}

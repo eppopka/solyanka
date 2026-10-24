@@ -33,10 +33,7 @@ object ArchiveVisualUi {
                         add(GuiKit.description(w,"Move/scale the VANILLA health bar, including native absorption, poison and multirow behavior. Optional armor follows the same transform. Player Display and No Render hiding still apply. /solyanka gui drags the baseline box; extra health rows/armor can extend above it. Reset uses the native screen-relative position."))
                         add(GuiKit.toggleRow(w,"Visible",s.hud.enabled) {v->update {it.copy(moveHearts=it.moveHearts.copy(hud=it.moveHearts.hud.copy(enabled=v)))}})
                         add(GuiKit.toggleRow(w,"Move Armor Bar",s.moveArmor) {v->update {it.copy(moveHearts=it.moveHearts.copy(moveArmor=v))}})
-                        for(field in listOf("x","y","scale")) {
-                            val value=when(field) {"x"->h.x.toDouble();"y"->h.y.toDouble();else->h.scale}
-                            add(GuiKit.sliderRow(w,field.replaceFirstChar {it.uppercase()},value,SettingsNumbers.range("hud",field,host.width,host.height,value)) {v->update {f->val live=HeartLayout.editorHud(f.moveHearts,host.width,host.height);f.copy(moveHearts=f.moveHearts.copy(customPosition=true,hud=when(field) {"x"->live.copy(x=v.toInt());"y"->live.copy(y=v.toInt());else->live.copy(scale=v)}))}})
-                        }
+                        add(HudNavigation.button(w))
                         add(GuiKit.button("Reset Position / Scale",w) {update {it.copy(moveHearts=MoveHeartsSettings(moveArmor=it.moveHearts.moveArmor,hud=HudSpec(x=0,y=0,enabled=it.moveHearts.hud.enabled)))}})
                     }
                 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.solyanka.utility.FinalCosmeticsTest" tests="16" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:05:02.120Z" hostname="222f7e72-264" time="0.132">
+  <properties/>
+  <testcase name="knife skinning missing bone fallback and malformed channels()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.021"/>
+  <testcase name="ribbon adds triangles and no nan time accepted()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.005"/>
+  <testcase name="knife skinning bind pose and view transformation()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.0"/>
+  <testcase name="aura shape modes are distinct and glow adds geometry()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.002"/>
+  <testcase name="five aura styles produce deterministic finite triangle meshes()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.015"/>
+  <testcase name="knife rejects invalid identifiers wear seed and offsets()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.001"/>
+  <testcase name="new modules have actual settings and registered implementations()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.002"/>
+  <testcase name="knife skinning uses and normalizes four weights()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.0"/>
+  <testcase name="new settings default and old profile migration validate()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.002"/>
+  <testcase name="source orbit formula retains radius and animation()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.001"/>
+  <testcase name="aura max settings stay inside whole triangle budget()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.073"/>
+  <testcase name="inventory is title free and armor row starts at padding()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.001"/>
+  <testcase name="aura flush is after hand features but before matrix pop()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.001"/>
+  <testcase name="aura colors stay normalized with transparent rims()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.004"/>
+  <testcase name="inventory count uses footer only without armor and never overlaps main grid()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.0"/>
+  <testcase name="aura rejects invalid and non finite settings()" classname="dev.solyanka.utility.FinalCosmeticsTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

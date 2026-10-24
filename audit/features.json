@@ -364,7 +364,8 @@
     "module": "render.pip",
     "risk": "Actual feature captures another desktop window; Win32/JNA backend",
     "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
-    "notes": "docs/M13.md: exact-target Windows PrintWindow-only local capture; Windows runtime untested."
+    "notes": "1.3.7: application-labelled explicit HWND/process capture survives mutable titles/tab changes; process creation time checked when known, otherwise HWND+PID. No executable retarget or desktop fallback. Windows runtime untested. See docs/FEATURES_1.3.7.md.",
+    "release": "1.3.7"
   },
   {
     "source": "Stray",
@@ -412,8 +413,8 @@
     "module": "hud.scoreboard",
     "risk": "Vanilla replacement and text layout",
     "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
-    "release": "0.8.0-dev",
-    "notes": "Rounded visual adaptation; original text/interaction retained; source frost blur and chat motion not ported. See docs/M7.md."
+    "release": "1.3.7",
+    "notes": "1.3.7: decorative SCOREBOARD label/padding removed; actual objective optional. Explicit source classic-color preset. Native fonts/glass/theme-engine parity incomplete; native visual QA pending. See docs/FEATURES_1.3.7.md."
   },
   {
     "source": "Stray",
@@ -492,8 +493,10 @@
     ],
     "module": "cosmetic.cs2_knife",
     "risk": "Model/material/shader assets and their provenance need separate review",
-    "status": "AUDITED_ENTRY_POINTS_NOT_PORTED",
-    "notes": "Audited VPK/library/model loader: depends on player-owned CS2 install and a multi-file Source 2 model/skin/animation backend, still unported. No Valve assets bundled and no fake vanilla-sword replacement."
+    "status": "ADAPTED_NATIVE_26_2_LOCAL_INSTALL",
+    "notes": "Local CS2 or explicit pinned pack download; no bundled assets/automatic download. Bounded pack reader, progress/cancel. Real download/assets/native rendering untested; docs/FEATURES_1.3.8.md.",
+    "implementation": "client/cs2; Cs2FirstPersonMixin; Cs2ThirdPersonMixin; FinalCosmeticsUi",
+    "release": "1.3.8"
   },
   {
     "source": "Stray",
@@ -505,7 +508,7 @@
     "module": "cosmetic.held_item",
     "risk": "Separate HUD/shader behavior from knife and item-name features",
     "status": "IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING",
-    "release": "0.9.0-dev",
-    "notes": "Four first-person baked-item shader styles (Smoke/Stars/Portal/Galaxy), tint/fill/intensity/speed and independent hands. Arms, silhouette framebuffer pass and special model renderers are not ported. No entity/GUI fill. See docs/M8.md."
+    "release": "1.3.7",
+    "notes": "1.3.7: native item pipeline with duplicate-Globals regression guard; local monotonic phase via third texture texel removes world-time wrap/resync dependency, speed changes continuous. User artifact exact reproduction/native GPU acceptance pending; arms/silhouette/CS2 backend not ported. See docs/FEATURES_1.3.7.md."
   }
 ]

@@ -1,7 +1,7 @@
 """1.2 native weather and message API checks. Does not launch Minecraft/apply Mixins."""
 from pathlib import Path
 import json,re,subprocess,zipfile
-p=Path(__file__).resolve().parents[1];cp=str(Path.home()/'.gradle/caches/fabric-loom/26.2/minecraft-client.jar');jar=str(p/'build/libs/solyanka-1.3.3.jar');cache={}
+p=Path(__file__).resolve().parents[1];cp=str(Path.home()/'.gradle/caches/fabric-loom/26.2/minecraft-client.jar');jar=str(p/'build/libs/solyanka-1.3.9.jar');cache={}
 def dump(cls,classpath=cp,verbose=False):
  key=(cls,classpath,verbose)
  if key not in cache:cache[key]=subprocess.check_output(['java','-m','jdk.jdeps/com.sun.tools.javap.Main','-p','-s','-c']+(['-v'] if verbose else [])+['-classpath',classpath,cls],text=True)
@@ -36,12 +36,12 @@ assert 'ModuleInfo(SECRET_COUNTER' in client and 'SecretCounter.reset()' in clie
 assert 'host.showPanel(SettingsPanel(' in ui and 'model.updateGeneral' in ui and 'setScreen' not in ui
 assert '.isClientSide) {if(Environment.alwaysWater())' in (s/'mixin/AmbienceWeatherMixin.kt').read_text()
 with zipfile.ZipFile(jar) as z:
- assert json.loads(z.read('fabric.mod.json'))['version']=='1.3.3';assert len(json.loads(z.read('solyanka.client.mixins.json'))['client'])==41
+ assert json.loads(z.read('fabric.mod.json'))['version']=='1.3.9';assert len(json.loads(z.read('solyanka.client.mixins.json'))['client'])==44
  for name in ['dev/solyanka/client/feature/SecretCounter.class','dev/solyanka/client/ui/ArchiveDungeonUi.class','dev/solyanka/utility/SecretCounterState.class','dev/solyanka/utility/SecretAnnouncement.class','dev/solyanka/utility/AlwaysWaterPolicy.class','licenses/NoammAddons-CC0.txt']:assert name in z.namelist(),name
  assert not any('AetherOS' in n for n in z.namelist())
 archive=json.loads((p/'audit/archive-inventory.json').read_text());manifest=json.loads((p/'audit/archive-dungeon-source-manifest.json').read_text());assert len(manifest)==3
 for path in ['impl/dungeon/SecretCounter.kt','impl/visual/AlwaysWater.kt']:
  a=next(r for r in archive if r['file']==path);m=next(r for r in manifest if r['file']==path);assert a['sha256']==m['sha256'] and a['module']==m['module'];assert a['status']=='IMPLEMENTED_ADAPTED_BUILD_TESTED_INGAME_PENDING'
-result=dict(version='1.3.3',targets=targets,api_targets=apis,native_roof_height_callsites=1,native_precipitation_callsites=1,native_height_uses_clamped_against_camera=True,compiled_indoor_rain_handler_verified=True,compiled_client_rain_policy_verified=True,server_world_guard_preserved=True,existing_ambience_opacity_preserved=True,game_and_canceled_message_paths_verified=True,player_chat_not_observed=True,fixed_stats_command=True,announcements_opt_in=True,pending_state_resets=True,embedded_instant_settings=True,mixin_classes=41,in_game_tested_here=False,mixin_application_tested_here=False,server_run_command_tested_here=False,gpu_sodium_iris_tested_here=False)
+result=dict(version='1.3.9',targets=targets,api_targets=apis,native_roof_height_callsites=1,native_precipitation_callsites=1,native_height_uses_clamped_against_camera=True,compiled_indoor_rain_handler_verified=True,compiled_client_rain_policy_verified=True,server_world_guard_preserved=True,existing_ambience_opacity_preserved=True,game_and_canceled_message_paths_verified=True,player_chat_not_observed=True,fixed_stats_command=True,announcements_opt_in=True,pending_state_resets=True,embedded_instant_settings=True,mixin_classes=44,in_game_tested_here=False,mixin_application_tested_here=False,server_run_command_tested_here=False,gpu_sodium_iris_tested_here=False)
 (p/'validation/archive-dungeon-static.json').write_text(json.dumps(result,indent=2)+'\n')
 print('Archive dungeon/rain: 2 native targets, 1 roof callsite, 4 message/command API methods; compiled weather callbacks and fixed command gates checked; static only')

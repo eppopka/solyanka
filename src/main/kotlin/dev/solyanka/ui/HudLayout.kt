@@ -15,7 +15,7 @@ object HudLayout {
         f.timers.huds().forEach { (id,h) ->add(HudEntry("timer.$id",names.getValue(id),h,listOf("${names.getValue(id)}: 1.75s"))) }
         val samples=mapOf("health" to "3000/4000 HP","mana" to "2000/20000 Mana","overflow" to "333 Overflow","defense" to "1000 Defense","vitality" to "100 Vitality","ehp" to "33000 EHP","speed" to "400 Speed")
         f.player.huds().forEach { (id,h) -> add(HudEntry("player.$id",id.replaceFirstChar {it.uppercase()},h,listOf(samples.getValue(id)))) }
-        add(HudEntry("archive.hotbar","Vanilla Hotbar",HotbarLayout.editorHud(f.moveHotbar,width,height),listOf("Native Hotbar"),baseWidth=HotbarLayout.WIDTH,baseHeight=HotbarLayout.HEIGHT,paddingX=0))
+        add(HudEntry("archive.hotbar","Vanilla Hotbar",HotbarLayout.editorHud(f.moveHotbar,width,height),listOf("Native Hotbar"),baseWidth=HotbarLayout.geometry(f.moveHotbar).width,baseHeight=HotbarLayout.geometry(f.moveHotbar).height,paddingX=0))
         add(HudEntry("extra.pip","Picture in Picture",f.pip.hud,listOf("Explicit window capture"),baseWidth=f.pip.width+6,baseHeight=f.pip.width*9/16+6))
         add(HudEntry("archive.pet","Pet Display",f.pet.hud,listOf("[Lvl 100] Sample Pet","Total XP: server snapshot","XP/h: changed snapshots","Sample only"),baseWidth=220,baseHeight=57))
         add(HudEntry("archive.route","Waypoint Route",f.route.hud,listOf("Route: 3/12")))
@@ -30,6 +30,12 @@ object HudLayout {
         add(HudEntry("extra.scoreboard","Scoreboard",f.scoreboardHud.hud,listOf("Scoreboard sample"),baseWidth=f.scoreboardHud.maxWidth,baseHeight=ScoreboardLayout.height(5,f.scoreboardHud.header)))
         add(HudEntry("map","Map Info",HudSpec(x=f.map.x,y=f.map.y),listOf("Secrets: 25/30 | Score~: 295","Deaths: 0 | Crypts: 5","Sample room | 05:00"),false))
     }
+    fun owner(key:String):String=when {
+        key.startsWith("timer.")->"dungeon.tick_timers"
+        key.startsWith("player.")->"hud.player_display"
+        else->mapOf("archive.hotbar" to "custom.move_hotbar","extra.pip" to "render.picture_in_picture","archive.pet" to "custom.pet_display","archive.route" to "dungeon.waypoints","archive.simon" to "custom.simon_says","archive.hearts" to "custom.move_hearts","archive.stopwatch" to "custom.stopwatch","extra.inventory" to "hud.inventory","extra.item_name" to "hud.item_name","extra.skill" to "hud.skill_progress","extra.scoreboard" to "hud.scoreboard","map" to "dungeon.map_info").getValue(key)
+    }
+    fun visibleEntries(f:FeatureSettings,enabled:Set<String>,width:Int=960,height:Int=540)=entries(f,width,height).filter {owner(it.key) in enabled && it.hud.enabled && (it.key!="archive.route" || f.route.progress)}
     fun update(f:FeatureSettings,key:String,width:Int=960,height:Int=540,change:(HudSpec)->HudSpec):FeatureSettings {
         val entry=entries(f,width,height).firstOrNull {it.key==key} ?: error("Unknown HUD: $key")
         val h=change(entry.hud);h.validate()

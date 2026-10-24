@@ -27,11 +27,13 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
     private var selectionButton:io.wispforest.owo.ui.component.ButtonComponent?=null
     private fun select(key:String) {
         selected=key
-        selectionButton?.message=Component.literal(entries().first {it.key==key}.name)
+        selectionButton?.message=Component.literal(entries().firstOrNull {it.key==key}?.name ?: "No enabled HUDs")
     }
     private var dragging:String?=null
     private var offsetX=0.0;private var offsetY=0.0
-    private fun entries()=HudLayout.entries(SolyankaClient.currentGeneral().features,width,height)
+    private fun entries()=HudLayout.visibleEntries(SolyankaClient.currentGeneral().features,SolyankaClient.states().filterValues {it}.keys,width,height).map {dev.solyanka.client.feature.VanillaHotbar.editorEntry(it,width,height)}
+    private var controlKeys:List<String> = emptyList()
+    private fun syncSelection(list:List<HudEntry>) {if(list.none {it.key==selected}) selected=list.firstOrNull()?.key ?: ""}
     private fun ordered()=entries().sortedBy {it.key==selected}
     private fun bounds(entry:HudEntry)=HudLayout.bounds(entry,entry.lines.maxOf {font.width(it)},width,height)
     private fun at(x:Double,y:Double)=ordered().asReversed().firstOrNull {bounds(it).contains(x,y)}
@@ -42,25 +44,29 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
     override fun createAdapter():OwoUIAdapter<FlowLayout> = OwoUIAdapter.create(this) {w,h->UIContainers.verticalFlow(w,h)}
     override fun build(root:FlowLayout) {
         dragging=null
-        val list=entries()
+        val list=entries();syncSelection(list);controlKeys=list.map {it.key}
         val controls=UIContainers.horizontalFlow(Sizing.content(),Sizing.content()).apply {
             gap(5);verticalAlignment(VerticalAlignment.BOTTOM)
             positioning(Positioning.relative(50,100))
+            if(list.isNotEmpty()) {
             val selection=GuiKit.choiceRow(min(195,(width-75).coerceAtLeast(100)),"Selected HUD",list.map {it.name},list.indexOfFirst {it.key==selected}.coerceAtLeast(0),
                 readCurrent={list.indexOfFirst {it.key==selected}.coerceAtLeast(0)}) { index ->select(list[index].key)}
             selectionButton=selection.children().last() as io.wispforest.owo.ui.component.ButtonComponent
             child(selection)
+            } else child(GuiKit.label("No enabled HUDs"))
             child(GuiKit.button("Done",55) {onClose()})
         }
         root.child(controls)
     }
     override fun extractRenderState(g:GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
+        val current=entries();syncSelection(current)
+        if(controlKeys!=current.map {it.key}) {uiAdapter.rootComponent.clearChildren();build(uiAdapter.rootComponent)}
         val hovered=at(mx.toDouble(),my.toDouble())?.key
         ordered().forEach {entry ->
             val b=bounds(entry);val active=entry.hud.enabled
             g.fill(b.x,b.y,b.x+b.width,b.y+b.height,if(entry.key==selected) 0x88213946.toInt() else 0x66101010)
             GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else 0xff666666.toInt())
-            if(dev.solyanka.client.feature.VanillaHearts.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ArchiveHuds.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ExtraHuds.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ScoreboardHud.editor(g,entry.key,b.x,b.y)) {
+            if(dev.solyanka.client.feature.VanillaHotbar.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.VanillaHearts.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ArchiveHuds.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ExtraHuds.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ScoreboardHud.editor(g,entry.key,b.x,b.y)) {
                 GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else 0xff666666.toInt())
                 return@forEach
             }
@@ -70,10 +76,10 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
                 entry.lines.forEachIndexed {i,line ->g.text(font,Component.literal(line),0,i*10,if(active) entry.hud.color else 0xff888888.toInt(),true)}
             } finally {g.pose().popMatrix()}
         }
-        g.text(font,"HUD editor: drag LMB | scroll: scale | RMB: visibility",5,5,GuiKit.WHITE,true)
-        g.text(font,"Samples only; master module switches stay unchanged.",5,16,GuiKit.WHITE,true)
-        val entry=entries().first {it.key==selected}
-        g.text(font,"${entry.name}: ${entry.hud.x}, ${entry.hud.y} | ${entry.hud.scale}x | ${if(entry.hud.enabled) "shown" else "hidden"}",5,(height-57).coerceAtLeast(28),GuiKit.BLUE,true)
+        g.text(font,"HUD editor: drag LMB | scroll: scale | RMB: hide HUD",5,5,GuiKit.WHITE,true)
+        g.text(font,"Enabled modules + visible HUDs only. Enable hidden HUDs in settings.",5,16,GuiKit.WHITE,true)
+        val entry=entries().firstOrNull {it.key==selected}
+        if(entry!=null) g.text(font,"${entry.name}: ${entry.hud.x}, ${entry.hud.y} | ${entry.hud.scale}x | ${if(entry.hud.enabled) "shown" else "hidden"}",5,(height-57).coerceAtLeast(28),GuiKit.BLUE,true)
         model.error?.let {g.text(font,"Not saved: $it",5,(height-68).coerceAtLeast(39),0xffff5555.toInt(),true)}
         super.extractRenderState(g,mx,my,delta)
     }
@@ -89,7 +95,7 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
     }
     override fun mouseDragged(click:MouseButtonEvent,dx:Double,dy:Double):Boolean {
         val key=dragging ?: return super.mouseDragged(click,dx,dy)
-        val entry=entries().first {it.key==key}
+        val entry=entries().firstOrNull {it.key==key} ?: run {dragging=null;return true}
         change(key) { HudLayout.drag(it,click.x(),click.y(),offsetX,offsetY,bounds(entry),width,height) }
         return true
     }
@@ -109,6 +115,7 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
     override fun keyPressed(event:KeyEvent):Boolean {
         if(uiAdapter.rootComponent.focusHandler()?.focused()!=null) return super.keyPressed(event)
         val delta=when(event.key()) {GLFW.GLFW_KEY_LEFT->-1 to 0;GLFW.GLFW_KEY_RIGHT->1 to 0;GLFW.GLFW_KEY_UP->0 to -1;GLFW.GLFW_KEY_DOWN->0 to 1;else->return super.keyPressed(event)}
+        if(selected.isEmpty()) return true
         change(selected) {it.copy(x=(it.x+delta.first).coerceIn(0,10000),y=(it.y+delta.second).coerceIn(0,10000))}
         return true
     }

@@ -1,0 +1,19 @@
+{
+  "targets": [
+    {
+      "class": "net.minecraft.client.gui.contextualbar.ExperienceBar",
+      "method": "extractBackground",
+      "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V",
+      "target_exists": true
+    },
+    {
+      "class": "net.minecraft.client.gui.contextualbar.ExperienceBar",
+      "method": "extractRenderState",
+      "descriptor": "(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V",
+      "target_exists": true
+    }
+  ],
+  "xp_only_target": true,
+  "shared_info_bar_not_cancelled": true,
+  "in_game_tested_here": false
+}
