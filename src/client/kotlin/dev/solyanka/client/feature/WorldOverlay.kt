@@ -35,27 +35,35 @@ object WorldOverlay {
  private fun render(c:LevelRenderContext) {
   if(net.minecraft.client.Minecraft.getInstance().gui.hud.isHidden) return
   val values=channels.values.toList();val snapshot=values.flatMap {it.segments}.toMutableList();val camera=c.levelState().cameraRenderState.pos
-  val filled=values.flatMap {it.fills}.toMutableList();val text=values.flatMap {it.labels}
+  val filled=values.flatMap {it.fills}.toMutableList();val text=values.flatMap {it.labels}.toMutableList()
+  HuntingFeatures.collectTiki(c,snapshot,filled,text)
   BlockSelection.collect(c,snapshot,filled)
   val triangles=mutableListOf<Triangle>();ArchiveCosmetics.collect(c,snapshot,triangles)
   val pose=c.poseStack();pose.pushPose()
-  try { pose.translate(-camera.x,-camera.y,-camera.z)
+  try { // Subtract in double precision before casting vertices, avoiding world-coordinate jitter.
    triangles.groupBy {it.depth}.forEach { (depth,list)->
     c.submitNodeCollector().submitCustomGeometry(pose,if(depth) triangleDepth else triangleEsp) {matrix,buffer->
-     list.forEach {t->listOf(t.a,t.b,t.c).forEach {v->buffer.addVertex(matrix,v.x.toFloat(),v.y.toFloat(),v.z.toFloat()).setColor(t.color)}}
+     list.forEach {t->listOf(t.a,t.b,t.c).forEach {v->buffer.addVertex(matrix,(v.x-camera.x).toFloat(),(v.y-camera.y).toFloat(),(v.z-camera.z).toFloat()).setColor(t.color)}}
     }
    }
    filled.groupBy {it.depth}.forEach { (depth,list) ->
-    c.submitNodeCollector().submitCustomGeometry(pose,if(depth) fillDepth else fillEsp) { matrix,buffer ->
-     list.forEach { f -> val b=f.box
-      val v=arrayOf(Vec3(b.minX,b.minY,b.minZ),Vec3(b.maxX,b.minY,b.minZ),Vec3(b.maxX,b.maxY,b.minZ),Vec3(b.minX,b.maxY,b.minZ),Vec3(b.minX,b.minY,b.maxZ),Vec3(b.maxX,b.minY,b.maxZ),Vec3(b.maxX,b.maxY,b.maxZ),Vec3(b.minX,b.maxY,b.maxZ))
-      arrayOf(intArrayOf(0,1,2,3),intArrayOf(4,5,6,7),intArrayOf(0,1,5,4),intArrayOf(3,2,6,7),intArrayOf(0,3,7,4),intArrayOf(1,2,6,5)).forEach {face->face.forEach {index->val a=v[index];buffer.addVertex(matrix,a.x.toFloat(),a.y.toFloat(),a.z.toFloat()).setColor(f.color)} }
+    // Phased/translucent faces must be composited back-to-front, not insertion order.
+    // Sort face centroids, not whole boxes (particle glows enclose their cores).
+    data class Quad(val points:List<Vec3>,val color:Int,val distance:Double)
+    val quads=list.flatMap {f->val b=f.box
+     val v=arrayOf(Vec3(b.minX,b.minY,b.minZ),Vec3(b.maxX,b.minY,b.minZ),Vec3(b.maxX,b.maxY,b.minZ),Vec3(b.minX,b.maxY,b.minZ),Vec3(b.minX,b.minY,b.maxZ),Vec3(b.maxX,b.minY,b.maxZ),Vec3(b.maxX,b.maxY,b.maxZ),Vec3(b.minX,b.maxY,b.maxZ))
+     dev.solyanka.utility.OverlayBoxFaces.indices.map {face->
+      val points=face.map {v[it]};val center=points.reduce(Vec3::add).scale(.25)
+      Quad(points,f.color,center.distanceToSqr(camera))
      }
+    }.sortedByDescending {it.distance}
+    c.submitNodeCollector().submitCustomGeometry(pose,if(depth) fillDepth else fillEsp) { matrix,buffer ->
+     quads.forEach {q->q.points.forEach {a->buffer.addVertex(matrix,(a.x-camera.x).toFloat(),(a.y-camera.y).toFloat(),(a.z-camera.z).toFloat()).setColor(q.color)}}
     }
    }
    text.forEach { label ->
     pose.pushPose()
-    try {pose.translate(label.pos.x,label.pos.y,label.pos.z);pose.mulPose(c.levelState().cameraRenderState.orientation);val scale=.025f*label.scale;pose.scale(scale,-scale,scale)
+    try {pose.translate(label.pos.x-camera.x,label.pos.y-camera.y,label.pos.z-camera.z);pose.mulPose(c.levelState().cameraRenderState.orientation);val scale=.025f*label.scale;pose.scale(scale,-scale,scale)
      val component=net.minecraft.network.chat.Component.literal(label.text)
      val width=net.minecraft.client.Minecraft.getInstance().font.width(component)
      c.submitNodeCollector().submitText(pose,-width/2f,0f,component.visualOrderText,true,if(label.depth) net.minecraft.client.gui.Font.DisplayMode.NORMAL else net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH,0x00f000f0,label.color,0,0)
@@ -64,8 +72,8 @@ object WorldOverlay {
    snapshot.groupBy { it.depth }.forEach { (depth,list) ->
     c.submitNodeCollector().submitCustomGeometry(pose,if(depth) RenderTypes.LINES else esp) { matrix,buffer ->
      list.forEach { s -> val dx=(s.b.x-s.a.x).toFloat();val dy=(s.b.y-s.a.y).toFloat();val dz=(s.b.z-s.a.z).toFloat()
-      buffer.addVertex(matrix,s.a.x.toFloat(),s.a.y.toFloat(),s.a.z.toFloat()).setColor(s.color).setNormal(matrix,dx,dy,dz).setLineWidth(s.width)
-      buffer.addVertex(matrix,s.b.x.toFloat(),s.b.y.toFloat(),s.b.z.toFloat()).setColor(s.color).setNormal(matrix,dx,dy,dz).setLineWidth(s.width)
+      buffer.addVertex(matrix,(s.a.x-camera.x).toFloat(),(s.a.y-camera.y).toFloat(),(s.a.z-camera.z).toFloat()).setColor(s.color).setNormal(matrix,dx,dy,dz).setLineWidth(s.width)
+      buffer.addVertex(matrix,(s.b.x-camera.x).toFloat(),(s.b.y-camera.y).toFloat(),(s.b.z-camera.z).toFloat()).setColor(s.color).setNormal(matrix,dx,dy,dz).setLineWidth(s.width)
      }
     }
    }

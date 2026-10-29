@@ -23,6 +23,7 @@ class KnifeBrowserPanel(private val host:NoFrillsClickGui,private val model:Inst
  private var screenW=0;private var screenH=0;private var scale=1f
  private val W=548;private val H=332
  private var knifeSearch:EditBox?=null;private var finishSearch:EditBox?=null;private var seedBox:EditBox?=null
+ private var presetName:EditBox?=null;private var presetScroll=0
  private var tab=0;private var knifeScroll=0;private var finishScroll=0;private var bindingScroll=0
  private var editingUuid:String?=null;private var notice:String?=null
  private val previews=KnifePreviewCache();private var previewChanged=0L;private var previewKey=""
@@ -33,7 +34,7 @@ class KnifeBrowserPanel(private val host:NoFrillsClickGui,private val model:Inst
  private fun settings()=model.general.features.cs2Knife
  private fun binding()=settings().bindings.firstOrNull {it.uuid==editingUuid}
  private fun selection()=binding()?.choice() ?: settings().let {KnifeChoice(it.knife,it.finish,it.seed,it.wear)}
- private fun update(change:(Cs2KnifeSettings)->Cs2KnifeSettings){model.updateGeneral {it.copy(features=it.features.copy(cs2Knife=change(it.features.cs2Knife)))}}
+ private fun update(change:(Cs2KnifeSettings)->Cs2KnifeSettings)=model.updateGeneral {it.copy(features=it.features.copy(cs2Knife=change(it.features.cs2Knife)))}
  private fun edit(change:(KnifeChoice)->KnifeChoice) {
   val next=change(selection());val id=editingUuid
   update {s->if(id==null)s.copy(knife=next.knife,finish=next.finish,seed=next.seed,wear=next.wear)else s.copy(bindings=s.bindings.map {if(it.uuid==id)it.copy(knife=next.knife,finish=next.finish,seed=next.seed,wear=next.wear)else it})}
@@ -49,14 +50,15 @@ class KnifeBrowserPanel(private val host:NoFrillsClickGui,private val model:Inst
   fun box(x:Int,y:Int,w:Int,hint:String,value:String,change:(String)->Unit)=EditBox(font,x,y,w,12,Component.literal(hint)).apply {
    setBordered(false);setMaxLength(64);setHint(Component.literal(hint).withColor(0xa4a8ae));setTextColor(ink);setValue(value);setResponder(change)
   }
-  val k=knifeSearch?.value ?: "";val f=finishSearch?.value ?: ""
+  val k=knifeSearch?.value ?: "";val f=finishSearch?.value ?: "";val savedName=presetName?.value ?: "Preset ${settings().presets.size+1}"
   knifeSearch=box(18,51,110,"Search knives",k){knifeScroll=0}
   finishSearch=box(150,73,164,"Search finishes",f){finishScroll=0}
+  presetName=box(150,100,160,"Preset name",savedName){}.apply {setMaxLength(48);visible=tab==3}
   seedBox=box(366,203,66,"Seed",selection().seed.toString()){v->v.toIntOrNull()?.takeIf {it in 0..1000}?.let {n->edit {it.copy(seed=n)}}}.apply {setMaxLength(4)}
  }
  private fun xy(x:Double,y:Double):Pair<Double,Double>{val p=drag.position ?: PanelDrag.Point(0,0);return (x-p.x)/scale to (y-p.y)/scale}
  private fun event(e:MouseButtonEvent):MouseButtonEvent {val p=xy(e.x(),e.y());return MouseButtonEvent(p.first,p.second,e.buttonInfo())}
- private fun fields()=listOfNotNull(knifeSearch,finishSearch,seedBox).filter {it.visible}
+ private fun fields()=listOfNotNull(knifeSearch,finishSearch,seedBox,presetName).filter {it.visible}
  override fun focused():GuiEventListener?=fields().firstOrNull {it.isFocused}
  fun focusSearch(){fields().forEach {it.isFocused=false};knifeSearch?.isFocused=true}
  private fun text(g:GuiGraphicsExtractor,value:String,x:Int,y:Int,color:Int=ink,max:Int=1000){g.text(font,font.plainSubstrByWidth(value,max),x,y,color,false)}
@@ -86,6 +88,7 @@ class KnifeBrowserPanel(private val host:NoFrillsClickGui,private val model:Inst
    text(g,"CS2 Knife",12,10);text(g,if(editingUuid==null)"Global selection"else "Item: ${binding()?.label ?: "removed"}",12,25,muted,325)
    button(g,if(S.isEnabled(S.CS2_KNIFE))"Enabled"else "Enable",Box(148,8,65,18),S.isEnabled(S.CS2_KNIFE)) {val states=S.states().toMutableMap();states[S.CS2_KNIFE]=!S.isEnabled(S.CS2_KNIFE);notice=S.applySettings(S.currentProfile(),states)}
    button(g,"Inspect",Box(222,8,59,18)){Cs2Viewmodel.inspect()}
+   button(g,"Presets",Box(286,8,57,18),tab==3){tab=3}
    button(g,"Global",Box(347,8,56,18),editingUuid==null){editingUuid=null;seedBox?.value=selection().seed.toString();previewChanged=System.nanoTime()}
    button(g,"Assets / More",Box(410,8,104,18)){FinalCosmeticsUi.open(S.CS2_KNIFE,host,model,true)}
    button(g,"X",Box(520,8,18,18)){host.closePanel()}
@@ -102,7 +105,7 @@ class KnifeBrowserPanel(private val host:NoFrillsClickGui,private val model:Inst
    button(g,"Finishes",Box(144,46,56,18),tab==0){tab=0}
    button(g,"View",Box(203,46,38,18),tab==1){tab=1}
    button(g,"Item Bindings",Box(244,46,78,18),tab==2){tab=2}
-   finishSearch?.visible=tab==0
+   finishSearch?.visible=tab==0;presetName?.visible=tab==3
    when(tab) {
     0->{surface(g,Box(144,68,178,18))
      val finishes=(listOf(Cs2Library.Finish("","Vanilla"))+(current?.finishes() ?: emptyList())).filter {it.name().contains(finishSearch?.value ?: "",true)}
@@ -124,6 +127,7 @@ class KnifeBrowserPanel(private val host:NoFrillsClickGui,private val model:Inst
      text(g,"Enable Held Item Shader separately.",148,287,muted,168)
     }
     2->bindings(g)
+    3->presets(g)
    }
    val previewBox=Box(332,46,204,126);surface(g,previewBox,0xff252a31.toInt())
    val key=choice.key();if(key!=previewKey){previewKey=key;previewChanged=System.nanoTime()}
@@ -163,6 +167,26 @@ class KnifeBrowserPanel(private val host:NoFrillsClickGui,private val model:Inst
   }
   if(entries.isEmpty()){text(g,"Hold a unique SkyBlock item,",148,151,muted,168);text(g,"then bind your knife selection.",148,165,muted,168)}
  }
+ private fun presets(g:GuiGraphicsExtractor) {
+  text(g,"Named knife presets",148,76,ink,168)
+  surface(g,Box(144,94,178,23))
+  button(g,"Save current selection",Box(148,122,166,20)) {
+   runCatching {KnifePresets.save(settings().presets,presetName?.value ?: "",selection())}.fold(
+    onSuccess={next->if(update {it.copy(presets=next)})notice="Preset saved"},
+    onFailure={notice=it.message ?: "Invalid preset"})
+  }
+  val entries=settings().presets;presetScroll=presetScroll.coerceIn(0,(entries.size-4).coerceAtLeast(0))
+  entries.drop(presetScroll).take(4).forEachIndexed {i,preset->val y=151+i*36
+   text(g,preset.name,148,y,ink,166)
+   button(g,"Load",Box(148,y+12,79,18)) {
+    edit {preset.choice()};presetName?.value=preset.name;seedBox?.value=selection().seed.toString()
+    if(model.error==null)notice=if(editingUuid==null)"Preset loaded globally"else "Preset applied to item binding"
+   }
+   button(g,"Delete",Box(232,y+12,82,18)){if(update {s->s.copy(presets=s.presets.filterNot {it.name==preset.name})})notice="Preset deleted"}
+  }
+  if(entries.isEmpty())text(g,"Save a setup to reuse it later.",148,165,muted,166)
+  text(g,"Same name overwrites a preset.",148,303,muted,168)
+ }
  override fun mouseClicked(event:MouseButtonEvent,doubled:Boolean):Boolean {
   val (x,y)=xy(event.x(),event.y());lastX=x
   fields().forEach {it.isFocused=it.isMouseOver(x,y)}
@@ -182,7 +206,7 @@ class KnifeBrowserPanel(private val host:NoFrillsClickGui,private val model:Inst
   val (mx,my)=xy(x,y);if(my<65 || my>316)return true
   val step=if(vertical>0)-1 else if(vertical<0)1 else 0
   if(mx in 12.0..134.0)knifeScroll=(knifeScroll+step).coerceAtLeast(0)
-  else if(mx in 144.0..322.0){if(tab==0)finishScroll=(finishScroll+step).coerceAtLeast(0)else if(tab==2)bindingScroll=(bindingScroll+step).coerceAtLeast(0)}
+  else if(mx in 144.0..322.0){if(tab==0)finishScroll=(finishScroll+step).coerceAtLeast(0)else if(tab==2)bindingScroll=(bindingScroll+step).coerceAtLeast(0)else if(tab==3)presetScroll=(presetScroll+step).coerceAtLeast(0)}
   return true
  }
  override fun keyPressed(event:KeyEvent):Boolean {
