@@ -22,7 +22,7 @@
 
 This is **SOLYANKA**. We mixed together everything that could possibly be mixed, stole features from every mod, burned a million tokens, and lost 3 Claude accounts!
 
-> **⚠️ WARNING:** The README was made by hand because we ran out of tokens!
+> **⚠️ WARNING:** The README was made by hand because we ran out of tokens!!
 
 ---
 
