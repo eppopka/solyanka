@@ -27,6 +27,27 @@ class ChatCommandsTest {
         assertTrue(text.startsWith("3ppopka "));assertTrue(text.substringAfter(' ').toInt() in 60..100)
         assertNull(ChatCommandsLogic.response(settings.copy(party=false),chat))
     }
+    @Test fun `unicode commands and responses match ignoring case`() {
+        val settings=ChatCommandsSettings(commands=listOf(ChatCommand("привет","Привет, {name}!")))
+        val chat=ChatCommandsLogic.parse("Party > Player: !ПРИВЕТ")!!
+        assertEquals("Привет, Player!",ChatCommandsLogic.response(settings,chat))
+    }
+    @Test fun `command inside message is optional and uses whole words`() {
+        val settings=ChatCommandsSettings(commands=listOf(ChatCommand("bpm","{name} 93"),ChatCommand("привет","Здравствуй")))
+        fun chat(text:String)=IncomingCommandChat("party","Player",text)
+        assertNull(ChatCommandsLogic.response(settings,chat("текст !bpm")))
+        val anywhere=settings.copy(matchAnywhere=true)
+        assertEquals("Player 93",ChatCommandsLogic.response(anywhere,chat("текст !bpm ещё текст")))
+        assertEquals("Здравствуй",ChatCommandsLogic.response(anywhere,chat("текст !ПРИВЕТ")))
+        assertNull(ChatCommandsLogic.response(anywhere,chat("текст!bpm")))
+        assertNull(ChatCommandsLogic.response(anywhere,chat("!bpmm")))
+        assertEquals("baby shark",ChatCommandsLogic.match(anywhere,"текст !suggest baby shark",true)?.suggestion)
+        assertNull(ChatCommandsLogic.match(settings,"текст !suggest baby shark",true))
+        assertNull(ChatCommandsLogic.response(anywhere.copy(party=false),chat("текст !bpm")))
+        val decoded=FeatureCodec.decode(com.google.gson.Gson().toJsonTree(FeatureSettings(chatCommands=anywhere)).asJsonObject)
+        assertTrue(decoded.chatCommands.matchAnywhere)
+        assertFalse(FeatureCodec.decode(com.google.gson.JsonObject()).chatCommands.matchAnywhere)
+    }
     @Test fun `other channels and malformed messages`() {
         assertEquals("guild",ChatCommandsLogic.parse("Guild > [VIP] Player [Member]: !bpm")?.channel)
         assertEquals("private",ChatCommandsLogic.parse("From [VIP] Player: !bpm")?.channel)

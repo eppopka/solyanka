@@ -18,12 +18,13 @@ object ChatCommands {
         if(chat.name.equals(player.gameProfile.name,true) && echoes.consume(chat.channel,chat.text,System.nanoTime()/1_000_000L)) return
         val config=S.currentGeneral().features.chatCommands
         if(!ChatCommandsLogic.allowed(config,chat.channel)) return
-        val suggestion=chat.text.removePrefix(config.prefix).takeIf {chat.text.startsWith(config.prefix)}
-            ?.let {Regex("(?i)^suggest\\s+(.+)$").matchEntire(it)?.groupValues?.get(1)?.trim()}
-        val isSuggestion=suggestion!=null && S.currentGeneral().features.music.suggest
-        val response=if(isSuggestion) null else ChatCommandsLogic.response(config,chat) ?: return
+        val matched=ChatCommandsLogic.match(config,chat.text,S.currentGeneral().features.music.suggest) ?: return
+        val suggestion=matched.suggestion
+        val response=matched.command?.let {ChatCommandsLogic.formatResponse(it,chat.name)}
+        if(suggestion==null && response==null) return
         fun send(text:String) {
-            if(text.startsWith(S.currentGeneral().features.chatCommands.prefix)) echoes.remember(chat.channel,text,System.nanoTime()/1_000_000L)
+            val current=S.currentGeneral().features
+            if(ChatCommandsLogic.match(current.chatCommands,text,current.music.suggest)!=null) echoes.remember(chat.channel,text,System.nanoTime()/1_000_000L)
             when(chat.channel) {
             "party"->player.connection.sendCommand("pc $text")
             "guild"->player.connection.sendCommand("gc $text")
@@ -32,7 +33,7 @@ object ChatCommands {
             "private"->player.connection.sendCommand("msg ${chat.name} $text")
             "public"->player.connection.sendCommand("achat $text")
         }}
-        if(!isSuggestion) {send(response!!);return}
+        if(suggestion==null) {send(response!!);return}
         val world=client.level
         val accepted=YandexMusic.suggest(suggestion) {success,message->client.execute {
             if(client.level!==world || client.player!==player || !S.isEnabled(S.CHAT_COMMANDS)) return@execute

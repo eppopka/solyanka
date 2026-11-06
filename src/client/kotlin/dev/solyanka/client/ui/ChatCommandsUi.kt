@@ -25,6 +25,7 @@ object ChatCommandsUi {
             buildList {
                 add(GuiKit.description(w,"Hypixel: responds in the same chat channel, including your own commands. Review server rules before enabling."))
                 add(GuiKit.textRow(w,"Prefix",s.prefix) {value->update {it.copy(prefix=value)}})
+                add(GuiKit.toggleRow(w,"Command in message",s.matchAnywhere,"Allow a command as a separate word anywhere in a message.") {v->update {it.copy(matchAnywhere=v)}})
                 add(GuiKit.toggleRow(w,"Public Chat",s.publicChat) {v->update {it.copy(publicChat=v)}})
                 add(GuiKit.toggleRow(w,"Party Chat",s.party) {v->update {it.copy(party=v)}})
                 add(GuiKit.toggleRow(w,"Guild Chat",s.guild) {v->update {it.copy(guild=v)}})
