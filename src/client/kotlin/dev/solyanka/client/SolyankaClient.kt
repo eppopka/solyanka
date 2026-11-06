@@ -111,6 +111,8 @@ object SolyankaClient : ClientModInitializer {
     const val FOG="render.fog"
     const val WAYPOINTS="dungeon.waypoints"
     const val LEAP_MESSAGE="dungeon.leap_message"
+    const val CHAT_COMMANDS="render.chat_commands"
+    const val MUSIC="hud.yandex_music"
     const val DOORS="dungeon.door_highlight"
     const val MAP_INFO="dungeon.map_info"
     const val ICE="solver.ice_fill"
@@ -153,6 +155,8 @@ object SolyankaClient : ClientModInitializer {
         modules.register(object : Module(ModuleInfo(SUPPRESSION,"No render",Category.RENDER)) {})
         modules.register(object : Module(ModuleInfo(WAYPOINTS,"Waypoints",Category.RENDER)) {override fun onDisable() {DungeonPuzzles.invalidate()}})
         modules.register(object : Module(ModuleInfo(LEAP_MESSAGE,"Leap Message+",Category.DUNGEON)) {})
+        modules.register(object : Module(ModuleInfo(CHAT_COMMANDS,"Chat Commands",Category.RENDER)) {})
+        modules.register(object : Module(ModuleInfo(MUSIC,"Yandex Music",Category.HUD)) {override fun onDisable() {dev.solyanka.client.feature.YandexMusic.disconnect()}})
         listOf(DOORS to "Door Highlight",MAP_INFO to "Map Info",ICE to "Ice Fill",BLAZE to "Blaze",BEAMS to "Creeper Beams",MIMIC to "Mimic detection",MIMIC_CHEST to "Mimic Chest (archive)").forEach { (id,name) -> modules.register(object : Module(ModuleInfo(id,name,if(id.startsWith("solver.")) Category.SOLVER else Category.DUNGEON)) {override fun onDisable() {DungeonPuzzles.invalidate()}}) }
         listOf(AMBIENCE to "Ambience",ASPECT to "Aspect",FOG to "Fog").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {})}
         listOf(PLAYER_GLOW to "Player Glow",NAMETAGS to "Nametags",BLOCK_OUTLINE to "Block Outline",TITANIUM to "Titanium ESP").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {override fun onDisable() {WorldVisuals.reset();if(id==TITANIUM) TitaniumScanner.reset()}})}
@@ -202,7 +206,7 @@ object SolyankaClient : ClientModInitializer {
         PriceTooltips.register()
         Suppression.register()
         dev.solyanka.client.feature.VanillaHotbar.register();VanillaHearts.register() // Wrap existing visibility filters; never bypass their decisions.
-        DungeonPuzzles.register();DungeonMap.register();DungeonWaypoints.register();dev.solyanka.client.feature.LeapMessage.register()
+        DungeonPuzzles.register();DungeonMap.register();DungeonWaypoints.register();dev.solyanka.client.feature.LeapMessage.register();dev.solyanka.client.feature.ChatCommands.register();dev.solyanka.client.feature.YandexMusic.register()
         modules.all().forEach { module ->
             try { module.setEnabled(config.enabled(module.info.id)) }
             catch (e: Exception) { logger.error("Cannot enable ${module.info.id}", e) }
@@ -244,7 +248,7 @@ object SolyankaClient : ClientModInitializer {
         }
         ClientLifecycleEvents.CLIENT_STOPPING.register {
             config.save(states(), profile, general)
-            dev.solyanka.client.cs2.Cs2Knives.shutdown();modules.shutdown(); dev.solyanka.client.feature.ShitterList.close(); dev.solyanka.client.feature.PictureInPicture.close();TemporalBlur.close();ArchiveHuds.resetTimer();ArchiveHuds.resetDvd(); SkyboxVisual.close(); HeldItemCosmetic.close(); FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset();WorldVisuals.reset();TitaniumScanner.reset(); ownedInputs.clear(); previousWorld = null; initialized = false
+            dev.solyanka.client.feature.YandexMusic.disconnect();dev.solyanka.client.cs2.Cs2Knives.shutdown();modules.shutdown(); dev.solyanka.client.feature.ShitterList.close(); dev.solyanka.client.feature.PictureInPicture.close();TemporalBlur.close();ArchiveHuds.resetTimer();ArchiveHuds.resetDvd(); SkyboxVisual.close(); HeldItemCosmetic.close(); FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset();WorldVisuals.reset();TitaniumScanner.reset(); ownedInputs.clear(); previousWorld = null; initialized = false
         }
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             dispatcher.register(literal("solyanka")
@@ -277,7 +281,7 @@ object SolyankaClient : ClientModInitializer {
                 })))
         }
         initialized = true
-        logger.info("solyanka 1.3.12 initialized for Minecraft 26.2")
+        logger.info("solyanka 1.4.0-beta.1 initialized for Minecraft 26.2")
     }
 
     /** Validate and persist first; do not activate an invalid or unwritable UI draft. */

@@ -18,6 +18,7 @@ object HudLayout {
         add(HudEntry("archive.hotbar","Vanilla Hotbar",HotbarLayout.editorHud(f.moveHotbar,width,height),listOf("Native Hotbar"),baseWidth=HotbarLayout.geometry(f.moveHotbar).width,baseHeight=HotbarLayout.geometry(f.moveHotbar).height,paddingX=0))
         add(HudEntry("extra.pip","Picture in Picture",f.pip.hud,listOf("Explicit window capture"),baseWidth=f.pip.width+6,baseHeight=f.pip.width*9/16+6))
         add(HudEntry("archive.pet","Pet Display",f.pet.hud,listOf("[Lvl 100] Sample Pet","Total XP: server snapshot","XP/h: changed snapshots","Sample only"),baseWidth=220,baseHeight=57))
+        add(HudEntry("extra.music","Yandex Music",f.music.hud,listOf("Artist — Song")))
         add(HudEntry("archive.route","Waypoint Route",f.route.hud,listOf("Route: 3/12")))
         add(HudEntry("archive.simon","Simon Says",f.simon.hud,listOf("SS: 3/5")))
         add(HudEntry("archive.hearts","Vanilla Hearts",HeartLayout.editorHud(f.moveHearts,width,height),listOf("Vanilla Hearts"),baseWidth=HeartLayout.WIDTH,baseHeight=HeartLayout.HEIGHT,paddingX=0))
@@ -33,7 +34,7 @@ object HudLayout {
     fun owner(key:String):String=when {
         key.startsWith("timer.")->"dungeon.tick_timers"
         key.startsWith("player.")->"hud.player_display"
-        else->mapOf("archive.hotbar" to "custom.move_hotbar","extra.pip" to "render.picture_in_picture","archive.pet" to "custom.pet_display","archive.route" to "dungeon.waypoints","archive.simon" to "custom.simon_says","archive.hearts" to "custom.move_hearts","archive.stopwatch" to "custom.stopwatch","extra.inventory" to "hud.inventory","extra.item_name" to "hud.item_name","extra.skill" to "hud.skill_progress","extra.scoreboard" to "hud.scoreboard","map" to "dungeon.map_info").getValue(key)
+        else->mapOf("archive.hotbar" to "custom.move_hotbar","extra.pip" to "render.picture_in_picture","extra.music" to "hud.yandex_music","archive.pet" to "custom.pet_display","archive.route" to "dungeon.waypoints","archive.simon" to "custom.simon_says","archive.hearts" to "custom.move_hearts","archive.stopwatch" to "custom.stopwatch","extra.inventory" to "hud.inventory","extra.item_name" to "hud.item_name","extra.skill" to "hud.skill_progress","extra.scoreboard" to "hud.scoreboard","map" to "dungeon.map_info").getValue(key)
     }
     fun visibleEntries(f:FeatureSettings,enabled:Set<String>,width:Int=960,height:Int=540)=entries(f,width,height).filter {owner(it.key) in enabled && it.hud.enabled && (it.key!="archive.route" || f.route.progress)}
     fun update(f:FeatureSettings,key:String,width:Int=960,height:Int=540,change:(HudSpec)->HudSpec):FeatureSettings {
@@ -45,6 +46,7 @@ object HudLayout {
             key.startsWith("timer.")->f.copy(timers=f.timers.withHud(key.substringAfter('.'),h))
             key.startsWith("player.")->f.copy(player=f.player.withHud(key.substringAfter('.'),h))
             key=="archive.hotbar"->f.copy(moveHotbar=f.moveHotbar.copy(customPosition=true,hud=h))
+            key=="extra.music"->f.copy(music=f.music.copy(hud=h))
             key=="extra.pip"->f.copy(pip=f.pip.copy(hud=h))
             key=="archive.pet"->f.copy(pet=f.pet.copy(hud=h))
             key=="archive.route"->f.copy(route=f.route.copy(hud=h))

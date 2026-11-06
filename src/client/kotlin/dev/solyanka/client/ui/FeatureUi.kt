@@ -32,6 +32,8 @@ object FeatureUi {
         when(id) {
             SolyankaClient.ITEM_AURA,SolyankaClient.CS2_KNIFE->FinalCosmeticsUi.open(id,host,model)
             SolyankaClient.BLOCKLIST,SolyankaClient.MOVE_HOTBAR,SolyankaClient.PIP,SolyankaClient.PET,SolyankaClient.SIMON,SolyankaClient.BESTIARY,SolyankaClient.INVISIBUG,SolyankaClient.TIKI,SolyankaClient.CHINA_HAT,SolyankaClient.HALO->HuntingUi.open(id,host,model)
+            SolyankaClient.MUSIC->MusicUi.open(host,model)
+            SolyankaClient.CHAT_COMMANDS->ChatCommandsUi.open(host,model)
             SolyankaClient.LEAP_MESSAGE->LeapMessageUi.open(host,model)
             SolyankaClient.SECRET_COUNTER,SolyankaClient.ALWAYS_WATER->ArchiveDungeonUi.open(id,host,model)
             SolyankaClient.AMBIENT_PARTICLES,SolyankaClient.ROTATING_ITEM,SolyankaClient.MOVE_HEARTS->ArchiveVisualUi.open(id,host,model)

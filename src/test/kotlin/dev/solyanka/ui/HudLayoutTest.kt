@@ -8,9 +8,14 @@ import org.junit.jupiter.api.Test
 class HudLayoutTest {
     @Test fun `editor covers every implemented movable HUD`() {
         val all=HudLayout.entries(FeatureSettings())
-        assertEquals(25,all.size);assertEquals(25,all.map {it.key}.distinct().size)
+        assertEquals(26,all.size);assertEquals(26,all.map {it.key}.distinct().size)
         assertEquals(6,all.count {it.key.startsWith("timer.")});assertEquals(7,all.count {it.key.startsWith("player.")})
         assertFalse(all.first {it.key=="map"}.resizable)
+    }
+    @Test fun `music HUD is independently movable`() {
+        val f=FeatureSettings();val updated=HudLayout.update(f,"extra.music") {it.copy(x=77)}
+        assertEquals(77,updated.music.hud.x);assertEquals(f.waypoints,updated.waypoints)
+        assertEquals(listOf("extra.music"),HudLayout.visibleEntries(f,setOf("hud.yandex_music")).map {it.key})
     }
     @Test fun `moving a player HUD keeps all other settings`() {
         val f=FeatureSettings()

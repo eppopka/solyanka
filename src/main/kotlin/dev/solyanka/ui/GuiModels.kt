@@ -43,6 +43,8 @@ object GuiCatalog {
         FeatureCardInfo("render.aspect","Aspect","Render","Stray: matched horizontal projection and entity/terrain culling aspect multiplier."),
         FeatureCardInfo("render.fog","Fog","Render","Stray: atmospheric fog distances, color and density; preserves liquid/status fog. No Render wins."),
         FeatureCardInfo("dungeon.waypoints","Waypoints","Render","Odin-compatible dungeon packs and SkyBlock area waypoints, titles, secret hiding and manual editor."),
+        FeatureCardInfo("hud.yandex_music","Yandex Music","HUD","Experimental Yandex Music connection and current-track HUD."),
+        FeatureCardInfo("render.chat_commands","Chat Commands","Render","Custom chat-triggered text responses with name and random-number placeholders."),
         FeatureCardInfo("dungeon.leap_message","Leap Message+","Dungeon","Send a customizable party message after a confirmed teleport, with an optional per-player leap counter."),
         FeatureCardInfo("dungeon.door_highlight","Door Highlight","Dungeon","Odin: Magical Map doors, chat-tracked keys, key spawn alerts and openable colors."),
         FeatureCardInfo("dungeon.map_info","Map Info","Dungeon","Odin: secrets, estimated score, crypts, deaths, bonus flags, room secrets and portal highlight."),
