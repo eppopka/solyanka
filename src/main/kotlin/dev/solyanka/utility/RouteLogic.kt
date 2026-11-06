@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only; impl.zip numbered waypoint route adaptation. */
 package dev.solyanka.utility
 
-data class RouteSettings(val lines:Boolean=false,val color:Int=0xc8ffffff.toInt(),val width:Double=2.0,val rainbow:Boolean=false,val throughWalls:Boolean=true,val skipCollected:Boolean=true,val follow:Boolean=true,val radius:Double=4.0,val ahead:Int=1,val progress:Boolean=true,val hud:HudSpec=HudSpec(x=12,y=295)) {
+data class RouteSettings(val lines:Boolean=false,val color:Int=0xc8ffffff.toInt(),val width:Double=2.0,val rainbow:Boolean=false,val throughWalls:Boolean=true,val skipCollected:Boolean=true,val follow:Boolean=true,val radius:Double=4.0,val ahead:Int=1,val progress:Boolean=true,val hud:HudSpec=HudSpec(x=12,y=295),val startColor:Int=0xffff5555.toInt()) {
  fun validate() {require(width.isFinite() && width in 1.0..6.0 && radius.isFinite() && radius in 1.0..15.0 && ahead in 1..20);hud.validate()}
 }
 object RouteLogic {
@@ -10,9 +10,10 @@ object RouteLogic {
   val prefix=Regex("^\\s*(\\d+(?:\\s*/\\s*\\d+)*)").find(title)?.groupValues?.get(1) ?: return emptyList()
   return prefix.split('/').mapNotNull {it.trim().toIntOrNull()?.takeIf {n->n in 1..10000}}.distinct().take(32)
  }
- fun entries(ways:List<Waypoint>)=ways.flatMapIndexed {index,w->
-  if(w.title.isBlank() && w.color==0xffff5555.toInt())listOf(Entry(index,0)) else numbers(w.title).map {Entry(index,it)}
+ fun entries(ways:List<Waypoint>,startColor:Int=0xffff5555.toInt())=ways.flatMapIndexed {index,w->
+  if((w.color and 0xffffff)==(startColor and 0xffffff))listOf(Entry(index,0)) else numbers(w.title).map {Entry(index,it)}
  }.sortedWith(compareBy<Entry> {it.number}.thenBy {it.waypoint})
+ fun inRange(distanceSquared:Double,radius:Double)=distanceSquared<=radius*radius
  /** Progress cannot jump to a later repeat of the same physical block. */
  fun advance(entries:List<Entry>,cursor:Int,near:Set<Int>):Int {
   if(entries.isEmpty())return -1

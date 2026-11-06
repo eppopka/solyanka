@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.nio.file.*
 import com.google.gson.JsonParser
+import com.google.gson.Gson
 
 class ArchiveExpansionTest {
  @TempDir lateinit var temp:Path
@@ -39,6 +40,23 @@ class ArchiveExpansionTest {
  @Test fun `route parses number notes and repeated uses`() {assertEquals(listOf(1),RouteLogic.numbers("1 item"));assertEquals(listOf(2,4),RouteLogic.numbers("2 / 4"));assertTrue(RouteLogic.numbers("item 2").isEmpty());assertTrue(RouteLogic.numbers("0").isEmpty())}
  @Test fun `route rejects oversized numbers without overflow`() {assertTrue(RouteLogic.numbers("9999999999999999999999").isEmpty());assertEquals(listOf(2),RouteLogic.numbers("2/2"))}
  @Test fun `route orders start then numbered visits`() {val ways=listOf(Waypoint(GridPos(0,0,0),title="2/4"),Waypoint(GridPos(1,0,0),title="1 item"),Waypoint(GridPos(2,0,0),color=0xffff5555.toInt()));assertEquals(listOf(0,1,2,4),RouteLogic.entries(ways).map{it.number})}
+ @Test fun `custom start color takes priority over a numbered title`() {
+  val color=0xff123456.toInt();val ways=listOf(Waypoint(GridPos(0,0,0),title="2"),Waypoint(GridPos(1,0,0),color=0x80123456.toInt(),title="99"),Waypoint(GridPos(2,0,0),title="1"))
+  assertEquals(listOf(0,1,2),RouteLogic.entries(ways,color).map {it.number})
+  assertEquals(1,RouteLogic.entries(ways,color).first().waypoint)
+ }
+ @Test fun `activation radius includes its boundary and advances sequentially`() {
+  assertTrue(RouteLogic.inRange(16.0,4.0));assertFalse(RouteLogic.inRange(16.01,4.0))
+  val entries=(0..2).map {RouteLogic.Entry(it,it)}
+  assertEquals(0,RouteLogic.advance(entries,-1,setOf(0)))
+  assertEquals(1,RouteLogic.advance(entries,0,setOf(1)))
+  assertEquals(listOf(1 to 2),RouteLogic.segments(entries,1,RouteSettings()).map {it.first.number to it.second.number})
+ }
+ @Test fun `configured route start color round trips and defaults for old configs`() {
+  assertEquals(0xffff5555.toInt(),FeatureCodec.decode(JsonParser.parseString("{}").asJsonObject).route.startColor)
+  val f=FeatureSettings(route=RouteSettings(startColor=0xff123456.toInt()))
+  assertEquals(f.route,FeatureCodec.decode(Gson().toJsonTree(f).asJsonObject).route)
+ }
  @Test fun `route will not skip to repeated future block`() {val es=listOf(RouteLogic.Entry(0,1),RouteLogic.Entry(1,2),RouteLogic.Entry(0,3));assertEquals(0,RouteLogic.advance(es,0,setOf(0)));assertEquals(1,RouteLogic.advance(es,0,setOf(1)));assertEquals(2,RouteLogic.advance(es,1,setOf(0)))}
  @Test fun `route start resets when revisited`() {val es=listOf(RouteLogic.Entry(0,0),RouteLogic.Entry(1,1),RouteLogic.Entry(2,2));assertEquals(0,RouteLogic.advance(es,2,setOf(0)))}
  @Test fun `route lookahead bounds segments`() {val es=(0..30).map{RouteLogic.Entry(it,it)};assertEquals(2,RouteLogic.segments(es,3,RouteSettings(ahead=2)).size);assertEquals(30,RouteLogic.segments(es,3,RouteSettings(follow=false)).size)}

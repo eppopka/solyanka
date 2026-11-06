@@ -17,10 +17,10 @@ object DungeonWaypoints {
  private val store by lazy {WaypointStore(FabricLoader.getInstance().configDir.resolve("solyanka-waypoints"))}
  private var packs=emptyMap<String,WayPack>();private var signature="";private val clicked=mutableSetOf<String>()
  var error:String?=null;private set
- private val routeCursors=mutableMapOf<String,Int>();private var routeScope="";private var routeText:String?=null;private var routeAt=0L
+ private val routeCursors=mutableMapOf<String,Int>();private var routeScope="";private var worldRouteScope="";private var routeText:String?=null;private var routeAt=0L
  private var lastEther:BlockPos?=null;private var lastEtherTime=0L
  private fun cfg()=SolyankaClient.currentGeneral().features.waypoints
- fun reset() {WorldOverlay.clear("waypoints-world");routeCursors.clear();routeScope="";routeText=null;clicked.clear();lastEther=null;lastEtherTime=0;signature="";packs=emptyMap();error=null}
+ fun reset() {WorldOverlay.clear("waypoints-world");routeCursors.clear();routeScope="";worldRouteScope="";routeText=null;clicked.clear();lastEther=null;lastEtherTime=0;signature="";packs=emptyMap();error=null}
  fun names():List<String> = store.names()
  fun count(name:String):Int = store.load(name).values.sumOf {it.size}
  fun reload() {
@@ -35,7 +35,8 @@ object DungeonWaypoints {
  fun delete(name:String) {store.delete(name);reload()}
  fun import(name:String,text:String) {val pack=WaypointCodec.decode(text);store.write(name,pack,true);reload()}
  fun export(name:String)=WaypointCodec.encode(store.load(name),true)
- fun resetClicked() {routeCursors.clear();routeText=null;clicked.clear();DungeonPuzzles.invalidate()}
+ fun resetRoute() {routeCursors.clear();routeText=null}
+ fun resetClicked() {resetRoute();clicked.clear();DungeonPuzzles.invalidate()}
  private fun editingRoom():DungeonPuzzles.Room? {
   val ctx=FeatureRuntime.context
   if(!ctx.skyblock) return null
@@ -80,39 +81,43 @@ object DungeonWaypoints {
   val s=cfg();val route=SolyankaClient.currentGeneral().features.route
   val scope="${r.name}:${r.origin}:${r.facing}";if(scope!=routeScope){routeCursors.clear();routeScope=scope}
   val player=Minecraft.getInstance().player
-  packs.forEach {(pack,rooms)->
-   val ways=rooms[r.name].orEmpty();val entries=RouteLogic.entries(ways)
-   if(entries.isNotEmpty() && player!=null) {
-    fun point(e:RouteLogic.Entry)=Vec3.atCenterOf(r.real(ways[e.waypoint].blockPos)!!)
-    val near=entries.filter {point(it).distanceToSqr(player.position())<=route.radius*route.radius}.map {it.waypoint}.toSet()
-    val cursor=RouteLogic.advance(entries,routeCursors[pack] ?: -1,near);routeCursors[pack]=cursor
-    if(route.progress && routeText==null)routeText="Route: ${if(cursor>=0) (if(entries[cursor].number==0) "START" else entries[cursor].number.toString()) else "—"}/${entries.maxOf {it.number}}"
-    val remaining=if(route.skipCollected)entries.filter {key(pack,r.name,it.waypoint,r) !in clicked} else entries
-    val current=if(cursor<0)-1 else remaining.indexOfLast {it.number<=entries[cursor].number}
-    if(route.lines)RouteLogic.segments(remaining,current,route).forEach {(a,b)->
-     val color=if(route.rainbow) (java.awt.Color.HSBtoRGB(((System.nanoTime()/4_000_000_000.0)%1).toFloat(),.75f,1f) and 0xffffff) or (route.color and -0x1000000) else route.color
-     lines.add(WorldOverlay.Segment(point(a),point(b),color,!route.throughWalls,route.width.toFloat()))
-    }
-   }
+  if(player!=null) packs.forEach {(pack,rooms)->
+   val ways=rooms[r.name].orEmpty()
+   route("dungeon:$pack",ways,player.position(),lines,s,route,true,{i->Vec3.atCenterOf(r.real(ways[i].blockPos)!!)},{i->key(pack,r.name,i,r) in clicked})
   }
   packs.forEach { (pack,rooms)->rooms[r.name]?.forEachIndexed {i,w->
    if(key(pack,r.name,i,r) in clicked) return@forEachIndexed
    val b=WaypointLogic.box(w.aabb,w.blockPos,r.origin,r.facing);val box=AABB(b.minX,b.minY,b.minZ,b.maxX,b.maxY,b.maxZ);val depth=w.depth && !s.globalEsp
    if(w.filled) fills.add(WorldOverlay.Fill(box,w.color,depth)) else WorldOverlay.box(lines,box,w.color,depth)
-   if(s.lines && player!=null) lines.add(WorldOverlay.Segment(player.eyePosition,box.center,w.color,depth,s.lineSize.toFloat()))
    if(s.titles && w.title.isNotBlank()) {val p=r.real(w.blockPos)!!;labels.add(WorldOverlay.Label(Vec3.atCenterOf(p).add(0.0,.1*s.titleScale,0.0),w.title,w.color,depth,s.titleScale.toFloat()))}
   }}
+ }
+ private fun route(id:String,ways:List<Waypoint>,position:Vec3,lines:MutableList<WorldOverlay.Segment>,settings:WaypointSettings,route:RouteSettings,showProgress:Boolean,point:(Int)->Vec3,collected:(Int)->Boolean) {
+  val entries=RouteLogic.entries(ways,route.startColor);if(entries.isEmpty()) return
+  val near=entries.filter {RouteLogic.inRange(point(it.waypoint).distanceToSqr(position),route.radius)}.map {it.waypoint}.toSet()
+  val cursor=RouteLogic.advance(entries,routeCursors[id] ?: -1,near);routeCursors[id]=cursor
+  if(showProgress && route.progress && routeText==null) routeText="Route: ${if(cursor>=0) (if(entries[cursor].number==0) "START" else entries[cursor].number.toString()) else "—"}/${entries.maxOf {it.number}}"
+  val remaining=if(route.skipCollected) entries.filterNot {collected(it.waypoint)} else entries
+  val current=if(cursor<0)-1 else remaining.indexOfLast {it.number<=entries[cursor].number}
+  if(settings.lines || route.lines) RouteLogic.segments(remaining,current,route).forEach {(a,b)->
+   val color=if(route.rainbow) (java.awt.Color.HSBtoRGB(((System.nanoTime()/4_000_000_000.0)%1).toFloat(),.75f,1f) and 0xffffff) or (route.color and -0x1000000) else route.color
+   val width=if(settings.lines) settings.lineSize else route.width
+   lines.add(WorldOverlay.Segment(point(a.waypoint),point(b.waypoint),color,!route.throughWalls,width.toFloat()))
+  }
  }
  fun worldGeometry() {
   val ctx=FeatureRuntime.context;val player=Minecraft.getInstance().player
   val area=WaypointLogic.areaKey(ctx)
   if(!SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || area==null || player==null) {WorldOverlay.clear("waypoints-world");return}
   if(signature!=cfg().selectedPacks) reload()
-  val s=cfg();val lines=mutableListOf<WorldOverlay.Segment>();val fills=mutableListOf<WorldOverlay.Fill>();val labels=mutableListOf<WorldOverlay.Label>()
-  packs.values.forEach {pack->pack[area].orEmpty().forEach {w->
+  val s=cfg();val route=SolyankaClient.currentGeneral().features.route
+  if(area!=worldRouteScope) {routeCursors.clear();worldRouteScope=area}
+  val lines=mutableListOf<WorldOverlay.Segment>();val fills=mutableListOf<WorldOverlay.Fill>();val labels=mutableListOf<WorldOverlay.Label>()
+  packs.forEach {(name,pack)->val ways=pack[area].orEmpty()
+   route("world:$name",ways,player.position(),lines,s,route,false,{i->val p=ways[i].blockPos;Vec3(p.x+.5,p.y+.5,p.z+.5)},{false})
+   ways.forEach {w->
    val p=w.blockPos;val b=w.aabb;val box=AABB(p.x+b.minX,p.y+b.minY,p.z+b.minZ,p.x+b.maxX,p.y+b.maxY,p.z+b.maxZ);val depth=w.depth && !s.globalEsp
    if(w.filled) fills.add(WorldOverlay.Fill(box,w.color,depth)) else WorldOverlay.box(lines,box,w.color,depth)
-   if(s.lines) lines.add(WorldOverlay.Segment(player.eyePosition,box.center,w.color,depth,s.lineSize.toFloat()))
    if(s.titles && w.title.isNotBlank()) labels.add(WorldOverlay.Label(Vec3(p.x+.5,p.y+.5+.1*s.titleScale,p.z+.5),w.title,w.color,depth,s.titleScale.toFloat()))
   }}
   WorldOverlay.publish(lines,fills,labels,"waypoints-world")

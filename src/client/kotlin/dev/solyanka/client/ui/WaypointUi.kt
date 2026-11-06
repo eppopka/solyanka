@@ -12,6 +12,7 @@ object WaypointUi {
  fun open(host:NoFrillsClickGui,model:InstantSettings) {
   val raw=mutableMapOf<String,String>();var actionError:String?=null;val errors=linkedMapOf<String,String>();val parseErrors=linkedMapOf<String,String>();var newName="";var oldName=""
   var draft=Gson().toJsonTree(model.general.features.waypoints).asJsonObject
+  if(model.general.features.route.lines && !draft["lines"].asBoolean) {draft.addProperty("lines",true);draft.addProperty("lineSize",model.general.features.route.width)}
   fun status()=parseErrors.values.firstOrNull() ?: errors.values.firstOrNull() ?: actionError ?: model.error ?: DungeonWaypoints.error
   lateinit var panel:SettingsPanel
   fun run(action:()->Unit) {try {require(errors.isEmpty() && parseErrors.isEmpty()) {"Correct invalid fields first"};action();actionError=null} catch(e:Exception) {actionError=e.message ?: "Waypoint operation failed"};panel.refreshStatus()}
@@ -19,7 +20,8 @@ object WaypointUi {
    draft.add(field,value);parseErrors.remove(field)
    if(parseErrors.isNotEmpty()) {panel.refreshStatus();return}
    try {val root=Gson().toJsonTree(model.general.features).asJsonObject;root.add("waypoints",draft);val next=FeatureCodec.decode(root)
-    model.updateGeneral {it.copy(features=next)};errors.clear();if(model.error==null) DungeonWaypoints.reload()
+    val route=when(field) {"lines"->next.route.copy(lines=value.asBoolean);"lineSize"->next.route.copy(width=value.asDouble);else->next.route}
+    model.updateGeneral {it.copy(features=next.copy(route=route))};errors.clear();if(model.error==null) DungeonWaypoints.reload()
    } catch(e:Exception) {errors[field]=e.message ?: "Invalid waypoint settings"}
    panel.refreshStatus()
   }
