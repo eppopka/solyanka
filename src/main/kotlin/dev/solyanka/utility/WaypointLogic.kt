@@ -14,10 +14,16 @@ data class WayBox(val minX:Double,val minY:Double,val minZ:Double,val maxX:Doubl
 }
 enum class WayType {NONE,NORMAL,SECRET,ETHERWARP}
 data class Waypoint(val blockPos:GridPos,val color:Int=0xff55ff55.toInt(),val filled:Boolean=false,val depth:Boolean=false,val aabb:WayBox=WayBox(-.002,-.002,-.002,1.002,1.002,1.002),val title:String="",val type:WayType=WayType.NONE)
-data class WaypointSettings(val selectedPacks:String="default",val editPack:String="default",val allowEdits:Boolean=false,val globalEsp:Boolean=false,val titles:Boolean=true,val titleScale:Double=1.0,val type:Int=0,val color:Int=0xff55ff55.toInt(),val filled:Boolean=false,val depth:Boolean=false,val blockSize:Boolean=true,val sizeX:Double=1.0,val sizeY:Double=1.0,val sizeZ:Double=1.0) {
- fun validate() {val names=selectedPacks.split(',').map(String::trim);require(names.size<=32 && names.all(WaypointStore::validName));require(WaypointStore.validName(editPack));require(type in 0..3);require(titleScale.isFinite() && titleScale in .1..4.0);require(listOf(sizeX,sizeY,sizeZ).all {it.isFinite() && it in .1..5.0})}
+data class WaypointSettings(val selectedPacks:String="default",val editPack:String="default",val allowEdits:Boolean=false,val globalEsp:Boolean=false,val titles:Boolean=true,val titleScale:Double=1.0,val type:Int=0,val color:Int=0xff55ff55.toInt(),val filled:Boolean=false,val depth:Boolean=false,val blockSize:Boolean=true,val sizeX:Double=1.0,val sizeY:Double=1.0,val sizeZ:Double=1.0,val lines:Boolean=false,val lineSize:Double=3.0) {
+ fun validate() {val names=selectedPacks.split(',').map(String::trim);require(names.size<=32 && names.all(WaypointStore::validName));require(WaypointStore.validName(editPack));require(type in 0..3);require(titleScale.isFinite() && titleScale in .1..4.0);require(lineSize.isFinite() && lineSize in 1.0..6.0);require(listOf(sizeX,sizeY,sizeZ).all {it.isFinite() && it in .1..5.0})}
 }
 object WaypointLogic {
+ // Area-scoped world positions are distinct from existing room-relative pack entries.
+ fun areaKey(ctx:SkyblockContext):String? {
+  if(!ctx.skyblock || ctx.area.isBlank()) return null
+  val area=ctx.area.trim();val floor=if(ctx.dungeon) ":${if(ctx.master) "M" else "F"}${ctx.floor ?: "?"}" else ""
+  return ("@skyblock:$area$floor").takeIf {it.length<=128 && it.none {c->c=='\n' || c=='\r'}}
+ }
  private val secretDrops=listOf("Health Potion VIII Splash Potion","Healing Potion 8 Splash Potion","Healing Potion VIII Splash Potion","Healing VIII Splash Potion","Healing 8 Splash Potion","Decoy","Inflatable Jerry","Spirit Leap","Trap","Training Weights","Defuse Kit","Dungeon Chest Key","Treasure Talisman","Revive Stone","Architect's First Draft","Secret Dye","Candycomb")
  fun secretDrop(name:String)=secretDrops.any {ChatLogic.plain(name).contains(it,true)}
  fun rotate(p:Point3,facing:RoomFacing):Point3=when(facing) {RoomFacing.NORTH->Point3(-p.x,p.y,-p.z);RoomFacing.SOUTH->p;RoomFacing.WEST->Point3(-p.z,p.y,p.x);RoomFacing.EAST->Point3(p.z,p.y,-p.x)}

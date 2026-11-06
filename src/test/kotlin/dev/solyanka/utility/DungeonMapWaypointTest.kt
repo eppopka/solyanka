@@ -7,6 +7,17 @@ import java.nio.file.*
 import com.google.gson.JsonParser
 class DungeonMapWaypointTest {
  @TempDir lateinit var directory:Path
+ @Test fun `world waypoint keys require SkyBlock and a known area`() {
+  assertNull(WaypointLogic.areaKey(SkyblockContext()));assertNull(WaypointLogic.areaKey(SkyblockContext(skyblock=true)))
+  assertEquals("@skyblock:Hub",WaypointLogic.areaKey(SkyblockContext(skyblock=true,area="Hub")))
+  assertNotEquals(WaypointLogic.areaKey(SkyblockContext(skyblock=true,dungeon=true,area="Catacombs",floor=7)),WaypointLogic.areaKey(SkyblockContext(skyblock=true,dungeon=true,area="Catacombs",floor=6)))
+  assertNull(WaypointLogic.areaKey(SkyblockContext(skyblock=true,area="a".repeat(129))))
+ }
+ @Test fun `world area entries remain compatible with pack codec`() {
+  val key=WaypointLogic.areaKey(SkyblockContext(skyblock=true,area="Hub"))!!
+  val pack=mapOf(key to listOf(Waypoint(GridPos(-10,70,20),title="Hub")))
+  assertEquals(pack,WaypointCodec.decode(WaypointCodec.encode(pack)))
+ }
  @Test fun `all room transforms invert and preserve absolute y`() {val origin=GridPos(-170,0,-202);val p=GridPos(2,71,29);RoomFacing.entries.forEach {f->assertEquals(p,DungeonLogic.relative(DungeonLogic.real(p,origin,f),origin,f))}}
  @Test fun `tile bounds fail closed`() {assertEquals(0 to 0,DungeonLogic.tile(-201,-201));assertEquals(5 to 5,DungeonLogic.tile(-10,-10));assertNull(DungeonLogic.tile(-202,0));assertNull(DungeonLogic.tile(-9,-185))}
  @Test fun `core hashing preserves source block string format`() {assertEquals("0Block{minecraft:stone}Block{minecraft:air}".hashCode() to 139,DungeonLogic.core(listOf(140 to "minecraft:air",139 to "minecraft:stone",138 to "minecraft:air")))}

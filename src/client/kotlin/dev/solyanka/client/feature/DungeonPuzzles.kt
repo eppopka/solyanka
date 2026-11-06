@@ -68,6 +68,7 @@ object DungeonPuzzles {
  fun tick() {
   if(++ticks%5!=0) return
   val client=Minecraft.getInstance();val level=client.level ?: return;val ctx=FeatureRuntime.context
+  DungeonWaypoints.worldGeometry()
   val active=listOf(SolyankaClient.ICE,SolyankaClient.BLAZE,SolyankaClient.BEAMS,SolyankaClient.MIMIC,SolyankaClient.MIMIC_CHEST,SolyankaClient.DOORS,SolyankaClient.MAP_INFO,SolyankaClient.WAYPOINTS).any(SolyankaClient::isEnabled)
   if(!ctx.dungeon || !active || ctx.boss && !SolyankaClient.isEnabled(SolyankaClient.MIMIC_CHEST)) {room=null;WorldOverlay.publish(emptyList());return}
   room=if(ctx.boss) null else scan()

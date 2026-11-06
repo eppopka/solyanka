@@ -1,82 +1,242 @@
-diff --git a/src/client/kotlin/dev/solyanka/client/feature/SecretCounter.kt b/src/client/kotlin/dev/solyanka/client/feature/SecretCounter.kt
-index 8d44457..d442ec8 100644
---- a/src/client/kotlin/dev/solyanka/client/feature/SecretCounter.kt
-+++ b/src/client/kotlin/dev/solyanka/client/feature/SecretCounter.kt
-@@ -28,7 +28,7 @@ object SecretCounter {
-         if(DungeonRunMessages.ended(text)) state.finish(now)
-         state.readSecrets(text,now)?.let {count->
-             local("Secrets Found: $count")
--            announcement.schedule(now,count,S.currentGeneral().features.secretCounter.autoAnnounce)
-+            announcement.schedule(now,count,S.currentGeneral().features.secretCounter.shouldAnnounce(count))
-         }
-     }
-     fun tick() {
-@@ -40,7 +40,7 @@ object SecretCounter {
-             null->Unit
-         }
-         val s=S.currentGeneral().features.secretCounter
--        announcement.poll(now,s.autoAnnounce)?.let {count->
-+        announcement.poll(now,s.autoAnnounce)?.takeIf(s::shouldAnnounce)?.let {count->
-             val text="[solyanka] I did $count secrets!"
-             if(s.channel=="party") connection.sendCommand("pc $text") else connection.sendChat(text)
-         }
-diff --git a/src/client/kotlin/dev/solyanka/client/ui/ArchiveDungeonUi.kt b/src/client/kotlin/dev/solyanka/client/ui/ArchiveDungeonUi.kt
-index f6b56b2..099ce56 100644
---- a/src/client/kotlin/dev/solyanka/client/ui/ArchiveDungeonUi.kt
-+++ b/src/client/kotlin/dev/solyanka/client/ui/ArchiveDungeonUi.kt
-@@ -8,12 +8,20 @@ import dev.solyanka.ui.InstantSettings
- object ArchiveDungeonUi {
-     fun open(id:String,host:NoFrillsClickGui,model:InstantSettings) {
-         val title=if(id==S.SECRET_COUNTER) "Secret Counter" else "Always Water"
--        host.showPanel(SettingsPanel(title,{host.closePanel()},{model.error}) {panel,w->
-+        var thresholdError:String?=null
-+        host.showPanel(SettingsPanel(title,{host.closePanel()},{thresholdError ?: model.error}) {panel,w->
-             buildList {
-                 if(id==S.SECRET_COUNTER) {
-                     val s=model.general.features.secretCounter
-                     add(GuiKit.description(w,"Archive personal dungeon secrets counter. Enabling this module permits ONE /showextrastats request, 1 second after a recognized Catacombs completion header. Waits up to 10 seconds for an exact personal Secrets Found line, then reports locally. No API estimates. World/floor/run/toggle resets cancel pending work."))
-                     add(GuiKit.toggleRow(w,"Auto Announce",s.autoAnnounce,"Opt-in: sends your observed count to the selected chat channel after 0.5 seconds. Review server rules. Off by default.") {v->model.updateGeneral {it.copy(features=it.features.copy(secretCounter=it.features.secretCounter.copy(autoAnnounce=v)))};panel.refreshStatus()})
-+                    add(GuiKit.toggleRow(w,"Only Announce Above Threshold",s.thresholdEnabled,"Only send when the count is strictly greater than the threshold.") {v->model.updateGeneral {it.copy(features=it.features.copy(secretCounter=it.features.secretCounter.copy(thresholdEnabled=v)))};panel.refreshStatus()})
-+                    add(GuiKit.textRow(w,"Secret Threshold",s.threshold.toString(),"Non-negative whole number. Equal or lower counts are not announced.") {input->
-+                        val value=input.toIntOrNull()
-+                        thresholdError=if(value==null || value<0) "Secret threshold must be a non-negative whole number" else null
-+                        if(thresholdError==null) model.updateGeneral {it.copy(features=it.features.copy(secretCounter=it.features.secretCounter.copy(threshold=value!!)))}
-+                        panel.refreshStatus()
-+                    })
-                     val channels=listOf("current","party")
-                     add(GuiKit.choiceRow(w,"Announce Channel",listOf("Current Chat","Party Chat"),channels.indexOf(s.channel),readCurrent={channels.indexOf(model.general.features.secretCounter.channel)}) {i->model.updateGeneral {it.copy(features=it.features.copy(secretCounter=it.features.secretCounter.copy(channel=channels[i])))};panel.refreshStatus()})
-                 } else {
-diff --git a/src/main/kotlin/dev/solyanka/utility/SecretCounterLogic.kt b/src/main/kotlin/dev/solyanka/utility/SecretCounterLogic.kt
-index 24dbf61..3c9a01c 100644
---- a/src/main/kotlin/dev/solyanka/utility/SecretCounterLogic.kt
-+++ b/src/main/kotlin/dev/solyanka/utility/SecretCounterLogic.kt
-@@ -2,8 +2,9 @@
-  * Run lifecycle markers reference pinned NoammAddons CC0; see NOTICE. */
- package dev.solyanka.utility
- 
--data class SecretCounterSettings(val autoAnnounce:Boolean=false,val channel:String="current") {
--    fun validate() {require(channel in listOf("current","party"))}
-+data class SecretCounterSettings(val autoAnnounce:Boolean=false,val channel:String="current",val thresholdEnabled:Boolean=false,val threshold:Int=0) {
-+    fun validate() {require(channel in listOf("current","party"));require(threshold>=0) {"Secret threshold must be non-negative"}}
-+    fun shouldAnnounce(count:Int)=autoAnnounce && (!thresholdEnabled || count>threshold)
- }
- object DungeonRunMessages {
-     private const val START="[NPC] Mort: Here, I found this map when I first entered the dungeon."
-diff --git a/src/test/kotlin/dev/solyanka/utility/ArchiveDungeonTest.kt b/src/test/kotlin/dev/solyanka/utility/ArchiveDungeonTest.kt
-index 387046f..851c3f2 100644
---- a/src/test/kotlin/dev/solyanka/utility/ArchiveDungeonTest.kt
-+++ b/src/test/kotlin/dev/solyanka/utility/ArchiveDungeonTest.kt
-@@ -11,6 +11,13 @@ class ArchiveDungeonTest {
-     @Test fun `secret counter settings migrate with announcements off`() {val f=FeatureCodec.decode(JsonObject());assertEquals(SecretCounterSettings(),f.secretCounter);assertFalse(f.secretCounter.autoAnnounce)}
-     @Test fun `both announcement channels roundtrip`() {for(c in listOf("current","party")) {val f=FeatureSettings(secretCounter=SecretCounterSettings(true,c));assertEquals(f,FeatureCodec.decode(Gson().toJsonTree(f).asJsonObject))}}
-     @Test fun `unknown channel and wrong types fail validation`() {assertFails {SecretCounterSettings(channel="all").validate()};for(raw in listOf("""{"secretCounter":{"autoAnnounce":1}}""","""{"secretCounter":{"channel":0}}""","""{"secretCounter":{"channel":null}}""")) assertFails {FeatureCodec.decode(JsonParser.parseString(raw).asJsonObject)}}
-+    @Test fun `announcement threshold is opt in and strictly greater`() {
-+        val s=SecretCounterSettings(autoAnnounce=true,thresholdEnabled=true,threshold=5)
-+        assertFalse(s.shouldAnnounce(4));assertFalse(s.shouldAnnounce(5));assertTrue(s.shouldAnnounce(6))
-+        assertTrue(s.copy(thresholdEnabled=false).shouldAnnounce(0));assertFalse(s.copy(autoAnnounce=false).shouldAnnounce(6))
-+        assertFails {s.copy(threshold=-1).validate()}
-+        assertEquals(s,FeatureCodec.decode(Gson().toJsonTree(FeatureSettings(secretCounter=s)).asJsonObject).secretCounter)
+diff --git a/src/client/kotlin/dev/solyanka/client/SolyankaClient.kt b/src/client/kotlin/dev/solyanka/client/SolyankaClient.kt
+index e2d5288..2c45d2a 100644
+--- a/src/client/kotlin/dev/solyanka/client/SolyankaClient.kt
++++ b/src/client/kotlin/dev/solyanka/client/SolyankaClient.kt
+@@ -150,7 +150,7 @@ object SolyankaClient : ClientModInitializer {
+         modules.register(object : Module(ModuleInfo(PRICES,"Price tooltips",Category.UTILITY)) {})
+         modules.register(object : Module(ModuleInfo(EXPERIMENTS,"Experiment solver",Category.SOLVER)) { override fun onDisable() { Experiments.reset() } })
+         modules.register(object : Module(ModuleInfo(SUPPRESSION,"No render",Category.RENDER)) {})
+-        listOf(WAYPOINTS to "Dungeon Waypoints",DOORS to "Door Highlight",MAP_INFO to "Map Info",ICE to "Ice Fill",BLAZE to "Blaze",BEAMS to "Creeper Beams",MIMIC to "Mimic detection",MIMIC_CHEST to "Mimic Chest (archive)").forEach { (id,name) -> modules.register(object : Module(ModuleInfo(id,name,if(id.startsWith("solver.")) Category.SOLVER else Category.DUNGEON)) {override fun onDisable() {DungeonPuzzles.invalidate()}}) }
++        listOf(WAYPOINTS to "Waypoints",DOORS to "Door Highlight",MAP_INFO to "Map Info",ICE to "Ice Fill",BLAZE to "Blaze",BEAMS to "Creeper Beams",MIMIC to "Mimic detection",MIMIC_CHEST to "Mimic Chest (archive)").forEach { (id,name) -> modules.register(object : Module(ModuleInfo(id,name,if(id.startsWith("solver.")) Category.SOLVER else Category.DUNGEON)) {override fun onDisable() {DungeonPuzzles.invalidate()}}) }
+         listOf(AMBIENCE to "Ambience",ASPECT to "Aspect",FOG to "Fog").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {})}
+         listOf(PLAYER_GLOW to "Player Glow",NAMETAGS to "Nametags",BLOCK_OUTLINE to "Block Outline",TITANIUM to "Titanium ESP").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {override fun onDisable() {WorldVisuals.reset();if(id==TITANIUM) TitaniumScanner.reset()}})}
+         listOf(SCOREBOARD to "Scoreboard",THEMED_CHAT to "Themed Chat").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.HUD)) {})}
+diff --git a/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt b/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt
+index 130ddaa..9a31375 100644
+--- a/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt
++++ b/src/client/kotlin/dev/solyanka/client/feature/DungeonPuzzles.kt
+@@ -68,6 +68,7 @@ object DungeonPuzzles {
+  fun tick() {
+   if(++ticks%5!=0) return
+   val client=Minecraft.getInstance();val level=client.level ?: return;val ctx=FeatureRuntime.context
++  DungeonWaypoints.worldGeometry()
+   val active=listOf(SolyankaClient.ICE,SolyankaClient.BLAZE,SolyankaClient.BEAMS,SolyankaClient.MIMIC,SolyankaClient.MIMIC_CHEST,SolyankaClient.DOORS,SolyankaClient.MAP_INFO,SolyankaClient.WAYPOINTS).any(SolyankaClient::isEnabled)
+   if(!ctx.dungeon || !active || ctx.boss && !SolyankaClient.isEnabled(SolyankaClient.MIMIC_CHEST)) {room=null;WorldOverlay.publish(emptyList());return}
+   room=if(ctx.boss) null else scan()
+diff --git a/src/client/kotlin/dev/solyanka/client/feature/DungeonWaypoints.kt b/src/client/kotlin/dev/solyanka/client/feature/DungeonWaypoints.kt
+index 99985b6..8ddb2c5 100644
+--- a/src/client/kotlin/dev/solyanka/client/feature/DungeonWaypoints.kt
++++ b/src/client/kotlin/dev/solyanka/client/feature/DungeonWaypoints.kt
+@@ -20,8 +20,9 @@ object DungeonWaypoints {
+  private val routeCursors=mutableMapOf<String,Int>();private var routeScope="";private var routeText:String?=null;private var routeAt=0L
+  private var lastEther:BlockPos?=null;private var lastEtherTime=0L
+  private fun cfg()=SolyankaClient.currentGeneral().features.waypoints
+- fun reset() {routeCursors.clear();routeScope="";routeText=null;clicked.clear();lastEther=null;lastEtherTime=0;signature="";packs=emptyMap();error=null}
++ fun reset() {WorldOverlay.clear("waypoints-world");routeCursors.clear();routeScope="";routeText=null;clicked.clear();lastEther=null;lastEtherTime=0;signature="";packs=emptyMap();error=null}
+  fun names():List<String> = store.names()
++ fun count(name:String):Int = store.load(name).values.sumOf {it.size}
+  fun reload() {
+   routeCursors.clear();routeText=null
+   val next=linkedMapOf<String,WayPack>();val errors=mutableListOf<String>()
+@@ -35,16 +36,23 @@ object DungeonWaypoints {
+  fun import(name:String,text:String) {val pack=WaypointCodec.decode(text);store.write(name,pack,true);reload()}
+  fun export(name:String)=WaypointCodec.encode(store.load(name),true)
+  fun resetClicked() {routeCursors.clear();routeText=null;clicked.clear();DungeonPuzzles.invalidate()}
++ private fun editingRoom():DungeonPuzzles.Room? {
++  val ctx=FeatureRuntime.context
++  if(!ctx.skyblock) return null
++  if(ctx.dungeon && !ctx.boss) return DungeonPuzzles.currentRoom()
++  val area=WaypointLogic.areaKey(ctx) ?: return null
++  return DungeonPuzzles.Room(area,0,0,0,GridPos(0,0,0),RoomFacing.SOUTH)
++ }
+  private fun editable(change:(MutableMap<String,List<Waypoint>>,DungeonPuzzles.Room)->Unit) {
+-  require(SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS)) {"Enable Dungeon Waypoints first"}
+-  require(cfg().allowEdits) {"Enable Allow Edits first"}
+-  val r=DungeonPuzzles.currentRoom() ?: error("No recognized dungeon room")
+-  require(FeatureRuntime.context.dungeon && !FeatureRuntime.context.boss && r.origin!=null && r.facing!=null) {"Room rotation is not ready; load all room segments"}
++  require(SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS)) {"Enable Waypoints first"}
++  require(cfg().allowEdits) {"Enable Editor Mode first"}
++  val r=editingRoom() ?: error("SkyBlock area or dungeon room not recognized")
++  require(r.origin!=null && r.facing!=null) {"Room rotation is not ready; load all room segments"}
+   val next=store.load(cfg().editPack).toMutableMap();change(next,r);store.write(cfg().editPack,next);clicked.clear();reload()
+  }
+  fun clearRoom()=editable {p,r->p.remove(r.name)}
+  fun remove(index:Int)=editable {p,r->val rows=p[r.name]?.toMutableList() ?: error("Room has no waypoints");require(index in rows.indices);rows.removeAt(index);p[r.name]=rows}
+- fun roomRows():List<Waypoint> = DungeonPuzzles.currentRoom()?.let {store.load(cfg().editPack)[it.name]} ?: emptyList()
++ fun roomRows():List<Waypoint> = editingRoom()?.let {store.load(cfg().editPack)[it.name]} ?: emptyList()
+  fun addTarget(title:String="",toggle:Boolean=false) {
+   require(title.length<=128 && '\n' !in title && '\r' !in title)
+   val c=Minecraft.getInstance();val hit=c.hitResult as? BlockHitResult ?: error("Look at a block first")
+@@ -91,9 +99,24 @@ object DungeonWaypoints {
+    if(key(pack,r.name,i,r) in clicked) return@forEachIndexed
+    val b=WaypointLogic.box(w.aabb,w.blockPos,r.origin,r.facing);val box=AABB(b.minX,b.minY,b.minZ,b.maxX,b.maxY,b.maxZ);val depth=w.depth && !s.globalEsp
+    if(w.filled) fills.add(WorldOverlay.Fill(box,w.color,depth)) else WorldOverlay.box(lines,box,w.color,depth)
++   if(s.lines && player!=null) lines.add(WorldOverlay.Segment(player.eyePosition,box.center,w.color,depth,s.lineSize.toFloat()))
+    if(s.titles && w.title.isNotBlank()) {val p=r.real(w.blockPos)!!;labels.add(WorldOverlay.Label(Vec3.atCenterOf(p).add(0.0,.1*s.titleScale,0.0),w.title,w.color,depth,s.titleScale.toFloat()))}
+   }}
+  }
++ fun worldGeometry() {
++  val ctx=FeatureRuntime.context;val player=Minecraft.getInstance().player
++  val area=WaypointLogic.areaKey(ctx)
++  if(!SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || area==null || player==null) {WorldOverlay.clear("waypoints-world");return}
++  if(signature!=cfg().selectedPacks) reload()
++  val s=cfg();val lines=mutableListOf<WorldOverlay.Segment>();val fills=mutableListOf<WorldOverlay.Fill>();val labels=mutableListOf<WorldOverlay.Label>()
++  packs.values.forEach {pack->pack[area].orEmpty().forEach {w->
++   val p=w.blockPos;val b=w.aabb;val box=AABB(p.x+b.minX,p.y+b.minY,p.z+b.minZ,p.x+b.maxX,p.y+b.maxY,p.z+b.maxZ);val depth=w.depth && !s.globalEsp
++   if(w.filled) fills.add(WorldOverlay.Fill(box,w.color,depth)) else WorldOverlay.box(lines,box,w.color,depth)
++   if(s.lines) lines.add(WorldOverlay.Segment(player.eyePosition,box.center,w.color,depth,s.lineSize.toFloat()))
++   if(s.titles && w.title.isNotBlank()) labels.add(WorldOverlay.Label(Vec3(p.x+.5,p.y+.5+.1*s.titleScale,p.z+.5),w.title,w.color,depth,s.titleScale.toFloat()))
++  }}
++  WorldOverlay.publish(lines,fills,labels,"waypoints-world")
++ }
+  fun secret(pos:BlockPos,maxSquared:Int,type:WayType=WayType.SECRET) {
+   if(!SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || !FeatureRuntime.context.dungeon || FeatureRuntime.context.boss) return
+   val r=DungeonPuzzles.currentRoom() ?: return;if(r.origin==null || r.facing==null)return
+@@ -107,11 +130,11 @@ object DungeonWaypoints {
+  }
+  fun editorInput(device:InputDevice,key:Int):Boolean {
+   val c=Minecraft.getInstance()
+-  if(device!=InputDevice.MOUSE || key!=GLFW.GLFW_MOUSE_BUTTON_RIGHT || c.gui.screen()!=null || !SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || !FeatureRuntime.context.dungeon || FeatureRuntime.context.boss) return false
++  if(device!=InputDevice.MOUSE || key!=GLFW.GLFW_MOUSE_BUTTON_RIGHT || c.gui.screen()!=null || !SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || !FeatureRuntime.context.skyblock) return false
+   // Ray-cast only a manually initiated etherwarp; never use, aim or teleport automatically.
+   val player=c.player ?: return false
+   val id=player.mainHandItem.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA)?.copyTag()?.getStringOr("id","")
+-  if(id in setOf("ASPECT_OF_THE_VOID","ASPECT_OF_THE_END") && player.isCrouching) {
++  if(FeatureRuntime.context.dungeon && !FeatureRuntime.context.boss && id in setOf("ASPECT_OF_THE_VOID","ASPECT_OF_THE_END") && player.isCrouching) {
+    val tuned=player.mainHandItem.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA)?.copyTag()?.getIntOr("tuned_transmission",0) ?: 0
+    val target=player.pick((56+tuned.coerceIn(0,10)).toDouble(),0f,false) as? BlockHitResult
+    if(target?.type==HitResult.Type.BLOCK) {lastEther=target.blockPos.immutable();lastEtherTime=System.nanoTime()}
+diff --git a/src/client/kotlin/dev/solyanka/client/ui/WaypointUi.kt b/src/client/kotlin/dev/solyanka/client/ui/WaypointUi.kt
+index 82a895a..af1202a 100644
+--- a/src/client/kotlin/dev/solyanka/client/ui/WaypointUi.kt
++++ b/src/client/kotlin/dev/solyanka/client/ui/WaypointUi.kt
+@@ -3,6 +3,7 @@ package dev.solyanka.client.ui
+ import com.google.gson.*
+ import dev.solyanka.client.feature.DungeonWaypoints
+ import dev.solyanka.client.feature.DungeonPuzzles
++import dev.solyanka.client.feature.FeatureRuntime
+ import dev.solyanka.client.ui.nofrills.*
+ import dev.solyanka.ui.InstantSettings
+ import dev.solyanka.utility.*
+@@ -23,15 +24,24 @@ object WaypointUi {
+    panel.refreshStatus()
+   }
+   fun remount() {panel.mount(host.width,host.height)}
+-  panel=SettingsPanel("Dungeon Waypoints",{host.closePanel()},{status()}) {_,w ->
++  panel=SettingsPanel("Waypoint Pack Config",{host.closePanel()},{status()}) {_,w ->
+    buildList {
+-    add(GuiKit.description(w,"Local Odin-compatible JSON or Base64+GZIP packs; clipboard import/export only, no URL fetching. No secret pack is bundled. Place/edit waypoints manually: Allow Edits + right click a block (click again removes); normal block use is blocked in edit mode. /solyanka waypoint add <title> sets a title."))
+-    add(GuiKit.description(w,"Packs: ${runCatching {DungeonWaypoints.names().joinToString()}.getOrDefault("unavailable")}. Selected Packs: comma-separated names. Edit Pack must exist; select it to see edits. Unknown/unloaded room geometry fails closed. Disable Allow Edits for normal play."))
++    add(GuiKit.description(w,"Local Odin-compatible JSON or Base64+GZIP packs; clipboard import/export only, no URL fetching. No secret pack is bundled. Place/edit waypoints manually: Editor Mode + right click a block (click again removes); normal block use is blocked in edit mode. /solyanka waypoint add <title> sets a title."))
++    add(GuiKit.description(w,"Packs: ${runCatching {DungeonWaypoints.names().joinToString()}.getOrDefault("unavailable")}. Selected Packs: comma-separated names. Edit Pack must exist; select it to see edits. SkyBlock area names must be visible in the player list; unknown areas and unloaded room geometry fail closed. Disable Editor Mode for normal play."))
++    add(GuiKit.description(w,"Waypoint groups:"))
++    runCatching {DungeonWaypoints.names()}.getOrDefault(emptyList()).forEach {name ->
++     val count=runCatching {DungeonWaypoints.count(name).toString()}.getOrDefault("unavailable")
++     add(GuiKit.description(w,"$name — $count waypoints"))
 +    }
-     @Test fun `a request is impossible before a completion event`() {val s=SecretCounterState();assertNull(s.poll(0));assertNull(s.poll(100000));assertNull(s.readSecrets("Secrets Found: 42",100000))}
-     @Test fun `request waits exactly one second after completion`() {val s=SecretCounterState();s.finish(100);assertNull(s.poll(1099));assertEquals(SecretCounterState.Action.REQUEST_STATS,s.poll(1100));assertNull(s.poll(1101))}
-     @Test fun `duplicate finish headers do not postpone or duplicate request`() {val s=SecretCounterState();s.finish(0);s.finish(900);assertEquals(SecretCounterState.Action.REQUEST_STATS,s.poll(1000));s.finish(1100);assertNull(s.poll(2000))}
+     add(GuiKit.button("Route Lines / Progress",w){RouteUi.open(host,model)})
+-    draft.entrySet().forEach {(field,value) ->val label=field.replace(Regex("([a-z])([A-Z])"),"$1 $2").replaceFirstChar {it.uppercase()}
++    draft.entrySet().forEach {(field,value) ->val label=when(field) {
++     "titleScale"->"Text Size";"lines"->"Waypoint Lines";"globalEsp"->"Global Depth (through blocks)";"allowEdits"->"Editor Mode";"blockSize"->"Use Block Size"
++     else->field.replace(Regex("([a-z])([A-Z])"),"$1 $2").replaceFirstChar {it.uppercase()}
++    }
++     if(field=="lineSize" && !draft["lines"].asBoolean || field in setOf("sizeX","sizeY","sizeZ") && draft["blockSize"].asBoolean) return@forEach
+      if(field=="color") add(GuiKit.colorRow(w,label,value.asInt) {change(field,JsonPrimitive(it))})
+      else if(field=="type") add(GuiKit.choiceRow(w,label,dev.solyanka.ui.SettingsCatalog.waypointTypes,value.asInt) {change(field,JsonPrimitive(it))})
+-     else if(value.asJsonPrimitive.isBoolean) add(GuiKit.toggleRow(w,label,value.asBoolean) {change(field,JsonPrimitive(it))})
++     else if(value.asJsonPrimitive.isBoolean) add(GuiKit.toggleRow(w,label,value.asBoolean) {change(field,JsonPrimitive(it));if(field in setOf("lines","blockSize")) remount()})
+      else if(value.asJsonPrimitive.isString) add(GuiKit.textRow(w,label,raw.getOrPut(field) {value.asString}) {input->raw[field]=input;change(field,JsonPrimitive(input))})
+      else add(GuiKit.sliderRow(w,label,value.asDouble,dev.solyanka.ui.SettingsNumbers.range("waypoints",field,host.width,host.height,value.asDouble)) {input ->change(field,JsonPrimitive(input))})
+     }
+@@ -47,7 +57,7 @@ object WaypointUi {
+      child(GuiKit.button("Delete inactive",125) {run {require(oldName !in model.general.features.waypoints.selectedPacks.split(',').map(String::trim) && oldName!=model.general.features.waypoints.editPack) {"Switch away from this pack before deleting"};DungeonWaypoints.delete(oldName)};remount()})
+     })
+     add(GuiKit.row(w).apply {child(GuiKit.button("Reload packs",100) {run {DungeonWaypoints.reload()};remount()});child(GuiKit.button("Reset collected",115) {run {DungeonWaypoints.resetClicked()}})})
+-    add(GuiKit.description(w,"Room: ${DungeonPuzzles.currentRoom()?.name ?: "not recognized"}. Deletion below persists immediately."))
++    add(GuiKit.description(w,"Current area: ${if(FeatureRuntime.context.dungeon && !FeatureRuntime.context.boss) DungeonPuzzles.currentRoom()?.name ?: "room not recognized" else FeatureRuntime.context.area.ifBlank { "not recognized" }}. Deletion below persists immediately."))
+     val rows=runCatching {DungeonWaypoints.roomRows()}.getOrDefault(emptyList())
+     rows.forEachIndexed {i,way->add(GuiKit.row(w).apply {child(GuiKit.label("${i+1}: ${way.type} ${way.blockPos} ${way.title}").apply {horizontalSizing(io.wispforest.owo.ui.core.Sizing.fixed(w-100))});child(GuiKit.button("Delete",60) {run {DungeonWaypoints.remove(i)};remount()})})}
+    }
+diff --git a/src/main/kotlin/dev/solyanka/ui/GuiModels.kt b/src/main/kotlin/dev/solyanka/ui/GuiModels.kt
+index 4f6e74f..3bd4fe2 100644
+--- a/src/main/kotlin/dev/solyanka/ui/GuiModels.kt
++++ b/src/main/kotlin/dev/solyanka/ui/GuiModels.kt
+@@ -42,7 +42,7 @@ object GuiCatalog {
+         FeatureCardInfo("render.ambience","Ambience","Render","Stray: client clock, weather, snowy precipitation and intensity overrides; no server time changes."),
+         FeatureCardInfo("render.aspect","Aspect","Render","Stray: matched horizontal projection and entity/terrain culling aspect multiplier."),
+         FeatureCardInfo("render.fog","Fog","Render","Stray: atmospheric fog distances, color and density; preserves liquid/status fog. No Render wins."),
+-        FeatureCardInfo("dungeon.waypoints","Dungeon Waypoints","Dungeon","Odin-compatible local packs, room rotation, titles, secret/etherwarp hiding and manual editor."),
++        FeatureCardInfo("dungeon.waypoints","Waypoints","Dungeon","Odin-compatible dungeon packs and SkyBlock area waypoints, titles, secret hiding and manual editor."),
+         FeatureCardInfo("dungeon.door_highlight","Door Highlight","Dungeon","Odin: Magical Map doors, chat-tracked keys, key spawn alerts and openable colors."),
+         FeatureCardInfo("dungeon.map_info","Map Info","Dungeon","Odin: secrets, estimated score, crypts, deaths, bonus flags, room secrets and portal highlight."),
+         FeatureCardInfo("solver.ice_fill","Ice Fill","Solver","Odin: room-core identification, rotation and bundled easy/optimized Ice Fill routes."),
+diff --git a/src/main/kotlin/dev/solyanka/ui/SettingsNumbers.kt b/src/main/kotlin/dev/solyanka/ui/SettingsNumbers.kt
+index fa77e9e..0a23063 100644
+--- a/src/main/kotlin/dev/solyanka/ui/SettingsNumbers.kt
++++ b/src/main/kotlin/dev/solyanka/ui/SettingsNumbers.kt
+@@ -22,6 +22,7 @@ object SettingsNumbers {
+         section=="environment" && field=="gradient" -> NumberRange(.1,1.0,.01)
+         section=="environment" && field=="aspectRatio" -> NumberRange(.3,3.0,.01)
+         section=="environment" && field in setOf("fogStart","fogEnd","fogDensity") -> NumberRange(0.0,1.0,.01)
++        section=="waypoints" && field=="lineSize" -> NumberRange(1.0,6.0,.5)
+         section=="waypoints" && field=="titleScale" -> NumberRange(.1,4.0,.05)
+         section=="waypoints" && field in setOf("sizeX","sizeY","sizeZ") -> NumberRange(.1,5.0,.05)
+         section=="chat" && field=="feedbackLimit" -> NumberRange(0.0,512.0,1.0)
+diff --git a/src/main/kotlin/dev/solyanka/utility/WaypointLogic.kt b/src/main/kotlin/dev/solyanka/utility/WaypointLogic.kt
+index 6acbdb1..88f6138 100644
+--- a/src/main/kotlin/dev/solyanka/utility/WaypointLogic.kt
++++ b/src/main/kotlin/dev/solyanka/utility/WaypointLogic.kt
+@@ -14,10 +14,16 @@ data class WayBox(val minX:Double,val minY:Double,val minZ:Double,val maxX:Doubl
+ }
+ enum class WayType {NONE,NORMAL,SECRET,ETHERWARP}
+ data class Waypoint(val blockPos:GridPos,val color:Int=0xff55ff55.toInt(),val filled:Boolean=false,val depth:Boolean=false,val aabb:WayBox=WayBox(-.002,-.002,-.002,1.002,1.002,1.002),val title:String="",val type:WayType=WayType.NONE)
+-data class WaypointSettings(val selectedPacks:String="default",val editPack:String="default",val allowEdits:Boolean=false,val globalEsp:Boolean=false,val titles:Boolean=true,val titleScale:Double=1.0,val type:Int=0,val color:Int=0xff55ff55.toInt(),val filled:Boolean=false,val depth:Boolean=false,val blockSize:Boolean=true,val sizeX:Double=1.0,val sizeY:Double=1.0,val sizeZ:Double=1.0) {
+- fun validate() {val names=selectedPacks.split(',').map(String::trim);require(names.size<=32 && names.all(WaypointStore::validName));require(WaypointStore.validName(editPack));require(type in 0..3);require(titleScale.isFinite() && titleScale in .1..4.0);require(listOf(sizeX,sizeY,sizeZ).all {it.isFinite() && it in .1..5.0})}
++data class WaypointSettings(val selectedPacks:String="default",val editPack:String="default",val allowEdits:Boolean=false,val globalEsp:Boolean=false,val titles:Boolean=true,val titleScale:Double=1.0,val type:Int=0,val color:Int=0xff55ff55.toInt(),val filled:Boolean=false,val depth:Boolean=false,val blockSize:Boolean=true,val sizeX:Double=1.0,val sizeY:Double=1.0,val sizeZ:Double=1.0,val lines:Boolean=false,val lineSize:Double=3.0) {
++ fun validate() {val names=selectedPacks.split(',').map(String::trim);require(names.size<=32 && names.all(WaypointStore::validName));require(WaypointStore.validName(editPack));require(type in 0..3);require(titleScale.isFinite() && titleScale in .1..4.0);require(lineSize.isFinite() && lineSize in 1.0..6.0);require(listOf(sizeX,sizeY,sizeZ).all {it.isFinite() && it in .1..5.0})}
+ }
+ object WaypointLogic {
++ // Area-scoped world positions are distinct from existing room-relative pack entries.
++ fun areaKey(ctx:SkyblockContext):String? {
++  if(!ctx.skyblock || ctx.area.isBlank()) return null
++  val area=ctx.area.trim();val floor=if(ctx.dungeon) ":${if(ctx.master) "M" else "F"}${ctx.floor ?: "?"}" else ""
++  return ("@skyblock:$area$floor").takeIf {it.length<=128 && it.none {c->c=='\n' || c=='\r'}}
++ }
+  private val secretDrops=listOf("Health Potion VIII Splash Potion","Healing Potion 8 Splash Potion","Healing Potion VIII Splash Potion","Healing VIII Splash Potion","Healing 8 Splash Potion","Decoy","Inflatable Jerry","Spirit Leap","Trap","Training Weights","Defuse Kit","Dungeon Chest Key","Treasure Talisman","Revive Stone","Architect's First Draft","Secret Dye","Candycomb")
+  fun secretDrop(name:String)=secretDrops.any {ChatLogic.plain(name).contains(it,true)}
+  fun rotate(p:Point3,facing:RoomFacing):Point3=when(facing) {RoomFacing.NORTH->Point3(-p.x,p.y,-p.z);RoomFacing.SOUTH->p;RoomFacing.WEST->Point3(-p.z,p.y,p.x);RoomFacing.EAST->Point3(p.z,p.y,-p.x)}
+diff --git a/src/test/kotlin/dev/solyanka/ui/GuiModelsTest.kt b/src/test/kotlin/dev/solyanka/ui/GuiModelsTest.kt
+index 10093af..4ea781b 100644
+--- a/src/test/kotlin/dev/solyanka/ui/GuiModelsTest.kt
++++ b/src/test/kotlin/dev/solyanka/ui/GuiModelsTest.kt
+@@ -9,7 +9,7 @@ class GuiModelsTest {
+     @Test fun `catalog only contains implemented unique module cards`() {
+         val cards=GuiCatalog.search("").values.flatten()
+         assertEquals(setOf("custom.item_aura","cosmetic.cs2_knife","custom.shitter_list","custom.move_hotbar","render.picture_in_picture","custom.pet_display","custom.simon_says","custom.bestiary_esp","custom.invisibug_esp","custom.tiki_esp","custom.china_hat","custom.halo","custom.secret_counter","custom.always_water","custom.ambient_particles","custom.rotating_item","custom.move_hearts","render.motion_blur","custom.stopwatch","custom.dvd_bounce","render.skybox","cosmetic.held_item","hud.scoreboard","hud.themed_chat","render.player_glow","render.nametags","render.block_outline","mining.titanium","hud.inventory","hud.item_name","hud.skill_progress","render.ambience","render.aspect","render.fog","dungeon.waypoints","dungeon.door_highlight","dungeon.map_info","solver.ice_fill","solver.blaze","solver.creeper_beams","dungeon.mimic","custom.mimic_chest","utility.price_tooltips","solver.experiments","render.suppression","utility.command_keybinds","utility.command_shortcuts","utility.chat","utility.info_tooltips","dungeon.tick_timers","hud.player_display","render.animation_fix","utility.middle_click_fix","utility.middle_click_override","utility.cursor","utility.loading_screen"),cards.map { it.id }.toSet())
+-        assertEquals(57,cards.size)
++        assertEquals(56,cards.size)
+     }
+     @Test fun `search ignores case and whitespace and includes descriptions`() {
+         assertEquals("utility.command_keybinds",GuiCatalog.search("  COMMAND   keyBINDS ").values.flatten().single().id)
+diff --git a/src/test/kotlin/dev/solyanka/utility/DungeonMapWaypointTest.kt b/src/test/kotlin/dev/solyanka/utility/DungeonMapWaypointTest.kt
+index cee7af3..7029eef 100644
+--- a/src/test/kotlin/dev/solyanka/utility/DungeonMapWaypointTest.kt
++++ b/src/test/kotlin/dev/solyanka/utility/DungeonMapWaypointTest.kt
+@@ -7,6 +7,17 @@ import java.nio.file.*
+ import com.google.gson.JsonParser
+ class DungeonMapWaypointTest {
+  @TempDir lateinit var directory:Path
++ @Test fun `world waypoint keys require SkyBlock and a known area`() {
++  assertNull(WaypointLogic.areaKey(SkyblockContext()));assertNull(WaypointLogic.areaKey(SkyblockContext(skyblock=true)))
++  assertEquals("@skyblock:Hub",WaypointLogic.areaKey(SkyblockContext(skyblock=true,area="Hub")))
++  assertNotEquals(WaypointLogic.areaKey(SkyblockContext(skyblock=true,dungeon=true,area="Catacombs",floor=7)),WaypointLogic.areaKey(SkyblockContext(skyblock=true,dungeon=true,area="Catacombs",floor=6)))
++  assertNull(WaypointLogic.areaKey(SkyblockContext(skyblock=true,area="a".repeat(129))))
++ }
++ @Test fun `world area entries remain compatible with pack codec`() {
++  val key=WaypointLogic.areaKey(SkyblockContext(skyblock=true,area="Hub"))!!
++  val pack=mapOf(key to listOf(Waypoint(GridPos(-10,70,20),title="Hub")))
++  assertEquals(pack,WaypointCodec.decode(WaypointCodec.encode(pack)))
++ }
+  @Test fun `all room transforms invert and preserve absolute y`() {val origin=GridPos(-170,0,-202);val p=GridPos(2,71,29);RoomFacing.entries.forEach {f->assertEquals(p,DungeonLogic.relative(DungeonLogic.real(p,origin,f),origin,f))}}
+  @Test fun `tile bounds fail closed`() {assertEquals(0 to 0,DungeonLogic.tile(-201,-201));assertEquals(5 to 5,DungeonLogic.tile(-10,-10));assertNull(DungeonLogic.tile(-202,0));assertNull(DungeonLogic.tile(-9,-185))}
+  @Test fun `core hashing preserves source block string format`() {assertEquals("0Block{minecraft:stone}Block{minecraft:air}".hashCode() to 139,DungeonLogic.core(listOf(140 to "minecraft:air",139 to "minecraft:stone",138 to "minecraft:air")))}

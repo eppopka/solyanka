@@ -20,8 +20,9 @@ object DungeonWaypoints {
  private val routeCursors=mutableMapOf<String,Int>();private var routeScope="";private var routeText:String?=null;private var routeAt=0L
  private var lastEther:BlockPos?=null;private var lastEtherTime=0L
  private fun cfg()=SolyankaClient.currentGeneral().features.waypoints
- fun reset() {routeCursors.clear();routeScope="";routeText=null;clicked.clear();lastEther=null;lastEtherTime=0;signature="";packs=emptyMap();error=null}
+ fun reset() {WorldOverlay.clear("waypoints-world");routeCursors.clear();routeScope="";routeText=null;clicked.clear();lastEther=null;lastEtherTime=0;signature="";packs=emptyMap();error=null}
  fun names():List<String> = store.names()
+ fun count(name:String):Int = store.load(name).values.sumOf {it.size}
  fun reload() {
   routeCursors.clear();routeText=null
   val next=linkedMapOf<String,WayPack>();val errors=mutableListOf<String>()
@@ -35,16 +36,23 @@ object DungeonWaypoints {
  fun import(name:String,text:String) {val pack=WaypointCodec.decode(text);store.write(name,pack,true);reload()}
  fun export(name:String)=WaypointCodec.encode(store.load(name),true)
  fun resetClicked() {routeCursors.clear();routeText=null;clicked.clear();DungeonPuzzles.invalidate()}
+ private fun editingRoom():DungeonPuzzles.Room? {
+  val ctx=FeatureRuntime.context
+  if(!ctx.skyblock) return null
+  if(ctx.dungeon && !ctx.boss) return DungeonPuzzles.currentRoom()
+  val area=WaypointLogic.areaKey(ctx) ?: return null
+  return DungeonPuzzles.Room(area,0,0,0,GridPos(0,0,0),RoomFacing.SOUTH)
+ }
  private fun editable(change:(MutableMap<String,List<Waypoint>>,DungeonPuzzles.Room)->Unit) {
-  require(SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS)) {"Enable Dungeon Waypoints first"}
-  require(cfg().allowEdits) {"Enable Allow Edits first"}
-  val r=DungeonPuzzles.currentRoom() ?: error("No recognized dungeon room")
-  require(FeatureRuntime.context.dungeon && !FeatureRuntime.context.boss && r.origin!=null && r.facing!=null) {"Room rotation is not ready; load all room segments"}
+  require(SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS)) {"Enable Waypoints first"}
+  require(cfg().allowEdits) {"Enable Editor Mode first"}
+  val r=editingRoom() ?: error("SkyBlock area or dungeon room not recognized")
+  require(r.origin!=null && r.facing!=null) {"Room rotation is not ready; load all room segments"}
   val next=store.load(cfg().editPack).toMutableMap();change(next,r);store.write(cfg().editPack,next);clicked.clear();reload()
  }
  fun clearRoom()=editable {p,r->p.remove(r.name)}
  fun remove(index:Int)=editable {p,r->val rows=p[r.name]?.toMutableList() ?: error("Room has no waypoints");require(index in rows.indices);rows.removeAt(index);p[r.name]=rows}
- fun roomRows():List<Waypoint> = DungeonPuzzles.currentRoom()?.let {store.load(cfg().editPack)[it.name]} ?: emptyList()
+ fun roomRows():List<Waypoint> = editingRoom()?.let {store.load(cfg().editPack)[it.name]} ?: emptyList()
  fun addTarget(title:String="",toggle:Boolean=false) {
   require(title.length<=128 && '\n' !in title && '\r' !in title)
   val c=Minecraft.getInstance();val hit=c.hitResult as? BlockHitResult ?: error("Look at a block first")
@@ -91,8 +99,23 @@ object DungeonWaypoints {
    if(key(pack,r.name,i,r) in clicked) return@forEachIndexed
    val b=WaypointLogic.box(w.aabb,w.blockPos,r.origin,r.facing);val box=AABB(b.minX,b.minY,b.minZ,b.maxX,b.maxY,b.maxZ);val depth=w.depth && !s.globalEsp
    if(w.filled) fills.add(WorldOverlay.Fill(box,w.color,depth)) else WorldOverlay.box(lines,box,w.color,depth)
+   if(s.lines && player!=null) lines.add(WorldOverlay.Segment(player.eyePosition,box.center,w.color,depth,s.lineSize.toFloat()))
    if(s.titles && w.title.isNotBlank()) {val p=r.real(w.blockPos)!!;labels.add(WorldOverlay.Label(Vec3.atCenterOf(p).add(0.0,.1*s.titleScale,0.0),w.title,w.color,depth,s.titleScale.toFloat()))}
   }}
+ }
+ fun worldGeometry() {
+  val ctx=FeatureRuntime.context;val player=Minecraft.getInstance().player
+  val area=WaypointLogic.areaKey(ctx)
+  if(!SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || area==null || player==null) {WorldOverlay.clear("waypoints-world");return}
+  if(signature!=cfg().selectedPacks) reload()
+  val s=cfg();val lines=mutableListOf<WorldOverlay.Segment>();val fills=mutableListOf<WorldOverlay.Fill>();val labels=mutableListOf<WorldOverlay.Label>()
+  packs.values.forEach {pack->pack[area].orEmpty().forEach {w->
+   val p=w.blockPos;val b=w.aabb;val box=AABB(p.x+b.minX,p.y+b.minY,p.z+b.minZ,p.x+b.maxX,p.y+b.maxY,p.z+b.maxZ);val depth=w.depth && !s.globalEsp
+   if(w.filled) fills.add(WorldOverlay.Fill(box,w.color,depth)) else WorldOverlay.box(lines,box,w.color,depth)
+   if(s.lines) lines.add(WorldOverlay.Segment(player.eyePosition,box.center,w.color,depth,s.lineSize.toFloat()))
+   if(s.titles && w.title.isNotBlank()) labels.add(WorldOverlay.Label(Vec3(p.x+.5,p.y+.5+.1*s.titleScale,p.z+.5),w.title,w.color,depth,s.titleScale.toFloat()))
+  }}
+  WorldOverlay.publish(lines,fills,labels,"waypoints-world")
  }
  fun secret(pos:BlockPos,maxSquared:Int,type:WayType=WayType.SECRET) {
   if(!SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || !FeatureRuntime.context.dungeon || FeatureRuntime.context.boss) return
@@ -107,11 +130,11 @@ object DungeonWaypoints {
  }
  fun editorInput(device:InputDevice,key:Int):Boolean {
   val c=Minecraft.getInstance()
-  if(device!=InputDevice.MOUSE || key!=GLFW.GLFW_MOUSE_BUTTON_RIGHT || c.gui.screen()!=null || !SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || !FeatureRuntime.context.dungeon || FeatureRuntime.context.boss) return false
+  if(device!=InputDevice.MOUSE || key!=GLFW.GLFW_MOUSE_BUTTON_RIGHT || c.gui.screen()!=null || !SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || !FeatureRuntime.context.skyblock) return false
   // Ray-cast only a manually initiated etherwarp; never use, aim or teleport automatically.
   val player=c.player ?: return false
   val id=player.mainHandItem.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA)?.copyTag()?.getStringOr("id","")
-  if(id in setOf("ASPECT_OF_THE_VOID","ASPECT_OF_THE_END") && player.isCrouching) {
+  if(FeatureRuntime.context.dungeon && !FeatureRuntime.context.boss && id in setOf("ASPECT_OF_THE_VOID","ASPECT_OF_THE_END") && player.isCrouching) {
    val tuned=player.mainHandItem.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA)?.copyTag()?.getIntOr("tuned_transmission",0) ?: 0
    val target=player.pick((56+tuned.coerceIn(0,10)).toDouble(),0f,false) as? BlockHitResult
    if(target?.type==HitResult.Type.BLOCK) {lastEther=target.blockPos.immutable();lastEtherTime=System.nanoTime()}
