@@ -110,6 +110,7 @@ object SolyankaClient : ClientModInitializer {
     const val ASPECT="render.aspect"
     const val FOG="render.fog"
     const val WAYPOINTS="dungeon.waypoints"
+    const val LEAP_MESSAGE="dungeon.leap_message"
     const val DOORS="dungeon.door_highlight"
     const val MAP_INFO="dungeon.map_info"
     const val ICE="solver.ice_fill"
@@ -151,6 +152,7 @@ object SolyankaClient : ClientModInitializer {
         modules.register(object : Module(ModuleInfo(EXPERIMENTS,"Experiment solver",Category.SOLVER)) { override fun onDisable() { Experiments.reset() } })
         modules.register(object : Module(ModuleInfo(SUPPRESSION,"No render",Category.RENDER)) {})
         modules.register(object : Module(ModuleInfo(WAYPOINTS,"Waypoints",Category.RENDER)) {override fun onDisable() {DungeonPuzzles.invalidate()}})
+        modules.register(object : Module(ModuleInfo(LEAP_MESSAGE,"Leap Message+",Category.DUNGEON)) {})
         listOf(DOORS to "Door Highlight",MAP_INFO to "Map Info",ICE to "Ice Fill",BLAZE to "Blaze",BEAMS to "Creeper Beams",MIMIC to "Mimic detection",MIMIC_CHEST to "Mimic Chest (archive)").forEach { (id,name) -> modules.register(object : Module(ModuleInfo(id,name,if(id.startsWith("solver.")) Category.SOLVER else Category.DUNGEON)) {override fun onDisable() {DungeonPuzzles.invalidate()}}) }
         listOf(AMBIENCE to "Ambience",ASPECT to "Aspect",FOG to "Fog").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {})}
         listOf(PLAYER_GLOW to "Player Glow",NAMETAGS to "Nametags",BLOCK_OUTLINE to "Block Outline",TITANIUM to "Titanium ESP").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {override fun onDisable() {WorldVisuals.reset();if(id==TITANIUM) TitaniumScanner.reset()}})}
@@ -200,7 +202,7 @@ object SolyankaClient : ClientModInitializer {
         PriceTooltips.register()
         Suppression.register()
         dev.solyanka.client.feature.VanillaHotbar.register();VanillaHearts.register() // Wrap existing visibility filters; never bypass their decisions.
-        DungeonPuzzles.register();DungeonMap.register();DungeonWaypoints.register()
+        DungeonPuzzles.register();DungeonMap.register();DungeonWaypoints.register();dev.solyanka.client.feature.LeapMessage.register()
         modules.all().forEach { module ->
             try { module.setEnabled(config.enabled(module.info.id)) }
             catch (e: Exception) { logger.error("Cannot enable ${module.info.id}", e) }
