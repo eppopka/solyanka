@@ -1,84 +1,82 @@
-diff --git a/src/client/kotlin/dev/solyanka/client/SolyankaClient.kt b/src/client/kotlin/dev/solyanka/client/SolyankaClient.kt
-index 7adaebe..e2d5288 100644
---- a/src/client/kotlin/dev/solyanka/client/SolyankaClient.kt
-+++ b/src/client/kotlin/dev/solyanka/client/SolyankaClient.kt
-@@ -131,13 +131,6 @@ object SolyankaClient : ClientModInitializer {
-     override fun onInitializeClient() {
-         dev.solyanka.client.cs2.render.KnifeRender.register()
-         HeldItemCosmetic.register() // Pipeline metadata is known before the first shader resource reload.
--        modules.register(object : Module(ModuleInfo("core.diagnostics", "Lifecycle diagnostics", Category.CORE)) {
--            private var ticks = 0L
--            override fun onEnable() { logger.info("Diagnostics enabled") }
--            override fun onDisable() { ticks=0; logger.info("Diagnostics disabled") }
--            override fun onTick() { ticks++ }
--            override fun onReset(reason: ResetReason) { ticks=0; logger.debug("Diagnostics reset: {}",reason) }
--        })
-         modules.register(object : Module(ModuleInfo(KEYBINDS, "Command keybinds", Category.UTILITY)) {
-             override fun onReset(reason: ResetReason) { ownedInputs.clear() }
-         })
-diff --git a/src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt b/src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt
-index 955f3a8..e524c87 100644
---- a/src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt
-+++ b/src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt
-@@ -90,7 +90,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
-                     val failure=SolyankaClient.applySettings(SolyankaClient.currentProfile(),states)
-                     toggleError=failure
-                 },
--                settings=if(info.id=="core.diagnostics") null else ({ try {ConfigUi.openSettings(info.id,this)} catch(e:Exception) {logger.error("Cannot prepare settings for ${info.id}",e);toggleError="Settings unavailable — see logs/latest.log"} })
-+                settings=({ try {ConfigUi.openSettings(info.id,this)} catch(e:Exception) {logger.error("Cannot prepare settings for ${info.id}",e);toggleError="Settings unavailable — see logs/latest.log"} })
-             )) }
-             val scroll=UIContainers.verticalScroll(Sizing.fixed(w),Sizing.fill(90),cards)
-             scroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.BLUE)))
-diff --git a/src/main/kotlin/dev/solyanka/core/Module.kt b/src/main/kotlin/dev/solyanka/core/Module.kt
-index d1abc08..3151849 100644
---- a/src/main/kotlin/dev/solyanka/core/Module.kt
-+++ b/src/main/kotlin/dev/solyanka/core/Module.kt
-@@ -1,7 +1,7 @@
- /* SPDX-License-Identifier: GPL-3.0-only */
- package dev.solyanka.core
- 
--enum class Category { CORE, DUNGEON, SOLVER, UTILITY, RENDER, HUD, COSMETIC, HUNTING }
-+enum class Category { DUNGEON, SOLVER, UTILITY, RENDER, HUD, COSMETIC, HUNTING }
- enum class ResetReason { WORLD_CHANGED, DISCONNECTED }
- 
- data class ModuleInfo(val id: String, val name: String, val category: Category) {
-diff --git a/src/main/kotlin/dev/solyanka/ui/GuiModels.kt b/src/main/kotlin/dev/solyanka/ui/GuiModels.kt
-index 519a53d..4f6e74f 100644
---- a/src/main/kotlin/dev/solyanka/ui/GuiModels.kt
-+++ b/src/main/kotlin/dev/solyanka/ui/GuiModels.kt
-@@ -64,8 +64,7 @@ object GuiCatalog {
-         FeatureCardInfo("utility.chat","Chat Tweaks","General","Copy hovered messages or lines, keep history on disconnect and expand history limits."),
-         FeatureCardInfo("utility.info_tooltips","Info Tooltips","General","Dungeon quality, creation date, dye hex, museum category and market item IDs."),
-         FeatureCardInfo("utility.command_keybinds","Command Keybinds","General","Create keyboard and mouse binds for commands or chat. Modifier, GUI, island and dungeon class filters."),
--        FeatureCardInfo("utility.command_shortcuts","Command Shortcuts","General","Create command aliases with arguments, live expansion and cycle protection."),
--        FeatureCardInfo("core.diagnostics","Lifecycle Diagnostics","Core","Debug module lifecycle, tick and world reset events.")
-+        FeatureCardInfo("utility.command_shortcuts","Command Shortcuts","General","Create command aliases with arguments, live expansion and cycle protection.")
-     )
-     fun search(query: String): Map<String,List<FeatureCardInfo>> {
-         fun normalized(value: String) = value.lowercase().filterNot { it.isWhitespace() }
-diff --git a/src/test/kotlin/dev/solyanka/core/ModuleTest.kt b/src/test/kotlin/dev/solyanka/core/ModuleTest.kt
-index 852bd85..6332044 100644
---- a/src/test/kotlin/dev/solyanka/core/ModuleTest.kt
-+++ b/src/test/kotlin/dev/solyanka/core/ModuleTest.kt
-@@ -5,7 +5,7 @@ import kotlin.test.*
- import org.junit.jupiter.api.Test
- 
- class ModuleTest {
--    private class Probe(id: String = "test.probe") : Module(ModuleInfo(id, id, Category.CORE)) {
-+    private class Probe(id: String = "test.probe") : Module(ModuleInfo(id, id, Category.UTILITY)) {
-         var starts = 0; var stops = 0; var ticks = 0; var resets = 0
-         var failStart = false; var failTick = false; var failStop = false
-         override fun onEnable() { starts++; if (failStart) error("start") }
-diff --git a/src/test/kotlin/dev/solyanka/ui/GuiModelsTest.kt b/src/test/kotlin/dev/solyanka/ui/GuiModelsTest.kt
-index f21fa11..10093af 100644
---- a/src/test/kotlin/dev/solyanka/ui/GuiModelsTest.kt
-+++ b/src/test/kotlin/dev/solyanka/ui/GuiModelsTest.kt
-@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
- class GuiModelsTest {
-     @Test fun `catalog only contains implemented unique module cards`() {
-         val cards=GuiCatalog.search("").values.flatten()
--        assertEquals(setOf("custom.item_aura","cosmetic.cs2_knife","custom.shitter_list","custom.move_hotbar","render.picture_in_picture","custom.pet_display","custom.simon_says","custom.bestiary_esp","custom.invisibug_esp","custom.tiki_esp","custom.china_hat","custom.halo","custom.secret_counter","custom.always_water","custom.ambient_particles","custom.rotating_item","custom.move_hearts","render.motion_blur","custom.stopwatch","custom.dvd_bounce","render.skybox","cosmetic.held_item","hud.scoreboard","hud.themed_chat","render.player_glow","render.nametags","render.block_outline","mining.titanium","hud.inventory","hud.item_name","hud.skill_progress","render.ambience","render.aspect","render.fog","dungeon.waypoints","dungeon.door_highlight","dungeon.map_info","solver.ice_fill","solver.blaze","solver.creeper_beams","dungeon.mimic","custom.mimic_chest","utility.price_tooltips","solver.experiments","render.suppression","utility.command_keybinds","utility.command_shortcuts","core.diagnostics","utility.chat","utility.info_tooltips","dungeon.tick_timers","hud.player_display","render.animation_fix","utility.middle_click_fix","utility.middle_click_override","utility.cursor","utility.loading_screen"),cards.map { it.id }.toSet())
-+        assertEquals(setOf("custom.item_aura","cosmetic.cs2_knife","custom.shitter_list","custom.move_hotbar","render.picture_in_picture","custom.pet_display","custom.simon_says","custom.bestiary_esp","custom.invisibug_esp","custom.tiki_esp","custom.china_hat","custom.halo","custom.secret_counter","custom.always_water","custom.ambient_particles","custom.rotating_item","custom.move_hearts","render.motion_blur","custom.stopwatch","custom.dvd_bounce","render.skybox","cosmetic.held_item","hud.scoreboard","hud.themed_chat","render.player_glow","render.nametags","render.block_outline","mining.titanium","hud.inventory","hud.item_name","hud.skill_progress","render.ambience","render.aspect","render.fog","dungeon.waypoints","dungeon.door_highlight","dungeon.map_info","solver.ice_fill","solver.blaze","solver.creeper_beams","dungeon.mimic","custom.mimic_chest","utility.price_tooltips","solver.experiments","render.suppression","utility.command_keybinds","utility.command_shortcuts","utility.chat","utility.info_tooltips","dungeon.tick_timers","hud.player_display","render.animation_fix","utility.middle_click_fix","utility.middle_click_override","utility.cursor","utility.loading_screen"),cards.map { it.id }.toSet())
-         assertEquals(57,cards.size)
+diff --git a/src/client/kotlin/dev/solyanka/client/feature/SecretCounter.kt b/src/client/kotlin/dev/solyanka/client/feature/SecretCounter.kt
+index 8d44457..d442ec8 100644
+--- a/src/client/kotlin/dev/solyanka/client/feature/SecretCounter.kt
++++ b/src/client/kotlin/dev/solyanka/client/feature/SecretCounter.kt
+@@ -28,7 +28,7 @@ object SecretCounter {
+         if(DungeonRunMessages.ended(text)) state.finish(now)
+         state.readSecrets(text,now)?.let {count->
+             local("Secrets Found: $count")
+-            announcement.schedule(now,count,S.currentGeneral().features.secretCounter.autoAnnounce)
++            announcement.schedule(now,count,S.currentGeneral().features.secretCounter.shouldAnnounce(count))
+         }
      }
-     @Test fun `search ignores case and whitespace and includes descriptions`() {
+     fun tick() {
+@@ -40,7 +40,7 @@ object SecretCounter {
+             null->Unit
+         }
+         val s=S.currentGeneral().features.secretCounter
+-        announcement.poll(now,s.autoAnnounce)?.let {count->
++        announcement.poll(now,s.autoAnnounce)?.takeIf(s::shouldAnnounce)?.let {count->
+             val text="[solyanka] I did $count secrets!"
+             if(s.channel=="party") connection.sendCommand("pc $text") else connection.sendChat(text)
+         }
+diff --git a/src/client/kotlin/dev/solyanka/client/ui/ArchiveDungeonUi.kt b/src/client/kotlin/dev/solyanka/client/ui/ArchiveDungeonUi.kt
+index f6b56b2..099ce56 100644
+--- a/src/client/kotlin/dev/solyanka/client/ui/ArchiveDungeonUi.kt
++++ b/src/client/kotlin/dev/solyanka/client/ui/ArchiveDungeonUi.kt
+@@ -8,12 +8,20 @@ import dev.solyanka.ui.InstantSettings
+ object ArchiveDungeonUi {
+     fun open(id:String,host:NoFrillsClickGui,model:InstantSettings) {
+         val title=if(id==S.SECRET_COUNTER) "Secret Counter" else "Always Water"
+-        host.showPanel(SettingsPanel(title,{host.closePanel()},{model.error}) {panel,w->
++        var thresholdError:String?=null
++        host.showPanel(SettingsPanel(title,{host.closePanel()},{thresholdError ?: model.error}) {panel,w->
+             buildList {
+                 if(id==S.SECRET_COUNTER) {
+                     val s=model.general.features.secretCounter
+                     add(GuiKit.description(w,"Archive personal dungeon secrets counter. Enabling this module permits ONE /showextrastats request, 1 second after a recognized Catacombs completion header. Waits up to 10 seconds for an exact personal Secrets Found line, then reports locally. No API estimates. World/floor/run/toggle resets cancel pending work."))
+                     add(GuiKit.toggleRow(w,"Auto Announce",s.autoAnnounce,"Opt-in: sends your observed count to the selected chat channel after 0.5 seconds. Review server rules. Off by default.") {v->model.updateGeneral {it.copy(features=it.features.copy(secretCounter=it.features.secretCounter.copy(autoAnnounce=v)))};panel.refreshStatus()})
++                    add(GuiKit.toggleRow(w,"Only Announce Above Threshold",s.thresholdEnabled,"Only send when the count is strictly greater than the threshold.") {v->model.updateGeneral {it.copy(features=it.features.copy(secretCounter=it.features.secretCounter.copy(thresholdEnabled=v)))};panel.refreshStatus()})
++                    add(GuiKit.textRow(w,"Secret Threshold",s.threshold.toString(),"Non-negative whole number. Equal or lower counts are not announced.") {input->
++                        val value=input.toIntOrNull()
++                        thresholdError=if(value==null || value<0) "Secret threshold must be a non-negative whole number" else null
++                        if(thresholdError==null) model.updateGeneral {it.copy(features=it.features.copy(secretCounter=it.features.secretCounter.copy(threshold=value!!)))}
++                        panel.refreshStatus()
++                    })
+                     val channels=listOf("current","party")
+                     add(GuiKit.choiceRow(w,"Announce Channel",listOf("Current Chat","Party Chat"),channels.indexOf(s.channel),readCurrent={channels.indexOf(model.general.features.secretCounter.channel)}) {i->model.updateGeneral {it.copy(features=it.features.copy(secretCounter=it.features.secretCounter.copy(channel=channels[i])))};panel.refreshStatus()})
+                 } else {
+diff --git a/src/main/kotlin/dev/solyanka/utility/SecretCounterLogic.kt b/src/main/kotlin/dev/solyanka/utility/SecretCounterLogic.kt
+index 24dbf61..3c9a01c 100644
+--- a/src/main/kotlin/dev/solyanka/utility/SecretCounterLogic.kt
++++ b/src/main/kotlin/dev/solyanka/utility/SecretCounterLogic.kt
+@@ -2,8 +2,9 @@
+  * Run lifecycle markers reference pinned NoammAddons CC0; see NOTICE. */
+ package dev.solyanka.utility
+ 
+-data class SecretCounterSettings(val autoAnnounce:Boolean=false,val channel:String="current") {
+-    fun validate() {require(channel in listOf("current","party"))}
++data class SecretCounterSettings(val autoAnnounce:Boolean=false,val channel:String="current",val thresholdEnabled:Boolean=false,val threshold:Int=0) {
++    fun validate() {require(channel in listOf("current","party"));require(threshold>=0) {"Secret threshold must be non-negative"}}
++    fun shouldAnnounce(count:Int)=autoAnnounce && (!thresholdEnabled || count>threshold)
+ }
+ object DungeonRunMessages {
+     private const val START="[NPC] Mort: Here, I found this map when I first entered the dungeon."
+diff --git a/src/test/kotlin/dev/solyanka/utility/ArchiveDungeonTest.kt b/src/test/kotlin/dev/solyanka/utility/ArchiveDungeonTest.kt
+index 387046f..851c3f2 100644
+--- a/src/test/kotlin/dev/solyanka/utility/ArchiveDungeonTest.kt
++++ b/src/test/kotlin/dev/solyanka/utility/ArchiveDungeonTest.kt
+@@ -11,6 +11,13 @@ class ArchiveDungeonTest {
+     @Test fun `secret counter settings migrate with announcements off`() {val f=FeatureCodec.decode(JsonObject());assertEquals(SecretCounterSettings(),f.secretCounter);assertFalse(f.secretCounter.autoAnnounce)}
+     @Test fun `both announcement channels roundtrip`() {for(c in listOf("current","party")) {val f=FeatureSettings(secretCounter=SecretCounterSettings(true,c));assertEquals(f,FeatureCodec.decode(Gson().toJsonTree(f).asJsonObject))}}
+     @Test fun `unknown channel and wrong types fail validation`() {assertFails {SecretCounterSettings(channel="all").validate()};for(raw in listOf("""{"secretCounter":{"autoAnnounce":1}}""","""{"secretCounter":{"channel":0}}""","""{"secretCounter":{"channel":null}}""")) assertFails {FeatureCodec.decode(JsonParser.parseString(raw).asJsonObject)}}
++    @Test fun `announcement threshold is opt in and strictly greater`() {
++        val s=SecretCounterSettings(autoAnnounce=true,thresholdEnabled=true,threshold=5)
++        assertFalse(s.shouldAnnounce(4));assertFalse(s.shouldAnnounce(5));assertTrue(s.shouldAnnounce(6))
++        assertTrue(s.copy(thresholdEnabled=false).shouldAnnounce(0));assertFalse(s.copy(autoAnnounce=false).shouldAnnounce(6))
++        assertFails {s.copy(threshold=-1).validate()}
++        assertEquals(s,FeatureCodec.decode(Gson().toJsonTree(FeatureSettings(secretCounter=s)).asJsonObject).secretCounter)
++    }
+     @Test fun `a request is impossible before a completion event`() {val s=SecretCounterState();assertNull(s.poll(0));assertNull(s.poll(100000));assertNull(s.readSecrets("Secrets Found: 42",100000))}
+     @Test fun `request waits exactly one second after completion`() {val s=SecretCounterState();s.finish(100);assertNull(s.poll(1099));assertEquals(SecretCounterState.Action.REQUEST_STATS,s.poll(1100));assertNull(s.poll(1101))}
+     @Test fun `duplicate finish headers do not postpone or duplicate request`() {val s=SecretCounterState();s.finish(0);s.finish(900);assertEquals(SecretCounterState.Action.REQUEST_STATS,s.poll(1000));s.finish(1100);assertNull(s.poll(2000))}

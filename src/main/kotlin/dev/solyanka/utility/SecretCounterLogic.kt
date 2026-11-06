@@ -2,8 +2,9 @@
  * Run lifecycle markers reference pinned NoammAddons CC0; see NOTICE. */
 package dev.solyanka.utility
 
-data class SecretCounterSettings(val autoAnnounce:Boolean=false,val channel:String="current") {
-    fun validate() {require(channel in listOf("current","party"))}
+data class SecretCounterSettings(val autoAnnounce:Boolean=false,val channel:String="current",val thresholdEnabled:Boolean=false,val threshold:Int=0) {
+    fun validate() {require(channel in listOf("current","party"));require(threshold>=0) {"Secret threshold must be non-negative"}}
+    fun shouldAnnounce(count:Int)=autoAnnounce && (!thresholdEnabled || count>threshold)
 }
 object DungeonRunMessages {
     private const val START="[NPC] Mort: Here, I found this map when I first entered the dungeon."

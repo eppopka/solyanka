@@ -11,6 +11,13 @@ class ArchiveDungeonTest {
     @Test fun `secret counter settings migrate with announcements off`() {val f=FeatureCodec.decode(JsonObject());assertEquals(SecretCounterSettings(),f.secretCounter);assertFalse(f.secretCounter.autoAnnounce)}
     @Test fun `both announcement channels roundtrip`() {for(c in listOf("current","party")) {val f=FeatureSettings(secretCounter=SecretCounterSettings(true,c));assertEquals(f,FeatureCodec.decode(Gson().toJsonTree(f).asJsonObject))}}
     @Test fun `unknown channel and wrong types fail validation`() {assertFails {SecretCounterSettings(channel="all").validate()};for(raw in listOf("""{"secretCounter":{"autoAnnounce":1}}""","""{"secretCounter":{"channel":0}}""","""{"secretCounter":{"channel":null}}""")) assertFails {FeatureCodec.decode(JsonParser.parseString(raw).asJsonObject)}}
+    @Test fun `announcement threshold is opt in and strictly greater`() {
+        val s=SecretCounterSettings(autoAnnounce=true,thresholdEnabled=true,threshold=5)
+        assertFalse(s.shouldAnnounce(4));assertFalse(s.shouldAnnounce(5));assertTrue(s.shouldAnnounce(6))
+        assertTrue(s.copy(thresholdEnabled=false).shouldAnnounce(0));assertFalse(s.copy(autoAnnounce=false).shouldAnnounce(6))
+        assertFails {s.copy(threshold=-1).validate()}
+        assertEquals(s,FeatureCodec.decode(Gson().toJsonTree(FeatureSettings(secretCounter=s)).asJsonObject).secretCounter)
+    }
     @Test fun `a request is impossible before a completion event`() {val s=SecretCounterState();assertNull(s.poll(0));assertNull(s.poll(100000));assertNull(s.readSecrets("Secrets Found: 42",100000))}
     @Test fun `request waits exactly one second after completion`() {val s=SecretCounterState();s.finish(100);assertNull(s.poll(1099));assertEquals(SecretCounterState.Action.REQUEST_STATS,s.poll(1100));assertNull(s.poll(1101))}
     @Test fun `duplicate finish headers do not postpone or duplicate request`() {val s=SecretCounterState();s.finish(0);s.finish(900);assertEquals(SecretCounterState.Action.REQUEST_STATS,s.poll(1000));s.finish(1100);assertNull(s.poll(2000))}

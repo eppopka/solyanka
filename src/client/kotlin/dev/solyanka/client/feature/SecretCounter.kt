@@ -28,7 +28,7 @@ object SecretCounter {
         if(DungeonRunMessages.ended(text)) state.finish(now)
         state.readSecrets(text,now)?.let {count->
             local("Secrets Found: $count")
-            announcement.schedule(now,count,S.currentGeneral().features.secretCounter.autoAnnounce)
+            announcement.schedule(now,count,S.currentGeneral().features.secretCounter.shouldAnnounce(count))
         }
     }
     fun tick() {
@@ -40,7 +40,7 @@ object SecretCounter {
             null->Unit
         }
         val s=S.currentGeneral().features.secretCounter
-        announcement.poll(now,s.autoAnnounce)?.let {count->
+        announcement.poll(now,s.autoAnnounce)?.takeIf(s::shouldAnnounce)?.let {count->
             val text="[solyanka] I did $count secrets!"
             if(s.channel=="party") connection.sendCommand("pc $text") else connection.sendChat(text)
         }
