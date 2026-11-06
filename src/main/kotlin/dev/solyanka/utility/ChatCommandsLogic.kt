@@ -17,6 +17,25 @@ data class ChatCommandsSettings(val prefix:String="!",val commands:List<ChatComm
     }
 }
 data class IncomingCommandChat(val channel:String,val name:String,val text:String)
+
+/** Suppress only echoes of our own command-like replies, not manually typed commands. */
+class ChatReplyEchoes {
+    private data class Reply(val channel:String,val text:String,val time:Long)
+    private val replies=mutableListOf<Reply>()
+    // shortcut: a lost echo can hide identical self-input for 30s; upgrade if message IDs become available.
+    private fun prune(now:Long) { replies.removeAll {now-it.time>30_000 || now<it.time} }
+    fun remember(channel:String,text:String,now:Long) {
+        prune(now)
+        if(replies.size>=256) replies.removeAt(0)
+        replies.add(Reply(channel,text,now))
+    }
+    fun consume(channel:String,text:String,now:Long):Boolean {
+        prune(now)
+        val index=replies.indexOfFirst {it.channel==channel && it.text==text}
+        if(index<0) return false
+        replies.removeAt(index);return true
+    }
+}
 object ChatCommandsLogic {
     private val line=Regex("^(?:(Party|Guild|Officer|Co-op) > |(From) )?(?:\\[[^]\\r\\n]{1,32}] )*([A-Za-z0-9_]{1,16})(?: \\[[^]\\r\\n]{1,32}])?: (.{1,256})$")
     private val random=Regex("\\{randint\\((-?\\d{1,7}),\\s*(-?\\d{1,7})\\)}")

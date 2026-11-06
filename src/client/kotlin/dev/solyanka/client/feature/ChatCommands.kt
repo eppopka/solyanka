@@ -8,26 +8,23 @@ import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 
 object ChatCommands {
-    private var lastReply=0L
-    private val users=linkedMapOf<String,Long>()
+    private val echoes=ChatReplyEchoes()
     private fun receive(raw:String,overlay:Boolean) {
         if(overlay || !S.isEnabled(S.CHAT_COMMANDS)) return
         val client=Minecraft.getInstance();val player=client.player ?: return
         val address=client.currentServer?.ip?.substringBefore(':')?.lowercase() ?: return
         if(address!="hypixel.net" && !address.endsWith(".hypixel.net")) return
         val chat=ChatCommandsLogic.parse(raw) ?: return
-        if(chat.name.equals(player.gameProfile.name,true)) return
+        if(chat.name.equals(player.gameProfile.name,true) && echoes.consume(chat.channel,chat.text,System.nanoTime()/1_000_000L)) return
         val config=S.currentGeneral().features.chatCommands
         if(!ChatCommandsLogic.allowed(config,chat.channel)) return
         val suggestion=chat.text.removePrefix(config.prefix).takeIf {chat.text.startsWith(config.prefix)}
             ?.let {Regex("(?i)^suggest\\s+(.+)$").matchEntire(it)?.groupValues?.get(1)?.trim()}
         val isSuggestion=suggestion!=null && S.currentGeneral().features.music.suggest
         val response=if(isSuggestion) null else ChatCommandsLogic.response(config,chat) ?: return
-        val now=System.nanoTime()/1_000_000L;val key=chat.name.lowercase()
-        if(now-lastReply<5000 || now-(users[key] ?: 0L)<10000) return
-        lastReply=now;users[key]=now
-        if(users.size>512) users.remove(users.keys.first())
-        fun send(text:String) {when(chat.channel) {
+        fun send(text:String) {
+            if(text.startsWith(S.currentGeneral().features.chatCommands.prefix)) echoes.remember(chat.channel,text,System.nanoTime()/1_000_000L)
+            when(chat.channel) {
             "party"->player.connection.sendCommand("pc $text")
             "guild"->player.connection.sendCommand("gc $text")
             "officer"->player.connection.sendCommand("oc $text")
@@ -37,7 +34,7 @@ object ChatCommands {
         }}
         if(!isSuggestion) {send(response!!);return}
         val world=client.level
-        val accepted=YandexMusic.suggest(suggestion!!) {success,message->client.execute {
+        val accepted=YandexMusic.suggest(suggestion) {success,message->client.execute {
             if(client.level!==world || client.player!==player || !S.isEnabled(S.CHAT_COMMANDS)) return@execute
             if(success && S.currentGeneral().features.music.announce) {
                 val safe=message.filterNot {it.isISOControl() || it=='§'}.take(120)

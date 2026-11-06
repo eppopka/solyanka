@@ -6,6 +6,19 @@ import kotlin.random.Random
 import kotlin.test.*
 
 class ChatCommandsTest {
+    @Test fun `own command responses work and only remembered echoes are suppressed`() {
+        val settings=ChatCommandsSettings(commands=listOf(ChatCommand("bpm","{name} 93")))
+        val own=ChatCommandsLogic.parse("Party > [MVP+] 3ppopka: !bpm")!!
+        assertEquals("3ppopka 93",ChatCommandsLogic.response(settings,own))
+        val echoes=ChatReplyEchoes()
+        assertFalse(echoes.consume("party","!bpm",100))
+        echoes.remember("party","!bpm",100)
+        assertFalse(echoes.consume("guild","!bpm",101))
+        assertTrue(echoes.consume("party","!bpm",101))
+        assertFalse(echoes.consume("party","!bpm",102))
+        echoes.remember("party","!bpm",100)
+        assertFalse(echoes.consume("party","!bpm",30_101))
+    }
     @Test fun `party message and template are parsed`() {
         val chat=ChatCommandsLogic.parse("Party > [MVP+] 3ppopka: !bpm")!!
         assertEquals("party",chat.channel);assertEquals("3ppopka",chat.name)

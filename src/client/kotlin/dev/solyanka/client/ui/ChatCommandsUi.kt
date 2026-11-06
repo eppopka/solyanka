@@ -4,6 +4,9 @@ package dev.solyanka.client.ui
 import dev.solyanka.client.ui.nofrills.*
 import dev.solyanka.ui.InstantSettings
 import dev.solyanka.utility.*
+import io.wispforest.owo.ui.container.UIContainers
+import io.wispforest.owo.ui.core.Insets
+import io.wispforest.owo.ui.core.Sizing
 
 object ChatCommandsUi {
     fun open(host:NoFrillsClickGui,model:InstantSettings) {
@@ -20,7 +23,7 @@ object ChatCommandsUi {
         panel=SettingsPanel("Chat Commands",{host.closePanel()},{error ?: model.error}) {_,w->
             val s=model.general.features.chatCommands
             buildList {
-                add(GuiKit.description(w,"Hypixel: responds to other players in the same chat channel. 5 seconds between replies and 10 seconds per player. Review server rules before enabling."))
+                add(GuiKit.description(w,"Hypixel: responds in the same chat channel, including your own commands. Review server rules before enabling."))
                 add(GuiKit.textRow(w,"Prefix",s.prefix) {value->update {it.copy(prefix=value)}})
                 add(GuiKit.toggleRow(w,"Public Chat",s.publicChat) {v->update {it.copy(publicChat=v)}})
                 add(GuiKit.toggleRow(w,"Party Chat",s.party) {v->update {it.copy(party=v)}})
@@ -31,10 +34,19 @@ object ChatCommandsUi {
                 add(GuiKit.description(w,"Responses support {name} and {randint(60,100)}. Commands are text replies, not executable slash commands."))
                 s.commands.forEachIndexed {i,command->
                     add(GuiKit.textRow(w,"Command ${i+1}",names.getOrPut(i) {command.name}) {names[i]=it})
-                    add(GuiKit.textRow(w,"Response",replies.getOrPut(i) {command.response}) {replies[i]=it})
-                    add(GuiKit.row(w).apply {
-                        child(GuiKit.button("Save",65) {update {c->c.copy(commands=c.commands.mapIndexed {j,v->if(j==i) ChatCommand(names[i] ?: v.name,replies[i] ?: v.response) else v})};if(error==null) {names.clear();replies.clear();panel.mount(host.width,host.height)}})
-                        child(GuiKit.button("Delete",65) {update {c->c.copy(commands=c.commands.filterIndexed {j,_->j!=i})};if(error==null) {names.clear();replies.clear();panel.mount(host.width,host.height)}})
+                    fun save() {update {c->c.copy(commands=c.commands.mapIndexed {j,v->if(j==i) ChatCommand(names[i] ?: v.name,replies[i] ?: v.response) else v})};if(error==null) {names.clear();replies.clear();panel.mount(host.width,host.height)}}
+                    fun delete() {update {c->c.copy(commands=c.commands.filterIndexed {j,_->j!=i})};if(error==null) {names.clear();replies.clear();panel.mount(host.width,host.height)}}
+                    val response=replies.getOrPut(i) {command.response}
+                    if(w<150) {
+                        add(GuiKit.textRow(w,"Response",response) {replies[i]=it})
+                        add(GuiKit.row(w).apply {child(GuiKit.button("Save",48) {save()});child(GuiKit.button("Delete",54) {delete()})})
+                    } else add(UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content()).apply {
+                        padding(Insets.of(5));gap(3);child(GuiKit.label("Response"))
+                        child(UIContainers.horizontalFlow(Sizing.fixed(w-10),Sizing.content()).apply {
+                            gap(6)
+                            child(FlatTextbox(Sizing.fixed(w-124)).apply {text(response);onChanged().subscribe {replies[i]=it}})
+                            child(GuiKit.button("Save",48) {save()});child(GuiKit.button("Delete",54) {delete()})
+                        })
                     })
                 }
                 add(GuiKit.textRow(w,"New Command",newName) {newName=it})
