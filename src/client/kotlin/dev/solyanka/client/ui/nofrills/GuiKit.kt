@@ -33,6 +33,10 @@ object GuiKit {
                 dev.solyanka.client.feature.ChromeDraw.panel(g,b.x,b.y,b.width,b.height,RAISED,if(white) LINE else BLUE,4)
             }
         }
+    fun presetButton(text:String,width:Int,color:Int,action:(Int)->Unit):ButtonComponent = styleButton(DirectionalButton(text,action),width).apply {
+        message=Component.literal(text).withColor(color and 0xffffff)
+        tooltip(Component.literal("Left click: apply | Right click: save current color (#%08X)".format(color)))
+    }
     fun label(text:String) = PlainLabel(Component.literal(text)).apply { color(Color.ofArgb(WHITE)) }
     fun row(width:Int): FlowLayout = UIContainers.horizontalFlow(Sizing.fixed(width),Sizing.content()).apply {
         padding(Insets.of(5));verticalAlignment(VerticalAlignment.CENTER);gap(6)

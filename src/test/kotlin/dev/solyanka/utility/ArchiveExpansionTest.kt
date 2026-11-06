@@ -37,7 +37,7 @@ class ArchiveExpansionTest {
  @Test fun `source special second button consumes two`() {val s=SimonLogic();repeat(3){s.flash(it,false)};assertFalse(s.click(1,2,false,false));assertEquals(2,s.pending.single().cell)}
  @Test fun `simon reset removes skip state and progress`() {val s=SimonLogic();s.flash(1,false);s.check(true);s.reset();assertEquals(0,s.stage);assertTrue(s.pending.isEmpty());repeat(3){s.flash(it,true)};assertEquals(2,s.pending.size)}
  @Test fun `simon evidence bounded against packet flood`() {val s=SimonLogic();repeat(1000){s.flash(0,false)};assertEquals(32,s.pending.size)}
- @Test fun `route parses number notes and repeated uses`() {assertEquals(listOf(1),RouteLogic.numbers("1 item"));assertEquals(listOf(2,4),RouteLogic.numbers("2 / 4"));assertTrue(RouteLogic.numbers("item 2").isEmpty());assertTrue(RouteLogic.numbers("0").isEmpty())}
+ @Test fun `route parses number notes and repeated uses`() {assertEquals(listOf(1),RouteLogic.numbers("1 item"));assertEquals(listOf(2,4),RouteLogic.numbers("2 / 4"));assertEquals(listOf(2),RouteLogic.numbers("item 2"));assertTrue(RouteLogic.numbers("0").isEmpty())}
  @Test fun `route rejects oversized numbers without overflow`() {assertTrue(RouteLogic.numbers("9999999999999999999999").isEmpty());assertEquals(listOf(2),RouteLogic.numbers("2/2"))}
  @Test fun `route orders start then numbered visits`() {val ways=listOf(Waypoint(GridPos(0,0,0),title="2/4"),Waypoint(GridPos(1,0,0),title="1 item"),Waypoint(GridPos(2,0,0),color=0xffff5555.toInt()));assertEquals(listOf(0,1,2,4),RouteLogic.entries(ways).map{it.number})}
  @Test fun `custom start color takes priority over a numbered title`() {

@@ -45,7 +45,7 @@ class SliderControlsTest {
             }
         } }
         val way=root.getAsJsonObject("waypoints")
-        way.entrySet().filter {it.value.asJsonPrimitive.isNumber && it.key !in setOf("type","color")}.forEach {
+        way.entrySet().filter {it.value.isJsonPrimitive && it.value.asJsonPrimitive.isNumber && it.key !in setOf("type","color","textColor","styleColor","preset1","preset2","preset3","preset4")}.forEach {
             SettingsNumbers.range("waypoints",it.key,320,180,it.value.asDouble)
         }
     }

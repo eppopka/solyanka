@@ -22,6 +22,8 @@ object SettingsNumbers {
         section=="environment" && field=="gradient" -> NumberRange(.1,1.0,.01)
         section=="environment" && field=="aspectRatio" -> NumberRange(.3,3.0,.01)
         section=="environment" && field in setOf("fogStart","fogEnd","fogDensity") -> NumberRange(0.0,1.0,.01)
+        section=="waypoints" && field=="styleSpeed" -> NumberRange(0.0,5.0,.1)
+        section=="waypoints" && field=="styleIntensity" -> NumberRange(0.0,1.0,.05)
         section=="waypoints" && field=="lineSize" -> NumberRange(1.0,6.0,.5)
         section=="waypoints" && field=="titleScale" -> NumberRange(.1,4.0,.05)
         section=="waypoints" && field in setOf("sizeX","sizeY","sizeZ") -> NumberRange(.1,5.0,.05)

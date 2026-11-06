@@ -7,7 +7,7 @@ data class RouteSettings(val lines:Boolean=false,val color:Int=0xc8ffffff.toInt(
 object RouteLogic {
  data class Entry(val waypoint:Int,val number:Int)
  fun numbers(title:String):List<Int> {
-  val prefix=Regex("^\\s*(\\d+(?:\\s*/\\s*\\d+)*)").find(title)?.groupValues?.get(1) ?: return emptyList()
+  val prefix=Regex("(?<!\\d)(\\d+(?:\\s*/\\s*\\d+)*)(?!\\d)").find(title)?.groupValues?.get(1) ?: return emptyList()
   return prefix.split('/').mapNotNull {it.trim().toIntOrNull()?.takeIf {n->n in 1..10000}}.distinct().take(32)
  }
  fun entries(ways:List<Waypoint>,startColor:Int=0xffff5555.toInt())=ways.flatMapIndexed {index,w->

@@ -22,6 +22,7 @@ class SettingsPanel(
     private val back:()->Unit,
     private val status:()->String?,
     private val info:()->String?={null},
+    private val centeredTitle:Boolean=false,
     private val content:(SettingsPanel,Int)->List<UIComponent>
 ):EmbeddedPanel {
     lateinit var adapter:OwoUIAdapter<FlowLayout>;private set
@@ -68,7 +69,8 @@ class SettingsPanel(
         header=UIContainers.horizontalFlow(Sizing.fixed(w),Sizing.fixed(28)).apply {
             verticalAlignment(VerticalAlignment.CENTER);padding(Insets.of(4));gap(6)
             surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.RAISED,GuiKit.LINE,4)}
-            child(GuiKit.label(title).apply {horizontalSizing(Sizing.fixed((w-76).coerceAtLeast(1)));tooltip(Component.literal("Drag this title bar to move settings"))})
+            if(centeredTitle) child(UIContainers.horizontalFlow(Sizing.fixed(54),Sizing.fixed(1)))
+            child(GuiKit.label(title).apply {if(centeredTitle) horizontalTextAlignment(HorizontalAlignment.CENTER);horizontalSizing(Sizing.fixed((w-if(centeredTitle) 136 else 76).coerceAtLeast(1)));tooltip(Component.literal("Drag this title bar to move settings"))})
             child(GuiKit.button("Back",54,true) {capture=null;back()})
         }
         val rows=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content()).apply {gap(2)}

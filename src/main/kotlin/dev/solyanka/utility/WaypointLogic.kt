@@ -13,16 +13,17 @@ data class WayBox(val minX:Double,val minY:Double,val minZ:Double,val maxX:Doubl
  fun validate() {require(listOf(minX,minY,minZ,maxX,maxY,maxZ).all {it.isFinite() && abs(it)<=100000});require(minX<maxX && minY<maxY && minZ<maxZ);require(maxX-minX<=1024 && maxY-minY<=1024 && maxZ-minZ<=1024)}
 }
 enum class WayType {NONE,NORMAL,SECRET,ETHERWARP}
-data class Waypoint(val blockPos:GridPos,val color:Int=0xff55ff55.toInt(),val filled:Boolean=false,val depth:Boolean=false,val aabb:WayBox=WayBox(-.002,-.002,-.002,1.002,1.002,1.002),val title:String="",val type:WayType=WayType.NONE)
-data class WaypointSettings(val selectedPacks:String="default",val editPack:String="default",val allowEdits:Boolean=false,val globalEsp:Boolean=false,val titles:Boolean=true,val titleScale:Double=1.0,val type:Int=0,val color:Int=0xff55ff55.toInt(),val filled:Boolean=false,val depth:Boolean=false,val blockSize:Boolean=true,val sizeX:Double=1.0,val sizeY:Double=1.0,val sizeZ:Double=1.0,val lines:Boolean=false,val lineSize:Double=3.0) {
- fun validate() {val names=selectedPacks.split(',').map(String::trim);require(names.size<=32 && names.all(WaypointStore::validName));require(WaypointStore.validName(editPack));require(type in 0..3);require(titleScale.isFinite() && titleScale in .1..4.0);require(lineSize.isFinite() && lineSize in 1.0..6.0);require(listOf(sizeX,sizeY,sizeZ).all {it.isFinite() && it in .1..5.0})}
+data class Waypoint(val blockPos:GridPos,val color:Int=0xff55ff55.toInt(),val filled:Boolean=false,val depth:Boolean=false,val aabb:WayBox=WayBox(-.002,-.002,-.002,1.002,1.002,1.002),val title:String="",val type:WayType=WayType.NONE,val style:WayStyle?=null,val extras:JsonObject?=null)
+data class WaypointSettings(val selectedPacks:String="default",val editPack:String="default",val allowEdits:Boolean=false,val globalEsp:Boolean=false,val titles:Boolean=true,val titleScale:Double=1.0,val type:Int=0,val color:Int=0xff55ff55.toInt(),val filled:Boolean=false,val depth:Boolean=false,val blockSize:Boolean=true,val sizeX:Double=1.0,val sizeY:Double=1.0,val sizeZ:Double=1.0,val lines:Boolean=false,val lineSize:Double=3.0,val editorKey:CopyBinding=CopyBinding(),val styles:Boolean=true,val textFont:String="default",val useTextColor:Boolean=false,val textColor:Int=-1,val styleMode:String="static",val styleColor:Int=0xff5555ff.toInt(),val styleSpeed:Double=1.0,val styleIntensity:Double=1.0,val preset1:Int=0xff55ff55.toInt(),val preset2:Int=0xffff5555.toInt(),val preset3:Int=0xff5555ff.toInt(),val preset4:Int=-1) {
+ fun validate() {editorKey.validate();require(textFont in setOf("default","uniform","alt"));require(styleMode in setOf("static","gradient","pulse","fog"));WayStyle(if(styleMode=="static") "gradient" else styleMode,styleColor,styleSpeed,styleIntensity).validate();val names=selectedPacks.split(',').map(String::trim);require(names.size<=32 && names.all(WaypointStore::validName));require(WaypointStore.validName(editPack));require(type in 0..3);require(titleScale.isFinite() && titleScale in .1..4.0);require(lineSize.isFinite() && lineSize in 1.0..6.0);require(listOf(sizeX,sizeY,sizeZ).all {it.isFinite() && it in .1..5.0})}
 }
 object WaypointLogic {
  // Area-scoped world positions are distinct from existing room-relative pack entries.
  fun areaKey(ctx:SkyblockContext):String? {
   if(!ctx.skyblock || ctx.area.isBlank()) return null
-  val area=ctx.area.trim();val floor=if(ctx.dungeon) ":${if(ctx.master) "M" else "F"}${ctx.floor ?: "?"}" else ""
-  return ("@skyblock:$area$floor").takeIf {it.length<=128 && it.none {c->c=='\n' || c=='\r'}}
+  val area=ctx.area.trim();if(area.contains("mineshaft",true) && ctx.mineshaftVariant==null) return null
+  val variant=ctx.mineshaftVariant?.let {":$it"} ?: "";val floor=if(ctx.dungeon) ":${if(ctx.master) "M" else "F"}${ctx.floor ?: "?"}" else ""
+  return ("@skyblock:$area$variant$floor").takeIf {it.length<=128 && it.none {c->c=='\n' || c=='\r'}}
  }
  private val secretDrops=listOf("Health Potion VIII Splash Potion","Healing Potion 8 Splash Potion","Healing Potion VIII Splash Potion","Healing VIII Splash Potion","Healing 8 Splash Potion","Decoy","Inflatable Jerry","Spirit Leap","Trap","Training Weights","Defuse Kit","Dungeon Chest Key","Treasure Talisman","Revive Stone","Architect's First Draft","Secret Dye","Candycomb")
  fun secretDrop(name:String)=secretDrops.any {ChatLogic.plain(name).contains(it,true)}
@@ -87,13 +88,29 @@ object WaypointCodec {
     val title=o["title"]?.takeIf {!it.isJsonNull}?.asString ?: "";require(title.length<=128 && title.none {it=='\n' || it=='\r'})
     val type=o["type"]?.takeIf {!it.isJsonNull}?.asString?.let(WayType::valueOf) ?: if(o["secret"]?.asBoolean==true) WayType.SECRET else WayType.NONE
     fun bool(k:String):Boolean {val v=o[k];require(v.isJsonPrimitive && v.asJsonPrimitive.isBoolean);return v.asBoolean}
-    Waypoint(p,argb,bool("filled"),bool("depth"),box,title,type)
+    val style=o["solyankaStyle"]?.takeIf {!it.isJsonNull}?.let {v->
+     require(v.isJsonObject);val ob=v.asJsonObject
+     require(ob["mode"]?.isJsonPrimitive==true && ob["mode"].asJsonPrimitive.isString)
+     require(ob["color"]?.isJsonPrimitive==true && ob["color"].asJsonPrimitive.isNumber)
+     require(ob["speed"]?.isJsonPrimitive==true && ob["speed"].asJsonPrimitive.isNumber)
+     require(ob["intensity"]?.isJsonPrimitive==true && ob["intensity"].asJsonPrimitive.isNumber)
+     WayStyle(ob["mode"].asString,int(ob["color"]),ob["speed"].asDouble,ob["intensity"].asDouble).also {it.validate()}
+    }
+    // Preserve extensions from imported packs when a different waypoint is edited.
+    val extra=o.deepCopy()
+    listOf("blockPos","color","filled","depth","aabb","title","type","secret","x","y","z","field_11173","field_11174","field_11175","solyankaStyle").forEach(extra::remove)
+    fun preserveNested(key:String,obj:JsonObject,known:List<String>) {val rest=obj.deepCopy();known.forEach(rest::remove);if(rest.size()>0) extra.add(key,rest)}
+    if(o.has("blockPos")) preserveNested("blockPos",pos,listOf("x","y","z","field_11173","field_11174","field_11175"))
+    preserveNested("aabb",b,listOf("minX","minY","minZ","maxX","maxY","maxZ","field_1323","field_1322","field_1321","field_1320","field_1325","field_1324","field_72340_a","field_72338_b","field_72339_c","field_72336_d","field_72337_e","field_72334_f"))
+    if(style!=null) preserveNested("solyankaStyle",o["solyankaStyle"].asJsonObject,listOf("mode","color","speed","intensity"))
+    Waypoint(p,argb,bool("filled"),bool("depth"),box,title,type,style,extra.takeIf {it.size()>0})
    }
   }
  }
  fun encode(pack:WayPack,compressed:Boolean=false):String {
-  val root=JsonObject();pack.forEach {(room,ways)->root.add(room,JsonArray().apply {ways.forEach {w->add(JsonObject().apply {
-   add("blockPos",gson.toJsonTree(w.blockPos));val rgba=((w.color.toLong() and 0xffffff) shl 8) or ((w.color ushr 24).toLong());addProperty("color","#%08X".format(rgba));addProperty("filled",w.filled);addProperty("depth",w.depth);add("aabb",gson.toJsonTree(w.aabb));if(w.title.isNotEmpty()) addProperty("title",w.title);addProperty("type",w.type.name)
+  val root=JsonObject();pack.forEach {(room,ways)->root.add(room,JsonArray().apply {ways.forEach {w->add((w.extras?.deepCopy() ?: JsonObject()).apply {
+   fun merge(key:String,value:JsonObject) {val obj=get(key)?.takeIf {it.isJsonObject}?.asJsonObject ?: JsonObject();value.entrySet().forEach {(k,v)->obj.add(k,v)};add(key,obj)}
+   merge("blockPos",gson.toJsonTree(w.blockPos).asJsonObject);val rgba=((w.color.toLong() and 0xffffff) shl 8) or ((w.color ushr 24).toLong());addProperty("color","#%08X".format(rgba));addProperty("filled",w.filled);addProperty("depth",w.depth);merge("aabb",gson.toJsonTree(w.aabb).asJsonObject);if(w.title.isNotEmpty()) addProperty("title",w.title);addProperty("type",w.type.name);w.style?.let {it.validate();merge("solyankaStyle",gson.toJsonTree(it).asJsonObject)}
   })} })}
   val text=gson.toJson(root);require(text.toByteArray().size<=LIMIT);decode(text)
   if(!compressed)return text
