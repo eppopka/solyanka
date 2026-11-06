@@ -5,7 +5,7 @@ import kotlin.test.*
 import org.junit.jupiter.api.Test
 
 class ModuleTest {
-    private class Probe(id: String = "test.probe") : Module(ModuleInfo(id, id, Category.CORE)) {
+    private class Probe(id: String = "test.probe") : Module(ModuleInfo(id, id, Category.UTILITY)) {
         var starts = 0; var stops = 0; var ticks = 0; var resets = 0
         var failStart = false; var failTick = false; var failStop = false
         override fun onEnable() { starts++; if (failStart) error("start") }

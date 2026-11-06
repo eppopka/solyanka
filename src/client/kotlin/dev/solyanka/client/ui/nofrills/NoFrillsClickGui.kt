@@ -90,7 +90,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
                     val failure=SolyankaClient.applySettings(SolyankaClient.currentProfile(),states)
                     toggleError=failure
                 },
-                settings=if(info.id=="core.diagnostics") null else ({ try {ConfigUi.openSettings(info.id,this)} catch(e:Exception) {logger.error("Cannot prepare settings for ${info.id}",e);toggleError="Settings unavailable — see logs/latest.log"} })
+                settings=({ try {ConfigUi.openSettings(info.id,this)} catch(e:Exception) {logger.error("Cannot prepare settings for ${info.id}",e);toggleError="Settings unavailable — see logs/latest.log"} })
             )) }
             val scroll=UIContainers.verticalScroll(Sizing.fixed(w),Sizing.fill(90),cards)
             scroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.BLUE)))

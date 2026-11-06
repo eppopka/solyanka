@@ -131,13 +131,6 @@ object SolyankaClient : ClientModInitializer {
     override fun onInitializeClient() {
         dev.solyanka.client.cs2.render.KnifeRender.register()
         HeldItemCosmetic.register() // Pipeline metadata is known before the first shader resource reload.
-        modules.register(object : Module(ModuleInfo("core.diagnostics", "Lifecycle diagnostics", Category.CORE)) {
-            private var ticks = 0L
-            override fun onEnable() { logger.info("Diagnostics enabled") }
-            override fun onDisable() { ticks=0; logger.info("Diagnostics disabled") }
-            override fun onTick() { ticks++ }
-            override fun onReset(reason: ResetReason) { ticks=0; logger.debug("Diagnostics reset: {}",reason) }
-        })
         modules.register(object : Module(ModuleInfo(KEYBINDS, "Command keybinds", Category.UTILITY)) {
             override fun onReset(reason: ResetReason) { ownedInputs.clear() }
         })

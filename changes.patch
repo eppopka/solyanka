@@ -1,0 +1,84 @@
+diff --git a/src/client/kotlin/dev/solyanka/client/SolyankaClient.kt b/src/client/kotlin/dev/solyanka/client/SolyankaClient.kt
+index 7adaebe..e2d5288 100644
+--- a/src/client/kotlin/dev/solyanka/client/SolyankaClient.kt
++++ b/src/client/kotlin/dev/solyanka/client/SolyankaClient.kt
+@@ -131,13 +131,6 @@ object SolyankaClient : ClientModInitializer {
+     override fun onInitializeClient() {
+         dev.solyanka.client.cs2.render.KnifeRender.register()
+         HeldItemCosmetic.register() // Pipeline metadata is known before the first shader resource reload.
+-        modules.register(object : Module(ModuleInfo("core.diagnostics", "Lifecycle diagnostics", Category.CORE)) {
+-            private var ticks = 0L
+-            override fun onEnable() { logger.info("Diagnostics enabled") }
+-            override fun onDisable() { ticks=0; logger.info("Diagnostics disabled") }
+-            override fun onTick() { ticks++ }
+-            override fun onReset(reason: ResetReason) { ticks=0; logger.debug("Diagnostics reset: {}",reason) }
+-        })
+         modules.register(object : Module(ModuleInfo(KEYBINDS, "Command keybinds", Category.UTILITY)) {
+             override fun onReset(reason: ResetReason) { ownedInputs.clear() }
+         })
+diff --git a/src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt b/src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt
+index 955f3a8..e524c87 100644
+--- a/src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt
++++ b/src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt
+@@ -90,7 +90,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
+                     val failure=SolyankaClient.applySettings(SolyankaClient.currentProfile(),states)
+                     toggleError=failure
+                 },
+-                settings=if(info.id=="core.diagnostics") null else ({ try {ConfigUi.openSettings(info.id,this)} catch(e:Exception) {logger.error("Cannot prepare settings for ${info.id}",e);toggleError="Settings unavailable — see logs/latest.log"} })
++                settings=({ try {ConfigUi.openSettings(info.id,this)} catch(e:Exception) {logger.error("Cannot prepare settings for ${info.id}",e);toggleError="Settings unavailable — see logs/latest.log"} })
+             )) }
+             val scroll=UIContainers.verticalScroll(Sizing.fixed(w),Sizing.fill(90),cards)
+             scroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.BLUE)))
+diff --git a/src/main/kotlin/dev/solyanka/core/Module.kt b/src/main/kotlin/dev/solyanka/core/Module.kt
+index d1abc08..3151849 100644
+--- a/src/main/kotlin/dev/solyanka/core/Module.kt
++++ b/src/main/kotlin/dev/solyanka/core/Module.kt
+@@ -1,7 +1,7 @@
+ /* SPDX-License-Identifier: GPL-3.0-only */
+ package dev.solyanka.core
+ 
+-enum class Category { CORE, DUNGEON, SOLVER, UTILITY, RENDER, HUD, COSMETIC, HUNTING }
++enum class Category { DUNGEON, SOLVER, UTILITY, RENDER, HUD, COSMETIC, HUNTING }
+ enum class ResetReason { WORLD_CHANGED, DISCONNECTED }
+ 
+ data class ModuleInfo(val id: String, val name: String, val category: Category) {
+diff --git a/src/main/kotlin/dev/solyanka/ui/GuiModels.kt b/src/main/kotlin/dev/solyanka/ui/GuiModels.kt
+index 519a53d..4f6e74f 100644
+--- a/src/main/kotlin/dev/solyanka/ui/GuiModels.kt
++++ b/src/main/kotlin/dev/solyanka/ui/GuiModels.kt
+@@ -64,8 +64,7 @@ object GuiCatalog {
+         FeatureCardInfo("utility.chat","Chat Tweaks","General","Copy hovered messages or lines, keep history on disconnect and expand history limits."),
+         FeatureCardInfo("utility.info_tooltips","Info Tooltips","General","Dungeon quality, creation date, dye hex, museum category and market item IDs."),
+         FeatureCardInfo("utility.command_keybinds","Command Keybinds","General","Create keyboard and mouse binds for commands or chat. Modifier, GUI, island and dungeon class filters."),
+-        FeatureCardInfo("utility.command_shortcuts","Command Shortcuts","General","Create command aliases with arguments, live expansion and cycle protection."),
+-        FeatureCardInfo("core.diagnostics","Lifecycle Diagnostics","Core","Debug module lifecycle, tick and world reset events.")
++        FeatureCardInfo("utility.command_shortcuts","Command Shortcuts","General","Create command aliases with arguments, live expansion and cycle protection.")
+     )
+     fun search(query: String): Map<String,List<FeatureCardInfo>> {
+         fun normalized(value: String) = value.lowercase().filterNot { it.isWhitespace() }
+diff --git a/src/test/kotlin/dev/solyanka/core/ModuleTest.kt b/src/test/kotlin/dev/solyanka/core/ModuleTest.kt
+index 852bd85..6332044 100644
+--- a/src/test/kotlin/dev/solyanka/core/ModuleTest.kt
++++ b/src/test/kotlin/dev/solyanka/core/ModuleTest.kt
+@@ -5,7 +5,7 @@ import kotlin.test.*
+ import org.junit.jupiter.api.Test
+ 
+ class ModuleTest {
+-    private class Probe(id: String = "test.probe") : Module(ModuleInfo(id, id, Category.CORE)) {
++    private class Probe(id: String = "test.probe") : Module(ModuleInfo(id, id, Category.UTILITY)) {
+         var starts = 0; var stops = 0; var ticks = 0; var resets = 0
+         var failStart = false; var failTick = false; var failStop = false
+         override fun onEnable() { starts++; if (failStart) error("start") }
+diff --git a/src/test/kotlin/dev/solyanka/ui/GuiModelsTest.kt b/src/test/kotlin/dev/solyanka/ui/GuiModelsTest.kt
+index f21fa11..10093af 100644
+--- a/src/test/kotlin/dev/solyanka/ui/GuiModelsTest.kt
++++ b/src/test/kotlin/dev/solyanka/ui/GuiModelsTest.kt
+@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
+ class GuiModelsTest {
+     @Test fun `catalog only contains implemented unique module cards`() {
+         val cards=GuiCatalog.search("").values.flatten()
+-        assertEquals(setOf("custom.item_aura","cosmetic.cs2_knife","custom.shitter_list","custom.move_hotbar","render.picture_in_picture","custom.pet_display","custom.simon_says","custom.bestiary_esp","custom.invisibug_esp","custom.tiki_esp","custom.china_hat","custom.halo","custom.secret_counter","custom.always_water","custom.ambient_particles","custom.rotating_item","custom.move_hearts","render.motion_blur","custom.stopwatch","custom.dvd_bounce","render.skybox","cosmetic.held_item","hud.scoreboard","hud.themed_chat","render.player_glow","render.nametags","render.block_outline","mining.titanium","hud.inventory","hud.item_name","hud.skill_progress","render.ambience","render.aspect","render.fog","dungeon.waypoints","dungeon.door_highlight","dungeon.map_info","solver.ice_fill","solver.blaze","solver.creeper_beams","dungeon.mimic","custom.mimic_chest","utility.price_tooltips","solver.experiments","render.suppression","utility.command_keybinds","utility.command_shortcuts","core.diagnostics","utility.chat","utility.info_tooltips","dungeon.tick_timers","hud.player_display","render.animation_fix","utility.middle_click_fix","utility.middle_click_override","utility.cursor","utility.loading_screen"),cards.map { it.id }.toSet())
++        assertEquals(setOf("custom.item_aura","cosmetic.cs2_knife","custom.shitter_list","custom.move_hotbar","render.picture_in_picture","custom.pet_display","custom.simon_says","custom.bestiary_esp","custom.invisibug_esp","custom.tiki_esp","custom.china_hat","custom.halo","custom.secret_counter","custom.always_water","custom.ambient_particles","custom.rotating_item","custom.move_hearts","render.motion_blur","custom.stopwatch","custom.dvd_bounce","render.skybox","cosmetic.held_item","hud.scoreboard","hud.themed_chat","render.player_glow","render.nametags","render.block_outline","mining.titanium","hud.inventory","hud.item_name","hud.skill_progress","render.ambience","render.aspect","render.fog","dungeon.waypoints","dungeon.door_highlight","dungeon.map_info","solver.ice_fill","solver.blaze","solver.creeper_beams","dungeon.mimic","custom.mimic_chest","utility.price_tooltips","solver.experiments","render.suppression","utility.command_keybinds","utility.command_shortcuts","utility.chat","utility.info_tooltips","dungeon.tick_timers","hud.player_display","render.animation_fix","utility.middle_click_fix","utility.middle_click_override","utility.cursor","utility.loading_screen"),cards.map { it.id }.toSet())
+         assertEquals(57,cards.size)
+     }
+     @Test fun `search ignores case and whitespace and includes descriptions`() {

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.core
 
-enum class Category { CORE, DUNGEON, SOLVER, UTILITY, RENDER, HUD, COSMETIC, HUNTING }
+enum class Category { DUNGEON, SOLVER, UTILITY, RENDER, HUD, COSMETIC, HUNTING }
 enum class ResetReason { WORLD_CHANGED, DISCONNECTED }
 
 data class ModuleInfo(val id: String, val name: String, val category: Category) {
