@@ -8,6 +8,7 @@ import dev.solyanka.client.ui.HudEditorScreen
 import dev.solyanka.client.ui.nofrills.NoFrillsClickGui
 import dev.solyanka.utility.MusicLogic
 import dev.solyanka.utility.MusicServiceFailure
+import dev.solyanka.utility.MusicServerFailure
 import net.fabricmc.fabric.api.client.rendering.v1.hud.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.ChatScreen
@@ -79,10 +80,7 @@ object YandexMusic {
     private fun frame(listener:Frames,seconds:Long=10):JsonObject {
         val raw=listener.queue.poll(seconds,TimeUnit.SECONDS) ?: throw MusicServiceFailure("timeout")
         val json=JsonParser.parseString(raw).asJsonObject
-        if(json.has("error")) {
-            val code=runCatching {json.getAsJsonObject("error").get("grpc_code").asInt}.getOrNull()
-            throw MusicServiceFailure(if(code!=null && code in 0..999) "server error $code" else "server error")
-        }
+        if(json.has("error")) throw MusicLogic.serverFailure(json.get("error"))
         return json
     }
     private fun registration(device:String):String = JsonParser.parseString("""{"updateFullState":{"playerState":{"playerQueue":{"currentPlayableIndex":-1,"options":{"repeatMode":"NONE"},"version":{"deviceId":"$device"},"entityType":"VARIOUS","entityContext":"BASED_ON_ENTITY_BY_DEFAULT"},"status":{"paused":true,"playbackSpeed":1,"version":{"deviceId":"$device"}}},"device":{"capabilities":{"canBePlayer":false,"canBeRemoteController":true,"volumeGranularity":0},"info":{"deviceId":"$device","type":"WEB","title":"Solyanka","appName":"yandex-music"},"volumeInfo":{"volume":0}},"isCurrentlyActive":false},"rid":"${UUID.randomUUID()}","activityInterceptionType":"DO_NOT_INTERCEPT_BY_DEFAULT"}""").toString()
@@ -120,17 +118,41 @@ object YandexMusic {
                 }
                 val auth=token ?: throw MusicServiceFailure("code expired")
                 if(gen!=generation.get()) return@Thread
-                verification=null;status="Connecting…";stage="Music redirect"
-                val (redirect,rf)=open("wss://ynison.music.yandex.ru/redirector.YnisonRedirectService/GetRedirectToYnison",auth,device)
-                val response=try {frame(rf)} finally {redirect.abort()}
-                val host=response.get("host").asString.lowercase()
-                if(!host.matches(Regex("[a-z0-9.-]+\\.music\\.yandex\\.(ru|net)"))) throw MusicServiceFailure("unrecognized server")
-                stage="Music connection"
-                val pair=open("wss://$host/ynison_state.YnisonStateService/PutYnisonState",auth,device,MusicLogic.redirectValue(response,"redirectTicket"),MusicLogic.redirectValue(response,"sessionId"))
-                ws=pair.first;socket=ws;val frames=pair.second
-                stage="Music registration"
-                ws.sendText(registration(device),true).get(10,TimeUnit.SECONDS)
-                var state=frame(frames);connected=true;status="Connected (session only)";stage="Music session"
+                verification=null;status="Connecting…"
+                var attempt=0
+                lateinit var frames:Frames
+                lateinit var state:JsonObject
+                while(true) {
+                    try {
+                        stage="Music redirect"
+                        val (redirect,rf)=open("wss://ynison.music.yandex.ru/redirector.YnisonRedirectService/GetRedirectToYnison",auth,device)
+                        val response=try {frame(rf)} finally {redirect.abort()}
+                        if(gen!=generation.get()) return@Thread
+                        val host=response.get("host").asString.lowercase()
+                        if(!host.matches(Regex("[a-z0-9.-]+\\.music\\.yandex\\.(ru|net)"))) throw MusicServiceFailure("unrecognized server")
+                        stage="Music connection"
+                        val pair=open("wss://$host/ynison_state.YnisonStateService/PutYnisonState",auth,device,MusicLogic.redirectValue(response,"redirectTicket"),MusicLogic.redirectValue(response,"sessionId"))
+                        ws=pair.first
+                        if(gen!=generation.get()) return@Thread
+                        socket=ws;frames=pair.second
+                        stage="Music registration"
+                        ws.sendText(registration(device),true).get(10,TimeUnit.SECONDS)
+                        state=frame(frames)
+                        if(gen!=generation.get()) return@Thread
+                        break
+                    } catch(e:MusicServerFailure) {
+                        ws?.abort();ws=null
+                        if(gen!=generation.get()) return@Thread
+                        socket=null
+                        val delay=MusicLogic.retryDelay(e,attempt) ?: throw e
+                        attempt++
+                        status="Music unavailable; retrying ($attempt/3)…"
+                        val until=System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(delay)
+                        while(gen==generation.get() && System.nanoTime()<until) Thread.sleep(250)
+                        if(gen!=generation.get()) return@Thread
+                    }
+                }
+                connected=true;status="Connected (session only)";stage="Music session"
                 var lastId="";var ping=System.nanoTime()
                 while(gen==generation.get()) {
                     val idAndTitle=runCatching {MusicLogic.current(state)}.getOrNull()

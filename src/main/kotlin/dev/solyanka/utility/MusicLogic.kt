@@ -11,7 +11,10 @@ import java.util.concurrent.TimeoutException
 data class MusicSettings(val hud:HudSpec=HudSpec(x=12,y=245),val suggest:Boolean=true,val announce:Boolean=false) {
     fun validate() { hud.validate() }
 }
-class MusicServiceFailure(val reason:String):RuntimeException()
+open class MusicServiceFailure(val reason:String):RuntimeException()
+class MusicServerFailure(val code:Int?,val retryDelays:List<Long>,val goAway:Boolean):MusicServiceFailure(
+    if(code!=null && code in 0..999) "server error $code" else "server error"
+)
 
 object MusicLogic {
     fun failure(stage:String,error:Throwable):String {
@@ -27,6 +30,25 @@ object MusicLogic {
             else -> "unexpected response"
         }
         return "$stage: $reason"
+    }
+
+    fun serverFailure(error:JsonElement?):MusicServerFailure {
+        val obj=error?.takeIf {it.isJsonObject}?.asJsonObject
+        val code=runCatching {obj?.get("grpc_code")?.asInt}.getOrNull()
+        val headers=listOfNotNull(obj?.get("details"),obj?.get("extra_headers"))
+            .filter {it.isJsonObject}.map {it.asJsonObject}
+        val delayField=headers.firstNotNullOfOrNull {it.get("ynison-backoff-millis")}
+        val raw=runCatching {delayField?.asString}.getOrNull()
+        val parts=raw?.takeIf {it.length<=256}?.split(':')
+        val delays=parts?.mapNotNull {it.toLongOrNull()?.takeIf {n->n>=0}}.orEmpty()
+        val invalidDelay=delayField!=null && (parts==null || delays.size!=parts.size || delays.isEmpty())
+        return MusicServerFailure(code,delays,invalidDelay || headers.any {it.has("ynison-go-away-for-seconds")})
+    }
+    fun retryDelay(error:MusicServerFailure,attempt:Int):Long? {
+        if(error.code!=14 || error.goAway || attempt !in 0..2) return null
+        val delays=error.retryDelays.ifEmpty {listOf(1000L,5000L,30000L)}
+        val delay=delays[attempt.coerceAtMost(delays.lastIndex)].coerceAtLeast(1000)
+        return delay.takeIf {it<=60000}
     }
 
     private fun snake(key:String)=key.replace(Regex("[A-Z]")) {"_"+it.value.lowercase()}

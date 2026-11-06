@@ -12,6 +12,20 @@ class MusicLogicTest {
         assertEquals("Sign-in: HTTP 403",MusicLogic.failure("Sign-in",MusicServiceFailure("HTTP 403")))
         assertEquals("Music connection: timeout",MusicLogic.failure("Music connection",java.util.concurrent.ExecutionException(java.util.concurrent.TimeoutException())))
     }
+    @Test fun `unavailable registration retries are bounded and respect server backoff`() {
+        val unavailable=MusicLogic.serverFailure(JsonParser.parseString("""{"grpc_code":14}"""))
+        assertEquals(1000L,MusicLogic.retryDelay(unavailable,0));assertEquals(5000L,MusicLogic.retryDelay(unavailable,1))
+        assertEquals(30000L,MusicLogic.retryDelay(unavailable,2));assertNull(MusicLogic.retryDelay(unavailable,3))
+        val specified=MusicLogic.serverFailure(JsonParser.parseString("""{"grpc_code":14,"details":{"ynison-backoff-millis":"2000:70000"}}"""))
+        assertEquals(2000L,MusicLogic.retryDelay(specified,0));assertNull(MusicLogic.retryDelay(specified,1))
+        val goAway=MusicLogic.serverFailure(JsonParser.parseString("""{"grpc_code":14,"extra_headers":{"ynison-go-away-for-seconds":"3600"}}"""))
+        assertNull(MusicLogic.retryDelay(goAway,0))
+        val nested=MusicLogic.serverFailure(JsonParser.parseString("""{"grpc_code":14,"details":{},"extra_headers":{"ynison-go-away-for-seconds":"3600"}}"""))
+        assertNull(MusicLogic.retryDelay(nested,0))
+        val malformed=MusicLogic.serverFailure(JsonParser.parseString("""{"grpc_code":14,"details":{"ynison-backoff-millis":"bad"}}"""))
+        assertNull(MusicLogic.retryDelay(malformed,0))
+        assertNull(MusicLogic.retryDelay(MusicLogic.serverFailure(JsonParser.parseString("""{"grpc_code":16}""")),0))
+    }
     @Test fun `redirect accepts both protocol field formats without exposing tickets`() {
         for (body in listOf("""{"redirect_ticket":"ticket","session_id":"123"}""", """{"redirectTicket":"ticket","sessionId":123}""")) {
             val json=JsonParser.parseString(body).asJsonObject
