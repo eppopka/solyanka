@@ -38,6 +38,7 @@ object WorldOverlay {
   fun styled(color:Int,style:dev.solyanka.utility.WayStyle?,v:Vec3)=style?.colorAt(color,v.x,v.y,v.z,now) ?: color
   val values=channels.values.toList();val snapshot=values.flatMap {it.segments}.toMutableList();val camera=c.levelState().cameraRenderState.pos
   val filled=values.flatMap {it.fills}.toMutableList();val text=values.flatMap {it.labels}.toMutableList()
+  HuntingFeatures.collectBestiary(c,snapshot)
   HuntingFeatures.collectTiki(c,snapshot,filled,text)
   BlockSelection.collect(c,snapshot,filled)
   val triangles=mutableListOf<Triangle>();ArchiveCosmetics.collect(c,snapshot,triangles)
@@ -74,7 +75,8 @@ object WorldOverlay {
    }
    snapshot.groupBy { it.depth }.forEach { (depth,list) ->
     c.submitNodeCollector().submitCustomGeometry(pose,if(depth) RenderTypes.LINES else esp) { matrix,buffer ->
-     list.forEach { s -> val dx=(s.b.x-s.a.x).toFloat();val dy=(s.b.y-s.a.y).toFloat();val dz=(s.b.z-s.a.z).toFloat()
+     list.forEach { s -> val direction=dev.solyanka.utility.OverlayLine.direction(s.b.x-s.a.x,s.b.y-s.a.y,s.b.z-s.a.z) ?: return@forEach
+      val dx=direction.x.toFloat();val dy=direction.y.toFloat();val dz=direction.z.toFloat()
       buffer.addVertex(matrix,(s.a.x-camera.x).toFloat(),(s.a.y-camera.y).toFloat(),(s.a.z-camera.z).toFloat()).setColor(styled(s.color,s.style,s.a)).setNormal(matrix,dx,dy,dz).setLineWidth(s.width)
       buffer.addVertex(matrix,(s.b.x-camera.x).toFloat(),(s.b.y-camera.y).toFloat(),(s.b.z-camera.z).toFloat()).setColor(styled(s.color,s.style,s.b)).setNormal(matrix,dx,dy,dz).setLineWidth(s.width)
      }

@@ -216,6 +216,7 @@ object SolyankaClient : ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register { client ->
             dev.solyanka.client.cs2.Cs2Knives.tick(client);dev.solyanka.client.feature.PictureInPicture.tick();TemporalBlur.tick();ArchiveHuds.tick();SkyboxVisual.tick()
             val world = client.level
+            dev.solyanka.client.feature.HuntingFeatures.bestiaryWorld(world)
             if (world !== previousWorld) {
                 modules.reset(if (world == null) ResetReason.DISCONNECTED else ResetReason.WORLD_CHANGED)
                 ownedInputs.clear()

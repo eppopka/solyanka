@@ -28,6 +28,8 @@
     "SuppressNauseaMixin",
     "SuppressFogMixin",
     "DungeonEventMixin",
+    "BestiaryPacketMixin",
+    "EntityNameAccessor",
     "AmbienceClockMixin",
     "AmbienceWeatherMixin",
     "AmbiencePrecipitationMixin",

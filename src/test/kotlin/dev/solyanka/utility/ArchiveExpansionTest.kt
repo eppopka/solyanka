@@ -87,3 +87,30 @@ class ArchiveExpansionTest {
  @Test fun `old config gets all new defaults`() {val s=FeatureCodec.decode(JsonParser.parseString("{}").asJsonObject);assertEquals(PipSettings(),s.pip);assertEquals(PetSettings(),s.pet);assertEquals(RouteSettings(),s.route);assertEquals(HaloSettings(),s.halo)}
  @Test fun `invalid new config rejected by codec`() {assertFails {FeatureCodec.decode(JsonParser.parseString("""{"pip":{"fps":999}}""").asJsonObject)};assertFails{FeatureCodec.decode(JsonParser.parseString("""{"halo":{"radius":"oops"}}""").asJsonObject)}}
 }
+
+class BestiaryTagCacheTest {
+ @Test fun `names and bindings are removed when server clears or despawns a tag`() {
+  val c=BestiaryTagCache();c.spawn(5,Point3(1.0,2.0,3.0));c.name(5,"Zombie")
+  c.get(5)!!.target=BestiaryTagCache.Target(4,java.util.UUID.randomUUID())
+  c.name(5,null);assertNull(c.get(5)!!.name);assertNull(c.get(5)!!.target)
+  c.remove(5);assertNull(c.get(5))
+ }
+ @Test fun `cache is bounded and reused IDs do not retain names`() {
+  val c=BestiaryTagCache(2);val p=Point3(0.0,0.0,0.0)
+  c.spawn(1,p);c.name(1,"Zombie");c.spawn(2,p);c.spawn(3,p)
+  assertNull(c.get(1));assertEquals(2,c.all().size)
+  c.name(2,"Skeleton");c.spawn(2,p);assertNull(c.get(2)!!.name)
+  c.name(2,"x".repeat(2049));assertNull(c.get(2)!!.name)
+  c.clear();assertTrue(c.all().isEmpty())
+ }
+}
+
+class OverlayLineTest {
+ @Test fun `line direction remains proportional at long distances`() {
+  val d=OverlayLine.direction(300.0,400.0,0.0)!!
+  assertEquals(.6,d.x,1e-9);assertEquals(.8,d.y,1e-9);assertEquals(0.0,d.z)
+ }
+ @Test fun `zero and nonfinite line directions are ignored`() {
+  assertNull(OverlayLine.direction(0.0,0.0,0.0));assertNull(OverlayLine.direction(Double.NaN,1.0,0.0))
+ }
+}

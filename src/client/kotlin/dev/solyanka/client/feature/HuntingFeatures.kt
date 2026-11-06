@@ -8,6 +8,14 @@ import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
+import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
+import net.minecraft.network.syncher.EntityDataSerializers
+import net.minecraft.network.chat.Component
+import net.minecraft.client.multiplayer.ClientLevel
+import net.minecraft.world.entity.EntityTypes
+import dev.solyanka.client.mixin.EntityNameAccessor
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.level.block.entity.SkullBlockEntity
@@ -18,6 +26,23 @@ import kotlin.math.*
 
 object HuntingFeatures {
  private val bugs=BugEvidence()
+ private val bestiaryTags=BestiaryTagCache()
+ private var bestiaryWorld:ClientLevel?=null
+ fun bestiaryWorld(level:ClientLevel?) {if(bestiaryWorld!==level) {bestiaryTags.clear();bestiaryWorld=level}}
+ fun bestiarySpawn(level:ClientLevel?,p:ClientboundAddEntityPacket) {
+  bestiaryWorld(level);if(level==null)return
+  if(p.type==EntityTypes.ARMOR_STAND)bestiaryTags.spawn(p.id,Point3(p.x,p.y,p.z)) else bestiaryTags.remove(p.id)
+ }
+ fun bestiaryData(level:ClientLevel?,p:ClientboundSetEntityDataPacket) {
+  bestiaryWorld(level);if(level==null || bestiaryTags.get(p.id())==null)return
+  val field=EntityNameAccessor.`solyanka$getCustomNameAccessor`().id()
+  p.packedItems().firstOrNull {it.id()==field && it.serializer()==EntityDataSerializers.OPTIONAL_COMPONENT}?.let {
+   bestiaryTags.name(p.id(),((it.value() as? java.util.Optional<*>)?.orElse(null) as? Component)?.string)
+  }
+ }
+ fun bestiaryRemove(level:ClientLevel?,p:ClientboundRemoveEntitiesPacket) {
+  bestiaryWorld(level);if(level!=null)p.entityIds.forEach {bestiaryTags.remove(it)}
+ }
  private var matched=emptySet<Entity>()
  private var matchPolicy:Pair<String,Boolean>?=null
  private var tick=0
@@ -46,22 +71,30 @@ object HuntingFeatures {
   val f=S.currentGeneral().features
   val origin=c.gameRenderer.mainCamera().position().add(player.lookAngle.scale(.5))
   if(S.isEnabled(S.BESTIARY)) {
-   // Revalidate names AND exact mode on every scan; resolve again after metadata arrives late.
+   // Revalidate names and resolve again after metadata arrives late.
    if(tick%5==0) {
     val matches=linkedSetOf<Entity>()
+    fun valid(e:Entity?)=e!=null && e !is ArmorStand && e!==player && e.isAlive
     level.entitiesForRendering().asSequence().filterIsInstance<ArmorStand>().take(4096).forEach {stand->
-     if(stand.customName?.string?.let(f.bestiary::matches)==true) {
+     val cached=bestiaryTags.get(stand.id)
+     if(stand.customName?.string?.let(f.bestiary::matches)==true || cached?.name?.let(f.bestiary::matches)==true) {
       val prev=level.getEntity(stand.id-1)
-      val mob=if(prev!=null && prev !is ArmorStand && prev!==player && prev.isAlive && prev.distanceToSqr(stand)<=16) prev else
-       level.getEntities(stand,stand.boundingBox.move(0.0,-1.0,0.0)){it !is ArmorStand && it!==player && it.isAlive}.firstOrNull()
-      if(mob!=null)matches.add(mob)
+      val mob=if(valid(prev) && prev!!.distanceToSqr(stand)<=16) prev else
+       level.getEntities(stand,stand.boundingBox.move(0.0,-1.0,0.0)){valid(it)}.firstOrNull()
+      if(mob!=null) {matches.add(mob);cached?.target=BestiaryTagCache.Target(mob.id,mob.uuid)}
      }
-    };matched=matches;matchPolicy=f.bestiary.names to f.bestiary.exact
+    }
+    bestiaryTags.all().forEach {tag->
+     if(tag.name?.let(f.bestiary::matches)!=true)return@forEach
+     val bound=tag.target
+     val mob=level.getEntity(bound?.id ?: (tag.id-1))
+     val close=mob!=null && mob.position().distanceToSqr(Vec3(tag.position.x,tag.position.y,tag.position.z))<=16
+     if(valid(mob) && if(bound!=null) mob!!.uuid==bound.uuid else close) {
+      matches.add(mob!!);if(bound==null)tag.target=BestiaryTagCache.Target(mob.id,mob.uuid)
+     }
+    }
+    matched=matches;matchPolicy=f.bestiary.names to f.bestiary.exact
    }
-   val nearest=matched.filter {it.isAlive}.minByOrNull {it.distanceToSqr(player)}
-   val s=f.bestiary
-   val lines=if(s.tracer && nearest!=null && (s.range==0 || nearest.distanceToSqr(player)<=s.range.toDouble()*s.range)) listOf(WorldOverlay.Segment(origin,nearest.position().add(0.0,1.0,0.0),s.color,false,2f)) else emptyList()
-   WorldOverlay.publish(lines,owner="bestiary")
   } else {matched=emptySet();WorldOverlay.clear("bestiary")}
   bugs.tick()
   if(S.isEnabled(S.INVISIBUG) && inGalatea()) {
@@ -97,6 +130,20 @@ object HuntingFeatures {
    renderTowers=towers.entries.map {it.key to it.value}
    WorldOverlay.clear("tiki")
   } else {towers.clear();renderTowers=emptyList();WorldOverlay.clear("tiki")}
+ }
+ /** Identity is scanned on ticks; tracer endpoints use the current render frame. */
+ fun collectBestiary(c:net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext,lines:MutableList<WorldOverlay.Segment>) {
+  val mc=Minecraft.getInstance();val level=mc.level ?: return;val player=mc.player ?: return
+  val s=S.currentGeneral().features.bestiary
+  if(!S.isEnabled(S.BESTIARY) || !s.tracer || matchPolicy!=(s.names to s.exact))return
+  val delta=mc.deltaTracker.getGameTimeDeltaPartialTick(true);val playerPos=player.getPosition(delta)
+  val nearest=matched.asSequence().filter {it.isAlive && level.getEntity(it.id)===it}.minByOrNull {it.getPosition(delta).distanceToSqr(playerPos)} ?: return
+  val target=nearest.getPosition(delta).add(0.0,nearest.bbHeight.toDouble()/2.0,0.0)
+  if(s.range!=0 && nearest.getPosition(delta).distanceToSqr(playerPos)>s.range.toDouble()*s.range)return
+  val camera=c.levelState().cameraRenderState
+  val direction=camera.orientation.transform(org.joml.Vector3f(0f,0f,-1f))
+  val origin=camera.pos.add(direction.x.toDouble()*.5,direction.y.toDouble()*.5,direction.z.toDouble()*.5)
+  if(origin.distanceToSqr(target)>1e-8)lines.add(WorldOverlay.Segment(origin,target,s.color,false,2f))
  }
  /** Tick-scanned identity snapshot; render-camera tracers and monotonic per-frame animation. */
  fun collectTiki(c:net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext,lines:MutableList<WorldOverlay.Segment>,fills:MutableList<WorldOverlay.Fill>,labels:MutableList<WorldOverlay.Label>) {

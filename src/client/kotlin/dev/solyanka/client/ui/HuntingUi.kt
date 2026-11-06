@@ -51,7 +51,7 @@ object HuntingUi {
      add(HudNavigation.button(w))
     }
     S.BESTIARY->{val s=f.bestiary
-     add(GuiKit.description(w,"Comma-separated mob nameplate terms. Rechecks loaded stands and resolves their nearby mob. Uses native silhouette glow; no entity changes or server packets. Leave names empty to match nothing."))
+     add(GuiKit.description(w,"Comma-separated mob nameplate terms. Reads server-provided names even if a mod hides the nameplate. Highlights loaded mobs with native silhouette glow; no outgoing packets. Leave names empty to match nothing."))
      add(GuiKit.textRow(w,"Names",s.names){v->change {it.copy(bestiary=it.bestiary.copy(names=v))}})
      toggle("Exact Match",s.exact){it,v->it.copy(bestiary=it.bestiary.copy(exact=v))};color("Glow Color",s.color){it,v->it.copy(bestiary=it.bestiary.copy(color=v))}
      toggle("Nearest Tracer",s.tracer){it,v->it.copy(bestiary=it.bestiary.copy(tracer=v))};number("Tracer Range (0 = unlimited)",s.range.toDouble(),0.0,100.0,5.0){it,v->it.copy(bestiary=it.bestiary.copy(range=v.toInt()))}
