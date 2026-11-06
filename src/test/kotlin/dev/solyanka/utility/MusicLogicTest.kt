@@ -7,6 +7,11 @@ import kotlin.test.*
 
 class MusicLogicTest {
     private fun state()=JsonParser.parseString("""{"activeDeviceIdOptional":"device","playerState":{"status":{"paused":false,"progressMs":123},"playerQueue":{"entityType":"PLAYLIST","currentPlayableIndex":0,"playableList":[{"playableId":"42","playableType":"TRACK","title":"Song"}],"options":{"repeatMode":"NONE"},"version":{"deviceId":"old","version":1},"customField":"preserved"}}}""").asJsonObject
+    @Test fun `connection errors identify stage without exposing exception messages`() {
+        assertEquals("Music redirect: unexpected response",MusicLogic.failure("Music redirect",IllegalStateException("secret-token")))
+        assertEquals("Sign-in: HTTP 403",MusicLogic.failure("Sign-in",MusicServiceFailure("HTTP 403")))
+        assertEquals("Music connection: timeout",MusicLogic.failure("Music connection",java.util.concurrent.ExecutionException(java.util.concurrent.TimeoutException())))
+    }
     @Test fun `reads active track safely`() {
         assertEquals("42" to "Song",MusicLogic.current(state()))
         val inactive=state();inactive.remove("activeDeviceIdOptional");assertNull(MusicLogic.current(inactive))

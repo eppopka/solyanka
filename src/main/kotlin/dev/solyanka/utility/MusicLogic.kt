@@ -2,11 +2,33 @@
 package dev.solyanka.utility
 
 import com.google.gson.*
+import java.net.http.HttpTimeoutException
+import java.net.http.WebSocketHandshakeException
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.CompletionException
+import java.util.concurrent.TimeoutException
 
 data class MusicSettings(val hud:HudSpec=HudSpec(x=12,y=245),val suggest:Boolean=true,val announce:Boolean=false) {
     fun validate() { hud.validate() }
 }
+class MusicServiceFailure(val reason:String):RuntimeException()
+
 object MusicLogic {
+    fun failure(stage:String,error:Throwable):String {
+        var cause=error
+        while((cause is ExecutionException || cause is CompletionException) && cause.cause!=null) cause=cause.cause!!
+        val reason=when(cause) {
+            is MusicServiceFailure -> cause.reason
+            is WebSocketHandshakeException -> "HTTP ${cause.response.statusCode()}"
+            is HttpTimeoutException, is TimeoutException -> "timeout"
+            is java.net.UnknownHostException -> "DNS error"
+            is javax.net.ssl.SSLException -> "TLS error"
+            is java.net.ConnectException -> "network error"
+            else -> "unexpected response"
+        }
+        return "$stage: $reason"
+    }
+
     private fun JsonObject.objectAt(key:String):JsonObject? = get(key)?.takeIf {it.isJsonObject}?.asJsonObject
     private fun JsonObject.text(key:String):String? = get(key)?.takeIf {it.isJsonPrimitive && it.asJsonPrimitive.isString}?.asString
     fun current(state:JsonObject):Pair<String,String>? {

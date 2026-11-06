@@ -7,6 +7,7 @@ import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.client.ui.HudEditorScreen
 import dev.solyanka.client.ui.nofrills.NoFrillsClickGui
 import dev.solyanka.utility.MusicLogic
+import dev.solyanka.utility.MusicServiceFailure
 import net.fabricmc.fabric.api.client.rendering.v1.hud.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.ChatScreen
@@ -30,6 +31,8 @@ object YandexMusic {
     private val requests=ArrayBlockingQueue<Request>(8)
     private data class Request(val query:String,val callback:(Boolean,String)->Unit)
     @Volatile var status="Disconnected";private set
+    data class Verification(val url:URI,val code:String)
+    @Volatile var verification:Verification?=null;private set
     @Volatile var track:String?=null;private set
     @Volatile private var socket:WebSocket?=null
     @Volatile private var connected=false
@@ -40,8 +43,13 @@ object YandexMusic {
         if(form!=null) builder.header("Content-Type","application/x-www-form-urlencoded").POST(HttpRequest.BodyPublishers.ofString(form.entries.joinToString("&") {enc(it.key)+"="+enc(it.value)})) else builder.GET()
         val response=http.send(builder.build(),HttpResponse.BodyHandlers.ofInputStream())
         val data=response.body().use {it.readNBytes(2_000_001)};require(data.size<=2_000_000) {"Response too large"}
-        val json=JsonParser.parseString(data.toString(Charsets.UTF_8)).asJsonObject
-        if(response.statusCode() !in 200..299 && json.get("error")?.asString!="authorization_pending") error("Music service rejected request")
+        val json=try {JsonParser.parseString(data.toString(Charsets.UTF_8)).asJsonObject} catch(e:Exception) {
+            if(response.statusCode() !in 200..299) throw MusicServiceFailure("HTTP ${response.statusCode()}")
+            throw e
+        }
+        val authError=json.get("error")?.takeIf {it.isJsonPrimitive}?.asString
+        if(response.statusCode() !in 200..299 && authError !in setOf("authorization_pending","slow_down"))
+            throw MusicServiceFailure("HTTP ${response.statusCode()}")
         return json
     }
     private class Frames:WebSocket.Listener {
@@ -69,13 +77,17 @@ object YandexMusic {
         return ws to listener
     }
     private fun frame(listener:Frames,seconds:Long=10):JsonObject {
-        val raw=listener.queue.poll(seconds,TimeUnit.SECONDS) ?: error("Music service timed out")
+        val raw=listener.queue.poll(seconds,TimeUnit.SECONDS) ?: throw MusicServiceFailure("timeout")
         val json=JsonParser.parseString(raw).asJsonObject
-        require(!json.has("error")) {"Music service rejected the request"};return json
+        if(json.has("error")) {
+            val code=runCatching {json.getAsJsonObject("error").get("grpc_code").asInt}.getOrNull()
+            throw MusicServiceFailure(if(code!=null && code in 0..999) "server error $code" else "server error")
+        }
+        return json
     }
     private fun registration(device:String):String = JsonParser.parseString("""{"updateFullState":{"playerState":{"playerQueue":{"currentPlayableIndex":-1,"options":{"repeatMode":"NONE"},"version":{"deviceId":"$device"},"entityType":"VARIOUS","entityContext":"BASED_ON_ENTITY_BY_DEFAULT"},"status":{"paused":true,"playbackSpeed":1,"version":{"deviceId":"$device"}}},"device":{"capabilities":{"canBePlayer":false,"canBeRemoteController":true,"volumeGranularity":0},"info":{"deviceId":"$device","type":"WEB","title":"Solyanka","appName":"yandex-music"},"volumeInfo":{"volume":0}},"isCurrentlyActive":false},"rid":"${UUID.randomUUID()}","activityInterceptionType":"DO_NOT_INTERCEPT_BY_DEFAULT"}""").toString()
     fun disconnect() {
-        generation.incrementAndGet();connected=false;socket?.abort();socket=null;track=null;status="Disconnected"
+        generation.incrementAndGet();connected=false;socket?.abort();socket=null;track=null;verification=null;status="Disconnected"
         while(true) {val r=requests.poll() ?: break;r.callback(false,"Music disconnected")}
     }
     fun connect() {
@@ -83,6 +95,7 @@ object YandexMusic {
         disconnect();val gen=generation.get();status="Requesting sign-in code…"
         Thread({
             var ws:WebSocket?=null
+            var stage="Sign-in code"
             try {
                 val device=UUID.randomUUID().toString().replace("-","").take(12)
                 val code=httpJson("https://oauth.yandex.ru/device/code",form=mapOf("client_id" to CLIENT_ID,"device_id" to device,"device_name" to "Solyanka"))
@@ -91,28 +104,33 @@ object YandexMusic {
                 val userCode=code.get("user_code").asString;require(userCode.matches(Regex("[A-Za-z0-9-]{1,32}")))
                 val privateCode=code.get("device_code").asString
                 val expires=code.get("expires_in").asLong.coerceIn(10,900)
-                val interval=code.get("interval").asLong.coerceIn(3,30)
+                var interval=code.get("interval").asLong.coerceIn(3,30)
                 val deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(expires)
                 if(gen!=generation.get()) return@Thread
+                verification=Verification(url,userCode)
                 status="${url.host}${url.path}  code: $userCode"
+                stage="Sign-in"
                 var token:String?=null
                 while(token==null && gen==generation.get() && System.nanoTime()<deadline) {
                     Thread.sleep(interval*1000)
                     if(gen!=generation.get()) return@Thread
                     val result=httpJson("https://oauth.yandex.ru/token",form=mapOf("grant_type" to "device_code","code" to privateCode,"client_id" to CLIENT_ID,"client_secret" to CLIENT_SECRET))
+                    if(result.get("error")?.asString=="slow_down") interval=(interval+5).coerceAtMost(30)
                     token=result.get("access_token")?.asString
                 }
-                val auth=token ?: error("Sign-in expired")
+                val auth=token ?: throw MusicServiceFailure("code expired")
                 if(gen!=generation.get()) return@Thread
-                status="Connecting…"
+                verification=null;status="Connecting…";stage="Music redirect"
                 val (redirect,rf)=open("wss://ynison.music.yandex.ru/redirector.YnisonRedirectService/GetRedirectToYnison",auth,device)
                 val response=try {frame(rf)} finally {redirect.abort()}
                 val host=response.get("host").asString.lowercase()
-                require(host.matches(Regex("[a-z0-9.-]+\\.music\\.yandex\\.(ru|net)"))) {"Unrecognized music server"}
+                if(!host.matches(Regex("[a-z0-9.-]+\\.music\\.yandex\\.(ru|net)"))) throw MusicServiceFailure("unrecognized server")
+                stage="Music connection"
                 val pair=open("wss://$host/ynison_state.YnisonStateService/PutYnisonState",auth,device,response.get("redirectTicket").asString,response.get("sessionId").asString)
                 ws=pair.first;socket=ws;val frames=pair.second
+                stage="Music registration"
                 ws.sendText(registration(device),true).get(10,TimeUnit.SECONDS)
-                var state=frame(frames);connected=true;status="Connected (session only)"
+                var state=frame(frames);connected=true;status="Connected (session only)";stage="Music session"
                 var lastId="";var ping=System.nanoTime()
                 while(gen==generation.get()) {
                     val idAndTitle=runCatching {MusicLogic.current(state)}.getOrNull()
@@ -152,8 +170,8 @@ object YandexMusic {
                     if(next!=null) {state=JsonParser.parseString(next).asJsonObject;require(!state.has("error"))}
                     if(System.nanoTime()-ping>TimeUnit.SECONDS.toNanos(20)) {ws.sendPing(ByteBuffer.wrap(byteArrayOf(1)));ping=System.nanoTime()}
                 }
-            } catch(e:Exception) {if(gen==generation.get()) status="Connection failed; retry sign-in"}
-            finally {ws?.abort();if(gen==generation.get()) {connected=false;socket=null;track=null;while(true) {val r=requests.poll() ?: break;r.callback(false,"Music disconnected")}}}
+            } catch(e:Exception) {if(gen==generation.get()) status=MusicLogic.failure(stage,e)}
+            finally {ws?.abort();if(gen==generation.get()) {connected=false;socket=null;track=null;verification=null;while(true) {val r=requests.poll() ?: break;r.callback(false,"Music disconnected")}}}
         },"solyanka-yandex-music").apply {isDaemon=true;start()}
     }
     fun suggest(query:String,callback:(Boolean,String)->Unit):Boolean {
