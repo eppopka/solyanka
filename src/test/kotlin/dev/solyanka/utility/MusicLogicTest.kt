@@ -12,6 +12,25 @@ class MusicLogicTest {
         assertEquals("Sign-in: HTTP 403",MusicLogic.failure("Sign-in",MusicServiceFailure("HTTP 403")))
         assertEquals("Music connection: timeout",MusicLogic.failure("Music connection",java.util.concurrent.ExecutionException(java.util.concurrent.TimeoutException())))
     }
+    @Test fun `redirect accepts both protocol field formats without exposing tickets`() {
+        for (body in listOf("""{"redirect_ticket":"ticket","session_id":"123"}""", """{"redirectTicket":"ticket","sessionId":123}""")) {
+            val json=JsonParser.parseString(body).asJsonObject
+            assertEquals("ticket",MusicLogic.redirectValue(json,"redirectTicket"));assertEquals("123",MusicLogic.redirectValue(json,"sessionId"))
+        }
+        assertFailsWith<MusicServiceFailure> {MusicLogic.redirectValue(JsonParser.parseString("{}").asJsonObject,"redirectTicket")}
+    }
+    @Test fun `snake case state is read and queue update retains its format`() {
+        val state=JsonParser.parseString("""{"active_device_id_optional":"device","player_state":{"status":{"paused":false},"player_queue":{"current_playable_index":0,"entity_type":"PLAYLIST","playable_list":[{"playable_id":"42","playable_type":"TRACK"}]}}}""").asJsonObject
+        assertEquals("42" to "",MusicLogic.current(state));assertEquals(1,MusicLogic.queueSize(state))
+        val request=MusicLogic.appendRequest(state,"123","remote","rid",1000)
+        val player=request.getAsJsonObject("update_player_state").getAsJsonObject("player_state")
+        val queue=player.getAsJsonObject("player_queue")
+        assertEquals("123",queue.getAsJsonArray("playable_list")[1].asJsonObject["playable_id"].asString)
+        val response=JsonParser.parseString("""{"rid":"rid","player_state":$player}""").asJsonObject
+        assertTrue(MusicLogic.confirmed(response,"123",1,"rid"));assertEquals(1,MusicLogic.queueSize(state))
+        queue.add("shuffle_optional",JsonParser.parseString("{}"))
+        assertFails {MusicLogic.appendRequest(response,"99","remote","rid",1000)}
+    }
     @Test fun `reads active track safely`() {
         assertEquals("42" to "Song",MusicLogic.current(state()))
         val inactive=state();inactive.remove("activeDeviceIdOptional");assertNull(MusicLogic.current(inactive))

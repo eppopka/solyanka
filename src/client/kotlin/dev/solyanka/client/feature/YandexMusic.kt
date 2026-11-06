@@ -126,7 +126,7 @@ object YandexMusic {
                 val host=response.get("host").asString.lowercase()
                 if(!host.matches(Regex("[a-z0-9.-]+\\.music\\.yandex\\.(ru|net)"))) throw MusicServiceFailure("unrecognized server")
                 stage="Music connection"
-                val pair=open("wss://$host/ynison_state.YnisonStateService/PutYnisonState",auth,device,response.get("redirectTicket").asString,response.get("sessionId").asString)
+                val pair=open("wss://$host/ynison_state.YnisonStateService/PutYnisonState",auth,device,MusicLogic.redirectValue(response,"redirectTicket"),MusicLogic.redirectValue(response,"sessionId"))
                 ws=pair.first;socket=ws;val frames=pair.second
                 stage="Music registration"
                 ws.sendText(registration(device),true).get(10,TimeUnit.SECONDS)
@@ -153,7 +153,7 @@ object YandexMusic {
                             val id=first.get("id").asString;val name=first.get("title")?.asString ?: id
                             // Drain already-received changes before constructing a whole-state update.
                             while(true) {val next=frames.queue.poll() ?: break;state=JsonParser.parseString(next).asJsonObject;require(!state.has("error"))}
-                            val original=state.getAsJsonObject("playerState").getAsJsonObject("playerQueue").getAsJsonArray("playableList").size()
+                            val original=MusicLogic.queueSize(state)
                             val rid=UUID.randomUUID().toString()
                             val payload=MusicLogic.appendRequest(state,id,device,rid,System.currentTimeMillis())
                             ws.sendText(payload.toString(),true).get(10,TimeUnit.SECONDS)
