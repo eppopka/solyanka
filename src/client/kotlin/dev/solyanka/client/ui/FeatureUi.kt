@@ -32,10 +32,19 @@ object FeatureUi {
         when(id) {
             SolyankaClient.ITEM_AURA,SolyankaClient.CS2_KNIFE->FinalCosmeticsUi.open(id,host,model)
             SolyankaClient.BLOCKLIST,SolyankaClient.MOVE_HOTBAR,SolyankaClient.PIP,SolyankaClient.PET,SolyankaClient.SIMON,SolyankaClient.BESTIARY,SolyankaClient.INVISIBUG,SolyankaClient.TIKI,SolyankaClient.CHINA_HAT,SolyankaClient.HALO->HuntingUi.open(id,host,model)
-            SolyankaClient.SPREAD_GUESSER -> host.showPanel(SettingsPanel("Spread Guesser",{host.closePanel()},{model.error}) {_,w -> listOf(
-                GuiKit.description(w,"Add Mining Spread to the Stats widget in /widgets. Hints mark face-adjacent blocks of the same type, not guaranteed server targets. Gemstone Spread is separate."),
-                GuiKit.description(w,"Mining Spread: "+(dev.solyanka.client.feature.SpreadGuesser.spread?.toString() ?: "unavailable in tab"))
-            ) })
+            SolyankaClient.SPREAD_GUESSER -> host.showPanel(SettingsPanel("Spread Guesser",{host.closePanel()},{model.error}) {panel,w ->
+                val s=model.general.features.spreadGuesser
+                fun change(block:(SpreadGuesserSettings)->SpreadGuesserSettings) {
+                    model.updateGeneral {it.copy(features=it.features.copy(spreadGuesser=block(it.features.spreadGuesser)))};panel.refreshStatus()
+                }
+                listOf(
+                    GuiKit.description(w,"Add Mining Spread to the Stats widget in /widgets. Hints mark nearby matching or grouped blocks; server targets are not guaranteed. Gemstone Spread is separate."),
+                    GuiKit.description(w,"Mining Spread: "+(dev.solyanka.client.feature.SpreadGuesser.spread?.toString() ?: "unavailable in tab")),
+                    GuiKit.colorRow(w,"Outline Color",s.color) {color->change {it.copy(color=color)}},
+                    GuiKit.toggleRow(w,"Filled Overlay",s.filled) {filled->change {it.copy(filled=filled)}},
+                    GuiKit.colorRow(w,"Fill Color",s.fillColor) {color->change {it.copy(fillColor=color)}}
+                )
+            })
             SolyankaClient.MUSIC->MusicUi.open(host,model)
             SolyankaClient.CHAT_COMMANDS->ChatCommandsUi.open(host,model)
             SolyankaClient.LEAP_MESSAGE->LeapMessageUi.open(host,model)

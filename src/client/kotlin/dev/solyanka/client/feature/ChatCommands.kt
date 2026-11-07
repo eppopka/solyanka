@@ -42,7 +42,7 @@ object ChatCommands {
                 send("Added to queue: $safe")
             } else if(!success) player.sendSystemMessage(Component.literal("[solyanka] $message"))
         }}
-        if(!accepted) player.sendSystemMessage(Component.literal("[solyanka] Yandex Music is disconnected or the request queue is full."))
+        if(!accepted) player.sendSystemMessage(Component.literal("[solyanka] !suggest is not available in local Yandex Music mode."))
     }
     fun register() {
         ClientReceiveMessageEvents.GAME.register {m,o->receive(m.string,o)}

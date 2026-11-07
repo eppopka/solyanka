@@ -18,7 +18,7 @@ object HudLayout {
         add(HudEntry("archive.hotbar","Vanilla Hotbar",HotbarLayout.editorHud(f.moveHotbar,width,height),listOf("Native Hotbar"),baseWidth=HotbarLayout.geometry(f.moveHotbar).width,baseHeight=HotbarLayout.geometry(f.moveHotbar).height,paddingX=0))
         add(HudEntry("extra.pip","Picture in Picture",f.pip.hud,listOf("Explicit window capture"),baseWidth=f.pip.width+6,baseHeight=f.pip.width*9/16+6))
         add(HudEntry("archive.pet","Pet Display",f.pet.hud,listOf("[Lvl 100] Sample Pet","Total XP: server snapshot","XP/h: changed snapshots","Sample only"),baseWidth=220,baseHeight=57))
-        add(HudEntry("extra.music","Yandex Music",f.music.hud,listOf("Artist — Song")))
+        add(HudEntry("extra.music","Yandex Music",f.music.hud,listOf("Artist — Song"),baseWidth=208,baseHeight=if(f.music.showLyrics) 80 else 66))
         add(HudEntry("archive.route","Waypoint Route",f.route.hud,listOf("Route: 3/12")))
         add(HudEntry("archive.simon","Simon Says",f.simon.hud,listOf("SS: 3/5")))
         add(HudEntry("archive.hearts","Vanilla Hearts",HeartLayout.editorHud(f.moveHearts,width,height),listOf("Vanilla Hearts"),baseWidth=HeartLayout.WIDTH,baseHeight=HeartLayout.HEIGHT,paddingX=0))

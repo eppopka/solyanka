@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.core.Direction
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.BlockHitResult
-import net.minecraft.world.phys.Vec3
+import net.minecraft.core.registries.BuiltInRegistries
 
 object SpreadGuesser {
     var spread:Double?=null;private set
@@ -17,7 +17,7 @@ object SpreadGuesser {
             SpreadLogic.readTab(c.connection?.listedOnlinePlayers?.mapNotNull {it.tabListDisplayName?.string} ?: emptyList())
         else null
     }
-    fun collect(c:Minecraft,lines:MutableList<WorldOverlay.Segment>,labels:MutableList<WorldOverlay.Label>) {
+    fun collect(c:Minecraft,lines:MutableList<WorldOverlay.Segment>,fills:MutableList<WorldOverlay.Fill>) {
         val value=spread ?: return
         if(value<=0 || !S.isEnabled(S.SPREAD_GUESSER) || !FeatureRuntime.context.skyblock || c.gui.screen()!=null) return
         val level=c.level ?: return
@@ -27,13 +27,18 @@ object SpreadGuesser {
         if(!level.hasChunk(pos.x shr 4,pos.z shr 4)) return
         val block=level.getBlockState(pos)
         if(block.isAir) return
-        // shortcut: same-type face neighbors are only a guess, upgrade after server behavior is verified.
+        val settings=S.currentGeneral().features.spreadGuesser
+        val target=BuiltInRegistries.BLOCK.getKey(block.block).toString()
+        // shortcut: same-type or grouped face neighbors are only guesses, upgrade after server behavior is verified.
         Direction.entries.forEach {direction ->
             val adjacent=pos.relative(direction)
-            if(level.hasChunk(adjacent.x shr 4,adjacent.z shr 4) && level.getBlockState(adjacent).block==block.block)
-                WorldOverlay.box(lines,AABB(adjacent).inflate(.003),0xffffcc33.toInt())
+            if(!level.hasChunk(adjacent.x shr 4,adjacent.z shr 4)) return@forEach
+            val other=BuiltInRegistries.BLOCK.getKey(level.getBlockState(adjacent).block).toString()
+            if(SpreadLogic.equivalent(target,other)) {
+                val box=AABB(adjacent).inflate(.003)
+                WorldOverlay.box(lines,box,settings.color)
+                if(settings.filled) fills.add(WorldOverlay.Fill(box,settings.fillColor))
+            }
         }
-        val whole=(value/100).toInt();val chance=value%100
-        labels.add(WorldOverlay.Label(Vec3.atCenterOf(pos).add(0.0,1.0,0.0),"Spread $value: ~$whole + ${"%.1f".format(java.util.Locale.ROOT,chance)}% (guess)",0xffffcc33.toInt()))
     }
 }

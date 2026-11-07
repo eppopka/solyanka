@@ -55,6 +55,29 @@ class MusicLogicTest {
         queue.add("shuffle_optional",JsonParser.parseString("{}"))
         assertFails {MusicLogic.appendRequest(response,"99","remote","rid",1000)}
     }
+    @Test fun `local track handles blank and unsafe metadata`() {
+        assertEquals("Исполнитель — Песня",MusicLogic.localTrack("Песня","Исполнитель"))
+        assertEquals("Title",MusicLogic.localTrack("Title",null))
+        assertEquals("Artist — Song",MusicLogic.localTrack("Song\n","Artist§"))
+        assertNull(MusicLogic.localTrack("  ","Artist"))
+        assertEquals(300,MusicLogic.localTrack("x".repeat(500),null)?.length)
+    }
+    @Test fun `local playback and timed lyrics are bounded and handle missing values`() {
+        val basic=JsonParser.parseString("""{"title":"Песня","artist":"Исполнитель"}""").asJsonObject
+        val p=MusicLogic.localPlayback(basic,0)!!;assertEquals(0.0,p.duration);assertFalse(p.playing)
+        basic.addProperty("duration",100);basic.addProperty("position",12);basic.addProperty("playing",true)
+        val active=MusicLogic.localPlayback(basic,1_000_000_000)!!
+        assertEquals(14.0,MusicLogic.elapsed(active,3_000_000_000));assertEquals(17.0,MusicLogic.elapsed(active,20_000_000_000))
+        assertEquals("1:14",MusicLogic.timestamp(74.0))
+        val lines=MusicLogic.lyrics("[00:03.50]Second\n[00:01.00][00:02.00] First\n[00:90.00]bad\n[ar:Artist]")
+        assertEquals(listOf("First","First","Second"),lines.map {it.text})
+        assertNull(MusicLogic.lyricAt(lines,.9));assertEquals("First",MusicLogic.lyricAt(lines,2.5));assertEquals("Second",MusicLogic.lyricAt(lines,4.0))
+        assertTrue(MusicLogic.lyrics("x".repeat(200001)).isEmpty())
+        assertEquals(0xffff6675.toInt(),MusicLogic.progressColor(0xffff6675.toInt(),0,1.0,0.0))
+        assertNotEquals(MusicLogic.progressColor(-1,1,1.0,0.0),MusicLogic.progressColor(-1,1,1.0,1.0))
+        val settings=MusicSettings(serviceLabel="Музыка",playingLabel="Играет",progressEffect=2,showLyrics=true)
+        assertEquals(settings,FeatureCodec.decode(com.google.gson.Gson().toJsonTree(FeatureSettings(music=settings)).asJsonObject).music)
+    }
     @Test fun `reads active track safely`() {
         assertEquals("42" to "Song",MusicLogic.current(state()))
         val inactive=state();inactive.remove("activeDeviceIdOptional");assertNull(MusicLogic.current(inactive))

@@ -49,7 +49,7 @@ object GuiCatalog {
         FeatureCardInfo("dungeon.map_info","Map Info","Dungeons","Odin: secrets, estimated score, crypts, deaths, bonus flags, room secrets and portal highlight."),
         FeatureCardInfo("dungeon.mimic","Mimic Detection","Dungeons","Odin: baby-zombie death, prince and bat detection, optional party announcements; baby-zombie highlights."),
         FeatureCardInfo("custom.mimic_chest","Mimic Chest","Dungeons","impl.zip: trapped-chest highlights, loaded chunks only; no forced chunk loads."),
-        FeatureCardInfo("utility.spread_guesser","Spread Guesser","General","Approximate same-type adjacent block hints based on the Mining Spread stat in the tab list."),
+        FeatureCardInfo("utility.spread_guesser","Spread Guesser","General","Approximate adjacent block hints based on the Mining Spread stat in the tab list."),
         FeatureCardInfo("utility.price_tooltips","Price Tooltips","General","NoFrills: market prices, observed crafting recipes and local purchase costs. Online data is opt-in."),
         FeatureCardInfo("solver.experiments","Experiment Solver","General","Chronomatron, Ultrasequencer and Superpairs memory overlays, next-click hints and optional wrong-click prevention."),
         FeatureCardInfo("render.suppression","No Render","Visual","Independent particle, entity, overlay, fog, recipe-book and HUD suppression filters."),

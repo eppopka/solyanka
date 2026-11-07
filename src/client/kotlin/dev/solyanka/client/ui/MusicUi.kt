@@ -4,26 +4,31 @@ package dev.solyanka.client.ui
 import dev.solyanka.client.feature.YandexMusic
 import dev.solyanka.client.ui.nofrills.*
 import dev.solyanka.ui.InstantSettings
-import net.minecraft.client.Minecraft
-import net.minecraft.util.Util
+import dev.solyanka.ui.NumberRange
+import dev.solyanka.utility.MusicSettings
 
 object MusicUi {
     fun open(host:NoFrillsClickGui,model:InstantSettings) {
         host.showPanel(SettingsPanel("Yandex Music",{host.closePanel()},{model.error},{YandexMusic.status}) {panel,w->
             val s=model.general.features.music
+            fun update(change:(MusicSettings)->MusicSettings) {
+                model.updateGeneral {it.copy(features=it.features.copy(music=change(it.features.music)))};panel.refreshStatus()
+            }
             listOf(
-                GuiKit.description(w,"Unofficial experimental integration. Sign in with a Yandex device code; your token is held in memory only until disconnect or game exit. The account must have an active Yandex Music player."),
-                GuiKit.button("Connect",100) {YandexMusic.connect()},
+                GuiKit.description(w,"Windows local player only. Play a track in the Yandex Music desktop app, enable the module and connect. No account sign-in in the mod."),
+                GuiKit.button("Connect local (Windows)",180) {YandexMusic.connectLocalWindows()},
                 GuiKit.button("Disconnect",100) {YandexMusic.disconnect()},
-                GuiKit.row(w).apply {
-                    child(GuiKit.button("Open sign-in page",135) {YandexMusic.verification?.let {Util.getPlatform().openUri(it.url)}})
-                    child(GuiKit.button("Copy code",100) {YandexMusic.verification?.let {Minecraft.getInstance().keyboardHandler.clipboard=it.code}})
-                },
-                GuiKit.description(w,"After Connect, use these buttons while the sign-in code is displayed."),
                 HudNavigation.button(w),
-                GuiKit.colorRow(w,"HUD Text Color",s.hud.color) {v->model.updateGeneral {it.copy(features=it.features.copy(music=it.features.music.copy(hud=it.features.music.hud.copy(color=v))))};panel.refreshStatus()},
-                GuiKit.toggleRow(w,"Allow !suggest",s.suggest,"Experimental whole-queue update; may overwrite concurrent changes. Test only with a disposable queue. Radio, My Wave and shuffle are not supported.") {v->model.updateGeneral {it.copy(features=it.features.copy(music=it.features.music.copy(suggest=v)))};panel.refreshStatus()},
-                GuiKit.toggleRow(w,"Announce Added Track",s.announce,"Only announces when the server confirms the queue update.") {v->model.updateGeneral {it.copy(features=it.features.copy(music=it.features.music.copy(announce=v)))};panel.refreshStatus()}
+                GuiKit.colorRow(w,"HUD Text Color",s.hud.color) {v->update {it.copy(hud=it.hud.copy(color=v))}},
+                GuiKit.textRow(w,"Service Label",s.serviceLabel,"Text shown at the top left of the HUD.") {v->update {it.copy(serviceLabel=v.take(40))}},
+                GuiKit.colorRow(w,"Service Label Color",s.serviceColor) {v->update {it.copy(serviceColor=v)}},
+                GuiKit.textRow(w,"Playing Label",s.playingLabel,"Text shown while music is playing.") {v->update {it.copy(playingLabel=v.take(40))}},
+                GuiKit.colorRow(w,"Playing Label Color",s.playingColor) {v->update {it.copy(playingColor=v)}},
+                GuiKit.colorRow(w,"Progress Color",s.progressColor) {v->update {it.copy(progressColor=v)}},
+                GuiKit.choiceRow(w,"Progress Effect",listOf("Static","Breathing","Rainbow"),s.progressEffect,{model.general.features.music.progressEffect}) {v->update {it.copy(progressEffect=v)}},
+                GuiKit.sliderRow(w,"Effect Speed",s.effectSpeed,NumberRange(.2,3.0,.1)) {v->update {it.copy(effectSpeed=v)}},
+                GuiKit.toggleRow(w,"Show Synced Lyrics",s.showLyrics,"Sends the current title, artist and duration to LRCLIB. Lyrics may be missing or mismatched.") {v->update {it.copy(showLyrics=v)}},
+                GuiKit.description(w,"When lyrics are enabled, track title, artist and duration are sent to LRCLIB. !suggest is not available in local mode.")
             )
         })
     }
