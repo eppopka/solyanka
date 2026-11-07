@@ -37,6 +37,11 @@ object YandexMusic {
     @Volatile var track:String?=null;private set
     @Volatile private var socket:WebSocket?=null
     @Volatile private var connected=false
+    @Volatile private var retryAfterNanos:Long?=null
+    private fun waitRemainingSeconds():Long {
+        val remaining=(retryAfterNanos ?: return 0L)-System.nanoTime()
+        return if(remaining>0) (remaining+999_999_999L)/1_000_000_000L else 0L
+    }
     private fun enc(s:String)=URLEncoder.encode(s,Charsets.UTF_8)
     private fun httpJson(uri:String,token:String?=null,form:Map<String,String>?=null):JsonObject {
         val builder=HttpRequest.newBuilder(URI(uri)).timeout(Duration.ofSeconds(12))
@@ -90,6 +95,8 @@ object YandexMusic {
     }
     fun connect() {
         if(!S.isEnabled(S.MUSIC)) {status="Enable Yandex Music first";return}
+        val remaining=waitRemainingSeconds()
+        if(remaining>0) {status="Music: server requested wait ${remaining}s";return}
         disconnect();val gen=generation.get();status="Requesting sign-in code…"
         Thread({
             var ws:WebSocket?=null
@@ -144,9 +151,12 @@ object YandexMusic {
                         ws?.abort();ws=null
                         if(gen!=generation.get()) return@Thread
                         socket=null
-                        val delay=MusicLogic.retryDelay(e,attempt) ?: throw e
+                        val serverWait=e.goAwaySeconds
+                        if(serverWait!=null) retryAfterNanos=System.nanoTime()+TimeUnit.SECONDS.toNanos(serverWait)
+                        if(serverWait!=null && (e.code!=14 || attempt>=4)) throw MusicServiceFailure("server requested wait ${serverWait}s")
+                        val delay=if(serverWait!=null) TimeUnit.SECONDS.toMillis(serverWait) else MusicLogic.retryDelay(e,attempt) ?: throw e
                         attempt++
-                        status="Music unavailable; retrying ($attempt/4)…"
+                        status=if(serverWait!=null) "Music: server requested wait ${serverWait}s; retrying" else "Music unavailable; retrying ($attempt/4)…"
                         val until=System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(delay)
                         while(gen==generation.get() && System.nanoTime()<until) Thread.sleep(250)
                         if(gen!=generation.get()) return@Thread

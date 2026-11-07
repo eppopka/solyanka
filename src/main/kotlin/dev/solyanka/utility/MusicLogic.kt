@@ -12,7 +12,7 @@ data class MusicSettings(val hud:HudSpec=HudSpec(x=12,y=245),val suggest:Boolean
     fun validate() { hud.validate() }
 }
 open class MusicServiceFailure(val reason:String):RuntimeException()
-class MusicServerFailure(val code:Int?,val retryDelays:List<Long>,val goAway:Boolean,val httpCode:Int?=null,val serviceCode:String?=null):MusicServiceFailure(
+class MusicServerFailure(val code:Int?,val retryDelays:List<Long>,val goAway:Boolean,val httpCode:Int?=null,val serviceCode:String?=null,val goAwaySeconds:Long?=null):MusicServiceFailure(
     (if(code!=null && code in 0..999) "server error $code" else "server error") +
         (httpCode?.let { " / HTTP $it" } ?: "") + (serviceCode?.let { " / $it" } ?: "")
 )
@@ -46,7 +46,10 @@ object MusicLogic {
         val httpCode=runCatching {obj?.get("http_code")?.asInt}.getOrNull()?.takeIf {it in 100..599}
         val serviceCode=headers.firstNotNullOfOrNull {runCatching {it.get("ynison-error-code")?.asString}.getOrNull()}
             ?.takeIf {it.matches(Regex("[0-9]{1,12}"))}
-        return MusicServerFailure(code,delays,invalidDelay || headers.any {it.has("ynison-go-away-for-seconds")},httpCode,serviceCode)
+        val waitField=headers.firstNotNullOfOrNull {it.get("ynison-go-away-for-seconds")}
+        // shortcut: waits over seven days remain manual, upgrade if the service documents longer intervals.
+        val wait=runCatching {waitField?.asString?.toLongOrNull()}.getOrNull()?.takeIf {it in 1..604800}
+        return MusicServerFailure(code,delays,invalidDelay || waitField!=null,httpCode,serviceCode,wait)
     }
     fun retryDelay(error:MusicServerFailure,attempt:Int):Long? {
         if(error.code!=14 || error.goAway || attempt !in 0..3) return null
