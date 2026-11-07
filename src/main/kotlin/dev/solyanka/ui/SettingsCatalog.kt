@@ -6,7 +6,7 @@ data class FeaturePanelSpec(val section:String,val title:String,val fields:List<
 object SettingsCatalog {
     private fun panel(section:String,title:String,vararg fields:String)=FeaturePanelSpec(section,title,fields.toList())
     val panels=linkedMapOf(
-        "render.ambience" to panel("environment","Ambience","clock","weather","precipitation","gradient"),
+        "render.ambience" to panel("environment","Ambience","clock","weather","ignoreWeatherBlocks","precipitation","gradient"),
         "render.aspect" to panel("environment","Aspect","aspectRatio"),
         "render.fog" to panel("environment","Fog","fogStart","fogEnd","fogDensity","fogColor"),
         "dungeon.door_highlight" to panel("map","Door Highlight","announceKeySpawn"),

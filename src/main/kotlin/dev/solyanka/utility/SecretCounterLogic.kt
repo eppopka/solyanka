@@ -47,9 +47,3 @@ class SecretAnnouncement {
     }
     fun reset() {pending=null}
 }
-object AlwaysWaterPolicy {
-    fun rain(enabled:Boolean,original:Float)=if(enabled) 1f else original
-    // Extraction clamps every use against camera Y/radius before making a column/light position.
-    // Do not change the world's heightmap or precipitation state.
-    fun roofHeight(enabled:Boolean,original:Int)=if(enabled) Int.MIN_VALUE else original
-}

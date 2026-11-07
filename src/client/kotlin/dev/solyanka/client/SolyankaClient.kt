@@ -78,7 +78,6 @@ object SolyankaClient : ClientModInitializer {
     const val CHINA_HAT="custom.china_hat"
     const val HALO="custom.halo"
     const val SECRET_COUNTER="custom.secret_counter"
-    const val ALWAYS_WATER="custom.always_water"
     const val AMBIENT_PARTICLES="custom.ambient_particles"
     const val ROTATING_ITEM="custom.rotating_item"
     const val MOVE_HEARTS="custom.move_hearts"
@@ -115,6 +114,7 @@ object SolyankaClient : ClientModInitializer {
     const val MUSIC="hud.yandex_music"
     const val DOORS="dungeon.door_highlight"
     const val MAP_INFO="dungeon.map_info"
+    const val PUZZLE_SOLVERS="dungeon.puzzle_solvers"
     const val ICE="solver.ice_fill"
     const val BLAZE="solver.blaze"
     const val BEAMS="solver.creeper_beams"
@@ -129,57 +129,59 @@ object SolyankaClient : ClientModInitializer {
     @JvmStatic fun keepChatHistory() = isEnabled(CHAT) && general.chat.keepHistory
 
     fun currentProfile() = profile
-    fun isEnabled(id: String) = modules.get(id)?.enabled == true
+    fun isEnabled(id: String) = PuzzleSolverModules.active(id,modules.get(id)?.enabled == true,modules.get(PUZZLE_SOLVERS)?.enabled == true)
 
     override fun onInitializeClient() {
         dev.solyanka.client.cs2.render.KnifeRender.register()
         HeldItemCosmetic.register() // Pipeline metadata is known before the first shader resource reload.
-        modules.register(object : Module(ModuleInfo(KEYBINDS, "Command keybinds", Category.UTILITY)) {
+        modules.register(object : Module(ModuleInfo(KEYBINDS, "Command keybinds", Category.GENERAL)) {
             override fun onReset(reason: ResetReason) { ownedInputs.clear() }
         })
-        modules.register(object : Module(ModuleInfo(SHORTCUTS, "Command shortcuts", Category.UTILITY)) {})
-        modules.register(object : Module(ModuleInfo(CHAT,"Chat tweaks",Category.UTILITY)) {})
-        modules.register(object : Module(ModuleInfo(TOOLTIPS,"Info tooltips",Category.UTILITY)) {})
+        modules.register(object : Module(ModuleInfo(SHORTCUTS, "Command shortcuts", Category.GENERAL)) {})
+        modules.register(object : Module(ModuleInfo(CHAT,"Chat tweaks",Category.GENERAL)) {})
+        modules.register(object : Module(ModuleInfo(TOOLTIPS,"Info tooltips",Category.GENERAL)) {})
         modules.register(object : Module(ModuleInfo(TICK_TIMERS,"Tick timers (Odin)",Category.DUNGEON)) { override fun onDisable() { FeatureRuntime.timers.reset() } })
         modules.register(object : Module(ModuleInfo(PLAYER_DISPLAY,"Player display (Odin)",Category.HUD)) { override fun onDisable() { FeatureRuntime.stats.reset() } })
         listOf(INVENTORY_HUD to "Inventory HUD",ITEM_NAME_HUD to "Item Name HUD",SKILL_HUD to "Skill Progress HUD").forEach {(id,name)->
             modules.register(object : Module(ModuleInfo(id,name,Category.HUD)) {override fun onDisable() {if(id==SKILL_HUD) ExtraHuds.reset()}})
         }
-        modules.register(object : Module(ModuleInfo(ANIMATION,"Animation fix",Category.RENDER)) {})
-        modules.register(object : Module(ModuleInfo(MIDDLE_FIX,"Middle click fix",Category.UTILITY)) {})
-        modules.register(object : Module(ModuleInfo(MIDDLE_OVERRIDE,"Middle click override",Category.UTILITY)) {})
-        modules.register(object : Module(ModuleInfo(CURSOR,"No cursor reset",Category.UTILITY)) { override fun onDisable() { FeatureRuntime.cursor.reset() } })
-        modules.register(object : Module(ModuleInfo(LOADING,"No loading screen",Category.UTILITY)) {})
-        modules.register(object : Module(ModuleInfo(PRICES,"Price tooltips",Category.UTILITY)) {})
-        modules.register(object : Module(ModuleInfo(EXPERIMENTS,"Experiment solver",Category.SOLVER)) { override fun onDisable() { Experiments.reset() } })
-        modules.register(object : Module(ModuleInfo(SUPPRESSION,"No render",Category.RENDER)) {})
-        modules.register(object : Module(ModuleInfo(WAYPOINTS,"Waypoints",Category.RENDER)) {override fun onDisable() {DungeonPuzzles.invalidate()}})
+        modules.register(object : Module(ModuleInfo(ANIMATION,"Animation fix",Category.GENERAL)) {})
+        modules.register(object : Module(ModuleInfo(MIDDLE_FIX,"Middle click fix",Category.GENERAL)) {})
+        modules.register(object : Module(ModuleInfo(MIDDLE_OVERRIDE,"Middle click override",Category.GENERAL)) {})
+        modules.register(object : Module(ModuleInfo(CURSOR,"No cursor reset",Category.GENERAL)) { override fun onDisable() { FeatureRuntime.cursor.reset() } })
+        modules.register(object : Module(ModuleInfo(LOADING,"No loading screen",Category.GENERAL)) {})
+        modules.register(object : Module(ModuleInfo(PRICES,"Price tooltips",Category.GENERAL)) {})
+        modules.register(object : Module(ModuleInfo(EXPERIMENTS,"Experiment solver",Category.GENERAL)) { override fun onDisable() { Experiments.reset() } })
+        modules.register(object : Module(ModuleInfo(SUPPRESSION,"No render",Category.VISUAL)) {})
+        modules.register(object : Module(ModuleInfo(WAYPOINTS,"Waypoints",Category.VISUAL)) {override fun onDisable() {DungeonPuzzles.invalidate()}})
         modules.register(object : Module(ModuleInfo(LEAP_MESSAGE,"Leap Message+",Category.DUNGEON)) {})
-        modules.register(object : Module(ModuleInfo(CHAT_COMMANDS,"Chat Commands",Category.RENDER)) {})
+        modules.register(object : Module(ModuleInfo(CHAT_COMMANDS,"Chat Commands",Category.GENERAL)) {})
         modules.register(object : Module(ModuleInfo(MUSIC,"Yandex Music",Category.HUD)) {override fun onDisable() {dev.solyanka.client.feature.YandexMusic.disconnect()}})
-        listOf(DOORS to "Door Highlight",MAP_INFO to "Map Info",ICE to "Ice Fill",BLAZE to "Blaze",BEAMS to "Creeper Beams",MIMIC to "Mimic detection",MIMIC_CHEST to "Mimic Chest (archive)").forEach { (id,name) -> modules.register(object : Module(ModuleInfo(id,name,if(id.startsWith("solver.")) Category.SOLVER else Category.DUNGEON)) {override fun onDisable() {DungeonPuzzles.invalidate()}}) }
-        listOf(AMBIENCE to "Ambience",ASPECT to "Aspect",FOG to "Fog").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {})}
-        listOf(PLAYER_GLOW to "Player Glow",NAMETAGS to "Nametags",BLOCK_OUTLINE to "Block Outline",TITANIUM to "Titanium ESP").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.RENDER)) {override fun onDisable() {WorldVisuals.reset();if(id==TITANIUM) TitaniumScanner.reset()}})}
+        listOf(DOORS to "Door Highlight",MAP_INFO to "Map Info",ICE to "Ice Fill",BLAZE to "Blaze",BEAMS to "Creeper Beams",MIMIC to "Mimic detection",MIMIC_CHEST to "Mimic Chest (archive)").forEach { (id,name) -> modules.register(object : Module(ModuleInfo(id,name,Category.DUNGEON)) {override fun onDisable() {DungeonPuzzles.invalidate()}}) }
+        listOf(AMBIENCE to "Ambience",ASPECT to "Aspect",FOG to "Fog").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.VISUAL)) {})}
+        listOf(PLAYER_GLOW to "Player Glow",NAMETAGS to "Nametags",BLOCK_OUTLINE to "Block Outline",TITANIUM to "Titanium ESP").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.VISUAL)) {override fun onDisable() {WorldVisuals.reset();if(id==TITANIUM) TitaniumScanner.reset()}})}
         listOf(SCOREBOARD to "Scoreboard",THEMED_CHAT to "Themed Chat").forEach {(id,name)->modules.register(object : Module(ModuleInfo(id,name,Category.HUD)) {})}
-        modules.register(object : Module(ModuleInfo(ITEM_AURA,"Item Aura",Category.RENDER)) {override fun onDisable() {dev.solyanka.client.feature.ItemAura.clear()};override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.ItemAura.clear()}})
-        modules.register(object : Module(ModuleInfo(CS2_KNIFE,"CS2 Knives",Category.RENDER)) {override fun onEnable() {dev.solyanka.client.cs2.Cs2Knives.reload()};override fun onDisable() {dev.solyanka.client.cs2.Cs2Knives.clear()};override fun onReset(reason:ResetReason) {dev.solyanka.client.cs2.Cs2Viewmodel.reset()}})
-        modules.register(object : Module(ModuleInfo(HELD_ITEM,"Held Item Shader",Category.RENDER)) {override fun onEnable() {HeldItemCosmetic.retry()};override fun onDisable() {HeldItemCosmetic.suspend()};override fun onReset(reason:ResetReason) {HeldItemCosmetic.requestCleanup()}})
-        modules.register(object : Module(ModuleInfo(SKYBOX,"Skybox",Category.RENDER)) {override fun onEnable() {SkyboxVisual.retry()};override fun onDisable() {SkyboxVisual.requestCleanup()};override fun onReset(reason:ResetReason) {SkyboxVisual.requestCleanup()}})
-        modules.register(object : Module(ModuleInfo(MOTION_BLUR,"Motion Blur",Category.RENDER)) {override fun onEnable() {TemporalBlur.retry()};override fun onDisable() {TemporalBlur.requestCleanup()};override fun onReset(reason:ResetReason) {TemporalBlur.requestCleanup()}})
+        modules.register(object : Module(ModuleInfo(ITEM_AURA,"Item Aura",Category.VISUAL)) {override fun onDisable() {dev.solyanka.client.feature.ItemAura.clear()};override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.ItemAura.clear()}})
+        modules.register(object : Module(ModuleInfo(CS2_KNIFE,"CS2 Knives",Category.VISUAL)) {override fun onEnable() {dev.solyanka.client.cs2.Cs2Knives.reload()};override fun onDisable() {dev.solyanka.client.cs2.Cs2Knives.clear()};override fun onReset(reason:ResetReason) {dev.solyanka.client.cs2.Cs2Viewmodel.reset()}})
+        modules.register(object : Module(ModuleInfo(HELD_ITEM,"Held Item Shader",Category.VISUAL)) {override fun onEnable() {HeldItemCosmetic.retry()};override fun onDisable() {HeldItemCosmetic.suspend()};override fun onReset(reason:ResetReason) {HeldItemCosmetic.requestCleanup()}})
+        modules.register(object : Module(ModuleInfo(SKYBOX,"Skybox",Category.VISUAL)) {override fun onEnable() {SkyboxVisual.retry()};override fun onDisable() {SkyboxVisual.requestCleanup()};override fun onReset(reason:ResetReason) {SkyboxVisual.requestCleanup()}})
+        modules.register(object : Module(ModuleInfo(MOTION_BLUR,"Motion Blur",Category.VISUAL)) {override fun onEnable() {TemporalBlur.retry()};override fun onDisable() {TemporalBlur.requestCleanup()};override fun onReset(reason:ResetReason) {TemporalBlur.requestCleanup()}})
         modules.register(object : Module(ModuleInfo(STOPWATCH,"Stopwatch",Category.HUD)) {override fun onDisable() {ArchiveHuds.resetTimer()};override fun onReset(reason:ResetReason) {ArchiveHuds.resetTimer()}})
         modules.register(object : Module(ModuleInfo(DVD,"DVD Bounce",Category.HUD)) {override fun onDisable() {ArchiveHuds.resetDvd()};override fun onReset(reason:ResetReason) {ArchiveHuds.resetDvd()}})
-        modules.register(object : Module(ModuleInfo(AMBIENT_PARTICLES,"Ambient Particles",Category.RENDER)) {})
-        modules.register(object : Module(ModuleInfo(ROTATING_ITEM,"Rotating Item",Category.RENDER)) {override fun onEnable() {ArchiveVisuals.resetRotation()};override fun onDisable() {ArchiveVisuals.resetRotation()};override fun onReset(reason:ResetReason) {ArchiveVisuals.resetRotation()}})
+        modules.register(object : Module(ModuleInfo(AMBIENT_PARTICLES,"Ambient Particles",Category.VISUAL)) {})
+        modules.register(object : Module(ModuleInfo(ROTATING_ITEM,"Rotating Item",Category.VISUAL)) {override fun onEnable() {ArchiveVisuals.resetRotation()};override fun onDisable() {ArchiveVisuals.resetRotation()};override fun onReset(reason:ResetReason) {ArchiveVisuals.resetRotation()}})
         modules.register(object : Module(ModuleInfo(MOVE_HEARTS,"Move Hearts",Category.HUD)) {})
         modules.register(object : Module(ModuleInfo(SECRET_COUNTER,"Secret Counter",Category.DUNGEON)) {override fun onEnable() {SecretCounter.reset()};override fun onDisable() {SecretCounter.reset()};override fun onReset(reason:ResetReason) {SecretCounter.reset()}})
-        modules.register(object : Module(ModuleInfo(ALWAYS_WATER,"Always Water",Category.RENDER)) {})
         listOf(BESTIARY to "Bestiary ESP",INVISIBUG to "Invisibug ESP",TIKI to "Tiki ESP",CHINA_HAT to "ChinaHat",HALO to "Halo").forEach {(id,name)->
-            modules.register(object:Module(ModuleInfo(id,name,if(id in setOf(CHINA_HAT,HALO)) Category.COSMETIC else Category.HUNTING)) {
+            modules.register(object:Module(ModuleInfo(id,name,if(id in setOf(CHINA_HAT,HALO)) Category.VISUAL else Category.ESP)) {
                 override fun onDisable() {dev.solyanka.client.feature.HuntingFeatures.reset()}
                 override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.HuntingFeatures.reset()}
             })
         }
-        modules.register(object:Module(ModuleInfo(SIMON,"Simon Says",Category.SOLVER)) {
+        modules.register(object:Module(ModuleInfo(PUZZLE_SOLVERS,"Puzzle Solvers",Category.DUNGEON)) {
+            override fun onDisable() {DungeonPuzzles.invalidate();dev.solyanka.client.feature.SimonSolver.reset()}
+        })
+        modules.register(object:Module(ModuleInfo(SIMON,"Simon Says",Category.DUNGEON)) {
             override fun onDisable() {dev.solyanka.client.feature.SimonSolver.reset()}
             override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.SimonSolver.reset()}
         })
@@ -187,7 +189,7 @@ object SolyankaClient : ClientModInitializer {
             override fun onDisable() {dev.solyanka.client.feature.PetDisplay.reset()}
             override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.PetDisplay.reset()}
         })
-        modules.register(object:Module(ModuleInfo(PIP,"Picture in Picture",Category.RENDER)) {
+        modules.register(object:Module(ModuleInfo(PIP,"Picture in Picture",Category.HUD)) {
             override fun onDisable() {dev.solyanka.client.feature.PictureInPicture.reset()}
             override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.PictureInPicture.reset()}
         })
@@ -208,7 +210,7 @@ object SolyankaClient : ClientModInitializer {
         dev.solyanka.client.feature.VanillaHotbar.register();VanillaHearts.register() // Wrap existing visibility filters; never bypass their decisions.
         DungeonPuzzles.register();DungeonMap.register();DungeonWaypoints.register();dev.solyanka.client.feature.LeapMessage.register();dev.solyanka.client.feature.ChatCommands.register();dev.solyanka.client.feature.YandexMusic.register()
         modules.all().forEach { module ->
-            try { module.setEnabled(config.enabled(module.info.id)) }
+            try { module.setEnabled(if(module.info.id==PUZZLE_SOLVERS) PuzzleSolverModules.masterEnabled(config.configured(PUZZLE_SOLVERS),PuzzleSolverModules.children.any(config::enabled)) else config.enabled(module.info.id)) }
             catch (e: Exception) { logger.error("Cannot enable ${module.info.id}", e) }
         }
         settingsKey = KeyMappingHelper.registerKeyMapping(KeyMapping("key.solyanka.settings", GLFW.GLFW_KEY_RIGHT_SHIFT,
@@ -274,10 +276,10 @@ object SolyankaClient : ClientModInitializer {
                     if (modules.get(id) == null) {
                         ctx.source.sendError(Component.literal("Unknown or unimplemented module: $id")); 0
                     } else {
-                        val changed = states().toMutableMap().also { it[id] = !isEnabled(id) }
+                        val changed = states().toMutableMap().also { it[id] = !(states()[id] ?: false) }
                         val failure = applySettings(profile, changed)
                         if (failure != null) { ctx.source.sendError(Component.literal(failure)); 0 }
-                        else { ctx.source.sendFeedback(Component.literal("$id: ${if (isEnabled(id)) "on" else "off"}")); 1 }
+                        else { ctx.source.sendFeedback(Component.literal("$id: ${if (states()[id]==true) "on" else "off"}${if(id in PuzzleSolverModules.children && !isEnabled(PUZZLE_SOLVERS)) " (Puzzle Solvers off)" else ""}")); 1 }
                     }
                 })))
         }

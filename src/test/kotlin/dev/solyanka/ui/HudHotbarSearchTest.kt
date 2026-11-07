@@ -8,7 +8,7 @@ import com.google.gson.*
 class HudHotbarSearchTest {
  private fun ui(name:String)=Path.of("src/client/kotlin/dev/solyanka/client/ui/$name").toFile().readText()
  @Test fun `no enabled modules means empty editor without changing catalog`() {assertTrue(HudLayout.visibleEntries(FeatureSettings(),emptySet()).isEmpty());assertEquals(26,HudLayout.entries(FeatureSettings()).size)}
- @Test fun `every HUD owner resolves to a registered module`() {val ids=GuiCatalog.features.map {it.id}.toSet();HudLayout.entries(FeatureSettings()).forEach {assertTrue(HudLayout.owner(it.key) in ids,it.key)}}
+ @Test fun `every HUD owner resolves to a registered module`() {val ids=GuiCatalog.features.map {it.id}.toSet()+dev.solyanka.utility.PuzzleSolverModules.children;HudLayout.entries(FeatureSettings()).forEach {assertTrue(HudLayout.owner(it.key) in ids,it.key)}}
  @Test fun `one module exposes only its own enabled HUDs`() {val f=FeatureSettings();assertEquals(listOf("extra.inventory"),HudLayout.visibleEntries(f,setOf("hud.inventory")).map {it.key});assertEquals(6,HudLayout.visibleEntries(f,setOf("dungeon.tick_timers")).size)}
  @Test fun `hidden sub HUD stays out even when parent is enabled`() {val f=FeatureSettings(timers=TimerSettings(goldor=HudSpec(enabled=false)));assertEquals(5,HudLayout.visibleEntries(f,setOf("dungeon.tick_timers")).size);assertEquals(26,HudLayout.entries(f).size)}
  @Test fun `route progress switch also filters editor`() {assertTrue(HudLayout.visibleEntries(FeatureSettings(route=RouteSettings(progress=false)),setOf("dungeon.waypoints")).isEmpty())}

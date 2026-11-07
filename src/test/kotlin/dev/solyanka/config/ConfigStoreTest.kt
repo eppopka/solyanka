@@ -18,6 +18,17 @@ class ConfigStoreTest {
         c.load(); assertFalse(c.enabled("test.module")); c.save(mapOf("test.module" to true))
         val reloaded = store(file); reloaded.load(); assertTrue(reloaded.enabled("test.module"))
     }
+    @Test fun `legacy solver flags and explicit master survive migration and reload`() {
+        val file=dir.resolve("solyanka.json")
+        Files.writeString(file,"""{"modules":{"solver.ice_fill":true,"custom.simon_says":false}}""")
+        val c=store();c.load()
+        val enabled=PuzzleSolverModules.masterEnabled(c.configured("dungeon.puzzle_solvers"),PuzzleSolverModules.children.any(c::enabled))
+        assertTrue(enabled);assertTrue(c.enabled("solver.ice_fill"));assertFalse(c.enabled("custom.simon_says"))
+        assertTrue(c.save(mapOf("dungeon.puzzle_solvers" to false)))
+        val next=store();next.load()
+        assertFalse(PuzzleSolverModules.masterEnabled(next.configured("dungeon.puzzle_solvers"),PuzzleSolverModules.children.any(next::enabled)))
+        assertTrue(next.enabled("solver.ice_fill"));assertFalse(next.enabled("custom.simon_says"))
+    }
     @Test fun `unknown config settings and modules survive save`() {
         val file = dir.resolve("solyanka.json")
         Files.writeString(file, """{"schemaVersion":1,"future":{"x":9},"modules":{"future.feature":true}}""")

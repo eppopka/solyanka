@@ -8,12 +8,18 @@ import org.junit.jupiter.api.Test
 class GuiModelsTest {
     @Test fun `catalog only contains implemented unique module cards`() {
         val cards=GuiCatalog.search("").values.flatten()
-        assertEquals(setOf("custom.item_aura","cosmetic.cs2_knife","custom.shitter_list","custom.move_hotbar","render.picture_in_picture","custom.pet_display","custom.simon_says","custom.bestiary_esp","custom.invisibug_esp","custom.tiki_esp","custom.china_hat","custom.halo","custom.secret_counter","custom.always_water","custom.ambient_particles","custom.rotating_item","custom.move_hearts","render.motion_blur","custom.stopwatch","custom.dvd_bounce","render.skybox","cosmetic.held_item","hud.scoreboard","hud.themed_chat","render.player_glow","render.nametags","render.block_outline","mining.titanium","hud.inventory","hud.item_name","hud.skill_progress","render.ambience","render.aspect","render.fog","dungeon.waypoints","render.chat_commands","hud.yandex_music","dungeon.leap_message","dungeon.door_highlight","dungeon.map_info","solver.ice_fill","solver.blaze","solver.creeper_beams","dungeon.mimic","custom.mimic_chest","utility.price_tooltips","solver.experiments","render.suppression","utility.command_keybinds","utility.command_shortcuts","utility.chat","utility.info_tooltips","dungeon.tick_timers","hud.player_display","render.animation_fix","utility.middle_click_fix","utility.middle_click_override","utility.cursor","utility.loading_screen"),cards.map { it.id }.toSet())
-        assertEquals(59,cards.size)
+        assertEquals(setOf("custom.item_aura","cosmetic.cs2_knife","custom.shitter_list","custom.move_hotbar","render.picture_in_picture","custom.pet_display","custom.bestiary_esp","custom.invisibug_esp","custom.tiki_esp","custom.china_hat","custom.halo","custom.secret_counter","custom.ambient_particles","custom.rotating_item","custom.move_hearts","render.motion_blur","custom.stopwatch","custom.dvd_bounce","render.skybox","cosmetic.held_item","hud.scoreboard","hud.themed_chat","render.player_glow","render.nametags","render.block_outline","mining.titanium","hud.inventory","hud.item_name","hud.skill_progress","render.ambience","render.aspect","render.fog","dungeon.waypoints","render.chat_commands","hud.yandex_music","dungeon.leap_message","dungeon.door_highlight","dungeon.map_info","dungeon.puzzle_solvers","dungeon.mimic","custom.mimic_chest","utility.price_tooltips","solver.experiments","render.suppression","utility.command_keybinds","utility.command_shortcuts","utility.chat","utility.info_tooltips","dungeon.tick_timers","hud.player_display","render.animation_fix","utility.middle_click_fix","utility.middle_click_override","utility.cursor","utility.loading_screen"),cards.map { it.id }.toSet())
+        assertEquals(55,cards.size)
     }
-    @Test fun `waypoints retains its id in render`() {
+    @Test fun `waypoints retains its id in visual`() {
         val card=GuiCatalog.search("waypoints").values.flatten().single { it.id=="dungeon.waypoints" }
-        assertEquals("Render",card.category)
+        assertEquals("Visual",card.category)
+    }
+    @Test fun `reorganized cards have requested categories`() {
+        val cards=GuiCatalog.features.associateBy {it.id}
+        mapOf("dungeon.puzzle_solvers" to "Dungeons","solver.experiments" to "General","render.chat_commands" to "General", "render.picture_in_picture" to "HUD", "custom.item_aura" to "Visual","custom.halo" to "Visual","custom.china_hat" to "Visual","cosmetic.cs2_knife" to "Visual","custom.bestiary_esp" to "ESP").forEach { (id,category)->assertEquals(category,cards.getValue(id).category) }
+        assertEquals(setOf("Dungeons","General","Visual","HUD","ESP"),cards.values.map {it.category}.toSet())
+        assertTrue(PuzzleSolverModules.children.none {it in cards});assertFalse(cards.containsKey("custom.always_water"))
     }
     @Test fun `search ignores case and whitespace and includes descriptions`() {
         assertEquals("utility.command_keybinds",GuiCatalog.search("  COMMAND   keyBINDS ").values.flatten().single().id)

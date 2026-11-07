@@ -33,7 +33,8 @@ class ConfigStore(private val path: Path, private val report: (String, Exception
             report("Cannot load config; writes disabled to preserve original file", e)
         }
     }
-    fun enabled(id: String): Boolean = root.getAsJsonObject("modules")?.get(id)?.asBoolean ?: false
+    fun configured(id: String): Boolean? = root.getAsJsonObject("modules")?.get(id)?.asBoolean
+    fun enabled(id: String): Boolean = configured(id) ?: false
     fun profile(): CommandProfile = ProfileCodec.decode(root.getAsJsonObject("commandUtilities"))
     fun general(): GeneralSettings = GeneralCodec.decode(root.getAsJsonObject("generalUtilities"))
     fun save(states: Map<String, Boolean>, profile: CommandProfile? = null, general: GeneralSettings? = null): Boolean {

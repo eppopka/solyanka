@@ -10,12 +10,12 @@ import dev.solyanka.utility.FeatureCodec
 
 /** Typed settings still validate through FeatureCodec; widgets edit only an immutable copy. */
 object AdvancedUi {
- fun open(id:String,host:NoFrillsClickGui,model:InstantSettings) {
+ fun open(id:String,host:NoFrillsClickGui,model:InstantSettings,onBack:()->Unit={host.closePanel()}) {
   val spec=SettingsCatalog.panels[id] ?: error("No advanced settings for $id")
   val key=spec.section
   val title=spec.title
   val errors=linkedMapOf<String,String>()
-  host.showPanel(SettingsPanel(title,{host.closePanel()},{errors.values.firstOrNull() ?: model.error}) { panel,w ->
+  host.showPanel(SettingsPanel(title,onBack,{errors.values.firstOrNull() ?: model.error}) { panel,w ->
    val objectValue=Gson().toJsonTree(model.general.features).asJsonObject
    val section=objectValue.getAsJsonObject(key)
    fun change(field:String,value:com.google.gson.JsonPrimitive) {
@@ -27,7 +27,7 @@ object AdvancedUi {
    }
    buildList {
     add(GuiKit.description(w,when(id) {
-     SolyankaClient.AMBIENCE->"Local time and weather overrides. Left click: next style; right click: previous."
+     SolyankaClient.AMBIENCE->"Local time and weather overrides. Ignore Weather Blocks lets precipitation pass through roofs, but does not enable rain or snow. Left click: next style; right click: previous."
      SolyankaClient.ASPECT->"Horizontal projection multiplier: 1 is vanilla. Range 0.3–3; not a width:height ratio."
      SolyankaClient.FOG->"Start/end/density are fractions from 0–1. Density controls fog opacity; palette alpha is ignored. Sodium uses native fog uniforms; Iris parity is not included."
      SolyankaClient.DOORS->"Door colors follow Magical Map data and available-key chat. Optionally announce key spawns locally."

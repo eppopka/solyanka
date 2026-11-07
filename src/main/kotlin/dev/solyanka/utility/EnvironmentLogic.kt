@@ -2,11 +2,13 @@
  * Stray CustomAmbience/AspectFov/CustomFog CC0 adaptation; see NOTICE. */
 package dev.solyanka.utility
 import kotlin.math.*
-data class EnvironmentSettings(val clock:Int=0,val weather:Int=0,val precipitation:Boolean=false,val gradient:Double=.5,val aspectRatio:Double=1.0,val fogStart:Double=.2,val fogEnd:Double=1.0,val fogDensity:Double=.5,val fogColor:Int=0xffaabbcc.toInt()) {
+data class EnvironmentSettings(val clock:Int=0,val weather:Int=0,val ignoreWeatherBlocks:Boolean=false,val precipitation:Boolean=false,val gradient:Double=.5,val aspectRatio:Double=1.0,val fogStart:Double=.2,val fogEnd:Double=1.0,val fogDensity:Double=.5,val fogColor:Int=0xffaabbcc.toInt()) {
  fun validate() {require(clock in 0..6 && weather in 0..4);require(gradient.isFinite() && gradient in .1..1.0);require(aspectRatio.isFinite() && aspectRatio in .3..3.0);require(listOf(fogStart,fogEnd,fogDensity).all {it.isFinite() && it in 0.0..1.0})}
 }
 object EnvironmentLogic {
  fun time(clock:Int):Long?=when(clock) {1->23041L;2->1000L;3->6000L;4->12610L;5->13000L;6->18000L;else->null}
+ // Extraction clamps the height to the camera radius; the world heightmap is untouched.
+ fun roofHeight(ignore:Boolean,original:Int)=if(ignore) Int.MIN_VALUE else original
  fun rain(weather:Int,original:Float):Float=when(weather) {1->0f;2,3->1f;4->.9f;else->original}
  fun thunder(weather:Int,original:Float):Float=when(weather) {3->1f;1,2,4->0f;else->original}
  data class Fog(val start:Float,val end:Float,val red:Float,val green:Float,val blue:Float,val alpha:Float)

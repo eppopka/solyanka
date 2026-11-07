@@ -5,9 +5,9 @@ import dev.solyanka.client.ui.nofrills.*
 import dev.solyanka.ui.*
 import dev.solyanka.utility.*
 object HuntingUi {
- fun open(id:String,host:NoFrillsClickGui,model:InstantSettings) {
-  val title=GuiCatalog.features.firstOrNull {it.id==id}?.name ?: "Archive"
-  host.showPanel(SettingsPanel(title,{host.closePanel()},{model.error}) {panel,w->buildList {
+ fun open(id:String,host:NoFrillsClickGui,model:InstantSettings,onBack:()->Unit={host.closePanel()}) {
+  val title=if(id==S.SIMON) "Simon Says" else GuiCatalog.features.firstOrNull {it.id==id}?.name ?: "Archive"
+  host.showPanel(SettingsPanel(title,onBack,{model.error}) {panel,w->buildList {
    fun change(block:(FeatureSettings)->FeatureSettings) {model.updateGeneral {it.copy(features=block(it.features))};panel.refreshStatus()}
    fun toggle(name:String,value:Boolean,help:String="",update:(FeatureSettings,Boolean)->FeatureSettings) {add(GuiKit.toggleRow(w,name,value,help){v->change {update(it,v)}})}
    fun color(name:String,value:Int,update:(FeatureSettings,Int)->FeatureSettings) {add(GuiKit.colorRow(w,name,value){v->change {update(it,v)}})}

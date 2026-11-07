@@ -27,7 +27,7 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
     private fun select(key:String) {selected=key}
     private var dragging:String?=null
     private var offsetX=0.0;private var offsetY=0.0
-    private fun entries()=HudLayout.visibleEntries(SolyankaClient.currentGeneral().features,SolyankaClient.states().filterValues {it}.keys,width,height).map {dev.solyanka.client.feature.VanillaHotbar.editorEntry(it,width,height)}
+    private fun entries()=HudLayout.visibleEntries(SolyankaClient.currentGeneral().features,SolyankaClient.states().filter { (id,enabled)->enabled && SolyankaClient.isEnabled(id) }.keys,width,height).map {dev.solyanka.client.feature.VanillaHotbar.editorEntry(it,width,height)}
     private var controlKeys:List<String> = emptyList()
     private fun syncSelection(list:List<HudEntry>) {if(list.none {it.key==selected}) selected=list.firstOrNull()?.key ?: ""}
     private fun ordered()=entries().sortedBy {it.key==selected}
