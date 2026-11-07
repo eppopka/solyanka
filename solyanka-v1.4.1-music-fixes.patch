@@ -24,6 +24,48 @@ index b9f3c1f..c730d80 100644
      }
      fun register() {
          ClientReceiveMessageEvents.GAME.register {m,o->receive(m.string,o)}
+diff --git a/src/client/kotlin/dev/solyanka/client/feature/ChromeDraw.kt b/src/client/kotlin/dev/solyanka/client/feature/ChromeDraw.kt
+index b8b6dbe..1cc5ae1 100644
+--- a/src/client/kotlin/dev/solyanka/client/feature/ChromeDraw.kt
++++ b/src/client/kotlin/dev/solyanka/client/feature/ChromeDraw.kt
+@@ -21,4 +21,37 @@ object ChromeDraw {
+    else {g.fill(left,top,right,bottom,fill);g.fill(left,top,left+1,bottom,border);g.fill(right-1,top,right,bottom,border)}
+   }
+  }
++
++ /**
++  * Shared premium surface used by the ClickGUI, settings cards and HUD editor.
++  *
++  * The old `panel` primitive intentionally remains unchanged for feature-owned
++  * HUDs. This higher-level primitive adds the Move Hotbar treatment without
++  * forcing every in-world overlay to inherit a menu surface:
++  * soft offset shadow, clipped body, accent rail and a restrained top sheen.
++  */
++ fun premium(
++  g:GuiGraphicsExtractor,
++  x:Int,y:Int,w:Int,h:Int,
++  fill:Int,border:Int,
++  accent:Int=0xff7dd3fc.toInt(),
++  radius:Int=6,
++  selected:Boolean=false,
++  rail:Boolean=true
++ ) {
++  if(w<=0 || h<=0) return
++  val safeRadius=radius.coerceIn(0,minOf(w,h)/2)
++  panel(g,x+2,y+3,w,h,alpha(0x000000,if(selected) 0x66 else 0x42),0,safeRadius)
++  panel(g,x,y,w,h,fill,border,safeRadius)
++  if(rail && h>safeRadius*2+4) {
++   g.fill(x+3,y+safeRadius,x+5,y+h-safeRadius,alpha(accent,if(selected) 0xff else 0xb8))
++  }
++  if(w>safeRadius*2+4) {
++   val sheen=alpha(0xffffff,if(selected) 0x20 else 0x0f)
++   g.fill(x+safeRadius,y+1,x+w-safeRadius,y+2,sheen)
++  }
++ }
++
++ private fun alpha(color:Int,opacity:Int):Int =
++  (opacity.coerceIn(0,255) shl 24) or (color and 0x00ffffff)
+ }
 diff --git a/src/client/kotlin/dev/solyanka/client/feature/YandexMusic.kt b/src/client/kotlin/dev/solyanka/client/feature/YandexMusic.kt
 index ee708de..781c91d 100644
 --- a/src/client/kotlin/dev/solyanka/client/feature/YandexMusic.kt
@@ -512,6 +554,32 @@ index ee708de..781c91d 100644
              System.currentTimeMillis()<retryAfterMillis && data==null -> "Lyrics temporarily rate limited"
              data==null -> "Loading lyrics…"
              data.lines.isEmpty() -> "Synced lyrics unavailable"
+diff --git a/src/client/kotlin/dev/solyanka/client/ui/HudEditorScreen.kt b/src/client/kotlin/dev/solyanka/client/ui/HudEditorScreen.kt
+index 9ed40ed..e0ca229 100644
+--- a/src/client/kotlin/dev/solyanka/client/ui/HudEditorScreen.kt
++++ b/src/client/kotlin/dev/solyanka/client/ui/HudEditorScreen.kt
+@@ -59,10 +59,18 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD
+         val hovered=at(mx.toDouble(),my.toDouble())?.key
+         ordered().forEach {entry ->
+             val b=bounds(entry);val active=entry.hud.enabled
+-            g.fill(b.x,b.y,b.x+b.width,b.y+b.height,if(entry.key==selected) 0x88213946.toInt() else 0x66101010)
+-            GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else 0xff666666.toInt())
++            val focused=entry.key==selected
++            val hot=focused || entry.key==hovered
++            dev.solyanka.client.feature.ChromeDraw.premium(
++                g,b.x,b.y,b.width,b.height,
++                if(focused) 0x88213946.toInt() else 0x66101010,
++                if(hot) GuiKit.BLUE else 0xff666666.toInt(),
++                if(active) GuiKit.BLUE else GuiKit.MUTED,
++                if(min(b.width,b.height)>=12) 5 else 0,
++                selected=focused,rail=false
++            )
+             if(dev.solyanka.client.feature.YandexMusic.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.VanillaHotbar.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.VanillaHearts.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ArchiveHuds.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ExtraHuds.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ScoreboardHud.editor(g,entry.key,b.x,b.y)) {
+-                GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else 0xff666666.toInt())
++                GuiKit.border(g,b.x,b.y,b.width,b.height,if(hot) GuiKit.BLUE else 0xff666666.toInt())
+                 return@forEach
+             }
+             g.pose().pushMatrix()
 diff --git a/src/client/kotlin/dev/solyanka/client/ui/MusicUi.kt b/src/client/kotlin/dev/solyanka/client/ui/MusicUi.kt
 index 9134874..1c6aff0 100644
 --- a/src/client/kotlin/dev/solyanka/client/ui/MusicUi.kt
@@ -576,10 +644,23 @@ index 9134874..1c6aff0 100644
      }
  }
 diff --git a/src/client/kotlin/dev/solyanka/client/ui/nofrills/GuiKit.kt b/src/client/kotlin/dev/solyanka/client/ui/nofrills/GuiKit.kt
-index 2aebbb6..31eda88 100644
+index 2aebbb6..25e03cc 100644
 --- a/src/client/kotlin/dev/solyanka/client/ui/nofrills/GuiKit.kt
 +++ b/src/client/kotlin/dev/solyanka/client/ui/nofrills/GuiKit.kt
-@@ -143,6 +143,17 @@ object GuiKit {
+@@ -30,7 +30,11 @@ object GuiKit {
+             sizing(Sizing.fixed(width),Sizing.fixed(20))
+             textShadow(false)
+             renderer { g,b,_ ->
+-                dev.solyanka.client.feature.ChromeDraw.panel(g,b.x,b.y,b.width,b.height,RAISED,if(white) LINE else BLUE,4)
++                dev.solyanka.client.feature.ChromeDraw.premium(
++                    g,b.x,b.y,b.width,b.height,
++                    RAISED,if(white) LINE else BLUE,
++                    if(white) LINE else BLUE,4,selected=!white,rail=false
++                )
+             }
+         }
+     fun presetButton(text:String,width:Int,color:Int,action:(Int)->Unit):ButtonComponent = styleButton(DirectionalButton(text,action),width).apply {
+@@ -143,6 +147,17 @@ object GuiKit {
      fun description(width:Int,text:String) = UIContainers.verticalFlow(Sizing.fixed(width),Sizing.content()).apply {
          padding(Insets.of(6));child(label(text).apply { color(Color.ofArgb(MUTED));horizontalSizing(Sizing.fixed((width-12).coerceAtLeast(1))) })
      }
@@ -588,7 +669,7 @@ index 2aebbb6..31eda88 100644
 +        padding(Insets.of(7));gap(2)
 +        surface {g,c->
 +            val x=c.x().toInt();val y=c.y().toInt();val w=c.width().toInt();val h=c.height().toInt()
-+            dev.solyanka.client.feature.ChromeDraw.panel(g,x,y,w,h,0x6b263448.toInt(),0x8a435870.toInt(),6)
++            dev.solyanka.client.feature.ChromeDraw.premium(g,x,y,w,h,0x6b263448.toInt(),0x8a435870.toInt(),BLUE,6,rail=true)
 +            g.fill(x,y+6,x+2,y+h-6,BLUE)
 +        }
 +        child(label(title).apply {color(Color.ofArgb(BLUE));horizontalSizing(Sizing.fixed((width-14).coerceAtLeast(1)))})
@@ -597,6 +678,50 @@ index 2aebbb6..31eda88 100644
  }
  
  class PlainLabel(text:Component):LabelComponent(text) {
+diff --git a/src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt b/src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt
+index e524c87..1466cb5 100644
+--- a/src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt
++++ b/src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt
+@@ -96,7 +96,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
+             scroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.BLUE)))
+             categoryScrolls.add(scroll)
+             val header=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content()).apply {
+-                alignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER);padding(Insets.of(6));surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.RAISED,GuiKit.LINE,5)}
++                alignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER);padding(Insets.of(6));surface {g,c->dev.solyanka.client.feature.ChromeDraw.premium(g,c.x(),c.y(),c.width(),c.height(),GuiKit.RAISED,GuiKit.LINE,GuiKit.BLUE,5,rail=false)}
+                 child(GuiKit.label(name.uppercase()).apply { horizontalTextAlignment(HorizontalAlignment.CENTER) })
+             }
+             columns.child(UIContainers.verticalFlow(Sizing.fixed(w),Sizing.fill(100)).apply {
+@@ -181,8 +181,8 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
+     private fun paint() {
+         val active=SolyankaClient.isEnabled(info.id)
+         title.text(Component.literal(info.name).withColor(if(active) 0xb8e9ff else 0xc3cede))
+-        if(active) surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),0xf0243948.toInt(),0xff527c96.toInt(),4);g.fill(c.x()+4,c.y()+5,c.x()+6,c.y()+c.height()-5,GuiKit.BLUE)}
+-        else surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.PANEL,GuiKit.LINE,4)}
++        if(active) surface {g,c->dev.solyanka.client.feature.ChromeDraw.premium(g,c.x(),c.y(),c.width(),c.height(),0xf0243948.toInt(),0xff527c96.toInt(),GuiKit.BLUE,4,selected=true)}
++        else surface {g,c->dev.solyanka.client.feature.ChromeDraw.premium(g,c.x(),c.y(),c.width(),c.height(),GuiKit.PANEL,GuiKit.LINE,GuiKit.BLUE,4,selected=false)}
+     }
+     override fun onMouseDown(click:MouseButtonEvent,doubled:Boolean):Boolean {
+         return when(click.button()) {
+diff --git a/src/client/kotlin/dev/solyanka/client/ui/nofrills/SettingsPanel.kt b/src/client/kotlin/dev/solyanka/client/ui/nofrills/SettingsPanel.kt
+index f010fcc..c4454b6 100644
+--- a/src/client/kotlin/dev/solyanka/client/ui/nofrills/SettingsPanel.kt
++++ b/src/client/kotlin/dev/solyanka/client/ui/nofrills/SettingsPanel.kt
+@@ -62,13 +62,12 @@ class SettingsPanel(
+         frame=UIContainers.verticalFlow(Sizing.fixed(outerWidth),Sizing.content()).apply {
+             padding(Insets.of(6));gap(4)
+             surface {g,c->
+-                dev.solyanka.client.feature.ChromeDraw.panel(g,c.x()+3,c.y()+4,c.width(),c.height(),0x50000000,0x10000000,7)
+-                dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.PANEL,GuiKit.LINE,7)
++                dev.solyanka.client.feature.ChromeDraw.premium(g,c.x(),c.y(),c.width(),c.height(),GuiKit.PANEL,GuiKit.LINE,GuiKit.BLUE,7,rail=true)
+             }
+         }
+         header=UIContainers.horizontalFlow(Sizing.fixed(w),Sizing.fixed(28)).apply {
+             verticalAlignment(VerticalAlignment.CENTER);padding(Insets.of(4));gap(6)
+-            surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.RAISED,GuiKit.LINE,4)}
++            surface {g,c->dev.solyanka.client.feature.ChromeDraw.premium(g,c.x(),c.y(),c.width(),c.height(),GuiKit.RAISED,GuiKit.LINE,GuiKit.BLUE,4,rail=false)}
+             if(centeredTitle) child(UIContainers.horizontalFlow(Sizing.fixed(54),Sizing.fixed(1)))
+             child(GuiKit.label(title).apply {if(centeredTitle) horizontalTextAlignment(HorizontalAlignment.CENTER);horizontalSizing(Sizing.fixed((w-if(centeredTitle) 136 else 76).coerceAtLeast(1)));tooltip(Component.literal("Drag this title bar to move settings"))})
+             child(GuiKit.button("Back",54,true) {capture=null;back()})
 diff --git a/src/client/resources/solyanka-yandex-local.ps1 b/src/client/resources/solyanka-yandex-local.ps1
 index c4f4431..80e89a7 100644
 --- a/src/client/resources/solyanka-yandex-local.ps1
@@ -684,3 +809,320 @@ index d901137..f3c34f6 100644
          basic.addProperty("duration",100);basic.addProperty("position",12);basic.addProperty("playing",true)
          val active=MusicLogic.localPlayback(basic,1_000_000_000)!!
          assertEquals(14.0,MusicLogic.elapsed(active,3_000_000_000));assertEquals(17.0,MusicLogic.elapsed(active,20_000_000_000))
+diff --git a/docs/UI_AUDIT.md b/docs/UI_AUDIT.md
+new file mode 100644
+index 0000000..dfd5b1b
+--- /dev/null
++++ b/docs/UI_AUDIT.md
+@@ -0,0 +1,311 @@
++# Solyanka GUI/HUD Premium Audit
++
++## Scope and method
++
++This is a source-level audit of every registered feature card, settings panel, HUD entry, dedicated screen, and shared rendering primitive in the current checkout. The benchmark is `Move Hotbar`, especially `HotbarPainter` and `HotbarPrimitives`.
++
++The audit is intentionally conservative: it distinguishes existing behavior from design recommendations and does not claim in-game visual QA on a Linux build machine.
++
++## Benchmark: what Move Hotbar already gets right
++
++`Move Hotbar` is the visual source of truth because it has:
++
++- Four explicit visual presets: Vanilla, Minimal, Glass, and Neon.
++- A reusable surface model: background, secondary color, accent, opacity, radius, border width, gradient, shadow, glow, shimmer, selection opacity, and effect radius.
++- Real rounded geometry rather than square fill rectangles.
++- Layered depth: shadow first, surface second, border third, sheen/glow last.
++- Bounded gradients clipped to rounded corners.
++- Motion tied to elapsed time rather than arbitrary frame counters.
++- A clear separation between content geometry and visual appearance.
++- Conservative alpha and glow values that preserve readability.
++- A layout model that calculates bounds before drawing, preventing overlap and off-screen placement.
++
++Every other surface should use the same contract:
++
++```kotlin
++data class SurfaceStyle(
++    val preset: Preset,
++    val background: Color,
++    val secondary: Color,
++    val accent: Color,
++    val opacity: Float,
++    val radius: Float,
++    val borderWidth: Float,
++    val shadow: Boolean,
++    val glow: Boolean,
++    val shimmer: Boolean,
++    val effectSpeed: Float,
++)
++```
++
++## Global design tokens
++
++Use the existing dark Solyanka palette, but make it semantic and consistent:
++
++| Token | Value | Use |
++|---|---:|---|
++| Canvas | `#0B111B` | GUI background / HUD void |
++| Surface | `#16202E` | Base card |
++| Raised | `#263448` | Button, selected card, header |
++| Border | `#435870` | Default boundaries |
++| Text | `#EDF4FD` | Primary text |
++| Muted | `#B2C2D8` | Descriptions and secondary metadata |
++| Accent | `#7DD3FC` | Focus, selection, links |
++| Positive | `#80E0B0` | Enabled / connected |
++| Warning | `#F3ACAC` | Disabled / caution |
++| Error | `#FF5555` | Validation and failures |
++
++Spacing scale: `3, 4, 6, 8, 12, 16, 24`. Default radius: `5–7`. Default border: `1`. Never use color as the only state indicator: pair it with text, a border, or a shape change.
++
++## Total screen audit
++
++### 1. `NoFrillsClickGui` — main feature browser
++
++**Current weaknesses**
++
++- Feature cards are visually consistent but mostly static.
++- Search and category columns do not have a strong hierarchy between navigation, content, and active state.
++- Footer hints are plain text placed against the world with no dedicated surface.
++- Focus/hover feedback is primarily a border color change.
++- The horizontal multi-column layout becomes dense when many categories are visible.
++
++**Required upgrade**
++
++- Add a fixed top chrome band with brand, active category, search state, and close action.
++- Give each category a compact header with an accent rail and count badge.
++- Animate card hover/selection with a 2–4 px lift and accent interpolation over 160–220 ms.
++- Add a selected-card glow only for the active feature; keep idle cards quiet.
++- Put keyboard/mouse hints inside a bottom status capsule, not directly on the world.
++- Use a compact two-column layout at narrow widths rather than forcing horizontal scrolling.
++
++**Presets**
++
++- Minimal: opaque navy cards, one blue accent line, no glow.
++- Glass: translucent cards, white top sheen, low-opacity border.
++- Neon: stronger accent halo, animated shimmer only on selected cards.
++- Amber: orange accent for dungeon-focused sessions.
++
++### 2. `SettingsPanel` and `GuiKit`
++
++**Current weaknesses**
++
++- Shared controls are structurally good but rows are mechanically uniform.
++- Long panels lack enough grouping and hierarchy.
++- Toggles, sliders, colors, and descriptions do not communicate semantic importance consistently.
++- Error/status text is a single footer label and can be missed.
++
++**Required upgrade**
++
++- Use `GuiKit.section` for every long panel, not just Yandex Music.
++- Add an accent rail and section subtitle.
++- Make errors a raised red status card with an icon/text prefix.
++- Keep labels at one size and descriptions at one muted size.
++- Add a consistent hover surface to buttons and color controls.
++- Preserve the current instant-save model; visual feedback should not imply a separate Save action.
++
++### 3. `HudEditorScreen`
++
++**Current weaknesses**
++
++- Preview rectangles are flat and do not communicate live-vs-sample state strongly enough.
++- The canvas has no alignment grid, safe-area guides, or snap feedback.
++- Selection and hover are both border-only.
++- The top controls and bottom status text float over the world without a surface.
++
++**Required upgrade**
++
++- Add a low-alpha 8 px grid and 16 px major grid.
++- Add safe-area guides at 8 px and 16 px from the screen edge.
++- Render selected HUDs with the same premium surface painter used by Move Hotbar.
++- Add a small selected-state chip with name, position, scale, and enabled state.
++- Animate selection changes and drag preview; commit the final position at release.
++- Add keyboard nudges in 1 px and Shift+arrow in 8 px increments.
++
++### 4. `Move Hotbar` — benchmark
++
++**Status:** strongest implementation in the project.
++
++**Preserve:** four presets, rounded clipping, glow/shadow, shimmer, selection animation, explicit layout model.
++
++**Small refinements:** centralize its surface math into a reusable theme primitive so other HUDs cannot drift visually.
++
++## HUD-by-HUD audit
++
++### Vanilla HUD / Move Hearts
++
++Current native replacement/follower behavior is functional but inherits vanilla visual density.
++
++- Add a shared glass/neon surface behind moved followers only when the selected style is not Vanilla.
++- Keep native icons and bars untouched in Vanilla mode.
++- Add low-alpha separators between health, armor, and XP followers.
++- Use consistent rounded corners and accent colors from the selected theme.
++
++### Timers: Goldor, Storm Pad, Storm Lightning, Storm PY, Storm Phase, M3 Fire Freeze
++
++Current timer entries are text-oriented and can look like isolated labels.
++
++- Convert each timer to a compact status capsule with left accent rail.
++- Use semantic urgency colors: blue idle, amber imminent, red active/late, green complete.
++- Animate only the progress/urgent state, never the text itself.
++- Keep a stable width to prevent HUD jitter as numbers change.
++- Theme options: Minimal capsule, Glass capsule, Neon countdown ring.
++
++### Player Display: health, mana, overflow, defense, vitality, EHP, speed
++
++Current feature has many independent HUDs, which makes a unified visual language important.
++
++- Provide a shared stat-card painter with icon slot, label, value, and optional progress rail.
++- Keep value alignment fixed so changing digits do not move neighboring text.
++- Group related stats with the same accent family.
++- Use small icon badges instead of extra words when the icon is unambiguous.
++- Theme options: compact text, glass stat tiles, neon rails.
++
++### Picture in Picture
++
++Current explicit-window capture is a strong functional boundary but needs presentation chrome.
++
++- Add a title bar with capture state and source label.
++- Add rounded clipping, subtle border, and connection indicator.
++- Show a non-intrusive empty state when no capture is selected.
++- Never add fake blur or pretend the source is live when it is stale.
++- Theme options: clean frame, glass frame, neon recording frame.
++
++### Pet Display
++
++Current sample-oriented display can read as a plain information block.
++
++- Make the pet icon/identity the visual anchor.
++- Use a three-row hierarchy: identity, observed total XP, observed rate.
++- Add a small “observed” badge instead of repeating caveats in every line.
++- Use a stable panel width and truncate long pet names with an ellipsis.
++
++### Yandex Music
++
++Current custom panel is the right direction, but it needs the same surface contract as Move Hotbar.
++
++- Use a 52 px cover tile with rounded clipping and fallback icon.
++- Give service/playing labels a consistent eyebrow hierarchy.
++- Use a stable title/artist column so long metadata cannot resize the card.
++- Keep progress rail at a fixed y position.
++- Reserve a two-line lyric region with clipping and animated line transitions.
++- Use a cover-loading shimmer while the image is in flight.
++- Show explicit connection state in the settings panel: local, account, waiting, backoff, error.
++
++### Waypoint Route, Map Info, Simon Says
++
++These are high-information dungeon overlays and need density control.
++
++- Use compact cards with a single accent family per solver.
++- Separate primary result from secondary context using opacity, not extra borders.
++- Keep route progress and room/secret counts in fixed-width slots.
++- Use a consistent “active / waiting / unavailable” indicator.
++
++### Inventory HUD, Item Name HUD, Skill Progress HUD, Scoreboard
++
++These display frequently changing values and are vulnerable to jitter and overflow.
++
++- Calculate content width before rendering.
++- Clamp and ellipsize names.
++- Align values on a baseline grid.
++- Use one shared card background and one shared divider treatment.
++- Use a theme preset rather than one-off colors per feature.
++
++### Stopwatch and DVD Bounce
++
++These are expressive HUDs but should still obey the benchmark.
++
++- Stopwatch: stable-width digits, segmented display option, active glow only while running.
++- DVD: keep motion, but use the selected theme accent and smooth easing at wall collisions; avoid flashing the entire card.
++
++## Visual renderers and world overlays
++
++These are not traditional panels, but they are still GUI/HUD-facing graphics and must share semantic styling:
++
++- Player Glow: reduce outline intensity at distance; use theme accent and avoid opaque silhouettes.
++- Nametags: stable plate width, health bar as a secondary rail, no text collision.
++- Block Outline: preserve world readability; use theme accent only for selected/confirmed state.
++- Titanium ESP: use one scanner color and a distinct confirmed/commission color.
++- Ambient Particles: tie particle color to the theme preset; cap brightness and density.
++- Rotating Item: preserve the visual motion but reuse accent and shadow tokens.
++- Skybox: expose palette presets that coordinate with GUI presets without changing vanilla fog semantics.
++- Held Item Shader: map Smoke/Stars/Portal/Galaxy to the same semantic accent palette.
++- Motion Blur: keep temporal effect separate from UI surfaces; never blur text or controls.
++- No Render, Aspect, Fog, and Ambience: expose clear preview/status text; avoid controls that imply a visual result when the current world does not support it.
++
++## Dedicated screens and nested editors
++
++### Waypoint name screen
++
++- Use a centered modal card with clear title, field focus ring, character counter, and explicit Cancel/Save hierarchy.
++- Reserve an error row below the field instead of shifting the modal when validation changes.
++
++### Key capture screen
++
++- Show device type, current binding, and a large “Press a key” state.
++- Give Escape and Backspace explicit help text.
++- Use the same modal surface and error styling as settings panels.
++
++### Knife browser / asset browser
++
++- Add a thumbnail skeleton state, selected card glow, filter/search grouping, and a persistent download status strip.
++- Keep destructive/reset actions visually separated from browsing actions.
++
++### Config, command binds, command shortcuts, chat commands, leap message, route, puzzle solvers, and visual editors
++
++- Convert long ungrouped lists to section cards.
++- Use stable labels and inline validation rows.
++- Place Add/Create actions in the section header; place Delete/Reset actions at the bottom with warning styling.
++- Preserve current instant-save behavior and never add fake Save buttons.
++
++## Ready-to-use shared surface painter
++
++The following abstraction should replace one-off flat panels over time. It mirrors Move Hotbar’s visual contract while remaining usable by integer-based GUI code:
++
++```kotlin
++object PremiumSurface {
++    enum class Preset { MINIMAL, GLASS, NEON, AMBER }
++
++    data class Style(
++        val preset: Preset,
++        val background: java.awt.Color,
++        val secondary: java.awt.Color,
++        val accent: java.awt.Color,
++        val opacity: Float = .92f,
++        val radius: Float = 6f,
++        val border: Float = 1f,
++        val shadow: Boolean = true,
++        val glow: Boolean = false,
++        val shimmer: Boolean = false,
++        val speed: Float = 1f,
++    )
++
++    fun style(preset: Preset, accent: java.awt.Color): Style = when (preset) {
++        Preset.MINIMAL -> Style(preset, java.awt.Color(22,32,46), java.awt.Color(28,42,58), accent)
++        Preset.GLASS -> Style(preset, java.awt.Color(27,39,55), java.awt.Color(41,58,78), accent, .72f, 7f, 1f, true, false, true, .6f)
++        Preset.NEON -> Style(preset, java.awt.Color(14,24,39), java.awt.Color(23,42,66), accent, .94f, 6f, 1.25f, true, true, true, 1f)
++        Preset.AMBER -> Style(preset, java.awt.Color(31,27,24), java.awt.Color(55,42,31), java.awt.Color(255,184,77), .92f, 6f)
++    }
++}
++```
++
++## Implementation order
++
++1. Centralize `PremiumSurface` and route `ChromeDraw` and `GuiKit.section` through it.
++2. Upgrade `NoFrillsClickGui`, `SettingsPanel`, and `HudEditorScreen` because every feature inherits their visual quality.
++3. Migrate high-frequency HUDs: Player Display, timers, Inventory, Skill, Item Name, Scoreboard, Yandex Music.
++4. Migrate dungeon cards and world-overlay accents.
++5. Add per-feature preset selection only where a feature has enough visual area to benefit; do not add hypothetical settings everywhere.
++6. Render and visually inspect at 960x540, 1280x720, and 1920x1080 in Minecraft. The Linux build environment cannot certify this step.
++
++## Acceptance checklist
++
++- No HUD overlaps or clips at the three target resolutions.
++- No text changes the panel width while values update.
++- Every interactive control has a visible hover/focus/pressed state.
++- Errors and unavailable states are readable without relying on color alone.
++- Glow/shimmer never reduces text contrast.
++- Glass presets use alpha and sheen, not claims of world blur.
++- Reduced-motion preference is respected where the platform exposes it.
++- HUD editor bounds match live renderer bounds.
++- Feature panels remain usable with keyboard navigation and scroll.
++- The final result is visually inspected in-game; compilation alone is not a design sign-off.
