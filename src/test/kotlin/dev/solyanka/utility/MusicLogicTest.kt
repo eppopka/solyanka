@@ -13,9 +13,15 @@ class MusicLogicTest {
         assertEquals("Music connection: timeout",MusicLogic.failure("Music connection",java.util.concurrent.ExecutionException(java.util.concurrent.TimeoutException())))
     }
     @Test fun `unavailable registration retries are bounded and respect server backoff`() {
+        val diagnostic=MusicLogic.serverFailure(JsonParser.parseString("""{"grpc_code":14,"http_code":503,"details":{"ynison-error-code":"400090001","message":"secret"}}"""))
+        assertEquals("Music registration: server error 14 / HTTP 503 / 400090001",MusicLogic.failure("Music registration",diagnostic))
+        val unsafe=MusicLogic.serverFailure(JsonParser.parseString("""{"grpc_code":14,"details":{"ynison-error-code":"secret-token"}}"""))
+        assertEquals("server error 14",unsafe.reason)
         val unavailable=MusicLogic.serverFailure(JsonParser.parseString("""{"grpc_code":14}"""))
         assertEquals(1000L,MusicLogic.retryDelay(unavailable,0));assertEquals(5000L,MusicLogic.retryDelay(unavailable,1))
-        assertEquals(30000L,MusicLogic.retryDelay(unavailable,2));assertNull(MusicLogic.retryDelay(unavailable,3))
+        assertEquals(30000L,MusicLogic.retryDelay(unavailable,2));assertEquals(30000L,MusicLogic.retryDelay(unavailable,3));assertNull(MusicLogic.retryDelay(unavailable,4))
+        val serverLadder=MusicLogic.serverFailure(JsonParser.parseString("""{"grpc_code":14,"details":{"ynison-backoff-millis":"0:1000:5000:30000"}}"""))
+        assertEquals(30000L,MusicLogic.retryDelay(serverLadder,3))
         val specified=MusicLogic.serverFailure(JsonParser.parseString("""{"grpc_code":14,"details":{"ynison-backoff-millis":"2000:70000"}}"""))
         assertEquals(2000L,MusicLogic.retryDelay(specified,0));assertNull(MusicLogic.retryDelay(specified,1))
         val goAway=MusicLogic.serverFailure(JsonParser.parseString("""{"grpc_code":14,"extra_headers":{"ynison-go-away-for-seconds":"3600"}}"""))

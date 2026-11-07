@@ -66,6 +66,7 @@ object SolyankaClient : ClientModInitializer {
     private lateinit var settingsKey: KeyMapping
     const val KEYBINDS = "utility.command_keybinds"
     const val SHORTCUTS = "utility.command_shortcuts"
+    const val SPREAD_GUESSER = "utility.spread_guesser"
 
     const val BLOCKLIST="custom.shitter_list"
     const val MOVE_HOTBAR="custom.move_hotbar"
@@ -151,6 +152,7 @@ object SolyankaClient : ClientModInitializer {
         modules.register(object : Module(ModuleInfo(CURSOR,"No cursor reset",Category.GENERAL)) { override fun onDisable() { FeatureRuntime.cursor.reset() } })
         modules.register(object : Module(ModuleInfo(LOADING,"No loading screen",Category.GENERAL)) {})
         modules.register(object : Module(ModuleInfo(PRICES,"Price tooltips",Category.GENERAL)) {})
+        modules.register(object : Module(ModuleInfo(SPREAD_GUESSER,"Spread Guesser",Category.GENERAL)) { override fun onDisable() { dev.solyanka.client.feature.SpreadGuesser.reset() }; override fun onReset(reason:ResetReason) { dev.solyanka.client.feature.SpreadGuesser.reset() } })
         modules.register(object : Module(ModuleInfo(EXPERIMENTS,"Experiment solver",Category.GENERAL)) { override fun onDisable() { Experiments.reset() } })
         modules.register(object : Module(ModuleInfo(SUPPRESSION,"No render",Category.VISUAL)) {})
         modules.register(object : Module(ModuleInfo(WAYPOINTS,"Waypoints",Category.VISUAL)) {override fun onDisable() {DungeonPuzzles.invalidate()}})
@@ -236,7 +238,7 @@ object SolyankaClient : ClientModInitializer {
                 openSettingsRequested = false
                 client.setScreenAndShow(ConfigUi.create(null))
             }
-            if (world != null && client.player != null) { FeatureRuntime.tick(client);dev.solyanka.client.feature.ShitterList.tick();dev.solyanka.client.feature.PetDisplay.tick();dev.solyanka.client.feature.SimonSolver.tick();dev.solyanka.client.feature.HuntingFeatures.tick(client);SecretCounter.tick(); ArchiveVisuals.tick(client);ExtraHuds.tick(client);WorldVisuals.reset();TitaniumScanner.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
+            if (world != null && client.player != null) { FeatureRuntime.tick(client);dev.solyanka.client.feature.SpreadGuesser.tick(client);dev.solyanka.client.feature.ShitterList.tick();dev.solyanka.client.feature.PetDisplay.tick();dev.solyanka.client.feature.SimonSolver.tick();dev.solyanka.client.feature.HuntingFeatures.tick(client);SecretCounter.tick(); ArchiveVisuals.tick(client);ExtraHuds.tick(client);WorldVisuals.reset();TitaniumScanner.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
         }
         ClientSendMessageEvents.ALLOW_COMMAND.register { command ->
             if (bypassExpansion || !isEnabled(SHORTCUTS)) true

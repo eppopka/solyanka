@@ -41,6 +41,7 @@ object WorldOverlay {
   HuntingFeatures.collectBestiary(c,snapshot)
   HuntingFeatures.collectTiki(c,snapshot,filled,text)
   BlockSelection.collect(c,snapshot,filled)
+  SpreadGuesser.collect(net.minecraft.client.Minecraft.getInstance(),snapshot,text)
   val triangles=mutableListOf<Triangle>();ArchiveCosmetics.collect(c,snapshot,triangles)
   val pose=c.poseStack();pose.pushPose()
   try { // Subtract in double precision before casting vertices, avoiding world-coordinate jitter.

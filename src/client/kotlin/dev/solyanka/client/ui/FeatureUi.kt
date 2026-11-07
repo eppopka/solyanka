@@ -32,6 +32,10 @@ object FeatureUi {
         when(id) {
             SolyankaClient.ITEM_AURA,SolyankaClient.CS2_KNIFE->FinalCosmeticsUi.open(id,host,model)
             SolyankaClient.BLOCKLIST,SolyankaClient.MOVE_HOTBAR,SolyankaClient.PIP,SolyankaClient.PET,SolyankaClient.SIMON,SolyankaClient.BESTIARY,SolyankaClient.INVISIBUG,SolyankaClient.TIKI,SolyankaClient.CHINA_HAT,SolyankaClient.HALO->HuntingUi.open(id,host,model)
+            SolyankaClient.SPREAD_GUESSER -> host.showPanel(SettingsPanel("Spread Guesser",{host.closePanel()},{model.error}) {_,w -> listOf(
+                GuiKit.description(w,"Add Mining Spread to the Stats widget in /widgets. Hints mark face-adjacent blocks of the same type, not guaranteed server targets. Gemstone Spread is separate."),
+                GuiKit.description(w,"Mining Spread: "+(dev.solyanka.client.feature.SpreadGuesser.spread?.toString() ?: "unavailable in tab"))
+            ) })
             SolyankaClient.MUSIC->MusicUi.open(host,model)
             SolyankaClient.CHAT_COMMANDS->ChatCommandsUi.open(host,model)
             SolyankaClient.LEAP_MESSAGE->LeapMessageUi.open(host,model)

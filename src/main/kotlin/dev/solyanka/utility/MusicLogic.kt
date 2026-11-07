@@ -12,8 +12,9 @@ data class MusicSettings(val hud:HudSpec=HudSpec(x=12,y=245),val suggest:Boolean
     fun validate() { hud.validate() }
 }
 open class MusicServiceFailure(val reason:String):RuntimeException()
-class MusicServerFailure(val code:Int?,val retryDelays:List<Long>,val goAway:Boolean):MusicServiceFailure(
-    if(code!=null && code in 0..999) "server error $code" else "server error"
+class MusicServerFailure(val code:Int?,val retryDelays:List<Long>,val goAway:Boolean,val httpCode:Int?=null,val serviceCode:String?=null):MusicServiceFailure(
+    (if(code!=null && code in 0..999) "server error $code" else "server error") +
+        (httpCode?.let { " / HTTP $it" } ?: "") + (serviceCode?.let { " / $it" } ?: "")
 )
 
 object MusicLogic {
@@ -42,10 +43,13 @@ object MusicLogic {
         val parts=raw?.takeIf {it.length<=256}?.split(':')
         val delays=parts?.mapNotNull {it.toLongOrNull()?.takeIf {n->n>=0}}.orEmpty()
         val invalidDelay=delayField!=null && (parts==null || delays.size!=parts.size || delays.isEmpty())
-        return MusicServerFailure(code,delays,invalidDelay || headers.any {it.has("ynison-go-away-for-seconds")})
+        val httpCode=runCatching {obj?.get("http_code")?.asInt}.getOrNull()?.takeIf {it in 100..599}
+        val serviceCode=headers.firstNotNullOfOrNull {runCatching {it.get("ynison-error-code")?.asString}.getOrNull()}
+            ?.takeIf {it.matches(Regex("[0-9]{1,12}"))}
+        return MusicServerFailure(code,delays,invalidDelay || headers.any {it.has("ynison-go-away-for-seconds")},httpCode,serviceCode)
     }
     fun retryDelay(error:MusicServerFailure,attempt:Int):Long? {
-        if(error.code!=14 || error.goAway || attempt !in 0..2) return null
+        if(error.code!=14 || error.goAway || attempt !in 0..3) return null
         val delays=error.retryDelays.ifEmpty {listOf(1000L,5000L,30000L)}
         val delay=delays[attempt.coerceAtMost(delays.lastIndex)].coerceAtLeast(1000)
         return delay.takeIf {it<=60000}

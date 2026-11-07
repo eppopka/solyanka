@@ -146,7 +146,7 @@ object YandexMusic {
                         socket=null
                         val delay=MusicLogic.retryDelay(e,attempt) ?: throw e
                         attempt++
-                        status="Music unavailable; retrying ($attempt/3)…"
+                        status="Music unavailable; retrying ($attempt/4)…"
                         val until=System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(delay)
                         while(gen==generation.get() && System.nanoTime()<until) Thread.sleep(250)
                         if(gen!=generation.get()) return@Thread
