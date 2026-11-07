@@ -68,7 +68,7 @@ object MusicLogic {
         fun number(key:String)=runCatching {json.get(key)?.asDouble}.getOrNull()?.takeIf {it.isFinite() && it>=0 && it<=86400} ?: 0.0
         val title=text("title");if(title.isEmpty()) return null
         val duration=number("duration");val position=number("position").coerceAtMost(duration)
-        val art=runCatching {json.get("art")?.asString}.getOrNull().orEmpty().takeIf {it.length<=350_000} ?: ""
+        val art=runCatching {json.get("art")?.asString}.getOrNull().orEmpty().takeIf {it.length<=1_400_000} ?: ""
         val playing=runCatching {json.get("playing")?.asBoolean}.getOrDefault(false) ?: false
         return LocalPlayback(title,text("artist"),position,duration,playing,art,now)
     }

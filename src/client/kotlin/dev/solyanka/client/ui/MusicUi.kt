@@ -6,6 +6,8 @@ import dev.solyanka.client.ui.nofrills.*
 import dev.solyanka.ui.InstantSettings
 import dev.solyanka.ui.NumberRange
 import dev.solyanka.utility.MusicSettings
+import net.minecraft.client.Minecraft
+import net.minecraft.util.Util
 
 object MusicUi {
     fun open(host:NoFrillsClickGui,model:InstantSettings) {
@@ -14,22 +16,33 @@ object MusicUi {
             fun update(change:(MusicSettings)->MusicSettings) {
                 model.updateGeneral {it.copy(features=it.features.copy(music=change(it.features.music)))};panel.refreshStatus()
             }
-            listOf(
-                GuiKit.description(w,"Windows local player only. Play a track in the Yandex Music desktop app, enable the module and connect. No account sign-in in the mod."),
-                GuiKit.button("Connect local (Windows)",180) {YandexMusic.connectLocalWindows()},
-                GuiKit.button("Disconnect",100) {YandexMusic.disconnect()},
-                HudNavigation.button(w),
-                GuiKit.colorRow(w,"HUD Text Color",s.hud.color) {v->update {it.copy(hud=it.hud.copy(color=v))}},
-                GuiKit.textRow(w,"Service Label",s.serviceLabel,"Text shown at the top left of the HUD.") {v->update {it.copy(serviceLabel=v.take(40))}},
-                GuiKit.colorRow(w,"Service Label Color",s.serviceColor) {v->update {it.copy(serviceColor=v)}},
-                GuiKit.textRow(w,"Playing Label",s.playingLabel,"Text shown while music is playing.") {v->update {it.copy(playingLabel=v.take(40))}},
-                GuiKit.colorRow(w,"Playing Label Color",s.playingColor) {v->update {it.copy(playingColor=v)}},
-                GuiKit.colorRow(w,"Progress Color",s.progressColor) {v->update {it.copy(progressColor=v)}},
-                GuiKit.choiceRow(w,"Progress Effect",listOf("Static","Breathing","Rainbow"),s.progressEffect,{model.general.features.music.progressEffect}) {v->update {it.copy(progressEffect=v)}},
-                GuiKit.sliderRow(w,"Effect Speed",s.effectSpeed,NumberRange(.2,3.0,.1)) {v->update {it.copy(effectSpeed=v)}},
-                GuiKit.toggleRow(w,"Show Synced Lyrics",s.showLyrics,"Sends the current title, artist and duration to LRCLIB. Lyrics may be missing or mismatched.") {v->update {it.copy(showLyrics=v)}},
-                GuiKit.description(w,"When lyrics are enabled, track title, artist and duration are sent to LRCLIB. !suggest is not available in local mode.")
-            )
+            buildList {
+                add(GuiKit.description(w,"A focused music panel: connect once, then keep the HUD lightweight. Account mode enables authenticated search and !suggest; the token is kept in memory only."))
+                add(GuiKit.section(w,"Connection","Choose one source. Local mode reads the Windows desktop player; account mode controls the Yandex queue."))
+                add(GuiKit.button("Connect local (Windows)",180) {YandexMusic.connectLocalWindows()})
+                add(GuiKit.button("Connect Yandex account",180) {YandexMusic.connect()})
+                add(GuiKit.button("Disconnect",100) {YandexMusic.disconnect()})
+                add(GuiKit.row(w).apply {
+                    child(GuiKit.button("Open sign-in page",135) {YandexMusic.verification?.let {Util.getPlatform().openUri(it.url)}})
+                    child(GuiKit.button("Copy code",100) {YandexMusic.verification?.let {Minecraft.getInstance().keyboardHandler.clipboard=it.code}})
+                })
+                add(GuiKit.section(w,"Queue controls","Use !suggest <song name> after account mode reports Connected."))
+                add(GuiKit.toggleRow(w,"Allow !suggest",s.suggest,"Account mode only. Searches Yandex Music and appends the first matching track to the current queue.") {v->update {it.copy(suggest=v)}})
+                add(GuiKit.toggleRow(w,"Announce Added Track",s.announce,"Only announces after Yandex confirms the queue update.") {v->update {it.copy(announce=v)}})
+                add(GuiKit.section(w,"HUD appearance","The HUD editor controls placement and scale; these options control its visual hierarchy."))
+                add(HudNavigation.button(w))
+                add(GuiKit.colorRow(w,"HUD Text Color",s.hud.color) {v->update {it.copy(hud=it.hud.copy(color=v))}})
+                add(GuiKit.textRow(w,"Service Label",s.serviceLabel,"Text shown at the top left of the HUD.") {v->update {it.copy(serviceLabel=v.take(40))}})
+                add(GuiKit.colorRow(w,"Service Label Color",s.serviceColor) {v->update {it.copy(serviceColor=v)}})
+                add(GuiKit.textRow(w,"Playing Label",s.playingLabel,"Text shown while music is playing.") {v->update {it.copy(playingLabel=v.take(40))}})
+                add(GuiKit.colorRow(w,"Playing Label Color",s.playingColor) {v->update {it.copy(playingColor=v)}})
+                add(GuiKit.colorRow(w,"Progress Color",s.progressColor) {v->update {it.copy(progressColor=v)}})
+                add(GuiKit.choiceRow(w,"Progress Effect",listOf("Static","Breathing","Rainbow"),s.progressEffect,{model.general.features.music.progressEffect}) {v->update {it.copy(progressEffect=v)}})
+                add(GuiKit.sliderRow(w,"Effect Speed",s.effectSpeed,NumberRange(.2,3.0,.1)) {v->update {it.copy(effectSpeed=v)}})
+                add(GuiKit.section(w,"Lyrics","Lyrics use LRCLIB only when enabled. Missing tracks fall back to a title/artist search."))
+                add(GuiKit.toggleRow(w,"Show Synced Lyrics",s.showLyrics,"Sends the current title, artist and duration to LRCLIB. Lyrics may be missing or mismatched.") {v->update {it.copy(showLyrics=v)}})
+                add(GuiKit.description(w,"Local mode cannot search or change the Yandex queue. Account mode is required for !suggest."))
+            }
         })
     }
 }

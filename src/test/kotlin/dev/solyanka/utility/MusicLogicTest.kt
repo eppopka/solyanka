@@ -65,6 +65,10 @@ class MusicLogicTest {
     @Test fun `local playback and timed lyrics are bounded and handle missing values`() {
         val basic=JsonParser.parseString("""{"title":"Песня","artist":"Исполнитель"}""").asJsonObject
         val p=MusicLogic.localPlayback(basic,0)!!;assertEquals(0.0,p.duration);assertFalse(p.playing)
+        basic.addProperty("art","a".repeat(1_400_000))
+        assertEquals(1_400_000,MusicLogic.localPlayback(basic,0)!!.art.length)
+        basic.addProperty("art","a".repeat(1_400_001))
+        assertTrue(MusicLogic.localPlayback(basic,0)!!.art.isEmpty())
         basic.addProperty("duration",100);basic.addProperty("position",12);basic.addProperty("playing",true)
         val active=MusicLogic.localPlayback(basic,1_000_000_000)!!
         assertEquals(14.0,MusicLogic.elapsed(active,3_000_000_000));assertEquals(17.0,MusicLogic.elapsed(active,20_000_000_000))

@@ -12,6 +12,7 @@ function Await($operation, $resultType) {
 }
 $manager = Await ([Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager]::RequestAsync()) ([Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager])
 $lastKey = ''; $art = ''; $artAttempt = [DateTime]::MinValue
+$maxArtBytes = 1048576
 # shortcut: polling every two seconds, upgrade to event subscriptions after validating the Windows prototype.
 while (Get-Process -Id __PARENT_PID__ -ErrorAction SilentlyContinue) {
     try {
@@ -30,7 +31,8 @@ while (Get-Process -Id __PARENT_PID__ -ErrorAction SilentlyContinue) {
                 [Console]::Out.WriteLine((@{state='connected';title=$title;artist=$artist} | ConvertTo-Json -Compress))
                 [Console]::Out.Flush()
             }
-            # shortcut: thumbnails above 256 KiB are omitted, upgrade to bounded downscaling if needed.
+            # Keep enough room for normal Yandex artwork. The Kotlin reader and JSON line
+            # limit are matched to this bound; larger artwork is skipped safely.
             $thumbnail = $null
             try { $thumbnail = $props.Thumbnail } catch {}
             if (-not $art -and $null -ne $thumbnail -and ([DateTime]::UtcNow - $artAttempt).TotalSeconds -ge 30) {
@@ -40,10 +42,20 @@ while (Get-Process -Id __PARENT_PID__ -ErrorAction SilentlyContinue) {
                     [Windows.Storage.Streams.DataReader, Windows.Storage.Streams, ContentType=WindowsRuntime] | Out-Null
                     [Windows.Storage.Streams.IRandomAccessStreamWithContentType, Windows.Storage.Streams, ContentType=WindowsRuntime] | Out-Null
                     $stream = Await ($thumbnail.OpenReadAsync()) ([Windows.Storage.Streams.IRandomAccessStreamWithContentType])
-                    if ($stream.Size -gt 0 -and $stream.Size -le 262144) {
+                    if ($stream.Size -gt 0 -and $stream.Size -le $maxArtBytes) {
                         $reader = [Windows.Storage.Streams.DataReader]::new($stream.GetInputStreamAt(0))
-                        $loaded = Await ($reader.LoadAsync([uint32]$stream.Size)) ([uint32])
-                        if ($loaded -eq $stream.Size) { $bytes = New-Object byte[] $loaded; $reader.ReadBytes($bytes); $art = [Convert]::ToBase64String($bytes) }
+                        $bytes = New-Object byte[] ([int]$stream.Size)
+                        $offset = 0
+                        while ($offset -lt $bytes.Length) {
+                            $request = [uint32][Math]::Min(65536, $bytes.Length - $offset)
+                            $loaded = Await ($reader.LoadAsync($request)) ([uint32])
+                            if ($loaded -eq 0) { throw 'Thumbnail stream ended early' }
+                            $chunk = New-Object byte[] $loaded
+                            $reader.ReadBytes($chunk)
+                            [Array]::Copy($chunk, 0, $bytes, $offset, [int]$loaded)
+                            $offset += [int]$loaded
+                        }
+                        $art = [Convert]::ToBase64String($bytes)
                     }
                 } catch {} finally {
                     try { if ($reader) { $reader.Dispose() } } catch {}
