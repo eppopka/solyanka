@@ -73,9 +73,10 @@ class MusicLogicTest {
         val active=MusicLogic.localPlayback(basic,1_000_000_000)!!
         assertEquals(14.0,MusicLogic.elapsed(active,3_000_000_000));assertEquals(17.0,MusicLogic.elapsed(active,20_000_000_000))
         assertEquals("1:14",MusicLogic.timestamp(74.0))
-        val lines=MusicLogic.lyrics("[00:03.50]Second\n[00:01.00][00:02.00] First\n[00:90.00]bad\n[ar:Artist]")
-        assertEquals(listOf("First","First","Second"),lines.map {it.text})
+        val lines=MusicLogic.lyrics("\uFEFF[00:03.50]Second\r\n[00:01.00][00:02.00] First\n[00:90.00]bad\n[ar:Artist]\n[01:02:03.250]Hour")
+        assertEquals(listOf("First","First","Second","Hour"),lines.map {it.text})
         assertNull(MusicLogic.lyricAt(lines,.9));assertEquals("First",MusicLogic.lyricAt(lines,2.5));assertEquals("Second",MusicLogic.lyricAt(lines,4.0))
+        assertEquals("Hour",MusicLogic.lyricAt(lines,3724.0))
         assertTrue(MusicLogic.lyrics("x".repeat(200001)).isEmpty())
         assertEquals(0xffff6675.toInt(),MusicLogic.progressColor(0xffff6675.toInt(),0,1.0,0.0))
         assertNotEquals(MusicLogic.progressColor(-1,1,1.0,0.0),MusicLogic.progressColor(-1,1,1.0,1.0))
@@ -84,7 +85,22 @@ class MusicLogicTest {
     }
     @Test fun `reads active track safely`() {
         assertEquals("42" to "Song",MusicLogic.current(state()))
+        assertEquals(CurrentTrack("42","Song","",0.0),MusicLogic.currentTrack(state()))
         val inactive=state();inactive.remove("activeDeviceIdOptional");assertNull(MusicLogic.current(inactive))
+    }
+    @Test fun `reads track artist duration and all supported cover locations`() {
+        val state=JsonParser.parseString("""{
+            "activeDeviceIdOptional":"device",
+            "playerState":{"playerQueue":{"currentPlayableIndex":0,"playableList":[{
+                "playableId":"42","playableType":"TRACK","title":"Song",
+                "artists":[{"name":"Artist"}],"durationMs":123000
+            }]}}
+        }""".trimIndent()).asJsonObject
+        assertEquals(CurrentTrack("42","Song","Artist",123.0),MusicLogic.currentTrack(state))
+        assertEquals("avatars.yandex.net/get-music-content/abc/%%",MusicLogic.coverUri(
+            JsonParser.parseString("""{"coverUri":"avatars.yandex.net/get-music-content/abc/%%"}""").asJsonObject))
+        assertEquals("avatars.yandex.net/get-music-content/album/%%",MusicLogic.coverUri(
+            JsonParser.parseString("""{"albums":[{"coverUri":"avatars.yandex.net/get-music-content/album/%%"}]}""").asJsonObject))
     }
     @Test fun `append preserves observed queue and does not alter input`() {
         val original=state();val request=MusicLogic.appendRequest(original,"123","remote","rid",1000)

@@ -7,6 +7,7 @@ import java.net.http.WebSocketHandshakeException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.CompletionException
 import java.util.concurrent.TimeoutException
+import kotlin.math.pow
 
 data class MusicSettings(val hud:HudSpec=HudSpec(x=12,y=245),val suggest:Boolean=true,val announce:Boolean=false,
     val serviceLabel:String="YANDEX MUSIC",val playingLabel:String="PLAYING",val serviceColor:Int=0xffff6973.toInt(),val playingColor:Int=0xff97a6b9.toInt(),val progressColor:Int=0xffff6675.toInt(),
@@ -15,6 +16,7 @@ data class MusicSettings(val hud:HudSpec=HudSpec(x=12,y=245),val suggest:Boolean
 }
 data class LocalPlayback(val title:String,val artist:String,val position:Double,val duration:Double,val playing:Boolean,val art:String,val receivedNanos:Long)
 data class LyricLine(val seconds:Double,val text:String)
+data class CurrentTrack(val id:String,val title:String,val artist:String,val duration:Double)
 
 open class MusicServiceFailure(val reason:String):RuntimeException()
 class MusicServerFailure(val code:Int?,val retryDelays:List<Long>,val goAway:Boolean,val httpCode:Int?=null,val serviceCode:String?=null,val goAwaySeconds:Long?=null):MusicServiceFailure(
@@ -74,15 +76,23 @@ object MusicLogic {
     }
     fun elapsed(s:LocalPlayback,now:Long):Double = (s.position + if(s.playing) ((now-s.receivedNanos).coerceAtLeast(0)/1_000_000_000.0).coerceAtMost(5.0) else 0.0).coerceIn(0.0,s.duration)
     fun timestamp(seconds:Double):String {val n=seconds.toInt().coerceAtLeast(0);return "%d:%02d".format(n/60,n%60)}
-    private val lyricTime=Regex("\\[(\\d{1,3}):(\\d{2})(?:[.:](\\d{1,3}))?]")
+    // Supports regular LRC timestamps as well as the optional hour component used
+    // by some LRCLIB entries: [mm:ss.xx] and [hh:mm:ss.xxx].
+    private val lyricTime=Regex("\\[(?:(\\d{1,2}):)?(\\d{1,3}):(\\d{2})(?:[.:](\\d{1,3}))?]")
     fun lyrics(value:String):List<LyricLine> {
         if(value.length>200_000) return emptyList()
-        return value.lineSequence().take(3000).flatMap {line->
+        return value.lineSequence().take(3000).flatMap {rawLine->
+            val line=rawLine.removePrefix("\uFEFF")
             val times=lyricTime.findAll(line).toList();val words=lyricTime.replace(line,"").trim().filterNot {it.isISOControl() || it=='§'}.take(300)
             times.asSequence().mapNotNull {m->
-                val sec=m.groupValues[2].toInt();if(sec>=60) return@mapNotNull null
-                val fraction=m.groupValues[3].let {if(it.isEmpty()) 0.0 else ("0."+it).toDouble()}
-                LyricLine(m.groupValues[1].toInt()*60.0+sec+fraction,words)
+                val hours=m.groupValues[1].takeIf(String::isNotEmpty)?.toInt() ?: 0
+                val minutes=m.groupValues[2].toInt()
+                val sec=m.groupValues[3].toInt()
+                if(sec>=60 || (m.groupValues[1].isNotEmpty() && minutes>=60)) return@mapNotNull null
+                val fraction=m.groupValues[4].let {digits->
+                    if(digits.isEmpty()) 0.0 else digits.toDouble()/10.0.pow(digits.length)
+                }
+                LyricLine(hours*3600.0+minutes*60.0+sec+fraction,words)
             }
         }.sortedBy {it.seconds}.toList()
     }
@@ -112,13 +122,22 @@ object MusicLogic {
     private fun JsonObject.objectAt(key:String):JsonObject? = field(key)?.takeIf {it.isJsonObject}?.asJsonObject
     private fun JsonObject.text(key:String):String? = field(key)?.takeIf {it.isJsonPrimitive && it.asJsonPrimitive.isString}?.asString
     private fun JsonObject.arrayAt(key:String):JsonArray? = field(key)?.takeIf {it.isJsonArray}?.asJsonArray
+    private fun JsonObject.numberAt(key:String):Double? =
+        runCatching {field(key)?.asDouble}.getOrNull()?.takeIf {it.isFinite() && it>=0.0}
+    private fun JsonObject.artistNames():String {
+        val names=arrayAt("artists")?.asSequence()
+            ?.mapNotNull {it.takeIf(JsonElement::isJsonObject)?.asJsonObject?.text("name")}
+            ?.filter(String::isNotBlank)?.toList().orEmpty()
+        return names.joinToString(", ").takeIf(String::isNotBlank)
+            ?: text("artist").orEmpty().trim()
+    }
     fun redirectValue(response:JsonObject,key:String):String {
         val value=response.field(key)?.takeIf {it.isJsonPrimitive}?.asString
         if(value.isNullOrBlank() || value.length>4096 || value.any {it.isISOControl()}) throw MusicServiceFailure("missing or invalid $key")
         return value
     }
     fun queueSize(state:JsonObject):Int = state.objectAt("playerState")?.objectAt("playerQueue")?.arrayAt("playableList")?.size() ?: error("Missing queue tracks")
-    fun current(state:JsonObject):Pair<String,String>? {
+    fun currentTrack(state:JsonObject):CurrentTrack? {
         if(state.text("activeDeviceIdOptional").isNullOrBlank()) return null
         val ps=state.objectAt("playerState") ?: return null
         val queue=ps.objectAt("playerQueue") ?: return null
@@ -128,7 +147,22 @@ object MusicLogic {
         val track=list[index].takeIf {it.isJsonObject}?.asJsonObject ?: return null
         if(track.text("playableType")?.let {it!="TRACK"} == true) return null
         val id=track.text("playableId")?.takeIf {it.matches(Regex("[0-9]{1,20}"))} ?: return null
-        return id to (track.text("title") ?: "")
+        val duration=track.numberAt("durationMs")?.div(1000.0)
+            ?: track.numberAt("duration") ?: 0.0
+        return CurrentTrack(id,track.text("title").orEmpty(),track.artistNames(),duration.coerceAtMost(86400.0))
+    }
+    fun current(state:JsonObject):Pair<String,String>? = currentTrack(state)?.let {it.id to it.title}
+
+    /** Finds the public avatar URI in both track-level and album-level Yandex payloads. */
+    fun coverUri(metadata:JsonObject):String? {
+        fun value(element:JsonElement?):String? = element?.takeIf {it.isJsonPrimitive && it.asJsonPrimitive.isString}
+            ?.asString?.trim()?.takeIf(String::isNotBlank)
+        val keys=listOf("coverUri","cover_uri","coverWithoutText","cover_without_text")
+        for(key in keys) value(metadata.field(key))?.let {return it}
+        metadata.arrayAt("albums")?.asSequence()?.forEach {album->
+            if(album.isJsonObject) for(key in keys) value(album.asJsonObject.field(key))?.let {return it}
+        }
+        return null
     }
     /** Experimental: retain the complete observed state and append only to an ordinary, non-shuffled queue. */
     fun appendRequest(state:JsonObject,id:String,deviceId:String,rid:String,now:Long):JsonObject {
