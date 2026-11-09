@@ -70,6 +70,7 @@ object PetDisplay {
    if(!S.isEnabled(S.PET) || c.level==null || c.gui.hud.isHidden || !FeatureRuntime.context.skyblock || c.gui.screen() is dev.solyanka.client.ui.HudEditorScreen)return@attachElementBefore
    if(h.enabled && (active!=null || pending.isNotBlank())) {
     g.pose().pushMatrix();try{g.pose().translate(h.x.toFloat(),h.y.toFloat());g.pose().scale(h.scale.toFloat(),h.scale.toFloat())
+     HudGlow.draw(g,S.PET,0,0,220,57)
      if(s.style!=0)ChromeDraw.panel(g,0,0,220,57,s.background,if(s.style==2)s.accent else 0x40555555,5)
      val a=active;val read=a?.reading
      if(a!=null)g.item(a.stack,5,5)

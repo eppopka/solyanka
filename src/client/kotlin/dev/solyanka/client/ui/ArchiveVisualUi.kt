@@ -12,6 +12,7 @@ object ArchiveVisualUi {
         host.showPanel(SettingsPanel(title,{host.closePanel()},{model.error}) {panel,w->
             fun update(block:(FeatureSettings)->FeatureSettings) {model.updateGeneral {it.copy(features=block(it.features))};panel.refreshStatus()}
             buildList {
+                if(id==S.MOVE_HEARTS) add(HudGlowUi.row(id,model,panel,w))
                 when(id) {
                     S.AMBIENT_PARTICLES->{val s=model.general.features.ambientParticles
                         add(GuiKit.description(w,"Archive client-only particles around the player; 1–10 spawn attempts per tick, paused with the game. Uses native particle settings and culling, so Reduced/Minimal particles may show fewer. No network traffic; existing particles expire naturally after disabling."))

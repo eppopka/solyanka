@@ -88,6 +88,7 @@ object FeatureUi {
             val s=v.model.general.features.player
             fun update(change:(PlayerDisplaySettings)->PlayerDisplaySettings)=v.change(panel) { it.copy(player=change(it.player)) }
             buildList {
+                add(HudGlowUi.row(SolyankaClient.PLAYER_DISPLAY,v.model,panel,w))
                 add(GuiKit.description(w,"SkyBlock sidebar required. Seven independent HUDs with position/scale/color. Action bar data is parsed before selected fields are hidden."))
                 add(GuiKit.toggleRow(w,"Hide Armor Bar",s.hideArmor) { value -> update { it.copy(hideArmor=value) } })
                 add(GuiKit.toggleRow(w,"Hide Food Bar",s.hideFood) { value -> update { it.copy(hideFood=value) } })

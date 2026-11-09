@@ -80,13 +80,13 @@ object FeatureRuntime {
         }
         return result
     }
-    private fun draw(g:GuiGraphicsExtractor,text:Component,h:HudSpec) {
+    private fun draw(g:GuiGraphicsExtractor,text:Component,h:HudSpec,glowId:String?=null) {
         if(!h.enabled) return
         val client=Minecraft.getInstance();val scale=h.scale.toFloat()
         val x=h.x.coerceIn(0,(client.window.guiScaledWidth-client.font.width(text)*scale).toInt().coerceAtLeast(0))
         val y=h.y.coerceIn(0,(client.window.guiScaledHeight-9*scale).toInt().coerceAtLeast(0))
         g.pose().pushMatrix()
-        try { g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale);g.text(client.font,text,0,0,h.color,true) }
+        try { g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale);if(glowId!=null) HudGlow.draw(g,glowId,0,0,client.font.width(text),9);g.text(client.font,text,0,0,h.color,true) }
         finally { g.pose().popMatrix() }
     }
     private fun render(g:GuiGraphicsExtractor) {
@@ -104,7 +104,7 @@ object FeatureRuntime {
         }
         if(SolyankaClient.isEnabled(SolyankaClient.PLAYER_DISPLAY) && context.skyblock) {
             val data=stats
-            data.lines(f.player).forEach { (id,text) -> draw(g,Component.literal(text),f.player.huds().getValue(id)) }
+            data.lines(f.player).forEach { (id,text) -> draw(g,Component.literal(text),f.player.huds().getValue(id),SolyankaClient.PLAYER_DISPLAY) }
         }
     }
     fun register() {

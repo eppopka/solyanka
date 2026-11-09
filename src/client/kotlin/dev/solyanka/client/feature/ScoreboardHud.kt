@@ -35,6 +35,7 @@ object ScoreboardHud {
   g.pose().pushMatrix()
   try {
    g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale)
+   HudGlow.draw(g,S.SCOREBOARD,0,0,layout.width,layout.height)
    if(s.background) ChromeDraw.panel(g,0,0,layout.width,layout.height,s.backgroundColor,s.borderColor,6)
    fun textClipped(text:Component,tx:Int,ty:Int,right:Int,color:Int) {
     // Scissor respects the active GUI pose, retaining styled text without overlapping scores.

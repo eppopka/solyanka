@@ -41,6 +41,7 @@ object StrayInventoryHud {
   g.pose().pushMatrix()
   try {
    g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale)
+   HudGlow.draw(g,dev.solyanka.client.SolyankaClient.INVENTORY_HUD,0,0,m.width,m.height)
    // Stray classic chrome. No costly frost/starfield pass in solyanka's inventory overlay.
    if(s.background) ChromeDraw.panel(g,0,0,m.width,m.height,s.backgroundColor,LINE,6)
    fun small(text:String,tx:Float,ty:Float,color:Int) {

@@ -13,6 +13,7 @@ object HuntingUi {
    fun color(name:String,value:Int,update:(FeatureSettings,Int)->FeatureSettings) {add(GuiKit.colorRow(w,name,value){v->change {update(it,v)}})}
    fun number(name:String,value:Double,min:Double,max:Double,step:Double,update:(FeatureSettings,Double)->FeatureSettings) {add(GuiKit.sliderRow(w,name,value,NumberRange(min,max,step),""){v->change {update(it,v)}})}
    val f=model.general.features
+   if(id in setOf(S.MOVE_HOTBAR,S.PIP,S.PET)) add(HudGlowUi.row(id,model,panel,w))
    when(id) {
     S.BLOCKLIST->{val s=f.blocklist
      add(GuiKit.description(w,"Local UUID-backed Party Finder blocklist. /sl add <name> [reason], /sl remove <name/uuid>, /sl list [page]. /sl importlegacy imports config/shitters.txt without modifying it. New list: config/solyanka-shitters.json. Corrupt files are preserved and writes disabled. No public/global ban database."))

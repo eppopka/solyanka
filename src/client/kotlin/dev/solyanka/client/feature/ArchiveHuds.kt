@@ -29,13 +29,14 @@ object ArchiveHuds {
   val x=atX ?: h.x.coerceIn(0,(c.window.guiScaledWidth-160*scale).roundToInt().coerceAtLeast(0));val y=atY ?: h.y.coerceIn(0,(c.window.guiScaledHeight-34*scale).roundToInt().coerceAtLeast(0))
   val state=if(sample) StopwatchClock.State.RUNNING else clock.state;val elapsed=if(sample) 5_123_000_000L else clock.elapsedNanos()
   g.pose().pushMatrix()
-  try {g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale);ChromeDraw.panel(g,0,0,160,34,0xcd0c1119.toInt(),0xff5f869f.toInt(),6);g.text(c.font,"Timer - "+when(state) {StopwatchClock.State.IDLE->"Ready";StopwatchClock.State.RUNNING->"Running";StopwatchClock.State.STOPPED->"Stopped"},8,6,when(state) {StopwatchClock.State.RUNNING->0xff55ff55.toInt();StopwatchClock.State.STOPPED->0xffffff55.toInt();else->0xffaaaaaa.toInt()},false);g.text(c.font,StopwatchClock.formatNanos(elapsed),8,19,h.color,false)} finally {g.pose().popMatrix()}
+  try {g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale);HudGlow.draw(g,S.STOPWATCH,0,0,160,34);ChromeDraw.panel(g,0,0,160,34,0xcd0c1119.toInt(),0xff5f869f.toInt(),6);g.text(c.font,"Timer - "+when(state) {StopwatchClock.State.IDLE->"Ready";StopwatchClock.State.RUNNING->"Running";StopwatchClock.State.STOPPED->"Stopped"},8,6,when(state) {StopwatchClock.State.RUNNING->0xff55ff55.toInt();StopwatchClock.State.STOPPED->0xffffff55.toInt();else->0xffaaaaaa.toInt()},false);g.text(c.font,StopwatchClock.formatNanos(elapsed),8,19,h.color,false)} finally {g.pose().popMatrix()}
  }
  fun editor(g:GuiGraphicsExtractor,key:String,x:Int,y:Int):Boolean {if(key!="archive.stopwatch") return false;timer(g,true,x,y);return true}
  private fun bounce(g:GuiGraphicsExtractor,now:Long) {
   val c=Minecraft.getInstance();val s=S.currentGeneral().features.dvd;val sw=c.window.guiScaledWidth;val sh=c.window.guiScaledHeight
   if(dvd.step(now,sw,sh,s) && s.sound) soundPending=true
   val x=dvd.x.roundToInt();val y=dvd.y.roundToInt();val w=s.width.coerceAtMost(sw);val h=s.height.coerceAtMost(sh);val color=colors[dvd.colorIndex]
+  HudGlow.draw(g,S.DVD,x,y,w,h)
   ChromeDraw.panel(g,x,y,w,h,0xe1070a10.toInt(),color,s.radius)
   val label=c.font.plainSubstrByWidth(s.text.ifBlank {"DVD"},(w-14).coerceAtLeast(0))
   g.text(c.font,label,x+(w-c.font.width(label))/2,y+(h-8)/2,color,true)

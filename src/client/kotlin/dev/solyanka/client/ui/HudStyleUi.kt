@@ -16,6 +16,7 @@ object HudStyleUi {
     val next=FeatureCodec.decode(root);model.updateGeneral {it.copy(features=next)};error=null
    } catch(e:Exception) {error=e.message ?: "Invalid setting"};panel.refreshStatus()}
    buildList {
+    add(HudGlowUi.row(id,model,panel,w))
     add(GuiKit.description(w,if(key=="scoreboardHud") "Rounded sidebar with team-colored objective selection and original styled names/scores. Move and scale with /solyanka gui. Long rows are clipped to avoid score overlap. No invented live data." else "One rounded pane plus styled input. Vanilla text, links, hover, scroll, suggestions and message-security tags remain intact. No frost blur or slide animation; click hitboxes stay unchanged."))
     add(GuiKit.button("Apply Stray classic colors",w) {
      model.updateGeneral {old->old.copy(features=if(key=="scoreboardHud") old.features.copy(scoreboardHud=dev.solyanka.utility.StrayClassicStyle.scoreboard(old.features.scoreboardHud)) else old.features.copy(themedChat=dev.solyanka.utility.StrayClassicStyle.chat(old.features.themedChat)))}

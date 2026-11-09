@@ -62,6 +62,7 @@ object VanillaHotbar {
    style=dev.solyanka.client.feature.hotbar.HotbarPainter.Style.valueOf(s.style.uppercase(java.util.Locale.ROOT)),background=java.awt.Color(s.backgroundColor,true),secondary=java.awt.Color(s.gradientColor,true),accent=accent,
    opacity=s.backgroundOpacity.toFloat(),radius=if(s.style=="vanilla")1f else s.cornerRadius.toFloat(),borderWidth=if(s.style=="vanilla")1f else s.borderWidth.toFloat(),gradient=s.gradient,gradientVertical=if(s.gradientAcross)!s.vertical else s.vertical,
    shadow=s.shadow,shadowStrength=s.shadowStrength.toFloat(),glow=s.glow,glowStrength=s.glowStrength.toFloat(),effectRadius=s.effectRadius.toFloat(),shimmer=s.shimmer,shimmerSpeed=s.effectSpeed.toFloat()*.15f,selectionOpacity=s.selectionOpacity.toFloat(),selectionRadius=s.selectionRadius.toFloat())
+  HudGlow.draw(g,S.MOVE_HOTBAR,0,0,geo.width,geo.height)
   dev.solyanka.client.feature.hotbar.HotbarPainter.background(g,layout,look,seconds)
   val slot=if(sample)0 else player?.inventory?.selectedSlot ?: 0
   val selected=if(sample)slot.toFloat()else selection.update(slot,elapsed,s.slideSpeed.toFloat(),s.smoothSelection)

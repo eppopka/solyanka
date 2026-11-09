@@ -501,6 +501,7 @@ object YandexMusic {
     private fun alpha(color:Int,amount:Float):Int = ((amount.coerceIn(0f,1f)*255f).toInt() shl 24) or (color and 0xffffff)
     private fun draw(g:GuiGraphicsExtractor,info:LocalPlayback,s:MusicSettings,cover:Boolean,line:String?) {
         val font=Minecraft.getInstance().font;val tall=height(s)
+        HudGlow.draw(g,S.MUSIC,0,0,WIDTH,tall)
         ChromeDraw.panel(g,0,0,WIDTH,tall,0xe9161b27.toInt(),0xff333e50.toInt(),7)
         ChromeDraw.panel(g,7,7,52,52,0xff242d3b.toInt(),0xff3e4b5c.toInt(),4)
         if(cover) g.blit(coverId,9,9,48,48,0f,1f,0f,1f) else g.text(font,"♪",26,27,0xfffd5d65.toInt(),false)

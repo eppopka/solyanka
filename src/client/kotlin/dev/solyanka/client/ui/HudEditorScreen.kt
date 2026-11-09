@@ -65,6 +65,8 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
                 GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else 0xff666666.toInt())
                 return@forEach
             }
+            // Generic previews (including PiP, pet and player stats) share their owner's glow.
+            dev.solyanka.client.feature.HudGlow.draw(g,HudLayout.owner(entry.key),b.x,b.y,b.width,b.height)
             g.pose().pushMatrix()
             try {
                 g.pose().translate(b.x+2f,b.y+1f);g.pose().scale(entry.hud.scale.toFloat(),entry.hud.scale.toFloat())
