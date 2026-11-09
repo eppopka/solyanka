@@ -18,6 +18,14 @@ object VisualChrome {
 object ScoreboardLayout {
  fun height(rows:Int,header:Boolean)=14+(if(header) 14 else 0)+rows.coerceIn(1,15)*10-2
  fun width(content:Int,maxWidth:Int)=content.plus(24).coerceIn(100,maxWidth.coerceIn(100,400))
+ /** Keep the live sidebar's right edge aligned with the editor's max-width preview. */
+ fun liveX(x:Int,screenWidth:Int,maxWidth:Int,contentWidth:Int,scale:Double):Int {
+  val screen=screenWidth.coerceAtLeast(1)
+  val previewWidth=(maxWidth*scale).roundToInt().coerceIn(1,screen)
+  val liveWidth=(contentWidth*scale).roundToInt().coerceIn(1,screen)
+  val previewX=x.coerceIn(0,screen-previewWidth)
+  return (previewX+previewWidth-liveWidth).coerceIn(0,screen-liveWidth)
+ }
 }
 data class ChatPane(val x:Int,val y:Int,val width:Int,val height:Int)
 object ChatPaneLayout {
