@@ -181,8 +181,17 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
     private fun paint() {
         val active=SolyankaClient.isEnabled(info.id)
         title.text(Component.literal(info.name).withColor(if(active) 0xb8e9ff else 0xc3cede))
-        if(active) surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),0xf0243948.toInt(),0xff527c96.toInt(),4);g.fill(c.x()+4,c.y()+5,c.x()+6,c.y()+c.height()-5,GuiKit.BLUE)}
-        else surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.PANEL,GuiKit.LINE,4)}
+        surface {g,c->
+            val x=c.x();val y=c.y();val w=c.width();val h=c.height()
+            dev.solyanka.client.feature.ChromeDraw.panel(g,x,y,w,h,if(active) 0xf0243948.toInt() else GuiKit.PANEL,if(active) 0xff527c96.toInt() else GuiKit.LINE,4)
+            if(info.category=="HUD" && w>12 && h>8) {
+                // Three faint insets suggest a soft highlight without a blur shader or changing hitboxes.
+                g.fill(x+5,y+2,x+w-5,y+3,0x287dd3fc)
+                g.fill(x+4,y+3,x+w-4,y+4,0x187dd3fc)
+                g.fill(x+4,y+4,x+w-4,y+5,0x0b7dd3fc)
+            }
+            if(active) g.fill(x+4,y+5,x+6,y+h-5,GuiKit.BLUE)
+        }
     }
     override fun onMouseDown(click:MouseButtonEvent,doubled:Boolean):Boolean {
         return when(click.button()) {

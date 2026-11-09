@@ -31,7 +31,7 @@ object ScoreboardHud {
  }
  private fun draw(g:GuiGraphicsExtractor,layout:Layout,atX:Int?=null,atY:Int?=null) {
   val c=Minecraft.getInstance();val s=S.currentGeneral().features.scoreboardHud;val scale=s.hud.scale.toFloat()
-  val x=atX ?: s.hud.x.coerceIn(0,(c.window.guiScaledWidth-layout.width*scale).roundToInt().coerceAtLeast(0));val y=atY ?: s.hud.y.coerceIn(0,(c.window.guiScaledHeight-layout.height*scale).roundToInt().coerceAtLeast(0))
+  val x=atX ?: ScoreboardLayout.liveX(s.hud.x,c.window.guiScaledWidth,s.maxWidth,layout.width,s.hud.scale);val y=atY ?: s.hud.y.coerceIn(0,(c.window.guiScaledHeight-layout.height*scale).roundToInt().coerceAtLeast(0))
   g.pose().pushMatrix()
   try {
    g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale)
