@@ -10,7 +10,6 @@ object ReleaseOneUi {
   host.showPanel(SettingsPanel(title,{host.closePanel()},{model.error}) {panel,w->
    fun update(block:(FeatureSettings)->FeatureSettings) {model.updateGeneral {it.copy(features=block(it.features))};panel.refreshStatus()}
    buildList {
-    if(id==S.STOPWATCH || id==S.DVD) add(HudGlowUi.row(id,model,panel,w))
     when(id) {
      S.MOTION_BLUR->{val s=model.general.features.motionBlur
       add(GuiKit.description(w,"Stray time-weighted Frame Blending uses a finite exposure window, monitor refresh and raw frames (not recursive output). Recommended for clean motion. Existing Mix/Max remain available and can leave trails. HUD stays sharp. History is lazy, depthless and capped at 96 MiB. Velocity/hybrid reprojection is not implemented."))
@@ -37,6 +36,7 @@ object ReleaseOneUi {
       add(GuiKit.toggleRow(w,"Corner Flash",s.flash) {v->update {it.copy(dvd=it.dvd.copy(flash=v))}})
      }
     }
+    if(id==S.STOPWATCH || id==S.DVD) addAll(HudGlowUi.controls(id,model,panel,w))
    }
   })
  }

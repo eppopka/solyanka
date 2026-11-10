@@ -9,6 +9,19 @@ object ChromeDraw {
  private val geometry=object:LinkedHashMap<Key,List<PanelBand>>(128,.75f,true) {
   override fun removeEldestEntry(eldest:MutableMap.MutableEntry<Key,List<PanelBand>>?)=size>128
  }
+ /** Rounded border only; never submits a transparent interior over the HUD. */
+ fun outline(g:GuiGraphicsExtractor,x:Int,y:Int,w:Int,h:Int,color:Int,radius:Int=5) {
+  if(w<=0 || h<=0) return
+  val key=Key(w,h,radius.coerceIn(0,minOf(w,h)/2))
+  val bands=geometry.getOrPut(key) {PanelGeometry.bands(w,h,key.radius)}
+  for(band in bands) {
+   val left=x+band.inset;val right=x+w-band.inset
+   if(right<=left) continue
+   val top=y+band.top;val bottom=y+band.bottom
+   if(band.borderOnly) g.fill(left,top,right,bottom,color)
+   else {g.fill(left,top,left+1,bottom,color);g.fill(right-1,top,right,bottom,color)}
+  }
+ }
  fun panel(g:GuiGraphicsExtractor,x:Int,y:Int,w:Int,h:Int,fill:Int,border:Int,radius:Int=5) {
   if(w<=0 || h<=0) return
   val key=Key(w,h,radius.coerceIn(0,minOf(w,h)/2))

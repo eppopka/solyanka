@@ -24,7 +24,6 @@ object ExtraHudUi {
                 panel.refreshStatus()
             }
             buildList {
-                add(HudGlowUi.row(id,model,panel,w))
                 add(GuiKit.description(w,when(key) {
                     "inventoryHud"->"27 inventory slots with optional hotbar, armor/offhand and filled-slot count. Display only; no inventory interaction. /solyanka gui moves/scales this HUD."
                     "itemNameHud"->"Persistent styled main-hand item name, hidden when hand is empty. Vanilla fading name can be hidden independently. /solyanka gui edits layout."
@@ -40,6 +39,7 @@ object ExtraHudUi {
                     else if(field=="backgroundColor") add(GuiKit.colorRow(w,label,value.asInt) {change(field,JsonPrimitive(it))})
                     else add(GuiKit.sliderRow(w,label,value.asDouble,NumberRange(0.0,120.0,1.0)) {change(field,JsonPrimitive(it.toInt()))})
                 }
+                addAll(HudGlowUi.controls(id,model,panel,w))
             }
         })
     }

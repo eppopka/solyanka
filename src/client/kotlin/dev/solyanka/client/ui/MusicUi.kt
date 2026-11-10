@@ -30,7 +30,6 @@ object MusicUi {
                 add(GuiKit.toggleRow(w,"Allow !suggest",s.suggest,"Account mode only. Searches Yandex Music and appends the first matching track to the current queue.") {v->update {it.copy(suggest=v)}})
                 add(GuiKit.toggleRow(w,"Announce Added Track",s.announce,"Only announces after Yandex confirms the queue update.") {v->update {it.copy(announce=v)}})
                 add(GuiKit.section(w,"HUD appearance","The HUD editor controls placement and scale; these options control its visual hierarchy."))
-                add(HudGlowUi.row(dev.solyanka.client.SolyankaClient.MUSIC,model,panel,w))
                 add(HudNavigation.button(w))
                 add(GuiKit.colorRow(w,"HUD Text Color",s.hud.color) {v->update {it.copy(hud=it.hud.copy(color=v))}})
                 add(GuiKit.textRow(w,"Service Label",s.serviceLabel,"Text shown at the top left of the HUD.") {v->update {it.copy(serviceLabel=v.take(40))}})
@@ -43,6 +42,7 @@ object MusicUi {
                 add(GuiKit.section(w,"Lyrics","Lyrics use LRCLIB only when enabled. Missing tracks fall back to a title/artist search."))
                 add(GuiKit.toggleRow(w,"Show Synced Lyrics",s.showLyrics,"Sends the current title, artist and duration to LRCLIB. Lyrics may be missing or mismatched.") {v->update {it.copy(showLyrics=v)}})
                 add(GuiKit.description(w,"Local mode cannot search or change the Yandex queue. Account mode is required for !suggest."))
+                addAll(HudGlowUi.controls(dev.solyanka.client.SolyankaClient.MUSIC,model,panel,w))
             }
         })
     }

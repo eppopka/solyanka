@@ -13,7 +13,6 @@ object HuntingUi {
    fun color(name:String,value:Int,update:(FeatureSettings,Int)->FeatureSettings) {add(GuiKit.colorRow(w,name,value){v->change {update(it,v)}})}
    fun number(name:String,value:Double,min:Double,max:Double,step:Double,update:(FeatureSettings,Double)->FeatureSettings) {add(GuiKit.sliderRow(w,name,value,NumberRange(min,max,step),""){v->change {update(it,v)}})}
    val f=model.general.features
-   if(id in setOf(S.MOVE_HOTBAR,S.PIP,S.PET)) add(HudGlowUi.row(id,model,panel,w))
    when(id) {
     S.BLOCKLIST->{val s=f.blocklist
      add(GuiKit.description(w,"Local UUID-backed Party Finder blocklist. /sl add <name> [reason], /sl remove <name/uuid>, /sl list [page]. /sl importlegacy imports config/shitters.txt without modifying it. New list: config/solyanka-shitters.json. Corrupt files are preserved and writes disabled. No public/global ban database."))
@@ -80,6 +79,7 @@ object HuntingUi {
      toggle("Shimmer",s.shimmer){it,v->it.copy(halo=it.halo.copy(shimmer=v))};toggle("Bobbing",s.bob){it,v->it.copy(halo=it.halo.copy(bob=v))};toggle("Filled Disc",s.fill){it,v->it.copy(halo=it.halo.copy(fill=v))};number("Disc Opacity",s.fillOpacity,0.0,1.0,.05){it,v->it.copy(halo=it.halo.copy(fillOpacity=v))};toggle("Through Walls",s.throughWalls){it,v->it.copy(halo=it.halo.copy(throughWalls=v))}
     }
    }
+   if(id in setOf(S.MOVE_HOTBAR,S.PIP,S.PET)) addAll(HudGlowUi.controls(id,model,panel,w))
   }})
  }
 }
