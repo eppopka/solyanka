@@ -22,18 +22,19 @@ class HudStyleTest {
  @Test fun `rounded panel rows mirror vertically`() {val rows=(0 until 19).map {VisualChrome.inset(it,19,5)};assertEquals(rows,rows.reversed());assertTrue(rows.first()>0);assertEquals(0,rows[9]);assertTrue((0 until 19).all {VisualChrome.inset(it,19,0)==0})}
  @Test fun `halo runs wide faint to narrow stronger within bounded passes`() {val lines=VisualChrome.halo(-1,2.0,4.0,.6);assertEquals(3,lines.size);assertEquals(lines.sortedByDescending {it.first},lines);assertTrue(lines.all {it.first>2f && (it.second ushr 24) in 1..255});assertTrue((lines.first().second ushr 24)<(lines.last().second ushr 24))}
  @Test fun `sidebar sizing bounds rows and width`() {assertEquals(176,ScoreboardLayout.height(15,true));assertEquals(176,ScoreboardLayout.height(100,true));assertEquals(220,ScoreboardLayout.width(10000,220));assertEquals(100,ScoreboardLayout.width(0,220));assertTrue(ScoreboardLayout.height(5,true)>ScoreboardLayout.height(5,false))}
- @Test fun `scoreboard live right edge follows editor preview at multiple widths and scales`() {
+ @Test fun `scoreboard reaches both edges for changing widths and scales`() {
   for(screen in listOf(320,960,1920)) for(scale in listOf(.5,1.0,1.25,2.0)) for(content in listOf(100,160,220)) {
-   val preview=(220*scale).roundToInt().coerceIn(1,screen)
    val live=(content*scale).roundToInt().coerceIn(1,screen)
-   val x=ScoreboardLayout.liveX(screen-preview,screen,220,content,scale)
-   assertEquals(screen,x+live,"screen=$screen scale=$scale content=$content")
+   assertEquals(0,ScoreboardLayout.liveX(0,screen,content,scale))
+   assertEquals(screen,ScoreboardLayout.liveX(0,screen,content,scale,true)+live)
   }
  }
- @Test fun `scoreboard live placement follows preview right edge offscreen and at intermediate positions`() {
-  assertEquals(220,ScoreboardLayout.liveX(100,960,220,100,1.0))
-  assertEquals(860,ScoreboardLayout.liveX(10000,960,220,100,1.0))
-  assertEquals(0,ScoreboardLayout.liveX(50,20,220,100,4.0))
+ @Test fun `scoreboard uses live left coordinate and bounded right anchor`() {
+  assertEquals(100,ScoreboardLayout.liveX(100,960,100,1.0))
+  assertEquals(860,ScoreboardLayout.liveX(10000,960,100,1.0))
+  assertEquals(0,ScoreboardLayout.liveX(50,20,100,4.0))
+  val f=FeatureSettings(scoreboardHud=ScoreboardHudSettings(anchorRight=true))
+  assertTrue(FeatureCodec.decode(Gson().toJsonTree(f).asJsonObject).scoreboardHud.anchorRight)
  }
  @Test fun `chat pane uses vanilla 200 tick lifetime and respects scroll`() {assertEquals(2,ChatPaneLayout.visible(listOf(0,199,200,300),false,15,0));assertEquals(4,ChatPaneLayout.visible(listOf(0,199,200,300),true,15,0));assertEquals(1,ChatPaneLayout.visible(listOf(0,199,200),false,15,1));assertEquals(0,ChatPaneLayout.visible(emptyList(),false,15,0))}
  @Test fun `chat pane applies scale without changing native hitboxes`() {val p=ChatPaneLayout.pane(300,320,1.0,9,5);assertEquals(ChatPane(0,209,332,57),p);assertTrue(ChatPaneLayout.pane(50,320,.5,9,5).y>=0);assertFails {ChatPaneLayout.pane(300,320,0.0,9,5)}}

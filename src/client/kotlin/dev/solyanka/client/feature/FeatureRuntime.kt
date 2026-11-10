@@ -86,7 +86,7 @@ object FeatureRuntime {
         val x=h.x.coerceIn(0,(client.window.guiScaledWidth-client.font.width(text)*scale).toInt().coerceAtLeast(0))
         val y=h.y.coerceIn(0,(client.window.guiScaledHeight-9*scale).toInt().coerceAtLeast(0))
         g.pose().pushMatrix()
-        try { g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale);if(glowId!=null) HudGlow.draw(g,glowId,0,0,client.font.width(text),9);g.text(client.font,text,0,0,h.color,true) }
+        try { g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale);if(glowId!=null) HudGlow.draw(g,glowId,0,0,client.font.width(text),9,0);g.text(client.font,text,0,0,h.color,true) }
         finally { g.pose().popMatrix() }
     }
     private fun render(g:GuiGraphicsExtractor) {
@@ -99,7 +99,7 @@ object FeatureRuntime {
             val lines=timers.lines(f.timers)
             lines.forEach { (id,line) ->
                 val text=Component.literal(line.prefix).withColor(line.prefixColor).append(Component.literal(line.value).withColor(line.color))
-                draw(g,text,f.timers.huds().getValue(id))
+                draw(g,text,f.timers.huds().getValue(id),SolyankaClient.TICK_TIMERS)
             }
         }
         if(SolyankaClient.isEnabled(SolyankaClient.PLAYER_DISPLAY) && context.skyblock) {

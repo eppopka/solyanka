@@ -195,7 +195,7 @@ object DungeonWaypoints {
     g.text(c.font,"Right click: toggle | Shift + right click: name",8,20,-1,true)
    }
    if(text!=null && System.nanoTime()-routeAt<500_000_000L && s.progress && h.enabled && SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) && FeatureRuntime.context.dungeon && !FeatureRuntime.context.boss && c.level!=null && !c.gui.hud.isHidden && c.gui.screen() !is dev.solyanka.client.ui.HudEditorScreen) {
-    g.pose().pushMatrix();try{g.pose().translate(h.x.toFloat(),h.y.toFloat());g.pose().scale(h.scale.toFloat(),h.scale.toFloat());g.text(c.font,text,0,0,h.color,true)}finally{g.pose().popMatrix()}
+    g.pose().pushMatrix();try{g.pose().translate(h.x.toFloat(),h.y.toFloat());g.pose().scale(h.scale.toFloat(),h.scale.toFloat());HudGlow.draw(g,SolyankaClient.WAYPOINTS,0,0,c.font.width(text),9,0);g.text(c.font,text,0,0,h.color,true)}finally{g.pose().popMatrix()}
    }
   }
   UseBlockCallback.EVENT.register {player,level,hand,hit ->

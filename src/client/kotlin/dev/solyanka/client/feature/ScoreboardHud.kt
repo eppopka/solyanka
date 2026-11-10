@@ -12,26 +12,30 @@ import kotlin.math.roundToInt
 object ScoreboardHud {
  private data class Row(val name:Component,val score:Component)
  private data class Layout(val title:Component,val rows:List<Row>,val width:Int,val height:Int)
- private fun layout(sample:Boolean=false):Layout? {
+ private fun layout():Layout? {
   val c=Minecraft.getInstance();val s=S.currentGeneral().features.scoreboardHud
-  var title:Component=Component.literal("SKYBLOCK");var rows=List(5) {Row(Component.literal(listOf("Late Spring 12th","Your Island","Purse: 12,345","Bits: 400","www.hypixel.net")[it]),Component.literal("${5-it}"))}
-  if(!sample) {
-   val level=c.level ?: return null;val player=c.player ?: return null;val board=level.scoreboard
-   val team=board.getPlayersTeam(player.scoreboardName)
-   val colored=team?.color?.orElse(null)?.displaySlot()
-   val objective=colored?.let {board.getDisplayObjective(it)} ?: board.getDisplayObjective(DisplaySlot.SIDEBAR) ?: return null
-   title=objective.displayName
-   rows=board.listPlayerScores(objective).filterNot {it.isHidden}.sortedWith(compareByDescending<PlayerScoreEntry> {it.value()}.thenBy(String.CASE_INSENSITIVE_ORDER) {it.owner()}).take(15).map {entry->
-    Row(PlayerTeam.formatNameForTeam(board.getPlayersTeam(entry.owner()),entry.display() ?: Component.literal(entry.owner())),if(s.scores) entry.formatValue(objective.numberFormatOrDefault(StyledFormat.SIDEBAR_DEFAULT)) else Component.empty())
-   }
-   if(rows.isEmpty()) return null
+  val level=c.level ?: return null;val player=c.player ?: return null;val board=level.scoreboard
+  val team=board.getPlayersTeam(player.scoreboardName)
+  val colored=team?.color?.orElse(null)?.displaySlot()
+  val objective=colored?.let {board.getDisplayObjective(it)} ?: board.getDisplayObjective(DisplaySlot.SIDEBAR) ?: return null
+  val title=objective.displayName
+  val rows=board.listPlayerScores(objective).filterNot {it.isHidden}.sortedWith(compareByDescending<PlayerScoreEntry> {it.value()}.thenBy(String.CASE_INSENSITIVE_ORDER) {it.owner()}).take(15).map {entry->
+   Row(PlayerTeam.formatNameForTeam(board.getPlayersTeam(entry.owner()),entry.display() ?: Component.literal(entry.owner())),if(s.scores) entry.formatValue(objective.numberFormatOrDefault(StyledFormat.SIDEBAR_DEFAULT)) else Component.empty())
   }
   val content=maxOf(c.font.width(title),rows.maxOfOrNull {c.font.width(it.name)+(if(s.scores && it.score.string.isNotBlank()) c.font.width(it.score)+8 else 0)} ?: 0)
-  return Layout(title,rows,if(sample) s.maxWidth else ScoreboardLayout.width(content,s.maxWidth),ScoreboardLayout.height(rows.size,s.header))
+  return Layout(title,rows,ScoreboardLayout.width(content,s.maxWidth),ScoreboardLayout.height(rows.size,s.header))
+ }
+ /** Use live content dimensions and position for the editor's hit box. */
+ fun editorEntry(entry:dev.solyanka.ui.HudEntry,screenWidth:Int):dev.solyanka.ui.HudEntry {
+  if(entry.key!="extra.scoreboard") return entry
+  val s=S.currentGeneral().features.scoreboardHud;val live=layout()
+  val w=live?.width ?: 160;val h=live?.height ?: 20
+  val x=ScoreboardLayout.liveX(s.hud.x,screenWidth,w,s.hud.scale,s.anchorRight)
+  return entry.copy(hud=entry.hud.copy(x=x),baseWidth=w,baseHeight=h,lines=listOf(if(live==null) "No active scoreboard" else "Scoreboard"))
  }
  private fun draw(g:GuiGraphicsExtractor,layout:Layout,atX:Int?=null,atY:Int?=null) {
   val c=Minecraft.getInstance();val s=S.currentGeneral().features.scoreboardHud;val scale=s.hud.scale.toFloat()
-  val x=atX ?: ScoreboardLayout.liveX(s.hud.x,c.window.guiScaledWidth,s.maxWidth,layout.width,s.hud.scale);val y=atY ?: s.hud.y.coerceIn(0,(c.window.guiScaledHeight-layout.height*scale).roundToInt().coerceAtLeast(0))
+  val x=atX ?: ScoreboardLayout.liveX(s.hud.x,c.window.guiScaledWidth,layout.width,s.hud.scale,s.anchorRight);val y=atY ?: s.hud.y.coerceIn(0,(c.window.guiScaledHeight-layout.height*scale).roundToInt().coerceAtLeast(0))
   g.pose().pushMatrix()
   try {
    g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale)
@@ -57,5 +61,15 @@ object ScoreboardHud {
   if(!S.isEnabled(S.SCOREBOARD)) original.extractRenderState(g,d)
   else if(s.hud.enabled && !Minecraft.getInstance().gui.hud.isHidden && Minecraft.getInstance().gui.screen() !is dev.solyanka.client.ui.HudEditorScreen) layout()?.let {draw(g,it)}
  }}}
- fun editor(g:GuiGraphicsExtractor,key:String,x:Int,y:Int):Boolean {if(key!="extra.scoreboard") return false;draw(g,layout(true)!!,x,y);return true}
+ fun editor(g:GuiGraphicsExtractor,key:String,x:Int,y:Int):Boolean {
+  if(key!="extra.scoreboard") return false
+  val current=layout()
+  if(current!=null) draw(g,current,x,y)
+  else {
+   val scale=S.currentGeneral().features.scoreboardHud.hud.scale.toFloat()
+   g.pose().pushMatrix()
+   try {g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale);g.text(Minecraft.getInstance().font,"No active scoreboard",3,5,0xffc3cede.toInt(),false)} finally {g.pose().popMatrix()}
+  }
+  return true
+ }
 }

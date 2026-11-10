@@ -66,11 +66,11 @@ object GuiCatalog {
         FeatureCardInfo("utility.command_keybinds","Command Keybinds","General","Create keyboard and mouse binds for commands or chat. Modifier, GUI, island and dungeon class filters."),
         FeatureCardInfo("utility.command_shortcuts","Command Shortcuts","General","Create command aliases with arguments, live expansion and cycle protection.")
     )
-    fun search(query: String): Map<String,List<FeatureCardInfo>> {
+    fun search(query: String,sortByLength:Boolean=false): Map<String,List<FeatureCardInfo>> {
         fun normalized(value: String) = value.lowercase().filterNot { it.isWhitespace() }
         val term=normalized(query)
         return features.filter { term.isEmpty() || normalized(it.name+" "+it.description).contains(term) }
-            .groupBy { it.category }.mapValues { (_,cards) -> cards.sortedBy { it.name } }
+            .groupBy { it.category }.mapValues { (_,cards) -> if(sortByLength) cards.sortedWith(compareByDescending<FeatureCardInfo> {it.name.length}.thenBy {it.name.lowercase()}.thenBy {it.id}) else cards.sortedWith(compareBy<FeatureCardInfo> {it.name.lowercase()}.thenBy {it.id}) }
     }
 }
 

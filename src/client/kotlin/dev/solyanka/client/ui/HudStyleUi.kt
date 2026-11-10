@@ -24,7 +24,7 @@ object HudStyleUi {
     fun controls(obj:JsonObject,prefix:String="") {
      obj.entrySet().forEach {(field,value)->
       if(value.isJsonObject || prefix=="hud." && field in setOf("x","y","scale")) return@forEach
-      if(key=="scoreboardHud" && field=="accentColor") return@forEach // Legacy saved field, no decorative header.
+      if(key=="scoreboardHud" && field in setOf("accentColor","anchorRight")) return@forEach // Legacy saved field, no decorative header.
       val path=prefix+field;val label=if(key=="scoreboardHud" && field=="header") "Objective title" else field.replace(Regex("([a-z])([A-Z])"),"$1 $2").replaceFirstChar {it.uppercase()}
       if(value.asJsonPrimitive.isBoolean) add(GuiKit.toggleRow(w,label,value.asBoolean) {change(path,JsonPrimitive(it))})
       else if(field.endsWith("Color") || field=="color") add(GuiKit.colorRow(w,label,value.asInt) {change(path,JsonPrimitive(it))})

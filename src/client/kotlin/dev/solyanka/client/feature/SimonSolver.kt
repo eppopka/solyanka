@@ -92,7 +92,7 @@ object SimonSolver {
   HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT,Identifier.fromNamespaceAndPath("solyanka","simon")) {g,_->
    val c=Minecraft.getInstance();val s=S.currentGeneral().features.simon;val h=s.hud
    if(active() && s.progress && h.enabled && logic.stage>0 && !c.gui.hud.isHidden && c.gui.screen() !is dev.solyanka.client.ui.HudEditorScreen) {
-    g.pose().pushMatrix();try {g.pose().translate(h.x.toFloat(),h.y.toFloat());g.pose().scale(h.scale.toFloat(),h.scale.toFloat());g.text(c.font,"SS: ${logic.stage}/5",0,0,h.color,true)}finally{g.pose().popMatrix()}
+    g.pose().pushMatrix();try {g.pose().translate(h.x.toFloat(),h.y.toFloat());g.pose().scale(h.scale.toFloat(),h.scale.toFloat());val text="SS: ${logic.stage}/5";HudGlow.draw(g,S.SIMON,0,0,c.font.width(text),9,0);g.text(c.font,text,0,0,h.color,true)}finally{g.pose().popMatrix()}
    }
   }
  }

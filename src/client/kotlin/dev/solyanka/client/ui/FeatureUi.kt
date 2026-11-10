@@ -80,6 +80,7 @@ object FeatureUi {
                         { value -> update { current -> current.withHud(id,current.huds().getValue(id).copy(enabled=value)) } },
                         { net.minecraft.client.Minecraft.getInstance().setScreenAndShow(HudEditorScreen()) }))
                 }
+                addAll(HudGlowUi.controls(SolyankaClient.TICK_TIMERS,v.model,panel,w))
             }
         })
     }

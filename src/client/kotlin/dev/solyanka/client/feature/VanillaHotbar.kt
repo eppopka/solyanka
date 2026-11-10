@@ -61,8 +61,15 @@ object VanillaHotbar {
   val look=dev.solyanka.client.feature.hotbar.HotbarPainter.Appearance(
    style=dev.solyanka.client.feature.hotbar.HotbarPainter.Style.valueOf(s.style.uppercase(java.util.Locale.ROOT)),background=java.awt.Color(s.backgroundColor,true),secondary=java.awt.Color(s.gradientColor,true),accent=accent,
    opacity=s.backgroundOpacity.toFloat(),radius=if(s.style=="vanilla")1f else s.cornerRadius.toFloat(),borderWidth=if(s.style=="vanilla")1f else s.borderWidth.toFloat(),gradient=s.gradient,gradientVertical=if(s.gradientAcross)!s.vertical else s.vertical,
-   shadow=s.shadow,shadowStrength=s.shadowStrength.toFloat(),glow=s.glow,glowStrength=s.glowStrength.toFloat(),effectRadius=s.effectRadius.toFloat(),shimmer=s.shimmer,shimmerSpeed=s.effectSpeed.toFloat()*.15f,selectionOpacity=s.selectionOpacity.toFloat(),selectionRadius=s.selectionRadius.toFloat())
-  HudGlow.draw(g,S.MOVE_HOTBAR,0,0,geo.width,geo.height)
+   shadow=false,shadowStrength=s.shadowStrength.toFloat(),glow=false,glowStrength=s.glowStrength.toFloat(),effectRadius=s.effectRadius.toFloat(),shimmer=s.shimmer,shimmerSpeed=s.effectSpeed.toFloat()*.15f,selectionOpacity=s.selectionOpacity.toFloat(),selectionRadius=s.selectionRadius.toFloat())
+  val corner=if(s.style=="vanilla") 1 else s.cornerRadius.roundToInt()
+  val spread=ceil(s.effectRadius.toDouble()).toInt().coerceIn(1,12)
+  // Preserve the upstream painter; render its shadow/glow with the shared anti-aliased contour.
+  if(s.shadow) RoundedGlow.draw(g,0,2,geo.width,geo.height,corner,0xff000000.toInt(),s.shadowStrength*.38,spread)
+  val features=S.currentGeneral().features
+  val lighting=features.hudGlow.style(S.MOVE_HOTBAR,features.hudLighting)
+  if(s.glow) RoundedGlow.draw(g,0,0,geo.width,geo.height,corner,lighting.color,s.glowStrength*lighting.intensity*if(s.style=="neon") .35 else .19,spread)
+  HudGlow.draw(g,S.MOVE_HOTBAR,0,0,geo.width,geo.height,corner)
   dev.solyanka.client.feature.hotbar.HotbarPainter.background(g,layout,look,seconds)
   val slot=if(sample)0 else player?.inventory?.selectedSlot ?: 0
   val selected=if(sample)slot.toFloat()else selection.update(slot,elapsed,s.slideSpeed.toFloat(),s.smoothSelection)

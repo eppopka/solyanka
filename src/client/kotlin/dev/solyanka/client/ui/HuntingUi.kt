@@ -79,7 +79,7 @@ object HuntingUi {
      toggle("Shimmer",s.shimmer){it,v->it.copy(halo=it.halo.copy(shimmer=v))};toggle("Bobbing",s.bob){it,v->it.copy(halo=it.halo.copy(bob=v))};toggle("Filled Disc",s.fill){it,v->it.copy(halo=it.halo.copy(fill=v))};number("Disc Opacity",s.fillOpacity,0.0,1.0,.05){it,v->it.copy(halo=it.halo.copy(fillOpacity=v))};toggle("Through Walls",s.throughWalls){it,v->it.copy(halo=it.halo.copy(throughWalls=v))}
     }
    }
-   if(id in setOf(S.MOVE_HOTBAR,S.PIP,S.PET)) addAll(HudGlowUi.controls(id,model,panel,w))
+   if(id in setOf(S.MOVE_HOTBAR,S.PIP,S.PET,S.SIMON)) addAll(HudGlowUi.controls(id,model,panel,w))
   }})
  }
 }

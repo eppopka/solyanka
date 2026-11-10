@@ -78,7 +78,7 @@ object PictureInPicture {
   if(!S.isEnabled(S.PIP) || c.level==null || !h.enabled || c.gui.hud.isHidden || c.gui.screen() is dev.solyanka.client.ui.HudEditorScreen)return@attachElementBefore
   val height=if(texW>0)(s.width.toDouble()*texH/texW).toInt().coerceIn(1,640) else s.width*9/16
   g.pose().pushMatrix();try{g.pose().translate(h.x.toFloat(),h.y.toFloat());g.pose().scale(h.scale.toFloat(),h.scale.toFloat())
-   HudGlow.draw(g,S.PIP,0,0,s.width+6,height+6)
+   HudGlow.draw(g,S.PIP,0,0,s.width+6,height+6,4)
    ChromeDraw.panel(g,0,0,s.width+6,height+6,0xd0181a22.toInt(),0xff5ca0bf.toInt(),4)
    if(texture!=null && shown===selected.get())g.blit(id,3,3,s.width,height,0f,1f,0f,1f)
    else g.text(c.font,if(supported())"Select a window in PiP settings" else "Windows only",7,7,-1,false)

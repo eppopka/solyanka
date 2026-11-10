@@ -8,19 +8,16 @@ import dev.solyanka.ui.NumberRange
 import io.wispforest.owo.ui.core.UIComponent
 
 object HudGlowUi {
- /** Append these rows after all primary feature controls. */
  fun controls(id:String,model:InstantSettings,panel:SettingsPanel,width:Int):List<UIComponent> {
   fun save(change:(dev.solyanka.utility.HudGlowSettings)->dev.solyanka.utility.HudGlowSettings) {
-   model.updateGeneral {g->g.copy(features=g.features.copy(hudGlow=change(g.features.hudGlow)))}
-   panel.refreshStatus()
+   model.updateGeneral {g->g.copy(features=g.features.copy(hudGlow=change(g.features.hudGlow)))};panel.refreshStatus()
   }
+  val s=model.general.features.hudGlow
   return listOf(
-   GuiKit.sliderRow(width,"Soft HUD Glow Intensity",model.general.features.hudGlow.intensity.value(id),NumberRange(.25,2.0,.05),"Applies only to this HUD when Soft HUD Glow is enabled.") { value ->
-    save {it.copy(intensity=it.intensity.withValue(id,value))}
-   },
-   GuiKit.toggleRow(width,"Soft HUD Glow",model.general.features.hudGlow.enabled(id),"Show a soft halo around this HUD.") { value ->
-    save {it.withEnabled(id,value)}
-   }
+   GuiKit.colorRow(width,"Custom HUD Glow Color",s.colors.value(id)) {v->save {it.copy(colors=it.colors.withValue(id,v))}},
+   GuiKit.sliderRow(width,"Custom HUD Glow Intensity",s.intensity.value(id),NumberRange(.25,2.0,.05),"Used only when Custom Style is enabled.") {v->save {it.copy(intensity=it.intensity.withValue(id,v))}},
+   GuiKit.toggleRow(width,"Custom Style",s.custom.value(id),"Use this HUD's own color and intensity; otherwise use global HUD lighting.") {v->save {it.copy(custom=it.custom.withValue(id,v))}},
+   GuiKit.toggleRow(width,"Soft HUD Glow",s.enabled(id),"Show a glow for this HUD.") {v->save {it.withEnabled(id,v)}}
   )
  }
 }

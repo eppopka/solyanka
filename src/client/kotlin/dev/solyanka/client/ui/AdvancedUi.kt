@@ -55,6 +55,7 @@ object AdvancedUi {
       change(field,com.google.gson.JsonPrimitive(n))
      })
     }
+    if(id==SolyankaClient.MAP_INFO) addAll(HudGlowUi.controls(id,model,panel,w))
    }
   })
  }

@@ -27,7 +27,7 @@ class GuiModelsTest {
         assertTrue(GuiCatalog.search("not-a-feature").isEmpty())
     }
     @Test fun `cards are sorted within categories`() {
-        GuiCatalog.search("").values.forEach { assertEquals(it.sortedBy { c -> c.name },it) }
+        GuiCatalog.search("").values.forEach { assertEquals(it.sortedWith(compareBy<FeatureCardInfo> { c -> c.name.lowercase() }.thenBy { c -> c.id }),it) }
     }
     @Test fun `draft stages bind changes without mutating initial profile`() {
         val bind=CommandBinding(id="one",name="Original")

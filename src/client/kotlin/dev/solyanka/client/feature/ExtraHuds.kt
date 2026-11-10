@@ -56,7 +56,7 @@ object ExtraHuds {
         if(!sample && (stack==null || stack.isEmpty)) return
         val text=if(sample) Component.literal("Sample held item") else stack!!.styledHoverName.copy()
         val w=maxOf(80,c.font.width(text)+16)
-        frame(g,s.hud,w,18,x,y) {HudGlow.draw(g,SolyankaClient.ITEM_NAME_HUD,0,0,w,18);panel(g,w,18,s.background,s.backgroundColor);g.text(c.font,text,8,5,s.hud.color,true)}
+        frame(g,s.hud,w,18,x,y) {HudGlow.draw(g,SolyankaClient.ITEM_NAME_HUD,0,0,w,18,0);panel(g,w,18,s.background,s.backgroundColor);g.text(c.font,text,8,5,s.hud.color,true)}
     }
     private fun icon(kind:SkillKind):Item = when(kind) {
         SkillKind.FARMING->Items.GOLDEN_HOE;SkillKind.MINING->Items.IRON_PICKAXE;SkillKind.COMBAT->Items.DIAMOND_SWORD;SkillKind.FORAGING->Items.GOLDEN_AXE;SkillKind.FISHING->Items.FISHING_ROD;SkillKind.ENCHANTING->Items.ENCHANTED_BOOK;SkillKind.ALCHEMY->Items.BREWING_STAND;SkillKind.TAMING->Items.BONE;SkillKind.CARPENTRY->Items.CRAFTING_TABLE;SkillKind.RUNECRAFTING->Items.MAGMA_CREAM;SkillKind.SOCIAL->Items.EMERALD;SkillKind.CATACOMBS->Items.WITHER_SKELETON_SKULL
@@ -67,7 +67,7 @@ object ExtraHuds {
         val text=(if(s.showGain) "${snap.gained} " else "")+snap.kind.label+(if(s.showLevel && snap.level!=null) " ${snap.level}" else "")+" "+SkillProgress.progressText(snap)
         val iconWidth=if(s.icon) 20 else 0;val w=c.font.width(text)+10+iconWidth
         frame(g,s.hud,w,26,x,y) {
-            HudGlow.draw(g,SolyankaClient.SKILL_HUD,0,0,w,26)
+            HudGlow.draw(g,SolyankaClient.SKILL_HUD,0,0,w,26,0)
             panel(g,w,26,s.background,s.backgroundColor)
             if(s.icon) g.item(ItemStack(icon(snap.kind)),5,5,310)
             g.text(c.font,text,5+iconWidth,9,s.hud.color,true)

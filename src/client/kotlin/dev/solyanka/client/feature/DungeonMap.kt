@@ -99,6 +99,7 @@ object DungeonMap {
      "Deaths: ${stats.deaths ?: "?"} | Crypts: ${stats.crypts ?: "?"} | M:${DungeonPuzzles.mimicKilled} P:${DungeonPuzzles.princeKilled} B:${DungeonPuzzles.batsKilled}",
      "${DungeonPuzzles.currentRoom()?.name ?: "Unknown room"}${if(cfg.roomSecrets && roomSecrets!=null) " | Room secrets: ${roomSecrets!!.first}/${roomSecrets!!.second}" else ""} | ${stats.elapsed}")
     val x=cfg.x.coerceAtMost((c.window.guiScaledWidth-text.maxOf {c.font.width(it)}).coerceAtLeast(0));val y=cfg.y.coerceAtMost((c.window.guiScaledHeight-30).coerceAtLeast(0))
+    HudGlow.draw(g,SolyankaClient.MAP_INFO,x,y,text.maxOf {c.font.width(it)},30,0)
     text.forEachIndexed {i,t->g.text(c.font,Component.literal(t),x,y+i*10,-1,true)}
    }
   }

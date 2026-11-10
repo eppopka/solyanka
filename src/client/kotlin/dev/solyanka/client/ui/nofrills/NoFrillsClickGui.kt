@@ -25,6 +25,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     private val categoryScrolls=mutableListOf<ScrollContainer<FlowLayout>>()
     private var cursorX=0;private var cursorY=0
     private var searchBox:FlatTextbox?=null
+    private val gradientHeaders=mutableListOf<Pair<PlainLabel,String>>()
     private var focusSearch=false
     private var panel:EmbeddedPanel?=null
     private var toggleError:String?=null
@@ -33,6 +34,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     private val logger=org.slf4j.LoggerFactory.getLogger("solyanka/gui")
     fun showPanel(next:EmbeddedPanel) {navigation.open(next)}
     fun closePanel() {navigation.close()}
+    fun refreshCards() {if(::columns.isInitialized) populate()}
     private fun commitNavigation() {
         val request=navigation.take() ?: return
         val next=request.panel
@@ -75,11 +77,14 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
         root.child(GuiKit.button("Done",55) { onClose() }.apply {
             positioning(Positioning.relative(100,100));margins(Insets.of(0,3,0,3))
         })
+        root.child(GuiKit.button("GUI Settings",94) {dev.solyanka.client.ui.ClickGuiSettingsUi.open(this)}.apply {
+            positioning(Positioning.absolute((width-102).coerceAtLeast(0),6))
+        })
         populate()
     }
     private fun populate() {
-        columns.clearChildren();categoryScrolls.clear()
-        val groups=GuiCatalog.search(query)
+        columns.clearChildren();categoryScrolls.clear();gradientHeaders.clear()
+        val groups=GuiCatalog.search(query,SolyankaClient.currentGeneral().features.clickGui.sortByLength)
         if(groups.isEmpty()) columns.child(GuiKit.label("No matching features").apply { margins(Insets.of(8)) })
         groups.forEach { (name,features) ->
             val w=maxOf(136,features.maxOf { Minecraft.getInstance().font.width(it.name)+26 })
@@ -97,7 +102,8 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
             categoryScrolls.add(scroll)
             val header=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content()).apply {
                 alignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER);padding(Insets.of(6));surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.RAISED,GuiKit.LINE,5)}
-                child(GuiKit.label(name.uppercase()).apply { horizontalTextAlignment(HorizontalAlignment.CENTER) })
+                val label=GuiKit.label(name.uppercase()).apply { horizontalTextAlignment(HorizontalAlignment.CENTER) }
+                gradientHeaders.add(label to name.uppercase());child(label)
             }
             columns.child(UIContainers.verticalFlow(Sizing.fixed(w),Sizing.fill(100)).apply {
                 margins(Insets.of(3,0,4,4));gap(4);child(header);child(scroll)
@@ -114,11 +120,14 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
             searchBox?.let {box->uiAdapter.rootComponent.focusHandler()?.focus(box,UIComponent.FocusSource.MOUSE_CLICK);box.setFocused(true);box.moveCursorToEnd(false);box.setHighlightPos(0)}
             focusSearch=false
         }
+        // Update the same visible label objects: no layout rebuild or change to hitboxes.
+        val seconds=System.nanoTime()/1_000_000_000.0
+        gradientHeaders.forEach {(label,text)->label.text(ClickGradient.text(text,seconds))}
         // Keep the feature list visible behind modal settings; input/tooltips still belong to the panel.
         super.extractRenderState(g,mx,my,delta)
         cursorX=mx;cursorY=my
-        g.text(font,"solyanka",12,12,GuiKit.WHITE)
-        if(width>290)g.text(font,"CLIENT UTILITIES  /  26.2",83,12,GuiKit.MUTED)
+        g.text(font,ClickGradient.text("solyanka",seconds),12,12,GuiKit.WHITE)
+        if(width>360)g.text(font,"CLIENT UTILITIES  /  26.2",83,12,GuiKit.MUTED)
         g.text(font,if(panel==null) "Right-click: settings | Ctrl+F: search" else "Drag the settings title bar to move it",8,height-43,GuiKit.MUTED)
         g.text(font,"Left click: toggle  |  Right click: settings",3,height-32,GuiKit.WHITE)
         toggleError?.let { g.text(font,"Not saved: $it",3,height-54,0xffff5555.toInt()) }
@@ -180,8 +189,10 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
     }
     private fun paint() {
         val active=SolyankaClient.isEnabled(info.id)
-        title.text(Component.literal(info.name).withColor(if(active) 0xb8e9ff else 0xc3cede))
-        if(active) surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),0xf0243948.toInt(),0xff527c96.toInt(),4);g.fill(c.x()+4,c.y()+5,c.x()+6,c.y()+c.height()-5,GuiKit.BLUE)}
+        val palette=SolyankaClient.currentGeneral().features.clickGui
+        val accent=if(active) palette.enabledColor else palette.disabledColor
+        title.text(Component.literal(info.name).withColor(accent and 0xffffff))
+        if(active) surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),0xf0243948.toInt(),accent or 0xff000000.toInt(),4);g.fill(c.x()+4,c.y()+5,c.x()+6,c.y()+c.height()-5,accent or 0xff000000.toInt())}
         else surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.PANEL,GuiKit.LINE,4)}
     }
     override fun onMouseDown(click:MouseButtonEvent,doubled:Boolean):Boolean {

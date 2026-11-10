@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only; Stray ScoreboardHudRenderer/ChatChrome CC0 adaptations. */
 package dev.solyanka.utility
 import kotlin.math.*
-data class ScoreboardHudSettings(val hud:HudSpec=HudSpec(x=300,y=40),val backgroundColor:Int=0xd018202b.toInt(),val borderColor:Int=0x665f869f,val accentColor:Int=0xff76c9ec.toInt(),val background:Boolean=true,val header:Boolean=true,val scores:Boolean=true,val shadow:Boolean=false,val maxWidth:Int=220) {
+data class ScoreboardHudSettings(val hud:HudSpec=HudSpec(x=300,y=40),val backgroundColor:Int=0xd018202b.toInt(),val borderColor:Int=0x665f869f,val accentColor:Int=0xff76c9ec.toInt(),val background:Boolean=true,val header:Boolean=true,val scores:Boolean=true,val shadow:Boolean=false,val maxWidth:Int=220,val anchorRight:Boolean=false) {
  fun validate() {hud.validate();require(maxWidth in 100..400)}
 }
 data class ThemedChatSettings(val backgroundColor:Int=0x9918202b.toInt(),val borderColor:Int=0x8865a9c9.toInt(),val inputColor:Int=0xcc18202b.toInt(),val rounded:Boolean=true,val input:Boolean=true,val opacity:Double=1.0) {fun validate() {require(opacity.isFinite() && opacity in .1..1.0)}}
@@ -16,16 +16,15 @@ object VisualChrome {
  fun halo(color:Int,width:Double,radius:Double,strength:Double):List<Pair<Float,Int>> = listOf(1.0 to .09,.7 to .15,.4 to .23).map {(r,a)->(width+radius*r*2).toFloat() to alpha(color,a*strength)}
 }
 object ScoreboardLayout {
- fun height(rows:Int,header:Boolean)=14+(if(header) 14 else 0)+rows.coerceIn(1,15)*10-2
+ fun height(rows:Int,header:Boolean)=14+(if(header) 14 else 0)+rows.coerceIn(0,15)*10-2
  fun width(content:Int,maxWidth:Int)=content.plus(24).coerceIn(100,maxWidth.coerceIn(100,400))
- /** Keep the live sidebar's right edge aligned with the editor's max-width preview. */
- fun liveX(x:Int,screenWidth:Int,maxWidth:Int,contentWidth:Int,scale:Double):Int {
+ /** The saved x is the actual left edge. Right anchoring survives live content changes. */
+ fun liveX(x:Int,screenWidth:Int,contentWidth:Int,scale:Double,anchorRight:Boolean=false):Int {
   val screen=screenWidth.coerceAtLeast(1)
-  val previewWidth=(maxWidth*scale).roundToInt().coerceIn(1,screen)
   val liveWidth=(contentWidth*scale).roundToInt().coerceIn(1,screen)
-  val previewX=x.coerceIn(0,screen-previewWidth)
-  return (previewX+previewWidth-liveWidth).coerceIn(0,screen-liveWidth)
+  return if(anchorRight) screen-liveWidth else x.coerceIn(0,screen-liveWidth)
  }
+
 }
 data class ChatPane(val x:Int,val y:Int,val width:Int,val height:Int)
 object ChatPaneLayout {

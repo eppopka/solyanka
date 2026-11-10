@@ -36,7 +36,7 @@ object ArchiveHuds {
   val c=Minecraft.getInstance();val s=S.currentGeneral().features.dvd;val sw=c.window.guiScaledWidth;val sh=c.window.guiScaledHeight
   if(dvd.step(now,sw,sh,s) && s.sound) soundPending=true
   val x=dvd.x.roundToInt();val y=dvd.y.roundToInt();val w=s.width.coerceAtMost(sw);val h=s.height.coerceAtMost(sh);val color=colors[dvd.colorIndex]
-  HudGlow.draw(g,S.DVD,x,y,w,h)
+  HudGlow.draw(g,S.DVD,x,y,w,h,s.radius)
   ChromeDraw.panel(g,x,y,w,h,0xe1070a10.toInt(),color,s.radius)
   val label=c.font.plainSubstrByWidth(s.text.ifBlank {"DVD"},(w-14).coerceAtLeast(0))
   g.text(c.font,label,x+(w-c.font.width(label))/2,y+(h-8)/2,color,true)

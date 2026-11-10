@@ -55,17 +55,10 @@ class HudGlowSettingsTest {
   assertFails {legacy.intensity.withValue("hud.inventory",2.1)}
   assertFails {FeatureCodec.decode(JsonParser.parseString("""{"hudGlow":{"intensity":{"inventory":3}}}""").asJsonObject)}
  }
- @Test fun `halo has a visible adjustable fading alpha ramp`() {
-  val atDefault=(1..HudGlowProfile.RADIUS).map {HudGlowProfile.alpha(it,1.0)}
-  assertEquals(120,atDefault.first());assertEquals(6,atDefault.size)
-  assertTrue(atDefault.zipWithNext().all {(inner,outer)->inner>outer && outer>0})
-  assertTrue((1..HudGlowProfile.RADIUS).all {HudGlowProfile.alpha(it,2.0)>HudGlowProfile.alpha(it,1.0)})
-  assertEquals(240,HudGlowProfile.alpha(1,2.0))
- }
  @Test fun `glow controls are appended to each feature panel`() {
   val root=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/ui")
   val sources=mapOf(
-   "HuntingUi.kt" to "if(id in setOf(S.MOVE_HOTBAR,S.PIP,S.PET)) addAll(HudGlowUi.controls",
+   "HuntingUi.kt" to "if(id in setOf(S.MOVE_HOTBAR,S.PIP,S.PET,S.SIMON)) addAll(HudGlowUi.controls",
    "ArchiveVisualUi.kt" to "if(id==S.MOVE_HEARTS) addAll(HudGlowUi.controls",
    "ReleaseOneUi.kt" to "if(id==S.STOPWATCH || id==S.DVD) addAll(HudGlowUi.controls",
    "HudStyleUi.kt" to "addAll(HudGlowUi.controls(id,model,panel,w))",
@@ -79,16 +72,21 @@ class HudGlowSettingsTest {
    assertFalse(text.contains("HudGlowUi.row("),file)
    // After the glow rows, the next statement closes the current buildList.
    assertTrue(text.substringAfter(marker).substringAfter('\n').trimStart().startsWith("}"),file)
-   assertEquals(1,Regex("HudGlowUi\\.controls\\(").findAll(text).count(),file)
+   assertEquals(if(file=="FeatureUi.kt") 2 else 1,Regex("HudGlowUi\\.controls\\(").findAll(text).count(),file)
+  }
+  for((file,id) in listOf("FeatureUi.kt" to "SolyankaClient.TICK_TIMERS", "AdvancedUi.kt" to "id", "WaypointUi.kt" to "dev.solyanka.client.SolyankaClient.WAYPOINTS")) {
+   val text=Files.readString(root.resolve(file));val marker="addAll(HudGlowUi.controls($id"
+   assertTrue(text.contains(marker),file)
+   assertTrue(text.substringAfter(marker).substringAfter('\n').trimStart().startsWith("}"),file)
   }
   val controls=Files.readString(root.resolve("HudGlowUi.kt"))
-  assertTrue(controls.indexOf("Soft HUD Glow Intensity")<controls.indexOf("\"Soft HUD Glow\""))
+  assertTrue(controls.indexOf("Custom HUD Glow Intensity")<controls.indexOf("\"Soft HUD Glow\""))
  }
  @Test fun `feature renderers use the shared opt in halo`() {
   val root=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature")
   val files=listOf("ArchiveHuds.kt","ExtraHuds.kt","FeatureRuntime.kt","PetDisplay.kt","PictureInPicture.kt","ScoreboardHud.kt","StrayInventoryHud.kt","ThemedChat.kt","VanillaHearts.kt","VanillaHotbar.kt","YandexMusic.kt")
   files.forEach {assertTrue(Files.readString(root.resolve(it)).contains("HudGlow.draw("),it)}
   val draw=Files.readString(root.resolve("HudGlow.kt"))
-  assertTrue(draw.contains("settings.enabled(id)"));assertTrue(draw.contains("HudGlowProfile.RADIUS downTo 1"))
+  assertTrue(draw.contains("f.hudGlow.enabled(id)"));assertTrue(draw.contains("RoundedGlow.draw("))
  }
 }
