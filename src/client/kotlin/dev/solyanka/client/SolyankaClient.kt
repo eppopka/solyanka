@@ -99,6 +99,7 @@ object SolyankaClient : ClientModInitializer {
     const val TOOLTIPS = "utility.info_tooltips"
     const val TICK_TIMERS = "dungeon.tick_timers"
     const val PLAYER_DISPLAY = "hud.player_display"
+    const val PERFORMANCE = "hud.performance"
     const val INVENTORY_HUD="hud.inventory"
     const val ITEM_NAME_HUD="hud.item_name"
     const val SKILL_HUD="hud.skill_progress"
@@ -143,6 +144,7 @@ object SolyankaClient : ClientModInitializer {
         modules.register(object : Module(ModuleInfo(TOOLTIPS,"Info tooltips",Category.GENERAL)) {})
         modules.register(object : Module(ModuleInfo(TICK_TIMERS,"Tick timers (Odin)",Category.DUNGEON)) { override fun onDisable() { FeatureRuntime.timers.reset() } })
         modules.register(object : Module(ModuleInfo(PLAYER_DISPLAY,"Player display (Odin)",Category.HUD)) { override fun onDisable() { FeatureRuntime.stats.reset() } })
+        modules.register(object : Module(ModuleInfo(PERFORMANCE,"Performance",Category.HUD)) {})
         listOf(INVENTORY_HUD to "Inventory HUD",ITEM_NAME_HUD to "Item Name HUD",SKILL_HUD to "Skill Progress HUD").forEach {(id,name)->
             modules.register(object : Module(ModuleInfo(id,name,Category.HUD)) {override fun onDisable() {if(id==SKILL_HUD) ExtraHuds.reset()}})
         }
@@ -206,7 +208,7 @@ object SolyankaClient : ClientModInitializer {
         InfoTooltips.register()
         FeatureRuntime.register()
         dev.solyanka.client.feature.PictureInPicture.register();dev.solyanka.client.feature.PetDisplay.register();dev.solyanka.client.feature.ShitterList.register();SecretCounter.register();dev.solyanka.client.feature.SimonSolver.register()
-        ArchiveHuds.register();ExtraHuds.register();WorldVisuals.register();ScoreboardHud.register()
+        ArchiveHuds.register();ExtraHuds.register();WorldVisuals.register();ScoreboardHud.register();dev.solyanka.client.feature.PerformanceHud.register()
         PriceTooltips.register()
         Suppression.register()
         dev.solyanka.client.feature.VanillaHotbar.register();VanillaHearts.register() // Wrap existing visibility filters; never bypass their decisions.
@@ -224,7 +226,7 @@ object SolyankaClient : ClientModInitializer {
             if (world !== previousWorld) {
                 modules.reset(if (world == null) ResetReason.DISCONNECTED else ResetReason.WORLD_CHANGED)
                 ownedInputs.clear()
-                FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset();WorldVisuals.reset();TitaniumScanner.reset()
+                dev.solyanka.client.feature.PerformanceHud.reset();FeatureRuntime.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset();WorldVisuals.reset();TitaniumScanner.reset()
                 previousWorld = world
             }
             while (settingsKey.consumeClick()) {

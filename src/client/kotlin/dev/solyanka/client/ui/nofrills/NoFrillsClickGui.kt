@@ -23,9 +23,9 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     private lateinit var columns:FlowLayout
     private lateinit var mainScroll:ScrollContainer<FlowLayout>
     private val categoryScrolls=mutableListOf<ScrollContainer<FlowLayout>>()
+    private val featureCards=mutableListOf<FeatureCard>()
     private var cursorX=0;private var cursorY=0
     private var searchBox:FlatTextbox?=null
-    private val gradientHeaders=mutableListOf<Pair<PlainLabel,String>>()
     private var focusSearch=false
     private var panel:EmbeddedPanel?=null
     private var toggleError:String?=null
@@ -77,33 +77,31 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
         root.child(GuiKit.button("Done",55) { onClose() }.apply {
             positioning(Positioning.relative(100,100));margins(Insets.of(0,3,0,3))
         })
-        root.child(GuiKit.button("GUI Settings",94) {dev.solyanka.client.ui.ClickGuiSettingsUi.open(this)}.apply {
-            positioning(Positioning.absolute((width-102).coerceAtLeast(0),6))
-        })
         populate()
     }
     private fun populate() {
-        columns.clearChildren();categoryScrolls.clear();gradientHeaders.clear()
+        columns.clearChildren();categoryScrolls.clear();featureCards.clear()
         val groups=GuiCatalog.search(query,SolyankaClient.currentGeneral().features.clickGui.sortByLength)
         if(groups.isEmpty()) columns.child(GuiKit.label("No matching features").apply { margins(Insets.of(8)) })
         groups.forEach { (name,features) ->
             val w=maxOf(136,features.maxOf { Minecraft.getInstance().font.width(it.name)+26 })
             val cards=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content())
-            features.forEach { info -> cards.child(FeatureCard(info,w,
+            features.forEach { info -> val card=FeatureCard(info,w,
                 toggle={
-                    val states=SolyankaClient.states().toMutableMap();states[info.id]=!SolyankaClient.isEnabled(info.id)
-                    val failure=SolyankaClient.applySettings(SolyankaClient.currentProfile(),states)
-                    toggleError=failure
+                    if(info.id==GuiCatalog.GUI_SETTINGS) dev.solyanka.client.ui.ClickGuiSettingsUi.open(this)
+                    else {
+                        val states=SolyankaClient.states().toMutableMap();states[info.id]=!SolyankaClient.isEnabled(info.id)
+                        toggleError=SolyankaClient.applySettings(SolyankaClient.currentProfile(),states)
+                    }
                 },
-                settings=({ try {ConfigUi.openSettings(info.id,this)} catch(e:Exception) {logger.error("Cannot prepare settings for ${info.id}",e);toggleError="Settings unavailable — see logs/latest.log"} })
-            )) }
+                settings=({ try {if(info.id==GuiCatalog.GUI_SETTINGS) dev.solyanka.client.ui.ClickGuiSettingsUi.open(this) else ConfigUi.openSettings(info.id,this)} catch(e:Exception) {logger.error("Cannot prepare settings for ${info.id}",e);toggleError="Settings unavailable — see logs/latest.log"} })
+            );featureCards.add(card);cards.child(card) }
             val scroll=UIContainers.verticalScroll(Sizing.fixed(w),Sizing.fill(90),cards)
             scroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.BLUE)))
             categoryScrolls.add(scroll)
             val header=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content()).apply {
                 alignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER);padding(Insets.of(6));surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.RAISED,GuiKit.LINE,5)}
-                val label=GuiKit.label(name.uppercase()).apply { horizontalTextAlignment(HorizontalAlignment.CENTER) }
-                gradientHeaders.add(label to name.uppercase());child(label)
+                child(GuiKit.label(name.uppercase()).apply { horizontalTextAlignment(HorizontalAlignment.CENTER) })
             }
             columns.child(UIContainers.verticalFlow(Sizing.fixed(w),Sizing.fill(100)).apply {
                 margins(Insets.of(3,0,4,4));gap(4);child(header);child(scroll)
@@ -120,9 +118,9 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
             searchBox?.let {box->uiAdapter.rootComponent.focusHandler()?.focus(box,UIComponent.FocusSource.MOUSE_CLICK);box.setFocused(true);box.moveCursorToEnd(false);box.setHighlightPos(0)}
             focusSearch=false
         }
-        // Update the same visible label objects: no layout rebuild or change to hitboxes.
         val seconds=System.nanoTime()/1_000_000_000.0
-        gradientHeaders.forEach {(label,text)->label.text(ClickGradient.text(text,seconds))}
+        // Each card uses monotonic elapsed time, not the number of rendered frames.
+        val now=System.nanoTime();featureCards.forEach {it.advance(now)}
         // Keep the feature list visible behind modal settings; input/tooltips still belong to the panel.
         super.extractRenderState(g,mx,my,delta)
         cursorX=mx;cursorY=my
@@ -184,20 +182,32 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
 private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val toggle:()->Unit,private val settings:(()->Unit)?):
     FlowLayout(Sizing.fixed(width),Sizing.content(),Algorithm.VERTICAL) {
     private val title=GuiKit.label(info.name)
+    private fun active()=info.id==GuiCatalog.GUI_SETTINGS || SolyankaClient.isEnabled(info.id)
+    private var progress=if(active()) 1.0 else 0.0
+    private var lastNanos=System.nanoTime()
     init {
-        title.margins(Insets.of(6,6,10,10));title.tooltip(Component.literal(info.description));child(title);paint()
+        title.margins(Insets.of(6,6,10,10));title.tooltip(Component.literal(info.description));child(title)
+        surface {g,c->
+            val palette=SolyankaClient.currentGeneral().features.clickGui
+            val mix=dev.solyanka.utility.ToggleAnimation::mix
+            val background=mix(GuiKit.PANEL,0xf0243948.toInt(),progress)
+            val border=mix(palette.disabledBorderColor,palette.enabledColor or 0xff000000.toInt(),progress)
+            dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),background,border,4)
+            val bar=mix(0, palette.enabledColor or 0xff000000.toInt(),progress)
+            if(bar ushr 24>0) g.fill(c.x()+4,c.y()+5,c.x()+6,c.y()+c.height()-5,bar)
+        }
+        advance(lastNanos)
     }
-    private fun paint() {
-        val active=SolyankaClient.isEnabled(info.id)
+    fun advance(now:Long) {
         val palette=SolyankaClient.currentGeneral().features.clickGui
-        val accent=if(active) palette.enabledColor else palette.disabledColor
-        title.text(Component.literal(info.name).withColor(accent and 0xffffff))
-        if(active) surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),0xf0243948.toInt(),accent or 0xff000000.toInt(),4);g.fill(c.x()+4,c.y()+5,c.x()+6,c.y()+c.height()-5,accent or 0xff000000.toInt())}
-        else surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.PANEL,GuiKit.LINE,4)}
+        val seconds=((now-lastNanos).coerceAtLeast(0L))/1_000_000_000.0;lastNanos=now
+        progress=dev.solyanka.utility.ToggleAnimation.step(progress,active(),seconds,palette.toggleAnimations)
+        val color=dev.solyanka.utility.ToggleAnimation.mix(palette.disabledColor,palette.enabledColor,progress)
+        title.text(Component.literal(info.name).withColor(color and 0xffffff))
     }
     override fun onMouseDown(click:MouseButtonEvent,doubled:Boolean):Boolean {
         return when(click.button()) {
-            GLFW.GLFW_MOUSE_BUTTON_LEFT -> { toggle();paint();true }
+            GLFW.GLFW_MOUSE_BUTTON_LEFT -> { toggle();advance(System.nanoTime());true }
             GLFW.GLFW_MOUSE_BUTTON_RIGHT -> { settings?.invoke();true }
             else -> false
         }

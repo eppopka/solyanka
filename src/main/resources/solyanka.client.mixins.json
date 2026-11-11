@@ -29,6 +29,7 @@
     "SuppressFogMixin",
     "DungeonEventMixin",
     "BestiaryPacketMixin",
+    "PerformanceTimeMixin",
     "EntityNameAccessor",
     "AmbienceClockMixin",
     "AmbienceWeatherMixin",

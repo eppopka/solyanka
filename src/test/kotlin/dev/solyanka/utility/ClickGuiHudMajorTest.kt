@@ -3,6 +3,7 @@ package dev.solyanka.utility
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import dev.solyanka.ui.GuiCatalog
 import java.nio.file.Files
 import java.nio.file.Path
@@ -79,6 +80,24 @@ class ClickGuiHudMajorTest {
   val b=RoundedGlowGeometry.bands(220,76,6,8)
   assertTrue(b.size<2000,"too many fill calls: ${b.size}")
   assertTrue(b.map {it.level}.distinct().size>4,"expected a feathered ramp")
+ }
+ @Test fun `145 migrates old HUD settings into globally enabled lighting`() {
+  val legacy=FeatureCodec.decode(JsonParser.parseString("""{"hudGlow":{"inventory":false,"intensity":{"inventory":1.5}}}""").asJsonObject)
+  assertTrue(legacy.hudLighting.enabled);assertFalse(legacy.hudGlow.custom.value("hud.inventory"))
+  assertEquals(HudGlowStyle(legacy.hudLighting.color,legacy.hudLighting.intensity),legacy.hudGlow.style("hud.inventory",legacy.hudLighting))
+  assertEquals(1.5,legacy.hudGlow.intensity.value("hud.inventory"))
+  val off=legacy.copy(hudLighting=legacy.hudLighting.copy(enabled=false),clickGui=legacy.clickGui.copy(disabledBorderColor=0xff123456.toInt()))
+  val roundTrip=FeatureCodec.decode(Gson().toJsonTree(off).asJsonObject)
+  assertFalse(roundTrip.hudLighting.enabled);assertEquals(0xff123456.toInt(),roundTrip.clickGui.disabledBorderColor)
+ }
+ @Test fun `145 Dev settings action and logo-only gradient are wired`() {
+  assertEquals("Dev",GuiCatalog.search("GUI Settings").values.flatten().single {it.id==GuiCatalog.GUI_SETTINGS}.category)
+  val ui=Files.readString(Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt"))
+  assertEquals(1,Regex("ClickGradient\\.text\\(").findAll(ui).count());assertTrue(ui.contains("ClickGradient.text(\"solyanka\""))
+  assertFalse(ui.contains("gradientHeaders"));assertTrue(ui.contains("info.id==GuiCatalog.GUI_SETTINGS ||"))
+  assertTrue(ui.contains("palette.disabledBorderColor"));assertFalse(ui.contains("GuiKit.button(\"GUI Settings\""))
+  val panel=Files.readString(Path.of("src/client/kotlin/dev/solyanka/client/ui/ClickGuiSettingsUi.kt"))
+  assertTrue(panel.contains("Disabled Modules Border Color"));assertTrue(panel.contains("Soft HUD Glow"))
  }
  @Test fun `scoreboard editor uses live rows and actual bounds`() {
   val root=Path.of("src/client/kotlin/dev/solyanka/client")

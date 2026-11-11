@@ -7,7 +7,10 @@ import dev.solyanka.utility.*
 
 data class FeatureCardInfo(val id: String, val name: String, val category: String, val description: String)
 object GuiCatalog {
+    const val GUI_SETTINGS="dev.gui_settings"
     val features = listOf(
+        FeatureCardInfo("hud.performance","Performance","HUD","Live FPS, player ping and estimated server TPS from world-time packets."),
+        FeatureCardInfo(GUI_SETTINGS,"GUI Settings","Dev","Always available: ClickGUI colors, sorting and global HUD lighting."),
         FeatureCardInfo("custom.item_aura","Item Aura","Visual","Archive first-person orbit rings, DNA helix, comet swarm, vortex and fireflies; gradient orbs, stars and trails."),
         FeatureCardInfo("cosmetic.cs2_knife","CS2 Knives","Visual","Stray Source 2 models, finishes and viewmodel animations from your local CS2 install or an explicitly downloaded verified Stray pack. No assets bundled."),
         FeatureCardInfo("custom.shitter_list","ShitterList","Dungeons","UUID-backed local blocklist, Party Finder warnings, opt-in kicks and Mojang lookups; /sl management."),

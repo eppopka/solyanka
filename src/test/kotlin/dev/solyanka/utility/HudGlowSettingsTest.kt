@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 class HudGlowSettingsTest {
  private val ids=GuiCatalog.features.filter {it.category=="HUD"}.map {it.id}
  @Test fun `each HUD feature has an independent default off toggle`() {
-  assertEquals(13,ids.size)
+  assertEquals(14,ids.size)
   val original=FeatureCodec.decode(JsonObject()).hudGlow
   assertTrue(ids.none {original.enabled(it)})
   for(id in ids) {
@@ -80,13 +80,14 @@ class HudGlowSettingsTest {
    assertTrue(text.substringAfter(marker).substringAfter('\n').trimStart().startsWith("}"),file)
   }
   val controls=Files.readString(root.resolve("HudGlowUi.kt"))
-  assertTrue(controls.indexOf("Custom HUD Glow Intensity")<controls.indexOf("\"Soft HUD Glow\""))
+  assertTrue(controls.indexOf("\"Custom Style\"")<controls.indexOf("if(s.custom.value(id))"))
+  assertTrue(controls.contains("if(s.custom.value(id))"));assertFalse(controls.contains("\"Soft HUD Glow\""))
  }
  @Test fun `feature renderers use the shared opt in halo`() {
   val root=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature")
   val files=listOf("ArchiveHuds.kt","ExtraHuds.kt","FeatureRuntime.kt","PetDisplay.kt","PictureInPicture.kt","ScoreboardHud.kt","StrayInventoryHud.kt","ThemedChat.kt","VanillaHearts.kt","VanillaHotbar.kt","YandexMusic.kt")
   files.forEach {assertTrue(Files.readString(root.resolve(it)).contains("HudGlow.draw("),it)}
   val draw=Files.readString(root.resolve("HudGlow.kt"))
-  assertTrue(draw.contains("f.hudGlow.enabled(id)"));assertTrue(draw.contains("RoundedGlow.draw("))
+  assertTrue(draw.contains("f.hudLighting.enabled"));assertTrue(draw.contains("RoundedGlow.draw("))
  }
 }

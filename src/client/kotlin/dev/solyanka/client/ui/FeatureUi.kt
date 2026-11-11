@@ -59,6 +59,7 @@ object FeatureUi {
             SolyankaClient.PUZZLE_SOLVERS->PuzzleSolversUi.open(host,model)
             SolyankaClient.WAYPOINTS->WaypointUi.open(host,model)
             SolyankaClient.AMBIENCE,SolyankaClient.ASPECT,SolyankaClient.FOG,SolyankaClient.DOORS,SolyankaClient.MAP_INFO,SolyankaClient.ICE,SolyankaClient.BLAZE,SolyankaClient.BEAMS,SolyankaClient.MIMIC,SolyankaClient.MIMIC_CHEST,SolyankaClient.PRICES,SolyankaClient.EXPERIMENTS,SolyankaClient.SUPPRESSION -> AdvancedUi.open(id,host,model)
+            SolyankaClient.PERFORMANCE -> PerformanceUi.open(host,model)
             SolyankaClient.TICK_TIMERS -> timers(v)
             SolyankaClient.PLAYER_DISPLAY -> player(v)
             else -> fixes(v,id)

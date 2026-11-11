@@ -25,6 +25,7 @@ object WorldOverlay {
  private val fillDepth by lazy {fillType(true)}
  private val fillEsp by lazy {fillType(false)}
  private val esp by lazy { RenderType.create("solyanka_lines_esp",RenderSetup.builder(RenderPipelines.register(RenderPipeline.builder(RenderPipelines.LINES_SNIPPET).withLocation("solyanka/lines_esp").withDepthStencilState(DepthStencilState(CompareOp.ALWAYS_PASS,false)).withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT)).build())).createRenderSetup()) }
+ fun lineType(depth:Boolean)=if(depth) RenderTypes.LINES else esp
  fun publish(value:List<Segment>,filled:List<Fill> = emptyList(),text:List<Label> = emptyList(),owner:String="dungeon") { channels=channels+(owner to Snapshot(value.toList(),filled.toList(),text.toList())) }
  fun clear(owner:String) { channels=channels-owner }
  fun box(out:MutableList<Segment>,b:AABB,color:Int,depth:Boolean=true,style:dev.solyanka.utility.WayStyle?=null) {
@@ -40,11 +41,12 @@ object WorldOverlay {
   val filled=values.flatMap {it.fills}.toMutableList();val text=values.flatMap {it.labels}.toMutableList()
   HuntingFeatures.collectBestiary(c,snapshot)
   HuntingFeatures.collectTiki(c,snapshot,filled,text)
-  BlockSelection.collect(c,snapshot,filled)
+  BlockSelection.collect(c,filled)
   SpreadGuesser.collect(net.minecraft.client.Minecraft.getInstance(),snapshot,filled)
   val triangles=mutableListOf<Triangle>();ArchiveCosmetics.collect(c,snapshot,triangles)
   val pose=c.poseStack();pose.pushPose()
   try { // Subtract in double precision before casting vertices, avoiding world-coordinate jitter.
+   BlockSelection.submit(c)
    triangles.groupBy {it.depth}.forEach { (depth,list)->
     c.submitNodeCollector().submitCustomGeometry(pose,if(depth) triangleDepth else triangleEsp) {matrix,buffer->
      list.forEach {t->listOf(t.a,t.b,t.c).forEach {v->buffer.addVertex(matrix,(v.x-camera.x).toFloat(),(v.y-camera.y).toFloat(),(v.z-camera.z).toFloat()).setColor(t.color)}}

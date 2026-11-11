@@ -19,10 +19,13 @@ object ClickGuiSettingsUi {
    val f=model.general.features
    listOf(
     GuiKit.section(w,"Module appearance","Colors and order apply across ClickGUI categories."),
+    GuiKit.toggleRow(w,"Toggle Animations",f.clickGui.toggleAnimations,"Smooth module on/off transitions.") {v->save {it.copy(clickGui=it.clickGui.copy(toggleAnimations=v))}},
     GuiKit.colorRow(w,"Enabled Modules Color",f.clickGui.enabledColor) {v->save {it.copy(clickGui=it.clickGui.copy(enabledColor=v))}},
-    GuiKit.colorRow(w,"Disabled Modules Color",f.clickGui.disabledColor) {v->save {it.copy(clickGui=it.clickGui.copy(disabledColor=v))}},
+    GuiKit.colorRow(w,"Disabled Modules Text Color",f.clickGui.disabledColor) {v->save {it.copy(clickGui=it.clickGui.copy(disabledColor=v))}},
+    GuiKit.colorRow(w,"Disabled Modules Border Color",f.clickGui.disabledBorderColor) {v->save {it.copy(clickGui=it.clickGui.copy(disabledBorderColor=v))}},
     GuiKit.choiceRow(w,"Module Sorting",listOf("Alphabetical (A–Z)","Name Length (longest first)"),if(f.clickGui.sortByLength) 1 else 0,readCurrent={if(model.general.features.clickGui.sortByLength) 1 else 0}) {v->save {it.copy(clickGui=it.clickGui.copy(sortByLength=v==1))}},
-    GuiKit.section(w,"Global HUD Lighting","Applies to HUD modules with Soft HUD Glow enabled unless Custom Style is on."),
+    GuiKit.section(w,"Global HUD Lighting","HUD elements inherit this glow by default; Custom Style overrides color and intensity."),
+    GuiKit.toggleRow(w,"Soft HUD Glow",f.hudLighting.enabled,"Enable or disable the shared HUD glow.") {v->save {it.copy(hudLighting=it.hudLighting.copy(enabled=v))}},
     GuiKit.colorRow(w,"Global HUD Glow Color",f.hudLighting.color) {v->save {it.copy(hudLighting=it.hudLighting.copy(color=v))}},
     GuiKit.sliderRow(w,"Global HUD Glow Intensity",f.hudLighting.intensity,NumberRange(.25,2.0,.05)) {v->save {it.copy(hudLighting=it.hudLighting.copy(intensity=v))}}
    )

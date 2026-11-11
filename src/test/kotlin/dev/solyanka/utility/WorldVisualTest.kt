@@ -38,7 +38,7 @@ class WorldVisualTest {
  }
  @Test fun `overlay channels keep dungeon and mining independent`() {
   val text=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/WorldOverlay.kt").toFile().readText()
-  assertTrue(text.contains("owner:String=\"dungeon\""));assertTrue(text.contains("channels=channels-owner"));assertTrue(text.contains("BlockSelection.collect(c,snapshot,filled)"));assertTrue(text.contains("setLineWidth(s.width)"))
+  assertTrue(text.contains("owner:String=\"dungeon\""));assertTrue(text.contains("channels=channels-owner"));assertTrue(text.contains("BlockSelection.collect(c,filled)"));assertTrue(text.contains("BlockSelection.submit(c)"));assertTrue(text.contains("setLineWidth(s.width)"))
  }
  @Test fun `outline callback accepts nullable Fabric selection`() {
   val text=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/BlockSelection.kt").toFile().readText();assertTrue(text.contains("BlockOutlineRenderState?"));assertTrue(text.contains("outline==null"))

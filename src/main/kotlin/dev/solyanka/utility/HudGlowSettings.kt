@@ -20,6 +20,7 @@ data class HudGlowSettings(
  val simon:Boolean=false,
  val route:Boolean=false,
  val mapInfo:Boolean=false,
+ val performance:Boolean=false,
  val intensity:HudGlowIntensity=HudGlowIntensity(),
  val custom:HudGlowOverrides=HudGlowOverrides(),
  val colors:HudGlowColors=HudGlowColors()
@@ -43,6 +44,7 @@ data class HudGlowSettings(
   "custom.simon_says"->simon
   "dungeon.waypoints"->route
   "dungeon.map_info"->mapInfo
+  "hud.performance"->performance
   else->false
  }
  fun withEnabled(id:String,value:Boolean):HudGlowSettings=when(id) {
@@ -63,6 +65,7 @@ data class HudGlowSettings(
   "custom.simon_says"->copy(simon=value)
   "dungeon.waypoints"->copy(route=value)
   "dungeon.map_info"->copy(mapInfo=value)
+  "hud.performance"->copy(performance=value)
   else->error("Unknown HUD glow feature: $id")
  }
 }
@@ -85,9 +88,10 @@ data class HudGlowIntensity(
  val timers:Double=1.0,
  val simon:Double=1.0,
  val route:Double=1.0,
- val mapInfo:Double=1.0
+ val mapInfo:Double=1.0,
+ val performance:Double=1.0
 ) {
- fun validate() {listOf(hotbar,pictureInPicture,pet,hearts,stopwatch,dvd,scoreboard,themedChat,inventory,itemName,skill,music,player,timers,simon,route,mapInfo).forEach {
+ fun validate() {listOf(hotbar,pictureInPicture,pet,hearts,stopwatch,dvd,scoreboard,themedChat,inventory,itemName,skill,music,player,timers,simon,route,mapInfo,performance).forEach {
   require(it.isFinite() && it in .25..2.0) {"HUD glow intensity must be 0.25–2"}
  }}
  fun value(id:String):Double=when(id) {
@@ -108,6 +112,7 @@ data class HudGlowIntensity(
   "custom.simon_says"->simon
   "dungeon.waypoints"->route
   "dungeon.map_info"->mapInfo
+  "hud.performance"->performance
   else->1.0
  }
  fun withValue(id:String,value:Double):HudGlowIntensity=when(id) {
@@ -128,12 +133,13 @@ data class HudGlowIntensity(
   "custom.simon_says"->copy(simon=value)
   "dungeon.waypoints"->copy(route=value)
   "dungeon.map_info"->copy(mapInfo=value)
+  "hud.performance"->copy(performance=value)
   else->error("Unknown HUD glow feature: $id")
  }.also {it.validate()}
 }
 
 /** Visual settings shared by all opted-in HUD modules. */
-data class HudLightingSettings(val color:Int=0xff7dd3fc.toInt(),val intensity:Double=1.0) {
+data class HudLightingSettings(val color:Int=0xff7dd3fc.toInt(),val intensity:Double=1.0,val enabled:Boolean=true) {
  fun validate() {require(intensity.isFinite() && intensity in .25..2.0)}
 }
 data class HudGlowStyle(val color:Int,val intensity:Double)
@@ -157,7 +163,8 @@ data class HudGlowOverrides(
  val timers:Boolean=false,
  val simon:Boolean=false,
  val route:Boolean=false,
- val mapInfo:Boolean=false
+ val mapInfo:Boolean=false,
+ val performance:Boolean=false
 ) {
  fun value(id:String):Boolean=when(id) {
   "custom.move_hotbar"->hotbar
@@ -177,6 +184,7 @@ data class HudGlowOverrides(
   "custom.simon_says"->simon
   "dungeon.waypoints"->route
   "dungeon.map_info"->mapInfo
+  "hud.performance"->performance
   else->false
  }
  fun withValue(id:String,value:Boolean):HudGlowOverrides=when(id) {
@@ -197,6 +205,7 @@ data class HudGlowOverrides(
   "custom.simon_says"->copy(simon=value)
   "dungeon.waypoints"->copy(route=value)
   "dungeon.map_info"->copy(mapInfo=value)
+  "hud.performance"->copy(performance=value)
   else->error("Unknown HUD glow feature: $id")
  }
 }
@@ -218,7 +227,8 @@ data class HudGlowColors(
  val timers:Int=0xff7dd3fc.toInt(),
  val simon:Int=0xff7dd3fc.toInt(),
  val route:Int=0xff7dd3fc.toInt(),
- val mapInfo:Int=0xff7dd3fc.toInt()
+ val mapInfo:Int=0xff7dd3fc.toInt(),
+ val performance:Int=0xff7dd3fc.toInt()
 ) {
  fun value(id:String):Int=when(id) {
   "custom.move_hotbar"->hotbar
@@ -238,6 +248,7 @@ data class HudGlowColors(
   "custom.simon_says"->simon
   "dungeon.waypoints"->route
   "dungeon.map_info"->mapInfo
+  "hud.performance"->performance
   else->0xff7dd3fc.toInt()
  }
  fun withValue(id:String,value:Int):HudGlowColors=when(id) {
@@ -258,6 +269,7 @@ data class HudGlowColors(
   "custom.simon_says"->copy(simon=value)
   "dungeon.waypoints"->copy(route=value)
   "dungeon.map_info"->copy(mapInfo=value)
+  "hud.performance"->copy(performance=value)
   else->error("Unknown HUD glow feature: $id")
  }
 }
