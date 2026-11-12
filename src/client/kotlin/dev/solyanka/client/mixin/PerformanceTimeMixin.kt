@@ -12,10 +12,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 @Mixin(ClientPacketListener::class)
 abstract class PerformanceTimeMixin {
- // Vanilla's handler has already moved the packet to the client thread at TAIL.
- @Inject(method=["handleSetTime"],at=[At("TAIL")])
- private fun solyankaTimeUpdate(packet:ClientboundSetTimePacket,ci:CallbackInfo) {
-  val c=Minecraft.getInstance()
-  if(c.connection===(this as Any) && c.level!=null) PerformanceHud.observe(packet.gameTime())
- }
+  // Vanilla's handler has already moved the packet to the client thread at TAIL.
+  @Inject(method = ["handleSetTime"], at = [At("TAIL")])
+  private fun solyankaTimeUpdate(packet: ClientboundSetTimePacket, ci: CallbackInfo) {
+    val c = Minecraft.getInstance()
+    if (c.connection === (this as Any) && c.level != null) PerformanceHud.observe(packet.gameTime())
+  }
 }

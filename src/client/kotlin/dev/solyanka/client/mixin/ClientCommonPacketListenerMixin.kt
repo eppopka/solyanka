@@ -11,7 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 @Mixin(ClientCommonPacketListenerImpl::class)
 abstract class ClientCommonPacketListenerMixin {
-    // TAIL runs only after vanilla's ensureRunningOnSameThread, never on the Netty thread.
-    @Inject(method=["handlePing"],at=[At("TAIL")])
-    private fun solyankaServerTick(packet:ClientboundPingPacket,ci:CallbackInfo) { FeatureRuntime.ping(packet.id) }
+  // TAIL runs only after vanilla's ensureRunningOnSameThread, never on the Netty thread.
+  @Inject(method = ["handlePing"], at = [At("TAIL")])
+  private fun solyankaServerTick(packet: ClientboundPingPacket, ci: CallbackInfo) {
+    FeatureRuntime.ping(packet.id)
+  }
 }

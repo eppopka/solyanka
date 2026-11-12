@@ -11,9 +11,17 @@ import net.minecraft.client.gui.GuiGraphicsExtractor
 
 /** Ordered preview painters. A painter returns false when it does not own the key. */
 object HudPreviewRegistry {
- private val painters:List<(GuiGraphicsExtractor,String,Int,Int)->Boolean> = listOf(
-  YandexMusic::editor,VanillaHotbar::editor,VanillaHearts::editor,
-  ArchiveHuds::editor,ExtraHuds::editor,ScoreboardHud::editor
- )
- fun draw(g:GuiGraphicsExtractor,key:String,x:Int,y:Int):Boolean = painters.any {it(g,key,x,y)}
+  private val painters: List<(GuiGraphicsExtractor, String, Int, Int) -> Boolean> =
+    listOf(
+      YandexMusic::editor,
+      VanillaHotbar::editor,
+      VanillaHearts::editor,
+      ArchiveHuds::editor,
+      ExtraHuds::editor,
+      ScoreboardHud::editor,
+    )
+
+  fun draw(g: GuiGraphicsExtractor, key: String, x: Int, y: Int): Boolean = painters.any {
+    it(g, key, x, y)
+  }
 }
