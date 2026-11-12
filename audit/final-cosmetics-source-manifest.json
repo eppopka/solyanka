@@ -95,7 +95,7 @@
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Bcn.java",
     "sha256": "9be1aa09395bf34eda6087632a612cf4071c5e1d0598816e0963a8673c9a68ed",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Bcn.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "The pinned Stray project is licensed CC0-1.0, but this manifest uses the generic “CC0-1.0 or retained third-party headers” label for this file. The CS2 notice attributes BC7 tables to DirectXTex (MIT); the audited source has no DirectXTex pointer or header, so whether that attribution applies to this file remains unresolved."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/Kv1.java",
@@ -116,14 +116,14 @@
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Lz4.java",
     "sha256": "31474fdc0c178b290d803bd524db23011e27f1642d0c37746b2a1aa47e3cf1e6",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Lz4.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "The pinned Stray project is licensed CC0-1.0, but this manifest uses the generic “CC0-1.0 or retained third-party headers” label for this file. It has no retained third-party header or named upstream source; whether it is covered by Stray CC0 or is third-party-derived remains unresolved."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/Meshopt.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Meshopt.java",
     "sha256": "1a538132f4b72b76c74f2072e60b2aace883d3aa0dc9f7961a0ddf4e5e8c4bc1",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Meshopt.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "The source comment identifies meshoptimizer vertex/index decoders ported from ValveResourceFormat. ValveResourceFormat is MIT-licensed, and its third-party notice lists meshoptimizer under MIT. This manifest pins the Stray copy, not an upstream revision or line-level mapping."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/Resource.java",
@@ -158,105 +158,105 @@
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/Zstd.java",
     "sha256": "af9386910400a446b8eb4c89a5f0777ab7a0eaf43a1c116c5cee6f8f60c99ade",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/Zstd.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Stray source at the pinned commit is CC0-1.0; its comment identifies a vendored aircompressor Zstandard decoder (Apache-2.0). The specific aircompressor revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/BitInputStream.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/BitInputStream.java",
     "sha256": "158698e663dd764287f963ab6d5ad9f453736dbaaacf06844e30ac2abec22436",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/BitInputStream.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Apache-2.0 (retained upstream header); the exact aircompressor source revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/BitOutputStream.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/BitOutputStream.java",
     "sha256": "a977a62ac2cd81af68977422a87878e69c44b4e47a6f09f86f0e6c86faf5d897",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/BitOutputStream.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Apache-2.0 (retained upstream header); the exact aircompressor source revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/Constants.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/Constants.java",
     "sha256": "7cfc69f62dc3e6f8a9621de6430bd0a73502f483fa92f950ada6ee0ec8a0a765",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/Constants.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Apache-2.0 (retained upstream header); the exact aircompressor source revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/FiniteStateEntropy.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/FiniteStateEntropy.java",
     "sha256": "960a6d2509aa1eadc5e7956431b1dcbcea453f41c4bb6c1134730a029dcb08a9",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/FiniteStateEntropy.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Apache-2.0 (retained upstream header); the exact aircompressor source revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/FrameHeader.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/FrameHeader.java",
     "sha256": "468b209f48980f452b4f18e6e5e45585c000d6402043bf7712a09ef33d6f369f",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/FrameHeader.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Apache-2.0 (retained upstream header); the exact aircompressor source revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/FseCompressionTable.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/FseCompressionTable.java",
     "sha256": "fda66875a9894726577f764e72285e53b929aa20e6e4724c22c2ff3f39be22db",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/FseCompressionTable.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Apache-2.0 (retained upstream header); the exact aircompressor source revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/FseTableReader.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/FseTableReader.java",
     "sha256": "f0569d26e7cb7149d77e0278994f19ebec96ecd74be9f56521b3ef80352c804e",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/FseTableReader.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Apache-2.0 (retained upstream header); the exact aircompressor source revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/Histogram.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/Histogram.java",
     "sha256": "47d83d2c0f3a0fd7ba093fb89341474252f684b477503c8da74d67dd5b804525",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/Histogram.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Apache-2.0 (retained upstream header); the exact aircompressor source revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/Huffman.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/Huffman.java",
     "sha256": "043122082061ba7b415aea1c3df2cd60f8f4f10ecfb8d8e3620ff302da4f6e19",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/Huffman.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Apache-2.0 (retained upstream header); the exact aircompressor source revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/MalformedInputException.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/MalformedInputException.java",
     "sha256": "3693c01d507d6758fcfe57454672d61a2a01b312580d59385cfe3daff14a6b2d",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/MalformedInputException.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Local-adaptation comment only; no retained upstream Apache header or upstream source mapping. Whether this helper is an original adaptation or a derivative, and its precise provenance/license, is unresolved."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/UnsafeUtil.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/UnsafeUtil.java",
     "sha256": "694269e424319ca98059b376b32c0493548e073a1ae7d8479cf029a3f2ade1d3",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/UnsafeUtil.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Local-adaptation comment only; no retained upstream Apache header or upstream source mapping. Whether this helper is an original adaptation or a derivative, and its precise provenance/license, is unresolved."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/Util.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/Util.java",
     "sha256": "d1ef47e498eaa1aeb9fd77ad43579eb104e3af4a5d69f5295ec542b9932aebae",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/Util.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Apache-2.0 (retained upstream header); the exact aircompressor source revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/XxHash64.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/XxHash64.java",
     "sha256": "32d8901ea30fc82fc0ba7ddc34e5792216de73048ba052359000dee19045c19e",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/XxHash64.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Apache-2.0 (retained upstream header); the exact aircompressor source revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/s2/zstd/ZstdFrameDecompressor.java",
     "local_file": "audit/final-cosmetics-source/src/client/java/dev/stray/client/cs2/s2/zstd/ZstdFrameDecompressor.java",
     "sha256": "5b456c4ca04214b1d83646dc0baf8c6f25ff1fdd2f1d9f5607ca4d0af6a8c0b8",
     "source_url": "https://github.com/camberX/Stray/blob/d91fcd4515b4eda647ee8fd7fa99408f473e5718/src/client/java/dev/stray/client/cs2/s2/zstd/ZstdFrameDecompressor.java",
-    "license": "CC0-1.0 or retained third-party headers"
+    "license": "Apache-2.0 (retained upstream header); the exact aircompressor source revision is not recorded."
   },
   {
     "file": "src/client/java/dev/stray/client/cs2/skin/Assets.java",
