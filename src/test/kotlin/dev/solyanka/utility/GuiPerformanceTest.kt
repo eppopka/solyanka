@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+
+import dev.solyanka.testutil.readSourceText
 import dev.solyanka.gfx.PanelGeometry
 import org.junit.jupiter.api.Test
 import kotlin.test.*
@@ -35,7 +37,7 @@ class GuiPerformanceTest {
   assertEquals(PanelGeometry.fillCalls(PanelGeometry.bands(400,420,7)),PanelGeometry.fillCalls(PanelGeometry.bands(400,4200,7)))
  }
  @Test fun `feature list remains rendered behind modal settings`() {
-  val s=Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt").readText()
+  val s=Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt").readSourceText()
   assertTrue("super.extractRenderState(g,mx,my,delta)" in s);assertFalse("if(panel==null) super.extractRenderState" in s)
   assertTrue("current.render(g,mx,my,delta)" in s)
  }

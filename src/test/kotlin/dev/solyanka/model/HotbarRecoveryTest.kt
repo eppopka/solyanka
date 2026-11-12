@@ -1,11 +1,13 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.model
+
+import dev.solyanka.testutil.readSourceText
 import dev.solyanka.utility.*
 import java.nio.file.Path
 import kotlin.test.*
 import org.junit.jupiter.api.Test
 class HotbarRecoveryTest {
- private fun source(path:String)=Path.of("src/client/kotlin/dev/solyanka/client/$path").toFile().readText()
+ private fun source(path:String)=Path.of("src/client/kotlin/dev/solyanka/client/$path").toFile().readSourceText()
  @Test fun `selector removed and right click cannot hide HUDs`() {val s=source("ui/HudEditorScreen.kt");assertFalse("Selected HUD" in s);assertFalse("selectionButton" in s);assertFalse("enabled=!it.enabled" in s);assertTrue("RMB: select" in s)}
  @Test fun `recovery is available in editor and settings without selecting invisible HUD`() {for(path in listOf("ui/HudEditorScreen.kt","ui/HotbarUi.kt")){val s=source(path);assertTrue("Restore Hotbar" in s);assertTrue("HotbarLayout.restore(" in s)}}
  @Test fun `restore shows and centers hotbar without changing appearance`() {val s=MoveHotbarSettings(customPosition=true,hud=HudSpec(enabled=false,x=9999,y=9999,scale=4.0),style="neon",backgroundOpacity=.33,keepOnScreen=false);val n=HotbarLayout.restore(s);n.validate();assertTrue(n.hud.enabled);assertFalse(n.customPosition);assertTrue(n.keepOnScreen);assertEquals(1.0,n.hud.scale);assertEquals(s.style,n.style);assertEquals(s.backgroundOpacity,n.backgroundOpacity);assertTrue(HudLayout.visibleEntries(FeatureSettings(moveHotbar=n),setOf("custom.move_hotbar")).any {it.key=="archive.hotbar"})}

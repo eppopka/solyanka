@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+
+import dev.solyanka.testutil.readSourceText
 import com.google.gson.*
 import org.junit.jupiter.api.Test
 import kotlin.test.*
@@ -98,12 +100,12 @@ class SkyboxTest {
   frames.forEachIndexed {i,q->assertEquals(frames[0].map {it.position},q.map {it.position});assertEquals(60+i*6,SkyboxAtlas.frameIndex(i))}
  }
  @Test fun `renderer resolves uploads before opening pass and uses source crossfade blends`() {
-  val f=Path.of("src/client/kotlin/dev/solyanka/client/feature/SkyboxVisual.kt").toFile().readText()
+  val f=Path.of("src/client/kotlin/dev/solyanka/client/feature/SkyboxVisual.kt").toFile().readSourceText()
   assertTrue(f.indexOf("val faceViews=")<f.indexOf(".createRenderPass("));assertTrue(f.indexOf("indices.getBuffer(SkyboxAtlas.INDEX_COUNT)")<f.indexOf(".createRenderPass("));assertFalse(f.contains("getMainRenderTarget"));assertFalse(f.contains("getModelViewStack"))
   for(t in listOf("TRANSLUCENT_PREMULTIPLIED_ALPHA","BlendFactor.ONE,BlendFactor.ONE","SkyboxAtlas.frameIndex(frames.a)","vertices.slice()","owned.clear()","manager.release(it)","quads?.close()")) assertTrue(f.contains(t),t)
  }
  @Test fun `sky hook keeps native end draw and never cancels sky fog guards`() {
-  val f=Path.of("src/client/kotlin/dev/solyanka/client/mixin/SkyboxMixin.kt").toFile().readText()
+  val f=Path.of("src/client/kotlin/dev/solyanka/client/mixin/SkyboxMixin.kt").toFile().readSourceText()
   assertFalse(f.contains("cancellable"));assertFalse(f.contains("ci.cancel"));assertTrue(f.contains("SkyboxVisual.render(renderTarget,solyankaSkyTime)"));assertTrue(f.contains("original.call(uniforms,matrix)"));assertTrue(f.contains("level.gameTime.toDouble()+partial"))
  }
 }

@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
 
+import dev.solyanka.testutil.readSourceText
+
 import com.google.gson.*
 import dev.solyanka.model.*
 import org.junit.jupiter.api.Test
@@ -67,12 +69,12 @@ class ExtraHudFeaturesTest {
     }
     @Test fun `runtime source gates XP-only class and excludes Aether module`() {
         val root=Path.of("src/client/kotlin/dev/solyanka/client")
-        val mixin=root.resolve("mixin/ExperienceBarMixin.kt").readText()
+        val mixin=root.resolve("mixin/ExperienceBarMixin.kt").readSourceText()
         assertTrue(mixin.contains("@Mixin(ExperienceBar::class)"));assertTrue(mixin.contains("\"extractBackground\",\"extractRenderState\""))
         assertFalse(mixin.contains("VanillaHudElements.INFO_BAR"))
-        val client=root.resolve("SolyankaClient.kt").readText()
+        val client=root.resolve("SolyankaClient.kt").readSourceText()
         assertFalse(client.contains("AetherOS"));assertTrue(client.contains("ExtraHuds.register()"))
-        val runtime=root.resolve("feature/FeatureRuntime.kt").readText()
+        val runtime=root.resolve("feature/FeatureRuntime.kt").readSourceText()
         assertTrue(runtime.indexOf("ExtraHuds.skills.overlay(message.string)")<runtime.indexOf("stats.overlay(message.string)"))
     }
 }

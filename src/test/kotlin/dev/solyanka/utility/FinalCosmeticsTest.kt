@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+
+import dev.solyanka.testutil.readSourceText
 import dev.solyanka.gfx.ItemAuraMesh
 import org.junit.jupiter.api.Test
 import org.joml.Matrix4f
@@ -61,7 +63,7 @@ class FinalCosmeticsTest {
  }
  @Test fun `inventory is title free and armor row starts at padding`() {
   val m=InventoryHudLayout.metrics(InventoryHudSettings());assertEquals(m.pad,m.armorY)
-  val s=Path.of("src/client/kotlin/dev/solyanka/client/feature/StrayInventoryHud.kt").readText();assertFalse("\"INVENTORY\"" in s);assertTrue("s.hud.color else LINE" in s)
+  val s=Path.of("src/client/kotlin/dev/solyanka/client/feature/StrayInventoryHud.kt").readSourceText();assertFalse("\"INVENTORY\"" in s);assertTrue("s.hud.color else LINE" in s)
  }
  @Test fun `inventory count uses footer only without armor and never overlaps main grid`() {
   val a=InventoryHudLayout.metrics(InventoryHudSettings(armor=false,count=true));val b=InventoryHudLayout.metrics(InventoryHudSettings(armor=false,count=false))
@@ -69,13 +71,13 @@ class FinalCosmeticsTest {
   val full=InventoryHudLayout.metrics(InventoryHudSettings());assertEquals(118,full.height)
  }
  @Test fun `new modules have actual settings and registered implementations`() {
-  val client=Path.of("src/client/kotlin/dev/solyanka/client/SolyankaClient.kt").readText();assertTrue("ModuleInfo(ITEM_AURA" in client);assertTrue("ModuleInfo(CS2_KNIFE" in client)
-  val ui=Path.of("src/client/kotlin/dev/solyanka/client/ui/FeatureUi.kt").readText();assertTrue("FinalCosmeticsUi.open(id,host,model)" in ui)
+  val client=Path.of("src/client/kotlin/dev/solyanka/client/SolyankaClient.kt").readSourceText();assertTrue("ModuleInfo(ITEM_AURA" in client);assertTrue("ModuleInfo(CS2_KNIFE" in client)
+  val ui=Path.of("src/client/kotlin/dev/solyanka/client/ui/FeatureUi.kt").readSourceText();assertTrue("FinalCosmeticsUi.open(id,host,model)" in ui)
  }
  @Test fun `aura flush is after hand features but before matrix pop`() {
-  val s=Path.of("src/client/kotlin/dev/solyanka/client/mixin/ItemAuraPassMixin.kt").readText()
+  val s=Path.of("src/client/kotlin/dev/solyanka/client/mixin/ItemAuraPassMixin.kt").readSourceText()
   assertTrue("FeatureRenderDispatcher;renderAllFeatures" in s);assertTrue("shift=At.Shift.AFTER" in s);assertTrue("ItemAura.begin()" in s)
-  val loader=Path.of("src/client/java/dev/solyanka/client/cs2/Cs2Knives.java").readText()
+  val loader=Path.of("src/client/java/dev/solyanka/client/cs2/Cs2Knives.java").readSourceText()
   assertFalse("openDownloaded" in loader);assertFalse("HttpClient" in loader);assertTrue("b.generation==generation" in loader);assertTrue("if(texturesUploaded)" in loader)
  }
 }

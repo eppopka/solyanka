@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.model
 
+import dev.solyanka.testutil.readSourceText
+
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import dev.solyanka.utility.*
@@ -54,7 +56,7 @@ class SettingsCatalogTest {
             assertFails { FeatureCodec.decode(JsonParser.parseString(json).asJsonObject) }
         }
     }
-    private fun client(file:String)=Path.of("src/client/kotlin/dev/solyanka/client/ui/$file").readText()
+    private fun client(file:String)=Path.of("src/client/kotlin/dev/solyanka/client/ui/$file").readSourceText()
     @Test fun `palette and settings remain embedded without world dimming`() {
         val panel=client("nofrills/SettingsPanel.kt")
         assertFalse(panel.contains("Changes save instantly."))
