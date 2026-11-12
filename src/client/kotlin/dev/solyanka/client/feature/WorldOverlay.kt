@@ -1,90 +1,342 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Odin RenderUtils geometry adaptation; (c) 2025 odtheking, BSD-3-Clause. */
 package dev.solyanka.client.feature
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
-import net.minecraft.client.renderer.RenderPipelines
-import net.minecraft.client.renderer.rendertype.*
+
 import com.mojang.blaze3d.pipeline.*
 import com.mojang.blaze3d.platform.CompareOp
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents
+import net.minecraft.client.renderer.RenderPipelines
+import net.minecraft.client.renderer.rendertype.*
 import net.minecraft.world.phys.*
 
 object WorldOverlay {
- data class Segment(val a:Vec3,val b:Vec3,val color:Int,val depth:Boolean=true,val width:Float=3f,val style:dev.solyanka.utility.WayStyle?=null)
- data class Triangle(val a:Vec3,val b:Vec3,val c:Vec3,val color:Int,val depth:Boolean=true)
- data class Fill(val box:AABB,val color:Int,val depth:Boolean=true,val style:dev.solyanka.utility.WayStyle?=null)
- data class Label(val pos:Vec3,val text:String,val color:Int=-1,val depth:Boolean=true,val scale:Float=1f,val font:String="default")
- private data class Snapshot(val segments:List<Segment>,val fills:List<Fill>,val labels:List<Label>)
- @Volatile private var channels:Map<String,Snapshot> = emptyMap()
- // Minecraft 26.2 uses reversed Z: near is greater, empty depth is zero.
- // Never write overlay depth; Through Walls explicitly bypasses scene occlusion.
- private fun fillType(depth:Boolean)=RenderType.create("solyanka_fills_$depth",RenderSetup.builder(RenderPipelines.register(RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET).withLocation("solyanka/fills_$depth").withCull(false).withDepthStencilState(DepthStencilState(if(depth) CompareOp.GREATER_THAN_OR_EQUAL else CompareOp.ALWAYS_PASS,false)).withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT)).build())).createRenderSetup())
- private fun triangleType(depth:Boolean)=RenderType.create("solyanka_triangles_$depth",RenderSetup.builder(RenderPipelines.register(RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET).withLocation("solyanka/triangles_$depth").withVertexBinding(0,com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_COLOR).withPrimitiveTopology(com.mojang.blaze3d.PrimitiveTopology.TRIANGLES).withCull(false).withDepthStencilState(DepthStencilState(if(depth) CompareOp.GREATER_THAN_OR_EQUAL else CompareOp.ALWAYS_PASS,false)).withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT)).build())).createRenderSetup())
- private val triangleDepth by lazy {triangleType(true)}
- private val triangleEsp by lazy {triangleType(false)}
- private val fillDepth by lazy {fillType(true)}
- private val fillEsp by lazy {fillType(false)}
- private val esp by lazy { RenderType.create("solyanka_lines_esp",RenderSetup.builder(RenderPipelines.register(RenderPipeline.builder(RenderPipelines.LINES_SNIPPET).withLocation("solyanka/lines_esp").withDepthStencilState(DepthStencilState(CompareOp.ALWAYS_PASS,false)).withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT)).build())).createRenderSetup()) }
- fun lineType(depth:Boolean)=if(depth) RenderTypes.LINES else esp
- fun publish(value:List<Segment>,filled:List<Fill> = emptyList(),text:List<Label> = emptyList(),owner:String="dungeon") { channels=channels+(owner to Snapshot(value.toList(),filled.toList(),text.toList())) }
- fun clear(owner:String) { channels=channels-owner }
- fun box(out:MutableList<Segment>,b:AABB,color:Int,depth:Boolean=true,style:dev.solyanka.utility.WayStyle?=null) {
-  val v=listOf(Vec3(b.minX,b.minY,b.minZ),Vec3(b.maxX,b.minY,b.minZ),Vec3(b.maxX,b.maxY,b.minZ),Vec3(b.minX,b.maxY,b.minZ),Vec3(b.minX,b.minY,b.maxZ),Vec3(b.maxX,b.minY,b.maxZ),Vec3(b.maxX,b.maxY,b.maxZ),Vec3(b.minX,b.maxY,b.maxZ))
-  listOf(0 to 1,1 to 2,2 to 3,3 to 0,4 to 5,5 to 6,6 to 7,7 to 4,0 to 4,1 to 5,2 to 6,3 to 7).forEach { (a,z)->out.add(Segment(v[a],v[z],color,depth,style=style)) }
- }
- fun register() { LevelRenderEvents.COLLECT_SUBMITS.register { c -> render(c) } }
- private fun render(c:LevelRenderContext) {
-  if(net.minecraft.client.Minecraft.getInstance().gui.hud.isHidden) return
-  val now=System.nanoTime()/1_000_000_000.0
-  fun styled(color:Int,style:dev.solyanka.utility.WayStyle?,v:Vec3)=style?.colorAt(color,v.x,v.y,v.z,now) ?: color
-  val values=channels.values.toList();val snapshot=values.flatMap {it.segments}.toMutableList();val camera=c.levelState().cameraRenderState.pos
-  val filled=values.flatMap {it.fills}.toMutableList();val text=values.flatMap {it.labels}.toMutableList()
-  HuntingFeatures.collectBestiary(c,snapshot)
-  HuntingFeatures.collectTiki(c,snapshot,filled,text)
-  BlockSelection.collect(c,filled)
-  SpreadGuesser.collect(net.minecraft.client.Minecraft.getInstance(),snapshot,filled)
-  val triangles=mutableListOf<Triangle>();ArchiveCosmetics.collect(c,snapshot,triangles)
-  val pose=c.poseStack();pose.pushPose()
-  try { // Subtract in double precision before casting vertices, avoiding world-coordinate jitter.
-   BlockSelection.submit(c)
-   triangles.groupBy {it.depth}.forEach { (depth,list)->
-    c.submitNodeCollector().submitCustomGeometry(pose,if(depth) triangleDepth else triangleEsp) {matrix,buffer->
-     list.forEach {t->listOf(t.a,t.b,t.c).forEach {v->buffer.addVertex(matrix,(v.x-camera.x).toFloat(),(v.y-camera.y).toFloat(),(v.z-camera.z).toFloat()).setColor(t.color)}}
-    }
-   }
-   filled.groupBy {it.depth}.forEach { (depth,list) ->
-    // Phased/translucent faces must be composited back-to-front, not insertion order.
-    // Sort face centroids, not whole boxes (particle glows enclose their cores).
-    data class Quad(val points:List<Vec3>,val color:Int,val style:dev.solyanka.utility.WayStyle?,val distance:Double)
-    val quads=list.flatMap {f->val b=f.box
-     val v=arrayOf(Vec3(b.minX,b.minY,b.minZ),Vec3(b.maxX,b.minY,b.minZ),Vec3(b.maxX,b.maxY,b.minZ),Vec3(b.minX,b.maxY,b.minZ),Vec3(b.minX,b.minY,b.maxZ),Vec3(b.maxX,b.minY,b.maxZ),Vec3(b.maxX,b.maxY,b.maxZ),Vec3(b.minX,b.maxY,b.maxZ))
-     dev.solyanka.gfx.OverlayBoxFaces.indices.map {face->
-      val points=face.map {v[it]};val center=points.reduce(Vec3::add).scale(.25)
-      Quad(points,f.color,f.style,center.distanceToSqr(camera))
-     }
-    }.sortedByDescending {it.distance}
-    c.submitNodeCollector().submitCustomGeometry(pose,if(depth) fillDepth else fillEsp) { matrix,buffer ->
-     quads.forEach {q->q.points.forEach {a->buffer.addVertex(matrix,(a.x-camera.x).toFloat(),(a.y-camera.y).toFloat(),(a.z-camera.z).toFloat()).setColor(styled(q.color,q.style,a))}}
-    }
-   }
-   text.forEach { label ->
+  data class Segment(
+    val a: Vec3,
+    val b: Vec3,
+    val color: Int,
+    val depth: Boolean = true,
+    val width: Float = 3f,
+    val style: dev.solyanka.utility.WayStyle? = null,
+  )
+
+  data class Triangle(
+    val a: Vec3,
+    val b: Vec3,
+    val c: Vec3,
+    val color: Int,
+    val depth: Boolean = true,
+  )
+
+  data class Fill(
+    val box: AABB,
+    val color: Int,
+    val depth: Boolean = true,
+    val style: dev.solyanka.utility.WayStyle? = null,
+  )
+
+  data class Label(
+    val pos: Vec3,
+    val text: String,
+    val color: Int = -1,
+    val depth: Boolean = true,
+    val scale: Float = 1f,
+    val font: String = "default",
+  )
+
+  private data class Snapshot(
+    val segments: List<Segment>,
+    val fills: List<Fill>,
+    val labels: List<Label>,
+  )
+
+  @Volatile private var channels: Map<String, Snapshot> = emptyMap()
+
+  // Minecraft 26.2 uses reversed Z: near is greater, empty depth is zero.
+  // Never write overlay depth; Through Walls explicitly bypasses scene occlusion.
+  private fun fillType(depth: Boolean) =
+    RenderType.create(
+      "solyanka_fills_$depth",
+      RenderSetup.builder(
+          RenderPipelines.register(
+            RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+              .withLocation("solyanka/fills_$depth")
+              .withCull(false)
+              .withDepthStencilState(
+                DepthStencilState(
+                  if (depth) CompareOp.GREATER_THAN_OR_EQUAL else CompareOp.ALWAYS_PASS,
+                  false,
+                ),
+              )
+              .withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT))
+              .build(),
+          ),
+        )
+        .createRenderSetup(),
+    )
+
+  private fun triangleType(depth: Boolean) =
+    RenderType.create(
+      "solyanka_triangles_$depth",
+      RenderSetup.builder(
+          RenderPipelines.register(
+            RenderPipeline.builder(RenderPipelines.DEBUG_FILLED_SNIPPET)
+              .withLocation("solyanka/triangles_$depth")
+              .withVertexBinding(0, com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_COLOR)
+              .withPrimitiveTopology(com.mojang.blaze3d.PrimitiveTopology.TRIANGLES)
+              .withCull(false)
+              .withDepthStencilState(
+                DepthStencilState(
+                  if (depth) CompareOp.GREATER_THAN_OR_EQUAL else CompareOp.ALWAYS_PASS,
+                  false,
+                ),
+              )
+              .withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT))
+              .build(),
+          ),
+        )
+        .createRenderSetup(),
+    )
+
+  private val triangleDepth by lazy { triangleType(true) }
+  private val triangleEsp by lazy { triangleType(false) }
+  private val fillDepth by lazy { fillType(true) }
+  private val fillEsp by lazy { fillType(false) }
+  private val esp by lazy {
+    RenderType.create(
+      "solyanka_lines_esp",
+      RenderSetup.builder(
+          RenderPipelines.register(
+            RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
+              .withLocation("solyanka/lines_esp")
+              .withDepthStencilState(DepthStencilState(CompareOp.ALWAYS_PASS, false))
+              .withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT))
+              .build(),
+          ),
+        )
+        .createRenderSetup(),
+    )
+  }
+
+  fun lineType(depth: Boolean) = if (depth) RenderTypes.LINES else esp
+
+  fun publish(
+    value: List<Segment>,
+    filled: List<Fill> = emptyList(),
+    text: List<Label> = emptyList(),
+    owner: String = "dungeon",
+  ) {
+    channels = channels + (owner to Snapshot(value.toList(), filled.toList(), text.toList()))
+  }
+
+  fun clear(owner: String) {
+    channels = channels - owner
+  }
+
+  fun box(
+    out: MutableList<Segment>,
+    b: AABB,
+    color: Int,
+    depth: Boolean = true,
+    style: dev.solyanka.utility.WayStyle? = null,
+  ) {
+    val v =
+      listOf(
+        Vec3(b.minX, b.minY, b.minZ),
+        Vec3(b.maxX, b.minY, b.minZ),
+        Vec3(b.maxX, b.maxY, b.minZ),
+        Vec3(b.minX, b.maxY, b.minZ),
+        Vec3(b.minX, b.minY, b.maxZ),
+        Vec3(b.maxX, b.minY, b.maxZ),
+        Vec3(b.maxX, b.maxY, b.maxZ),
+        Vec3(b.minX, b.maxY, b.maxZ),
+      )
+    listOf(
+        0 to 1,
+        1 to 2,
+        2 to 3,
+        3 to 0,
+        4 to 5,
+        5 to 6,
+        6 to 7,
+        7 to 4,
+        0 to 4,
+        1 to 5,
+        2 to 6,
+        3 to 7,
+      )
+      .forEach { (a, z) -> out.add(Segment(v[a], v[z], color, depth, style = style)) }
+  }
+
+  fun register() {
+    LevelRenderEvents.COLLECT_SUBMITS.register { c -> render(c) }
+  }
+
+  private fun render(c: LevelRenderContext) {
+    if (net.minecraft.client.Minecraft.getInstance().gui.hud.isHidden) return
+    val now = System.nanoTime() / 1_000_000_000.0
+    fun styled(color: Int, style: dev.solyanka.utility.WayStyle?, v: Vec3) =
+      style?.colorAt(color, v.x, v.y, v.z, now) ?: color
+    val values = channels.values.toList()
+    val snapshot = values.flatMap { it.segments }.toMutableList()
+    val camera = c.levelState().cameraRenderState.pos
+    val filled = values.flatMap { it.fills }.toMutableList()
+    val text = values.flatMap { it.labels }.toMutableList()
+    HuntingFeatures.collectBestiary(c, snapshot)
+    HuntingFeatures.collectTiki(c, snapshot, filled, text)
+    BlockSelection.collect(c, filled)
+    SpreadGuesser.collect(net.minecraft.client.Minecraft.getInstance(), snapshot, filled)
+    val triangles = mutableListOf<Triangle>()
+    ArchiveCosmetics.collect(c, snapshot, triangles)
+    val pose = c.poseStack()
     pose.pushPose()
-    try {pose.translate(label.pos.x-camera.x,label.pos.y-camera.y,label.pos.z-camera.z);pose.mulPose(c.levelState().cameraRenderState.orientation);val scale=.025f*label.scale;pose.scale(scale,-scale,scale)
-     val component=net.minecraft.network.chat.Component.literal(label.text)
-     if(label.font!="default") component.withStyle {style->style.withFont(net.minecraft.network.chat.FontDescription.Resource(net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft",label.font)))}
-     val width=net.minecraft.client.Minecraft.getInstance().font.width(component)
-     c.submitNodeCollector().submitText(pose,-width/2f,0f,component.visualOrderText,true,if(label.depth) net.minecraft.client.gui.Font.DisplayMode.NORMAL else net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH,0x00f000f0,label.color,0,0)
-    } finally {pose.popPose()}
-   }
-   snapshot.groupBy { it.depth }.forEach { (depth,list) ->
-    c.submitNodeCollector().submitCustomGeometry(pose,if(depth) RenderTypes.LINES else esp) { matrix,buffer ->
-     list.forEach { s -> val direction=dev.solyanka.gfx.OverlayLine.direction(s.b.x-s.a.x,s.b.y-s.a.y,s.b.z-s.a.z) ?: return@forEach
-      val dx=direction.x.toFloat();val dy=direction.y.toFloat();val dz=direction.z.toFloat()
-      buffer.addVertex(matrix,(s.a.x-camera.x).toFloat(),(s.a.y-camera.y).toFloat(),(s.a.z-camera.z).toFloat()).setColor(styled(s.color,s.style,s.a)).setNormal(matrix,dx,dy,dz).setLineWidth(s.width)
-      buffer.addVertex(matrix,(s.b.x-camera.x).toFloat(),(s.b.y-camera.y).toFloat(),(s.b.z-camera.z).toFloat()).setColor(styled(s.color,s.style,s.b)).setNormal(matrix,dx,dy,dz).setLineWidth(s.width)
-     }
+    try { // Subtract in double precision before casting vertices, avoiding world-coordinate jitter.
+      BlockSelection.submit(c)
+      triangles
+        .groupBy { it.depth }
+        .forEach { (depth, list) ->
+          c.submitNodeCollector().submitCustomGeometry(
+            pose,
+            if (depth) triangleDepth else triangleEsp,
+          ) { matrix, buffer ->
+            list.forEach { t ->
+              listOf(t.a, t.b, t.c).forEach { v ->
+                buffer
+                  .addVertex(
+                    matrix,
+                    (v.x - camera.x).toFloat(),
+                    (v.y - camera.y).toFloat(),
+                    (v.z - camera.z).toFloat(),
+                  )
+                  .setColor(t.color)
+              }
+            }
+          }
+        }
+      filled
+        .groupBy { it.depth }
+        .forEach { (depth, list) ->
+          // Phased/translucent faces must be composited back-to-front, not insertion order.
+          // Sort face centroids, not whole boxes (particle glows enclose their cores).
+          data class Quad(
+            val points: List<Vec3>,
+            val color: Int,
+            val style: dev.solyanka.utility.WayStyle?,
+            val distance: Double,
+          )
+          val quads =
+            list
+              .flatMap { f ->
+                val b = f.box
+                val v =
+                  arrayOf(
+                    Vec3(b.minX, b.minY, b.minZ),
+                    Vec3(b.maxX, b.minY, b.minZ),
+                    Vec3(b.maxX, b.maxY, b.minZ),
+                    Vec3(b.minX, b.maxY, b.minZ),
+                    Vec3(b.minX, b.minY, b.maxZ),
+                    Vec3(b.maxX, b.minY, b.maxZ),
+                    Vec3(b.maxX, b.maxY, b.maxZ),
+                    Vec3(b.minX, b.maxY, b.maxZ),
+                  )
+                dev.solyanka.gfx.OverlayBoxFaces.indices.map { face ->
+                  val points = face.map { v[it] }
+                  val center = points.reduce(Vec3::add).scale(.25)
+                  Quad(points, f.color, f.style, center.distanceToSqr(camera))
+                }
+              }
+              .sortedByDescending { it.distance }
+          c.submitNodeCollector().submitCustomGeometry(pose, if (depth) fillDepth else fillEsp) {
+            matrix,
+            buffer ->
+            quads.forEach { q ->
+              q.points.forEach { a ->
+                buffer
+                  .addVertex(
+                    matrix,
+                    (a.x - camera.x).toFloat(),
+                    (a.y - camera.y).toFloat(),
+                    (a.z - camera.z).toFloat(),
+                  )
+                  .setColor(styled(q.color, q.style, a))
+              }
+            }
+          }
+        }
+      text.forEach { label ->
+        pose.pushPose()
+        try {
+          pose.translate(label.pos.x - camera.x, label.pos.y - camera.y, label.pos.z - camera.z)
+          pose.mulPose(c.levelState().cameraRenderState.orientation)
+          val scale = .025f * label.scale
+          pose.scale(scale, -scale, scale)
+          val component = net.minecraft.network.chat.Component.literal(label.text)
+          if (label.font != "default")
+            component.withStyle { style ->
+              style.withFont(
+                net.minecraft.network.chat.FontDescription.Resource(
+                  net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", label.font),
+                ),
+              )
+            }
+          val width = net.minecraft.client.Minecraft.getInstance().font.width(component)
+          c.submitNodeCollector()
+            .submitText(
+              pose,
+              -width / 2f,
+              0f,
+              component.visualOrderText,
+              true,
+              if (label.depth) net.minecraft.client.gui.Font.DisplayMode.NORMAL
+              else net.minecraft.client.gui.Font.DisplayMode.SEE_THROUGH,
+              0x00f000f0,
+              label.color,
+              0,
+              0,
+            )
+        } finally {
+          pose.popPose()
+        }
+      }
+      snapshot
+        .groupBy { it.depth }
+        .forEach { (depth, list) ->
+          c.submitNodeCollector().submitCustomGeometry(
+            pose,
+            if (depth) RenderTypes.LINES else esp,
+          ) { matrix, buffer ->
+            list.forEach { s ->
+              val direction =
+                dev.solyanka.gfx.OverlayLine.direction(s.b.x - s.a.x, s.b.y - s.a.y, s.b.z - s.a.z)
+                  ?: return@forEach
+              val dx = direction.x.toFloat()
+              val dy = direction.y.toFloat()
+              val dz = direction.z.toFloat()
+              buffer
+                .addVertex(
+                  matrix,
+                  (s.a.x - camera.x).toFloat(),
+                  (s.a.y - camera.y).toFloat(),
+                  (s.a.z - camera.z).toFloat(),
+                )
+                .setColor(styled(s.color, s.style, s.a))
+                .setNormal(matrix, dx, dy, dz)
+                .setLineWidth(s.width)
+              buffer
+                .addVertex(
+                  matrix,
+                  (s.b.x - camera.x).toFloat(),
+                  (s.b.y - camera.y).toFloat(),
+                  (s.b.z - camera.z).toFloat(),
+                )
+                .setColor(styled(s.color, s.style, s.b))
+                .setNormal(matrix, dx, dy, dz)
+                .setLineWidth(s.width)
+            }
+          }
+        }
+    } finally {
+      pose.popPose()
     }
-   }
-  } finally {pose.popPose()}
- }
+  }
 }

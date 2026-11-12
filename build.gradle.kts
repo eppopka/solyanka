@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("net.fabricmc.fabric-loom")
     kotlin("jvm")
+    id("com.ncorti.ktfmt.gradle") version "0.28.0"
 }
 
 group = property("maven_group")!!
@@ -51,9 +52,12 @@ java {
 kotlin {
     jvmToolchain(25)
     compilerOptions.jvmTarget.set(JvmTarget.JVM_25)
+    sourceSets.create("audit") { kotlin.srcDir("audit") }
 }
+ktfmt { googleStyle() }
 tasks.withType<JavaCompile>().configureEach { options.release.set(25) }
 tasks.test { useJUnitPlatform() }
+tasks.named("check") { dependsOn("ktfmtCheckScripts") }
 tasks.processResources {
     inputs.property("version", project.version)
     filesMatching("fabric.mod.json") { expand("version" to project.version) }
