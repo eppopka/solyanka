@@ -16,6 +16,7 @@ import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.Style
 import org.lwjgl.glfw.GLFW
 
 class NoFrillsClickGui(private val previous:Screen?,private var query:String=""):
@@ -204,7 +205,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
 
 private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val query:String,private val toggle:()->Unit,private val favorite:()->Unit,private val settings:(()->Unit)?):
     FlowLayout(Sizing.fixed(width),Sizing.content(),Algorithm.VERTICAL) {
-    private val title=GuiKit.label(info.name)
+    private val title=GuiKit.label(GuiText.component(info.name))
     private fun active()=info.id==GuiCatalog.GUI_SETTINGS || SolyankaClient.isEnabled(info.id)
     private var progress=if(active()) 1.0 else 0.0
     private var lastNanos=System.nanoTime()
@@ -237,14 +238,14 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
         hoverProgress=dev.solyanka.gfx.ToggleAnimation.step(hoverProgress,hoverTarget,seconds,palette.toggleAnimations)
         val color=dev.solyanka.gfx.ToggleAnimation.mix(palette.disabledColor,palette.enabledColor,progress) and 0xffffff
         val highlight=palette.enabledColor and 0xffffff
-        if(color!=lastColor || highlight!=lastMatchColor) {
-            lastColor=color;lastMatchColor=highlight
-            val term=query.trim();val index=if(term.isEmpty()) -1 else info.name.indexOf(term,ignoreCase=true)
-            val label=if(index<0) Component.literal(info.name).withColor(color) else Component.empty()
-                .append(Component.literal(info.name.substring(0,index)).withColor(color))
-                .append(Component.literal(info.name.substring(index,index+term.length)).withColor(highlight))
-                .append(Component.literal(info.name.substring(index+term.length)).withColor(color))
-            title.text(label)
+        if(color!=lastColor) {
+            lastColor=color
+            title.color(Color.ofArgb(color or 0xff000000.toInt()))
+        }
+        if(highlight!=lastMatchColor) {
+            lastMatchColor=highlight
+            val localized=GuiText.component(info.name)
+            title.text(featureCardTitle(localized,info.name,localized.string,query,highlight))
         }
     }
     override fun onMouseDown(click:MouseButtonEvent,doubled:Boolean):Boolean {
@@ -255,4 +256,15 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
             else -> false
         }
     }
+}
+
+internal fun featureCardTitle(localized:Component,fallbackName:String,localizedName:String,query:String,highlightColor:Int):Component {
+    val term=query.trim()
+    if(term.isEmpty() || fallbackName.indexOf(term,ignoreCase=true)<0) return localized
+    val index=localizedName.indexOf(term,ignoreCase=true)
+    if(index<0) return localized
+    return Component.empty()
+        .append(Component.literal(localizedName.substring(0,index)))
+        .append(Component.literal(localizedName.substring(index,index+term.length)).withStyle(Style.EMPTY.withColor(highlightColor)))
+        .append(Component.literal(localizedName.substring(index+term.length)))
 }
