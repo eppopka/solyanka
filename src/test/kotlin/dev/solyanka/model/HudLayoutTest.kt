@@ -18,14 +18,47 @@ class HudLayoutTest {
             "extra.scoreboard" to ModuleIds.SCOREBOARD, "map" to ModuleIds.MAP_INFO,
         )
         HudLayout.entries(FeatureSettings()).forEach { entry ->
-            val owner=when {
+            val expectedOwner=when {
                 entry.key.startsWith("timer.")->ModuleIds.TICK_TIMERS
                 entry.key.startsWith("player.")->ModuleIds.PLAYER_DISPLAY
                 else->expected.getValue(entry.key)
             }
-            assertEquals(owner,HudLayout.owner(entry.key),entry.key)
+            assertEquals(expectedOwner,entry.descriptor.owner,entry.key)
+            assertEquals(entry.descriptor.owner,HudLayout.owner(entry.key),entry.key)
         }
         assertFails {HudLayout.owner("unknown.hud")}
+    }
+    @Test fun `preview descriptors select the existing editor renderers`() {
+        val previews=HudLayout.entries(FeatureSettings()).associate {it.key to it.descriptor.preview}
+        assertEquals(
+            mapOf(
+                "extra.music" to HudPreviewRenderer.YANDEX_MUSIC,
+                "archive.hotbar" to HudPreviewRenderer.VANILLA_HOTBAR,
+                "archive.hearts" to HudPreviewRenderer.VANILLA_HEARTS,
+                "archive.stopwatch" to HudPreviewRenderer.ARCHIVE_HUDS,
+                "extra.inventory" to HudPreviewRenderer.EXTRA_HUDS,
+                "extra.item_name" to HudPreviewRenderer.EXTRA_HUDS,
+                "extra.skill" to HudPreviewRenderer.EXTRA_HUDS,
+                "extra.scoreboard" to HudPreviewRenderer.SCOREBOARD,
+            ),
+            previews.filterValues {it!=null},
+        )
+        assertNull(HudLayout.descriptor("unknown.hud"))
+    }
+    @Test fun `visibility uses typed owner and retains route progress filtering`() {
+        val f=FeatureSettings(route=FeatureSettings().route.copy(progress=false))
+        val enabled=setOf(ModuleIds.MOVE_HOTBAR,ModuleIds.MUSIC,ModuleIds.WAYPOINTS,ModuleIds.MOVE_HEARTS)
+
+        assertEquals(
+            listOf("archive.hotbar","extra.music","archive.hearts"),
+            HudLayout.visibleEntries(f,enabled).map {it.key},
+        )
+
+        val hiddenHotbar=f.copy(moveHotbar=f.moveHotbar.copy(hud=f.moveHotbar.hud.copy(enabled=false)))
+        assertEquals(
+            listOf("extra.music","archive.hearts"),
+            HudLayout.visibleEntries(hiddenHotbar,enabled).map {it.key},
+        )
     }
     @Test fun `editor covers every implemented movable HUD`() {
         val all=HudLayout.entries(FeatureSettings())

@@ -7,13 +7,23 @@ import dev.solyanka.client.feature.ScoreboardHud
 import dev.solyanka.client.feature.VanillaHearts
 import dev.solyanka.client.feature.VanillaHotbar
 import dev.solyanka.client.feature.YandexMusic
+import dev.solyanka.model.HudLayout
+import dev.solyanka.model.HudPreviewRenderer
 import net.minecraft.client.gui.GuiGraphicsExtractor
 
 /** Ordered preview painters. A painter returns false when it does not own the key. */
 object HudPreviewRegistry {
- private val painters:List<(GuiGraphicsExtractor,String,Int,Int)->Boolean> = listOf(
-  YandexMusic::editor,VanillaHotbar::editor,VanillaHearts::editor,
-  ArchiveHuds::editor,ExtraHuds::editor,ScoreboardHud::editor
+ private data class Painter(val renderer:HudPreviewRenderer,val draw:(GuiGraphicsExtractor,String,Int,Int)->Boolean)
+ private val painters = listOf(
+  Painter(HudPreviewRenderer.YANDEX_MUSIC,YandexMusic::editor),
+  Painter(HudPreviewRenderer.VANILLA_HOTBAR,VanillaHotbar::editor),
+  Painter(HudPreviewRenderer.VANILLA_HEARTS,VanillaHearts::editor),
+  Painter(HudPreviewRenderer.ARCHIVE_HUDS,ArchiveHuds::editor),
+  Painter(HudPreviewRenderer.EXTRA_HUDS,ExtraHuds::editor),
+  Painter(HudPreviewRenderer.SCOREBOARD,ScoreboardHud::editor),
  )
- fun draw(g:GuiGraphicsExtractor,key:String,x:Int,y:Int):Boolean = painters.any {it(g,key,x,y)}
+ fun draw(g:GuiGraphicsExtractor,key:String,x:Int,y:Int):Boolean {
+  val renderer=HudLayout.descriptor(key)?.preview ?: return false
+  return painters.firstOrNull {it.renderer==renderer}?.draw?.invoke(g,key,x,y) ?: false
+ }
 }
