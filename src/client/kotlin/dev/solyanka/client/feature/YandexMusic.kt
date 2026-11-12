@@ -36,7 +36,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.UUID
 import java.util.Base64
 import kotlin.math.roundToInt
@@ -44,9 +43,8 @@ import kotlin.math.roundToInt
 /** Windows local media session; LRCLIB is contacted only when lyrics are explicitly enabled. */
 object YandexMusic {
     private const val CLIENT_ID="23cabbbdc6cd418abb4b39c32c41195d"
-    private val generation=AtomicInteger()
+    private val sessionGuard=MusicSessionGuard()
     private val localLock=Any()
-    private val authorizationLock=Any()
     private var localProcess:Process?=null
     private val requests=ArrayBlockingQueue<Request>(8)
     private data class Request(val query:String,val callback:(Boolean,String)->Unit)
@@ -212,23 +210,26 @@ object YandexMusic {
     }.getOrNull()
 
     private fun disconnectAndAdvance():Int {
-        val (nextGeneration,pending)=synchronized(authorizationLock) {
-            val next=generation.incrementAndGet()
+        var pending:CompletableFuture<String>?=null
+        var previousSocket:WebSocket?=null
+        val nextGeneration=sessionGuard.advance {
+            pending=pendingAuthorizationCode
             verification=null
-            next to pendingAuthorizationCode.also {pendingAuthorizationCode=null}
+            pendingAuthorizationCode=null
+            previousSocket=socket;socket=null;authenticated=false
+            local=null;lyrics=null;requestedKey="";lyricRetryAtMillis=0L;lyricJob?.cancel(true);lyricJob=null
+            lyricsEnabled=false;status="Disconnected"
         }
         pending?.completeExceptionally(CancellationException("Disconnected"))
         synchronized(localLock) {localProcess?.destroyForcibly();localProcess=null}
-        authenticated=false;socket?.abort();socket=null
-        local=null;lyrics=null;requestedKey="";lyricRetryAtMillis=0L;lyricJob?.cancel(true);lyricJob=null
-        lyricsEnabled=false;status="Disconnected"
+        previousSocket?.abort()
         while(true) {val request=requests.poll() ?: break;request.callback(false,"Music disconnected")}
         return nextGeneration
     }
     fun disconnect() {disconnectAndAdvance()}
     fun submitVerificationCode(value:String):Boolean {
         if(!MusicLogic.authorizationCodeValid(value)) {status="Enter the 7-digit authorization code";return false}
-        val pending=synchronized(authorizationLock) {pendingAuthorizationCode}
+        val pending=pendingAuthorizationCode
             ?: run {status="No sign-in request is waiting";return false}
         val submitted=pending.complete(value)
         if(submitted) status="Checking sign-in code…"
@@ -276,7 +277,8 @@ object YandexMusic {
         if(!S.isEnabled(ModuleIds.MUSIC)) {status="Enable Yandex Music first";return}
         val remaining=waitRemainingSeconds()
         if(remaining>0) {status="Music: server requested wait ${remaining}s";return}
-        val gen=disconnectAndAdvance();status="Requesting sign-in code…"
+        val gen=disconnectAndAdvance()
+        if(!sessionGuard.ifCurrent(gen) {status="Requesting sign-in code…"}) return
         Thread({
             var ws:WebSocket?=null
             var stage="Sign-in code"
@@ -293,26 +295,26 @@ object YandexMusic {
                 )
                 val url=URI("https://oauth.yandex.com/authorize?"+params.entries.joinToString("&") {enc(it.key)+"="+enc(it.value)})
                 val pending=CompletableFuture<String>()
-                val accepted=synchronized(authorizationLock) {
-                    if(gen!=generation.get()) false else {
-                        pendingAuthorizationCode=pending
-                        verification=Verification(url);status="Sign in, then enter the 7-digit authorization code"
-                        true
-                    }
+                val accepted=sessionGuard.ifCurrent(gen) {
+                    pendingAuthorizationCode=pending
+                    verification=Verification(url);status="Sign in, then enter the 7-digit authorization code"
                 }
                 if(!accepted) return@Thread
                 stage="Sign-in"
                 val authorizationCode=pending.get(10,TimeUnit.MINUTES)
-                if(gen!=generation.get()) return@Thread
-                pendingAuthorizationCode=null
+                var consumed=false
+                val current=sessionGuard.ifCurrent(gen) {
+                    if(pendingAuthorizationCode===pending) {pendingAuthorizationCode=null;consumed=true}
+                }
+                if(!current || !consumed) return@Thread
                 val tokenResponse=httpJson("https://oauth.yandex.com/token",form=mapOf(
                     "grant_type" to "authorization_code","code" to authorizationCode,
                     "client_id" to CLIENT_ID,"redirect_uri" to redirectUri,"code_verifier" to verifier
                 ))
                 val auth=tokenResponse.get("access_token")?.asString ?: throw MusicServiceFailure("authorization failed")
-                if(gen!=generation.get()) return@Thread
+                if(!sessionGuard.isCurrent(gen)) return@Thread
                 val device=deviceId(auth)
-                verification=null;status="Connecting…"
+                if(!sessionGuard.ifCurrent(gen) {verification=null;status="Connecting…"}) return@Thread
                 var attempt=0
                 lateinit var frames:Frames
                 lateinit var state:JsonObject
@@ -321,36 +323,47 @@ object YandexMusic {
                         stage="Music redirect"
                         val (redirect,rf)=open("wss://ynison.music.yandex.ru/redirector.YnisonRedirectService/GetRedirectToYnison",auth,device)
                         val response=try {frame(rf)} finally {redirect.abort()}
-                        if(gen!=generation.get()) return@Thread
+                        if(!sessionGuard.isCurrent(gen)) return@Thread
                         val host=response.get("host").asString.lowercase()
                         require(host.matches(Regex("[a-z0-9.-]+\\.music\\.yandex\\.(ru|net)"))) {"unrecognized server"}
                         stage="Music connection"
                         val pair=open("wss://$host/ynison_state.YnisonStateService/PutYnisonState",auth,device,
                             MusicLogic.redirectValue(response,"redirectTicket"),MusicLogic.redirectValue(response,"sessionId"))
-                        ws=pair.first
-                        if(gen!=generation.get()) return@Thread
-                        socket=ws;frames=pair.second;stage="Music registration"
-                        ws.sendText(registration(device),true).get(10,TimeUnit.SECONDS)
+                        val currentSocket=pair.first
+                        ws=currentSocket
+                        if(!sessionGuard.ifCurrent(gen) {socket=currentSocket}) {
+                            currentSocket.abort();ws=null;return@Thread
+                        }
+                        frames=pair.second;stage="Music registration"
+                        var registrationSend:CompletableFuture<WebSocket>?=null
+                        if(!sessionGuard.ifCurrent(gen) {registrationSend=currentSocket.sendText(registration(device),true)}) {
+                            currentSocket.abort();ws=null;return@Thread
+                        }
+                        registrationSend?.get(10,TimeUnit.SECONDS)
                         state=frame(frames)
-                        if(gen!=generation.get()) return@Thread
+                        if(!sessionGuard.isCurrent(gen)) return@Thread
                         break
                     } catch(e:MusicServerFailure) {
-                        ws?.abort();ws=null;socket=null
-                        if(gen!=generation.get()) return@Thread
+                        val failedSocket=ws
+                        failedSocket?.abort();ws=null
+                        if(!sessionGuard.ifCurrent(gen) {if(socket===failedSocket) socket=null}) return@Thread
                         val serverWait=e.goAwaySeconds
                         if(serverWait!=null) retryAfterNanos=System.nanoTime()+TimeUnit.SECONDS.toNanos(serverWait)
                         if(serverWait!=null && (e.code!=14 || attempt>=4))
                             throw MusicServiceFailure("server requested wait ${serverWait}s")
                         val delay=if(serverWait!=null) TimeUnit.SECONDS.toMillis(serverWait)
                             else MusicLogic.retryDelay(e,attempt) ?: throw e
-                        attempt++;status=if(serverWait!=null) "Music: server requested wait ${serverWait}s; retrying"
-                            else "Music unavailable; retrying ($attempt/4)…"
+                        attempt++
+                        if(!sessionGuard.ifCurrent(gen) {
+                            status=if(serverWait!=null) "Music: server requested wait ${serverWait}s; retrying"
+                                else "Music unavailable; retrying ($attempt/4)…"
+                        }) return@Thread
                         val until=System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(delay)
-                        while(gen==generation.get() && System.nanoTime()<until) Thread.sleep(250)
-                        if(gen!=generation.get()) return@Thread
+                        while(sessionGuard.isCurrent(gen) && System.nanoTime()<until) Thread.sleep(250)
+                        if(!sessionGuard.isCurrent(gen)) return@Thread
                     }
                 }
-                authenticated=true;status="Connected (account session)"
+                if(!sessionGuard.ifCurrent(gen) {authenticated=true;status="Connected (account session)"}) return@Thread
                 var lastId=""
                 var ping=System.nanoTime()
                 while(gen==generation.get()) {
