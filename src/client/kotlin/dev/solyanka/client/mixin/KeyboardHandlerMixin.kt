@@ -13,8 +13,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 @Mixin(KeyboardHandler::class)
 abstract class KeyboardHandlerMixin {
-    @Inject(method = ["keyPress"], at = [At("HEAD")], cancellable = true)
-    private fun solyankaInput(window: Long, action: Int, event: KeyEvent, ci: CallbackInfo) {
-        if (SolyankaClient.handleInput(window, action, InputDevice.KEYBOARD, event.key(), event.modifiers())) ci.cancel()
-    }
+  @Inject(method = ["keyPress"], at = [At("HEAD")], cancellable = true)
+  private fun solyankaInput(window: Long, action: Int, event: KeyEvent, ci: CallbackInfo) {
+    if (
+      SolyankaClient.handleInput(
+        window,
+        action,
+        InputDevice.KEYBOARD,
+        event.key(),
+        event.modifiers(),
+      )
+    )
+      ci.cancel()
+  }
 }

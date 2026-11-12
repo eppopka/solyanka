@@ -10,6 +10,10 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant
 
 @Mixin(ChatComponent::class)
 abstract class ChatComponentMixin {
-    @ModifyConstant(method=["addMessageToQueue","addMessageToDisplayQueue"],constant=[Constant(intValue=100)],require=2)
-    private fun solyankaHistoryLimit(original:Int):Int = SolyankaClient.chatLimit(original)
+  @ModifyConstant(
+    method = ["addMessageToQueue", "addMessageToDisplayQueue"],
+    constant = [Constant(intValue = 100)],
+    require = 2,
+  )
+  private fun solyankaHistoryLimit(original: Int): Int = SolyankaClient.chatLimit(original)
 }

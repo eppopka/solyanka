@@ -9,9 +9,13 @@ import org.spongepowered.asm.mixin.gen.Invoker
 
 @Mixin(ChatComponent::class)
 interface ChatComponentAccessor {
-    @Invoker("getWidth") fun solyankaChatWidth():Int
-    @Invoker("getScale") fun solyankaChatScale():Double
-    @Invoker("getLineHeight") fun solyankaLineHeight():Int
-    @Accessor("trimmedMessages") fun solyankaLines():List<GuiMessage.Line>
-    @Accessor("chatScrollbarPos") fun solyankaScroll():Int
+  @Invoker("getWidth") fun solyankaChatWidth(): Int
+
+  @Invoker("getScale") fun solyankaChatScale(): Double
+
+  @Invoker("getLineHeight") fun solyankaLineHeight(): Int
+
+  @Accessor("trimmedMessages") fun solyankaLines(): List<GuiMessage.Line>
+
+  @Accessor("chatScrollbarPos") fun solyankaScroll(): Int
 }
