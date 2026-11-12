@@ -70,6 +70,25 @@ class LocalizationTest {
   }
  }
 
+ @Test fun `feature card descriptions have ID-based translations and English fallbacks`() {
+  val lang=Path.of("src/main/resources/assets/solyanka/lang")
+  val en=JsonParser.parseString(lang.resolve("en_us.json").readText()).asJsonObject
+  val ru=JsonParser.parseString(lang.resolve("ru_ru.json").readText()).asJsonObject
+  val guiText=Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/GuiText.kt").readText()
+  val gui=Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt").readText()
+
+  assertTrue("Component.translatableWithFallback(GuiCatalog.featureDescriptionTranslationKey(info.id),info.description)" in guiText)
+  assertTrue("translatedDescription={ GuiText.featureDescription(it).string }" in gui)
+  assertTrue("title.tooltip(GuiText.featureDescription(info))" in gui)
+  GuiCatalog.features.forEach { feature ->
+   val key=GuiCatalog.featureDescriptionTranslationKey(feature.id)
+   assertEquals(feature.description,en.get(key)?.asString,"English fallback for $key")
+   assertTrue(ru.has(key),"Missing Russian description for ${feature.id}")
+   assertTrue(ru.get(key).asString.isNotBlank(),key)
+   assertNotEquals(en.get(key).asString,ru.get(key).asString,"Untranslated description for ${feature.id}")
+  }
+ }
+
  @Test fun `feature card advance updates title with localization and search highlight`() {
   val gui=Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt").readText()
   val advance=gui.substringAfter("fun advance(now:Long) {").substringBefore("override fun onMouseDown")

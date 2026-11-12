@@ -41,6 +41,15 @@ class GuiModelsTest {
         assertEquals(listOf("utility.command_keybinds","utility.command_shortcuts"),groups.getValue("General").map { it.id })
         assertEquals("utility.command_keybinds",GuiCatalog.search("dungeon class",translatedName=translatedName).values.flatten().single().id)
     }
+    @Test fun `search matches translated descriptions and keeps English description search`() {
+        val translatedDescription:(FeatureCardInfo)->String = { card -> when(card.id) {
+            "custom.mimic_chest" -> "Подсветка сундуков-ловушек только в загруженных чанках"
+            else -> card.description
+        } }
+
+        assertEquals("custom.mimic_chest",GuiCatalog.search("сундуков-ловушек",translatedDescription=translatedDescription).values.flatten().single().id)
+        assertEquals("custom.mimic_chest",GuiCatalog.search("forced chunk loads").values.flatten().single().id)
+    }
     @Test fun `cards are sorted within categories`() {
         GuiCatalog.search("").values.forEach { assertEquals(it.sortedWith(compareBy<FeatureCardInfo> { c -> c.name.lowercase() }.thenBy { c -> c.id }),it) }
     }
