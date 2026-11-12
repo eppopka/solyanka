@@ -5,12 +5,66 @@ import dev.solyanka.core.ModuleIds
 import dev.solyanka.utility.*
 import kotlin.math.roundToInt
 
-data class HudEntry(val key:String,val name:String,val hud:HudSpec,val lines:List<String>,val resizable:Boolean=true,val baseWidth:Int?=null,val baseHeight:Int?=null,val paddingX:Int=4)
+enum class HudPreviewRenderer { YANDEX_MUSIC, VANILLA_HOTBAR, VANILLA_HEARTS, ARCHIVE_HUDS, EXTRA_HUDS, SCOREBOARD }
+
+sealed interface HudSettingTarget {
+    data class Timer(val id:String):HudSettingTarget
+    data class Player(val id:String):HudSettingTarget
+    data object MoveHotbar:HudSettingTarget
+    data object Pip:HudSettingTarget
+    data object Pet:HudSettingTarget
+    data object Music:HudSettingTarget
+    data object Route:HudSettingTarget
+    data object Simon:HudSettingTarget
+    data object MoveHearts:HudSettingTarget
+    data object Stopwatch:HudSettingTarget
+    data object Inventory:HudSettingTarget
+    data object ItemName:HudSettingTarget
+    data object Skill:HudSettingTarget
+    data object Performance:HudSettingTarget
+    data object Scoreboard:HudSettingTarget
+    data object Map:HudSettingTarget
+}
+
+data class HudDescriptor(
+    val key:String,
+    val owner:String,
+    val setting:HudSettingTarget,
+    val preview:HudPreviewRenderer?=null,
+)
+
+data class HudEntry(val key:String,val name:String,val hud:HudSpec,val lines:List<String>,val resizable:Boolean=true,val baseWidth:Int?=null,val baseHeight:Int?=null,val paddingX:Int=4) {
+    val descriptor:HudDescriptor get() = HudLayout.descriptor(key) ?: error("Unknown HUD: $key")
+}
 data class HudBounds(val x:Int,val y:Int,val width:Int,val height:Int) {
     fun contains(mx:Double,my:Double)=mx>=x && my>=y && mx<x+width && my<y+height
 }
 /** The editor uses the same stored positions and scales as live renderers; sample data is editor-only. */
 object HudLayout {
+    private val fixedDescriptors = listOf(
+        HudDescriptor("archive.hotbar",ModuleIds.MOVE_HOTBAR,HudSettingTarget.MoveHotbar,HudPreviewRenderer.VANILLA_HOTBAR),
+        HudDescriptor("extra.pip",ModuleIds.PIP,HudSettingTarget.Pip),
+        HudDescriptor("archive.pet",ModuleIds.PET,HudSettingTarget.Pet),
+        HudDescriptor("extra.music",ModuleIds.MUSIC,HudSettingTarget.Music,HudPreviewRenderer.YANDEX_MUSIC),
+        HudDescriptor("archive.route",ModuleIds.WAYPOINTS,HudSettingTarget.Route),
+        HudDescriptor("archive.simon",ModuleIds.SIMON,HudSettingTarget.Simon),
+        HudDescriptor("archive.hearts",ModuleIds.MOVE_HEARTS,HudSettingTarget.MoveHearts,HudPreviewRenderer.VANILLA_HEARTS),
+        HudDescriptor("archive.stopwatch",ModuleIds.STOPWATCH,HudSettingTarget.Stopwatch,HudPreviewRenderer.ARCHIVE_HUDS),
+        HudDescriptor("extra.inventory",ModuleIds.INVENTORY_HUD,HudSettingTarget.Inventory,HudPreviewRenderer.EXTRA_HUDS),
+        HudDescriptor("extra.item_name",ModuleIds.ITEM_NAME_HUD,HudSettingTarget.ItemName,HudPreviewRenderer.EXTRA_HUDS),
+        HudDescriptor("extra.skill",ModuleIds.SKILL_HUD,HudSettingTarget.Skill,HudPreviewRenderer.EXTRA_HUDS),
+        HudDescriptor("extra.performance",ModuleIds.PERFORMANCE,HudSettingTarget.Performance),
+        HudDescriptor("extra.scoreboard",ModuleIds.SCOREBOARD,HudSettingTarget.Scoreboard,HudPreviewRenderer.SCOREBOARD),
+        HudDescriptor("map",ModuleIds.MAP_INFO,HudSettingTarget.Map),
+    ).associateBy { it.key }
+
+    fun descriptor(key:String):HudDescriptor? = fixedDescriptors[key] ?: when {
+        key.startsWith("timer.")->HudDescriptor(key,ModuleIds.TICK_TIMERS,HudSettingTarget.Timer(key.substringAfter('.')))
+        key.startsWith("player.")->HudDescriptor(key,ModuleIds.PLAYER_DISPLAY,HudSettingTarget.Player(key.substringAfter('.')))
+        else->null
+    }
+    fun previewRenderer(key:String):HudPreviewRenderer? = descriptor(key)?.preview
+
     fun entries(f:FeatureSettings,width:Int=960,height:Int=540):List<HudEntry> = buildList {
         val names=mapOf("goldor" to "Goldor","pad" to "Storm Pad","lightning" to "Storm Lightning","py" to "Storm PY","storm" to "Storm Phase","freeze" to "M3 Fire Freeze")
         f.timers.huds().forEach { (id,h) ->add(HudEntry("timer.$id",names.getValue(id),h,listOf("${names.getValue(id)}: 1.75s"))) }
@@ -33,51 +87,33 @@ object HudLayout {
         add(HudEntry("extra.scoreboard","Scoreboard",f.scoreboardHud.hud,listOf("Scoreboard sample"),baseWidth=f.scoreboardHud.maxWidth,baseHeight=ScoreboardLayout.height(5,f.scoreboardHud.header)))
         add(HudEntry("map","Map Info",HudSpec(x=f.map.x,y=f.map.y),listOf("Secrets: 25/30 | Score~: 295","Deaths: 0 | Crypts: 5","Sample room | 05:00"),false))
     }
-    private val owners = mapOf(
-        "archive.hotbar" to ModuleIds.MOVE_HOTBAR,
-        "extra.pip" to ModuleIds.PIP,
-        "extra.music" to ModuleIds.MUSIC,
-        "archive.pet" to ModuleIds.PET,
-        "archive.route" to ModuleIds.WAYPOINTS,
-        "archive.simon" to ModuleIds.SIMON,
-        "archive.hearts" to ModuleIds.MOVE_HEARTS,
-        "archive.stopwatch" to ModuleIds.STOPWATCH,
-        "extra.inventory" to ModuleIds.INVENTORY_HUD,
-        "extra.item_name" to ModuleIds.ITEM_NAME_HUD,
-        "extra.skill" to ModuleIds.SKILL_HUD,
-        "extra.performance" to ModuleIds.PERFORMANCE,
-        "extra.scoreboard" to ModuleIds.SCOREBOARD,
-        "map" to ModuleIds.MAP_INFO,
-    )
-    fun owner(key:String):String=when {
-        key.startsWith("timer.")->ModuleIds.TICK_TIMERS
-        key.startsWith("player.")->ModuleIds.PLAYER_DISPLAY
-        else->owners.getValue(key)
+    fun owner(key:String):String=descriptor(key)?.owner ?: throw NoSuchElementException(key)
+    fun visibleEntries(f:FeatureSettings,enabled:Set<String>,width:Int=960,height:Int=540)=entries(f,width,height).filter {
+        it.descriptor.owner in enabled && it.hud.enabled && (it.descriptor.setting!=HudSettingTarget.Route || f.route.progress)
     }
-    fun visibleEntries(f:FeatureSettings,enabled:Set<String>,width:Int=960,height:Int=540)=entries(f,width,height).filter {owner(it.key) in enabled && it.hud.enabled && (it.key!="archive.route" || f.route.progress)}
     fun update(f:FeatureSettings,key:String,width:Int=960,height:Int=540,change:(HudSpec)->HudSpec):FeatureSettings {
         val entry=entries(f,width,height).firstOrNull {it.key==key} ?: error("Unknown HUD: $key")
+        val target=entry.descriptor.setting
         val changed=change(entry.hud)
-        val h=if(key=="archive.hotbar" && f.moveHotbar.referenceSizing)changed.copy(scale=if(changed.scale==entry.hud.scale)f.moveHotbar.hud.scale else (changed.scale/HotbarLayout.referenceScale(f.moveHotbar,width,height)).coerceIn(.5,4.0))else changed
+        val h=if(target==HudSettingTarget.MoveHotbar && f.moveHotbar.referenceSizing)changed.copy(scale=if(changed.scale==entry.hud.scale)f.moveHotbar.hud.scale else (changed.scale/HotbarLayout.referenceScale(f.moveHotbar,width,height)).coerceIn(.5,4.0))else changed
         h.validate()
-        return when {
-            key.startsWith("timer.")->f.copy(timers=f.timers.withHud(key.substringAfter('.'),h))
-            key.startsWith("player.")->f.copy(player=f.player.withHud(key.substringAfter('.'),h))
-            key=="archive.hotbar"->f.copy(moveHotbar=f.moveHotbar.copy(customPosition=true,hud=h))
-            key=="extra.music"->f.copy(music=f.music.copy(hud=h))
-            key=="extra.pip"->f.copy(pip=f.pip.copy(hud=h))
-            key=="archive.pet"->f.copy(pet=f.pet.copy(hud=h))
-            key=="archive.route"->f.copy(route=f.route.copy(hud=h))
-            key=="archive.simon"->f.copy(simon=f.simon.copy(hud=h))
-            key=="archive.hearts"->f.copy(moveHearts=f.moveHearts.copy(customPosition=true,hud=h))
-            key=="archive.stopwatch"->f.copy(stopwatch=f.stopwatch.copy(hud=h))
-            key=="extra.inventory"->f.copy(inventoryHud=f.inventoryHud.copy(hud=h))
-            key=="extra.item_name"->f.copy(itemNameHud=f.itemNameHud.copy(hud=h))
-            key=="extra.performance"->f.copy(performance=f.performance.copy(hud=h))
-            key=="extra.scoreboard"->f.copy(scoreboardHud=f.scoreboardHud.copy(hud=h))
-            key=="extra.skill"->f.copy(skillHud=f.skillHud.copy(hud=h))
-            key=="map"->f.copy(map=f.map.copy(x=h.x,y=h.y))
-            else->error("Unknown HUD: $key")
+        return when(target) {
+            is HudSettingTarget.Timer->f.copy(timers=f.timers.withHud(target.id,h))
+            is HudSettingTarget.Player->f.copy(player=f.player.withHud(target.id,h))
+            HudSettingTarget.MoveHotbar->f.copy(moveHotbar=f.moveHotbar.copy(customPosition=true,hud=h))
+            HudSettingTarget.Music->f.copy(music=f.music.copy(hud=h))
+            HudSettingTarget.Pip->f.copy(pip=f.pip.copy(hud=h))
+            HudSettingTarget.Pet->f.copy(pet=f.pet.copy(hud=h))
+            HudSettingTarget.Route->f.copy(route=f.route.copy(hud=h))
+            HudSettingTarget.Simon->f.copy(simon=f.simon.copy(hud=h))
+            HudSettingTarget.MoveHearts->f.copy(moveHearts=f.moveHearts.copy(customPosition=true,hud=h))
+            HudSettingTarget.Stopwatch->f.copy(stopwatch=f.stopwatch.copy(hud=h))
+            HudSettingTarget.Inventory->f.copy(inventoryHud=f.inventoryHud.copy(hud=h))
+            HudSettingTarget.ItemName->f.copy(itemNameHud=f.itemNameHud.copy(hud=h))
+            HudSettingTarget.Performance->f.copy(performance=f.performance.copy(hud=h))
+            HudSettingTarget.Scoreboard->f.copy(scoreboardHud=f.scoreboardHud.copy(hud=h))
+            HudSettingTarget.Skill->f.copy(skillHud=f.skillHud.copy(hud=h))
+            HudSettingTarget.Map->f.copy(map=f.map.copy(x=h.x,y=h.y))
         }
     }
     fun bounds(entry:HudEntry,textWidth:Int,width:Int,height:Int)=pixels(entry.hud,entry.baseWidth ?: textWidth+entry.paddingX,entry.baseHeight ?: (entry.lines.size*10+2),width,height)
