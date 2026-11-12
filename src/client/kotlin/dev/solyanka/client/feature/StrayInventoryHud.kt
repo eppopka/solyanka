@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.item.*
-import kotlin.math.roundToInt
 
 /** Display only. Stray's 18px wells / 2px gaps / armor row / separate selected hotbar. */
 object StrayInventoryHud {
@@ -37,13 +36,8 @@ object StrayInventoryHud {
  }
  fun draw(g:GuiGraphicsExtractor,s:InventoryHudSettings,sample:Boolean=false,atX:Int?=null,atY:Int?=null) {
   val c=Minecraft.getInstance();val player=c.player;if(!sample && (player==null || c.gui.hud.isHidden || c.gui.screen() is net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<*>)) return
-  val m=InventoryHudLayout.metrics(s);val scale=s.hud.scale.toFloat()
-  val x=atX ?: s.hud.x.coerceIn(0,(c.window.guiScaledWidth-m.width*scale).roundToInt().coerceAtLeast(0))
-  val y=atY ?: s.hud.y.coerceIn(0,(c.window.guiScaledHeight-m.height*scale).roundToInt().coerceAtLeast(0))
-  g.pose().pushMatrix()
-  try {
-   g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale)
-   HudGlow.draw(g,ModuleIds.INVENTORY_HUD,0,0,m.width,m.height)
+  val m=InventoryHudLayout.metrics(s)
+  HudFrame.draw(g,s.hud,m.width,m.height,atX,atY,ModuleIds.INVENTORY_HUD) {
    // Stray classic chrome. No costly frost/starfield pass in solyanka's inventory overlay.
    if(s.background) ChromeDraw.panel(g,0,0,m.width,m.height,s.backgroundColor,LINE,6)
    fun small(text:String,tx:Float,ty:Float,color:Int) {
@@ -81,6 +75,6 @@ object StrayInventoryHud {
     g.fill(m.pad,m.hotbarY-3,m.width-m.pad,m.hotbarY-2,LINE)
     for(i in 0 until 9) slot(if(sample && i==0) ItemStack(Items.DIAMOND_SWORD) else if(sample) ItemStack.EMPTY else player!!.inventory.getItem(i),m.pad+i*20,m.hotbarY,i,selected=if(sample) i==0 else player!!.inventory.selectedSlot==i)
    }
-  } finally {g.pose().popMatrix()}
+  }
  }
 }
