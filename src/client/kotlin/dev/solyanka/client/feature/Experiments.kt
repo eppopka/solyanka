@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * NoFrills ExperimentSolver/SlotOptions and RecipeData adapters; see NOTICE. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.utility.*
 import net.minecraft.client.Minecraft
@@ -23,7 +25,7 @@ object Experiments {
  fun update() {
   val client=Minecraft.getInstance();val screen=client.gui.screen() as? ContainerScreen
   if(screen==null) { if(menu!=null) reset();return }
-  if(!SolyankaClient.isEnabled(SolyankaClient.EXPERIMENTS)) { if(menu!=null) reset();return }
+  if(!SolyankaClient.isEnabled(ModuleIds.EXPERIMENTS)) { if(menu!=null) reset();return }
   val cfg=SolyankaClient.currentGeneral().features.experiments
   val type=ExperimentLogic.type(ChatLogic.plain(screen.title.string),FeatureRuntime.context.skyblock && FeatureRuntime.context.area in setOf("Private Island","Your Island"))
   val active=when(type) { ExperimentType.CHRONO->cfg.chronomatron;ExperimentType.ULTRA->cfg.ultrasequencer;ExperimentType.SUPER->cfg.superpairs;else->false }

@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only; user impl.zip ItemAura adaptation. */
 package dev.solyanka.client.feature
+import dev.solyanka.gfx.ItemAuraMesh
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.utility.*
 import com.mojang.blaze3d.vertex.PoseStack
@@ -29,7 +32,7 @@ object ItemAura {
  fun clear() {captured.clear();failed=false}
  fun begin() {captured.clear()}
  @JvmStatic fun captureHand(pose:PoseStack,hand:InteractionHand,stack:ItemStack) {
-  if(!S.isEnabled(S.ITEM_AURA) || failed || captured.size>=2) return
+  if(!S.isEnabled(ModuleIds.ITEM_AURA) || failed || captured.size>=2) return
   val s=S.currentGeneral().features.itemAura
   if(hand==InteractionHand.OFF_HAND && !s.offHand || s.onlyWithItem && stack.isEmpty) return
   val sign=if(hand==InteractionHand.MAIN_HAND)1.0 else -1.0
@@ -41,7 +44,7 @@ object ItemAura {
  fun flush(dispatcher:FeatureRenderDispatcher) {
   if(captured.isEmpty())return
   val matrices=captured.toList();captured.clear()
-  if(!S.isEnabled(S.ITEM_AURA) || failed)return
+  if(!S.isEnabled(ModuleIds.ITEM_AURA) || failed)return
   val storage=SubmitNodeStorage()
   try {
    val s=S.currentGeneral().features.itemAura;val mesh=ItemAuraMesh(s).build(System.nanoTime()*1e-9)

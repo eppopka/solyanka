@@ -2,7 +2,7 @@
 package dev.solyanka.utility
 
 import com.google.gson.*
-import dev.solyanka.ui.*
+import dev.solyanka.model.*
 import org.junit.jupiter.api.Test
 import kotlin.test.*
 import java.nio.file.Path

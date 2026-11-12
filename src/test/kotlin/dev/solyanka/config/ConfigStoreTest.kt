@@ -93,7 +93,7 @@ class ConfigStoreTest {
     }
     @Test fun `instant edit reaches disk before editor is closed`() {
         val file=dir.resolve("solyanka.json");val c=store();c.load()
-        val editor=dev.solyanka.ui.InstantSettings(c.profile(),c.general()) { profile,general ->
+        val editor=dev.solyanka.model.InstantSettings(c.profile(),c.general()) { profile,general ->
             if(c.save(emptyMap(),profile,general)) null else "Save failed"
         }
         assertTrue(editor.updateGeneral { it.copy(tooltips=it.tooltips.copy(createdDate=true)) })
@@ -101,7 +101,7 @@ class ConfigStoreTest {
     }
     @Test fun `invalid transient instant edit leaves last successful disk value`() {
         val c=store();c.load()
-        val editor=dev.solyanka.ui.InstantSettings(c.profile(),c.general()) { profile,general ->
+        val editor=dev.solyanka.model.InstantSettings(c.profile(),c.general()) { profile,general ->
             if(c.save(emptyMap(),profile,general)) null else "Save failed"
         }
         assertTrue(editor.lines("2200"));assertFalse(editor.lines(""))
@@ -125,7 +125,7 @@ class ConfigStoreTest {
     }
     @Test fun `instant new HUD edits reach disk and reject invalid scale`() {
         val c=store();c.load()
-        val editor=dev.solyanka.ui.InstantSettings(c.profile(),c.general()) { profile,general -> if(c.save(emptyMap(),profile,general)) null else "Save failed" }
+        val editor=dev.solyanka.model.InstantSettings(c.profile(),c.general()) { profile,general -> if(c.save(emptyMap(),profile,general)) null else "Save failed" }
         assertTrue(editor.updateGeneral { it.copy(features=it.features.copy(player=it.features.player.copy(health=it.features.player.health.copy(scale=2.0)))) })
         assertFalse(editor.updateGeneral { it.copy(features=it.features.copy(player=it.features.player.copy(health=it.features.player.health.copy(scale=0.0)))) })
         val next=store();next.load();assertEquals(2.0,next.general().features.player.health.scale)

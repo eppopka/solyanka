@@ -10,6 +10,15 @@ class ModuleRegistry(private val report: (String, Exception) -> Unit) {
     }
     fun all(): List<Module> = modules.values.toList()
     fun get(id: String): Module? = modules[id]
+    /** Apply all requested transitions; one failing hook must not prevent other modules changing. */
+    fun applyEnabled(desired: Map<String, Boolean>): List<String> {
+        val failures = mutableListOf<String>()
+        all().forEach { module ->
+            try { module.setEnabled(desired[module.info.id] ?: module.enabled) }
+            catch (e: Exception) { failures.add(module.info.id); report("${module.info.id}:settings", e) }
+        }
+        return failures
+    }
     fun tick() = dispatch("tick") { it.onTick() }
     fun reset(reason: ResetReason) = dispatch("reset") { it.onReset(reason) }
     fun shutdown() {

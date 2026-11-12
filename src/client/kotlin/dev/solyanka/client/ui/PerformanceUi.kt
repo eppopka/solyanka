@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.ui
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.client.ui.nofrills.*
-import dev.solyanka.ui.InstantSettings
+import dev.solyanka.model.InstantSettings
 import dev.solyanka.utility.PerformanceSettings
 
 object PerformanceUi {
@@ -21,7 +23,7 @@ object PerformanceUi {
     add(GuiKit.toggleRow(w,"Show Ping",s.showPing) {v->update {it.copy(showPing=v)}})
     add(GuiKit.toggleRow(w,"Show TPS",s.showTps) {v->update {it.copy(showTps=v)}})
     add(GuiKit.colorRow(w,"Text Color",s.hud.color) {v->update {it.copy(hud=it.hud.copy(color=v))}})
-    addAll(HudGlowUi.controls(SolyankaClient.PERFORMANCE,model,panel,w))
+    addAll(HudGlowUi.controls(ModuleIds.PERFORMANCE,model,panel,w))
    }
   })
  }

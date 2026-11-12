@@ -2,6 +2,8 @@
  * Odin DungeonWaypoints/SecretWaypoints/pack persistence adaptation.
  * (c)2025 odtheking, BSD-3-Clause; see bundled notice. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.utility.*
 import net.fabricmc.loader.api.FabricLoader
@@ -45,7 +47,7 @@ object DungeonWaypoints {
   return DungeonPuzzles.Room(area,0,0,0,GridPos(0,0,0),RoomFacing.SOUTH)
  }
  private fun editable(change:(MutableMap<String,List<Waypoint>>,DungeonPuzzles.Room)->Unit) {
-  require(SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS)) {"Enable Waypoints first"}
+  require(SolyankaClient.isEnabled(ModuleIds.WAYPOINTS)) {"Enable Waypoints first"}
   require(cfg().allowEdits) {"Enable Editor Mode first"}
   val r=editingRoom() ?: error("SkyBlock area or dungeon room not recognized")
   require(r.origin!=null && r.facing!=null) {"Room rotation is not ready; load all room segments"}
@@ -80,7 +82,7 @@ object DungeonWaypoints {
  }
  private fun preview() {
   val c=Minecraft.getInstance();val level=c.level;val hit=c.hitResult as? BlockHitResult
-  if(!SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || !FeatureRuntime.context.skyblock || !cfg().allowEdits || c.gui.screen()!=null || level==null || hit?.type!=HitResult.Type.BLOCK || !level.hasChunkAt(hit.blockPos) || editingRoom()?.origin==null || editingRoom()?.facing==null) {WorldOverlay.clear("waypoint-preview");return}
+  if(!SolyankaClient.isEnabled(ModuleIds.WAYPOINTS) || !FeatureRuntime.context.skyblock || !cfg().allowEdits || c.gui.screen()!=null || level==null || hit?.type!=HitResult.Type.BLOCK || !level.hasChunkAt(hit.blockPos) || editingRoom()?.origin==null || editingRoom()?.facing==null) {WorldOverlay.clear("waypoint-preview");return}
   val s=cfg();val box=targetBox(level,hit.blockPos,s).move(hit.blockPos.x.toDouble(),hit.blockPos.y.toDouble(),hit.blockPos.z.toDouble())
   val lines=mutableListOf<WorldOverlay.Segment>();val fills=mutableListOf<WorldOverlay.Fill>()
   if(s.filled) fills.add(WorldOverlay.Fill(box,s.color,s.depth && !s.globalEsp,style(s))) else WorldOverlay.box(lines,box,s.color,s.depth && !s.globalEsp,style(s))
@@ -89,7 +91,7 @@ object DungeonWaypoints {
  private fun key(pack:String,room:String,index:Int,instance:DungeonPuzzles.Room)="$pack:$room:$index:${instance.origin}"
  fun geometry(r:DungeonPuzzles.Room?,lines:MutableList<WorldOverlay.Segment>,fills:MutableList<WorldOverlay.Fill>,labels:MutableList<WorldOverlay.Label>) {
   routeText=null;routeAt=System.nanoTime()
-  if(!SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || r?.origin==null || r.facing==null) return
+  if(!SolyankaClient.isEnabled(ModuleIds.WAYPOINTS) || r?.origin==null || r.facing==null) return
   if(signature!=cfg().selectedPacks) reload()
   val s=cfg();val route=SolyankaClient.currentGeneral().features.route
   val scope="${r.name}:${r.origin}:${r.facing}";if(scope!=routeScope){routeCursors.clear();routeScope=scope}
@@ -122,7 +124,7 @@ object DungeonWaypoints {
   preview()
   val ctx=FeatureRuntime.context;val player=Minecraft.getInstance().player
   val area=WaypointLogic.areaKey(ctx)
-  if(!SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || area==null || player==null) {WorldOverlay.clear("waypoints-world");return}
+  if(!SolyankaClient.isEnabled(ModuleIds.WAYPOINTS) || area==null || player==null) {WorldOverlay.clear("waypoints-world");return}
   if(signature!=cfg().selectedPacks) reload()
   val s=cfg();val route=SolyankaClient.currentGeneral().features.route
   if(area!=worldRouteScope) {routeCursors.clear();worldRouteScope=area}
@@ -137,7 +139,7 @@ object DungeonWaypoints {
   WorldOverlay.publish(lines,fills,labels,"waypoints-world")
  }
  fun secret(pos:BlockPos,maxSquared:Int,type:WayType=WayType.SECRET) {
-  if(!SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || !FeatureRuntime.context.dungeon || FeatureRuntime.context.boss) return
+  if(!SolyankaClient.isEnabled(ModuleIds.WAYPOINTS) || !FeatureRuntime.context.dungeon || FeatureRuntime.context.boss) return
   val r=DungeonPuzzles.currentRoom() ?: return;if(r.origin==null || r.facing==null)return
   val relative=DungeonLogic.relative(GridPos(pos.x,pos.y,pos.z),r.origin,r.facing)
   data class Candidate(val key:String,val distance:Long)
@@ -149,13 +151,13 @@ object DungeonWaypoints {
  }
  fun editorInput(device:InputDevice,key:Int):Boolean {
   val c=Minecraft.getInstance()
-  if(c.gui.screen()==null && c.isWindowActive && c.player!=null && SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) && cfg().editorKey.matches(device,key)) {
+  if(c.gui.screen()==null && c.isWindowActive && c.player!=null && SolyankaClient.isEnabled(ModuleIds.WAYPOINTS) && cfg().editorKey.matches(device,key)) {
    val next=!cfg().allowEdits;val general=SolyankaClient.currentGeneral()
    val failure=SolyankaClient.applySettings(SolyankaClient.currentProfile(),SolyankaClient.states(),general.copy(features=general.features.copy(waypoints=general.features.waypoints.copy(allowEdits=next))))
    c.player?.sendSystemMessage(Component.literal(if(failure==null) "[solyanka] Waypoint Editor Mode ${if(next) "enabled" else "disabled"}" else "[solyanka] $failure"))
    return true
   }
-  if(device!=InputDevice.MOUSE || key!=GLFW.GLFW_MOUSE_BUTTON_RIGHT || c.gui.screen()!=null || !SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) || !FeatureRuntime.context.skyblock) return false
+  if(device!=InputDevice.MOUSE || key!=GLFW.GLFW_MOUSE_BUTTON_RIGHT || c.gui.screen()!=null || !SolyankaClient.isEnabled(ModuleIds.WAYPOINTS) || !FeatureRuntime.context.skyblock) return false
   // Ray-cast only a manually initiated etherwarp; never use, aim or teleport automatically.
   val player=c.player ?: return false
   val id=player.mainHandItem.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA)?.copyTag()?.getStringOr("id","")
@@ -190,12 +192,12 @@ object DungeonWaypoints {
  fun register() {
   net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.attachElementBefore(net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements.CHAT,net.minecraft.resources.Identifier.fromNamespaceAndPath("solyanka","route")) {g,_->
    val c=Minecraft.getInstance();val s=SolyankaClient.currentGeneral().features.route;val h=s.hud;val text=routeText
-   if(SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) && cfg().allowEdits && FeatureRuntime.context.skyblock && c.level!=null && !c.gui.hud.isHidden && c.gui.screen()==null) {
+   if(SolyankaClient.isEnabled(ModuleIds.WAYPOINTS) && cfg().allowEdits && FeatureRuntime.context.skyblock && c.level!=null && !c.gui.hud.isHidden && c.gui.screen()==null) {
     val wp=cfg();g.text(c.font,"Editor: ${if(wp.filled) "filled" else "outline"} | ${wp.styleMode} | ${wp.editPack}",8,8,wp.color,true)
     g.text(c.font,"Right click: toggle | Shift + right click: name",8,20,-1,true)
    }
-   if(text!=null && System.nanoTime()-routeAt<500_000_000L && s.progress && h.enabled && SolyankaClient.isEnabled(SolyankaClient.WAYPOINTS) && FeatureRuntime.context.dungeon && !FeatureRuntime.context.boss && c.level!=null && !c.gui.hud.isHidden && c.gui.screen() !is dev.solyanka.client.ui.HudEditorScreen) {
-    g.pose().pushMatrix();try{g.pose().translate(h.x.toFloat(),h.y.toFloat());g.pose().scale(h.scale.toFloat(),h.scale.toFloat());HudGlow.draw(g,SolyankaClient.WAYPOINTS,0,0,c.font.width(text),9,0);g.text(c.font,text,0,0,h.color,true)}finally{g.pose().popMatrix()}
+   if(text!=null && System.nanoTime()-routeAt<500_000_000L && s.progress && h.enabled && SolyankaClient.isEnabled(ModuleIds.WAYPOINTS) && FeatureRuntime.context.dungeon && !FeatureRuntime.context.boss && c.level!=null && !c.gui.hud.isHidden && c.gui.screen() !is dev.solyanka.client.ui.HudEditorScreen) {
+    g.pose().pushMatrix();try{g.pose().translate(h.x.toFloat(),h.y.toFloat());g.pose().scale(h.scale.toFloat(),h.scale.toFloat());HudGlow.draw(g,ModuleIds.WAYPOINTS,0,0,c.font.width(text),9,0);g.text(c.font,text,0,0,h.color,true)}finally{g.pose().popMatrix()}
    }
   }
   UseBlockCallback.EVENT.register {player,level,hand,hit ->

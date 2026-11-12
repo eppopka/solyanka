@@ -33,7 +33,7 @@ class HeldItemLifecycleTest {
  }
  @Test fun `runtime status exposes fallback reasons without changing server state`() {
   val s=source();for(field in listOf("eligible=","replaced=","notReady=","incompatible=","ready=")) assertTrue(field in s)
-  assertTrue("literal(\"helditemstatus\")" in root.resolve("SolyankaClient.kt").readText())
+  assertTrue("literal(\"helditemstatus\")" in root.resolve("Commands.kt").readText())
   assertFalse("sendCommand" in s);assertFalse("sendChat" in s)
  }
 }

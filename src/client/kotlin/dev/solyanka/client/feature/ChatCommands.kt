@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.feature
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.utility.*
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
@@ -10,7 +12,7 @@ import net.minecraft.network.chat.Component
 object ChatCommands {
     private val echoes=ChatReplyEchoes()
     private fun receive(raw:String,overlay:Boolean) {
-        if(overlay || !S.isEnabled(S.CHAT_COMMANDS)) return
+        if(overlay || !S.isEnabled(ModuleIds.CHAT_COMMANDS)) return
         val client=Minecraft.getInstance();val player=client.player ?: return
         val address=client.currentServer?.ip?.substringBefore(':')?.lowercase() ?: return
         if(address!="hypixel.net" && !address.endsWith(".hypixel.net")) return
@@ -36,7 +38,7 @@ object ChatCommands {
         if(suggestion==null) {send(response!!);return}
         val world=client.level
         val accepted=YandexMusic.suggest(suggestion) {success,message->client.execute {
-            if(client.level!==world || client.player!==player || !S.isEnabled(S.CHAT_COMMANDS)) return@execute
+            if(client.level!==world || client.player!==player || !S.isEnabled(ModuleIds.CHAT_COMMANDS)) return@execute
             if(success && S.currentGeneral().features.music.announce) {
                 val safe=message.filterNot {it.isISOControl() || it=='§'}.take(120)
                 send("Added to queue: $safe")

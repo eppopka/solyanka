@@ -3,8 +3,8 @@ package dev.solyanka.client.ui
 
 import dev.solyanka.client.ui.nofrills.GuiKit
 import dev.solyanka.client.ui.nofrills.SettingsPanel
-import dev.solyanka.ui.InstantSettings
-import dev.solyanka.ui.NumberRange
+import dev.solyanka.model.InstantSettings
+import dev.solyanka.model.NumberRange
 import io.wispforest.owo.ui.container.UIContainers
 import io.wispforest.owo.ui.core.Sizing
 import io.wispforest.owo.ui.core.UIComponent

@@ -3,6 +3,8 @@
  * BSD-3-Clause, reproduced in licenses/Odin-BSD-3-Clause.txt. */
 package dev.solyanka.client.feature
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.utility.*
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
@@ -28,6 +30,33 @@ object FeatureRuntime {
     val stats=PlayerStats()
     val cursor=CursorMemory()
     var context=SkyblockContext();private set
+    private var layoutContext:String?=null
+    private var pendingLayoutContext:String?=null
+    private var contextTicks=0
+    /** Flush when leaving a world or disabling profiles; never alter the last good layout on save failure. */
+    fun flushHudProfile() {
+        val old=layoutContext ?: return
+        try {
+            val g=SolyankaClient.currentGeneral()
+            val next=dev.solyanka.model.HudProfiles.transition(g.features,old,null)
+            val error=SolyankaClient.applySettings(SolyankaClient.currentProfile(),SolyankaClient.states(),g.copy(features=next))
+            if(error==null) layoutContext=null else logger.warn("HUD profile save failed: {}",error)
+        } catch(e:Exception) {logger.error("HUD profile save failed",e)}
+    }
+    private fun updateHudProfile() {
+        val g=SolyankaClient.currentGeneral()
+        if(!g.features.hudProfiles.enabled) {flushHudProfile();pendingLayoutContext=null;contextTicks=0;return}
+        val next=dev.solyanka.model.HudProfiles.context(context) ?: return
+        if(next==layoutContext) {pendingLayoutContext=null;contextTicks=0;return}
+        if(next!=pendingLayoutContext) {pendingLayoutContext=next;contextTicks=1;return}
+        if(++contextTicks<40) return
+        try {
+            val f=dev.solyanka.model.HudProfiles.transition(g.features,layoutContext,next)
+            val error=SolyankaClient.applySettings(SolyankaClient.currentProfile(),SolyankaClient.states(),g.copy(features=f))
+            if(error==null) {layoutContext=next;pendingLayoutContext=null;contextTicks=0}
+            else {logger.warn("HUD profile switch failed: {}",error);contextTicks=0}
+        } catch(e:Exception) {logger.error("HUD profile switch failed",e);contextTicks=0}
+    }
     fun reset() { context=SkyblockContext();timers.reset();stats.reset();cursor.reset();ExtraHuds.reset() }
     private fun readContext(client:Minecraft):SkyblockContext {
         val player=client.player ?: return SkyblockContext()
@@ -41,32 +70,33 @@ object FeatureRuntime {
     }
     fun tick(client:Minecraft) {
         val old=context;context=readContext(client)
+        updateHudProfile()
         if(old.skyblock && !context.skyblock) stats.reset()
         if(old.dungeon && (!context.dungeon || old.floor!=context.floor || old.master!=context.master)) timers.reset()
-        if(context.skyblock && SolyankaClient.isEnabled(SolyankaClient.PLAYER_DISPLAY)) {
+        if(context.skyblock && SolyankaClient.isEnabled(ModuleIds.PLAYER_DISPLAY)) {
             client.player?.let { stats.tick(it.health.toDouble(),it.maxHealth.toDouble(),it.getAttribute(Attributes.MOVEMENT_SPEED)?.baseValue ?: 0.0) }
         }
-        if(SolyankaClient.isEnabled(SolyankaClient.CURSOR)) cursor.tick(client.level!=null,client.gui.screen()!=null)
+        if(SolyankaClient.isEnabled(ModuleIds.CURSOR)) cursor.tick(client.level!=null,client.gui.screen()!=null)
     }
     fun ping(id:Int) {
-        if(SolyankaClient.isEnabled(SolyankaClient.TICK_TIMERS)) {
+        if(SolyankaClient.isEnabled(ModuleIds.TICK_TIMERS)) {
             context=readContext(Minecraft.getInstance())
             timers.ping(id,context.boss,SolyankaClient.currentGeneral().features.timers)
         }
     }
-    fun screenChanged() { if(SolyankaClient.isEnabled(SolyankaClient.CURSOR)) cursor.screenChanged(SolyankaClient.currentGeneral().features.fixes.cursorClearTicks) }
+    fun screenChanged() { if(SolyankaClient.isEnabled(ModuleIds.CURSOR)) cursor.screenChanged(SolyankaClient.currentGeneral().features.fixes.cursorClearTicks) }
     fun cursorActive():Boolean {
         val client=Minecraft.getInstance()
         val screen=client.gui.screen()
-        return SolyankaClient.isEnabled(SolyankaClient.CURSOR) && !(screen is AbstractContainerScreen<*> && screen.title.string=="Spirit Leap")
+        return SolyankaClient.isEnabled(ModuleIds.CURSOR) && !(screen is AbstractContainerScreen<*> && screen.title.string=="Spirit Leap")
     }
     fun hideLoading():Boolean {
         val server=Minecraft.getInstance().currentServer
-        return LoadingPolicy.hide(SolyankaClient.isEnabled(SolyankaClient.LOADING),SolyankaClient.currentGeneral().features.fixes.loadingServerOnly,server!=null,server?.isLan==true)
+        return LoadingPolicy.hide(SolyankaClient.isEnabled(ModuleIds.LOADING),SolyankaClient.currentGeneral().features.fixes.loadingServerOnly,server!=null,server?.isLan==true)
     }
-    fun animationActive()=SolyankaClient.isEnabled(SolyankaClient.ANIMATION) && (!SolyankaClient.currentGeneral().features.fixes.animationSkyblockOnly || context.skyblock)
+    fun animationActive()=SolyankaClient.isEnabled(ModuleIds.ANIMATION) && (!SolyankaClient.currentGeneral().features.fixes.animationSkyblockOnly || context.skyblock)
     fun middleOverride(slot:Slot?,button:Int,action:ContainerInput):Boolean {
-        if(!SolyankaClient.isEnabled(SolyankaClient.MIDDLE_OVERRIDE) || slot==null) return false
+        if(!SolyankaClient.isEnabled(ModuleIds.MIDDLE_OVERRIDE) || slot==null) return false
         val client=Minecraft.getInstance();val screen=client.gui.screen() as? ContainerScreen ?: return false
         context=readContext(client)
         val stack=slot.item
@@ -95,24 +125,24 @@ object FeatureRuntime {
         val screen=client.gui.screen()
         if(screen!=null && screen !is ChatScreen && screen !is dev.solyanka.client.ui.nofrills.NoFrillsClickGui) return
         val f=SolyankaClient.currentGeneral().features
-        if(SolyankaClient.isEnabled(SolyankaClient.TICK_TIMERS) && context.boss) {
+        if(SolyankaClient.isEnabled(ModuleIds.TICK_TIMERS) && context.boss) {
             val lines=timers.lines(f.timers)
             lines.forEach { (id,line) ->
                 val text=Component.literal(line.prefix).withColor(line.prefixColor).append(Component.literal(line.value).withColor(line.color))
-                draw(g,text,f.timers.huds().getValue(id),SolyankaClient.TICK_TIMERS)
+                draw(g,text,f.timers.huds().getValue(id),ModuleIds.TICK_TIMERS)
             }
         }
-        if(SolyankaClient.isEnabled(SolyankaClient.PLAYER_DISPLAY) && context.skyblock) {
+        if(SolyankaClient.isEnabled(ModuleIds.PLAYER_DISPLAY) && context.skyblock) {
             val data=stats
-            data.lines(f.player).forEach { (id,text) -> draw(g,Component.literal(text),f.player.huds().getValue(id),SolyankaClient.PLAYER_DISPLAY) }
+            data.lines(f.player).forEach { (id,text) -> draw(g,Component.literal(text),f.player.huds().getValue(id),ModuleIds.PLAYER_DISPLAY) }
         }
     }
     fun register() {
         ClientReceiveMessageEvents.MODIFY_GAME.register { message,overlay ->
             if(overlay) {
                 context=readContext(Minecraft.getInstance())
-                if(context.skyblock && SolyankaClient.isEnabled(SolyankaClient.SKILL_HUD)) ExtraHuds.skills.overlay(message.string)
-                if(context.skyblock && SolyankaClient.isEnabled(SolyankaClient.PLAYER_DISPLAY)) {
+                if(context.skyblock && SolyankaClient.isEnabled(ModuleIds.SKILL_HUD)) ExtraHuds.skills.overlay(message.string)
+                if(context.skyblock && SolyankaClient.isEnabled(ModuleIds.PLAYER_DISPLAY)) {
                     stats.overlay(message.string)
                     val before=ChatLogic.plain(message.string)
                     val after=PlayerStats.strip(before,SolyankaClient.currentGeneral().features.player)
@@ -120,12 +150,12 @@ object FeatureRuntime {
                 } else message
             } else {
                 context=readContext(Minecraft.getInstance())
-                if(context.dungeon && SolyankaClient.isEnabled(SolyankaClient.TICK_TIMERS)) timers.message(message.string)
+                if(context.dungeon && SolyankaClient.isEnabled(ModuleIds.TICK_TIMERS)) timers.message(message.string)
                 message
             }
         }
         fun hide(id:Identifier,predicate:()->Boolean) { HudElementRegistry.replaceElement(id) { original -> HudElement { g,d -> if(!predicate()) original.extractRenderState(g,d) } } }
-        fun playerEnabled()=SolyankaClient.isEnabled(SolyankaClient.PLAYER_DISPLAY) && context.skyblock
+        fun playerEnabled()=SolyankaClient.isEnabled(ModuleIds.PLAYER_DISPLAY) && context.skyblock
         hide(VanillaHudElements.ARMOR_BAR) { playerEnabled() && SolyankaClient.currentGeneral().features.player.hideArmor }
         hide(VanillaHudElements.HEALTH_BAR) { playerEnabled() && SolyankaClient.currentGeneral().features.player.hideHearts }
         hide(VanillaHudElements.FOOD_BAR) { playerEnabled() && SolyankaClient.currentGeneral().features.player.hideFood }

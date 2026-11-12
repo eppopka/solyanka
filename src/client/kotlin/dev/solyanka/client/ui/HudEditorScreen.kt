@@ -3,9 +3,11 @@
  * Original WhatYouThing and NoFrills contributors; pinned revision and license in NOTICE. */
 package dev.solyanka.client.ui
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.client.ui.nofrills.GuiKit
-import dev.solyanka.ui.*
+import dev.solyanka.model.*
 import dev.solyanka.utility.HudSpec
 import io.wispforest.owo.ui.base.BaseOwoScreen
 import io.wispforest.owo.ui.container.*
@@ -26,13 +28,18 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
     private var selected="timer.goldor"
     private fun select(key:String) {selected=key}
     private var dragging:String?=null
+    private var guideX:Int?=null;private var guideY:Int?=null
     private var offsetX=0.0;private var offsetY=0.0
-    private fun entries()=HudLayout.visibleEntries(SolyankaClient.currentGeneral().features,SolyankaClient.states().filter { (id,enabled)->enabled && SolyankaClient.isEnabled(id) }.keys,width,height).map {dev.solyanka.client.feature.PerformanceHud.editorEntry(dev.solyanka.client.feature.ScoreboardHud.editorEntry(dev.solyanka.client.feature.VanillaHotbar.editorEntry(it,width,height),width))}
+    private fun entries(scoreboard:((HudEntry)->HudEntry)?=null)=HudLayout.visibleEntries(SolyankaClient.currentGeneral().features,SolyankaClient.states().filter { (id,enabled)->enabled && SolyankaClient.isEnabled(id) }.keys,width,height).map {
+        val hotbar=dev.solyanka.client.feature.VanillaHotbar.editorEntry(it,width,height)
+        val score=if(hotbar.key=="extra.scoreboard" && scoreboard!=null) scoreboard(hotbar) else dev.solyanka.client.feature.ScoreboardHud.editorEntry(hotbar,width)
+        dev.solyanka.client.feature.PerformanceHud.editorEntry(score)
+    }
     private var controlKeys:List<String> = emptyList()
     private fun syncSelection(list:List<HudEntry>) {if(list.none {it.key==selected}) selected=list.firstOrNull()?.key ?: ""}
-    private fun ordered()=entries().sortedBy {it.key==selected}
+    private lateinit var controls:FlowLayout
     private fun bounds(entry:HudEntry)=HudLayout.bounds(entry,entry.lines.maxOf {font.width(it)},width,height)
-    private fun at(x:Double,y:Double)=ordered().asReversed().firstOrNull {bounds(it).contains(x,y)}
+    private fun at(list:List<HudEntry>,x:Double,y:Double)=list.sortedBy {it.key==selected}.asReversed().firstOrNull {bounds(it).contains(x,y)}
     private fun change(key:String,scoreboardAnchor:Boolean?=null,block:(HudSpec)->HudSpec) {
         // Always start from live state: an earlier failed write must not leak into a later drag.
         model.updateGeneral {
@@ -45,10 +52,10 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
     override fun build(root:FlowLayout) {
         dragging=null
         val list=entries();syncSelection(list);controlKeys=list.map {it.key}
-        val controls=UIContainers.horizontalFlow(Sizing.content(),Sizing.content()).apply {
+        controls=UIContainers.horizontalFlow(Sizing.content(),Sizing.content()).apply {
             gap(5);verticalAlignment(VerticalAlignment.BOTTOM)
             positioning(Positioning.absolute((width-175).coerceAtLeast(0),28))
-            if(SolyankaClient.isEnabled(SolyankaClient.MOVE_HOTBAR)) child(GuiKit.button("Restore Hotbar",110) {
+            if(SolyankaClient.isEnabled(ModuleIds.MOVE_HOTBAR)) child(GuiKit.button("Restore Hotbar",110) {
                 model.updateGeneral { SolyankaClient.currentGeneral().let {g->g.copy(features=g.features.copy(moveHotbar=dev.solyanka.utility.HotbarLayout.restore(g.features.moveHotbar)))}}
                 select("archive.hotbar")
             })
@@ -58,15 +65,24 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
         root.child(controls)
     }
     override fun extractRenderState(g:GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
-        val current=entries();syncSelection(current)
+        dev.solyanka.client.ui.nofrills.GuiFrameClock.beginFrame()
+        val scoreboardPreview by lazy {dev.solyanka.client.feature.ScoreboardHud.editorSnapshot()}
+        val current=entries {scoreboardPreview.entry(it,width)};syncSelection(current)
         if(controlKeys!=current.map {it.key}) {uiAdapter.rootComponent.clearChildren();build(uiAdapter.rootComponent)}
-        val hovered=at(mx.toDouble(),my.toDouble())?.key
-        ordered().forEach {entry ->
+        val ordered=current.sortedBy {it.key==selected}
+        // Quiet alignment grid behind previews; guides remain brighter while dragging.
+        for(x in 32 until width step 32) g.fill(x,0,x+1,height,0x12ffffff)
+        for(y in 32 until height step 32) g.fill(0,y,width,y+1,0x12ffffff)
+        val hovered=ordered.asReversed().firstOrNull {bounds(it).contains(mx.toDouble(),my.toDouble())}?.key
+        guideX?.let {g.fill(it,0,it+1,height,0xaa80e0b0.toInt())}
+        guideY?.let {g.fill(0,it,width,it+1,0xaa80e0b0.toInt())}
+        ordered.forEach {entry ->
             val b=bounds(entry);val active=entry.hud.enabled
-            if(entry.key!="extra.scoreboard") g.fill(b.x,b.y,b.x+b.width,b.y+b.height,if(entry.key==selected) 0x88213946.toInt() else 0x66101010)
-            GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else 0xff666666.toInt())
-            if(dev.solyanka.client.feature.YandexMusic.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.VanillaHotbar.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.VanillaHearts.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ArchiveHuds.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ExtraHuds.editor(g,entry.key,b.x,b.y) || dev.solyanka.client.feature.ScoreboardHud.editor(g,entry.key,b.x,b.y)) {
-                GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else 0xff666666.toInt())
+            if(entry.key!="extra.scoreboard") g.fill(b.x,b.y,b.x+b.width,b.y+b.height,if(entry.key==selected) 0x88213946.toInt() else 0x6616202e)
+            GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else GuiKit.LINE)
+            val drawn=if(entry.key=="extra.scoreboard") {scoreboardPreview.draw(g,b.x,b.y);true} else HudPreviewRegistry.draw(g,entry.key,b.x,b.y)
+            if(drawn) {
+                GuiKit.border(g,b.x,b.y,b.width,b.height,if(entry.key==selected || entry.key==hovered) GuiKit.BLUE else GuiKit.LINE)
                 return@forEach
             }
             // Generic previews (including PiP, pet and player stats) share their owner's glow.
@@ -79,15 +95,15 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
         }
         g.text(font,"HUD editor: drag LMB | scroll: scale | RMB: select",5,5,GuiKit.WHITE,true)
         g.text(font,"Enabled modules + visible HUDs only. Enable hidden HUDs in settings.",5,16,GuiKit.WHITE,true)
-        val entry=entries().firstOrNull {it.key==selected}
+        val entry=current.firstOrNull {it.key==selected}
         if(entry!=null) g.text(font,"${entry.name}: ${entry.hud.x}, ${entry.hud.y} | ${entry.hud.scale}x | ${if(entry.hud.enabled) "shown" else "hidden"}",5,(height-57).coerceAtLeast(28),GuiKit.BLUE,true)
-        model.error?.let {g.text(font,"Not saved: $it",5,(height-68).coerceAtLeast(39),0xffff5555.toInt(),true)}
+        model.error?.let {g.text(font,it,5,(height-68).coerceAtLeast(39),0xffff5555.toInt(),true)}
         super.extractRenderState(g,mx,my,delta)
     }
     override fun mouseClicked(click:MouseButtonEvent,doubled:Boolean):Boolean {
-        if(click.y() in 28.0..51.0 && click.x()>=(width-175).coerceAtLeast(0)) return super.mouseClicked(click,doubled)
+        if(::controls.isInitialized && controls.isInBoundingBox(click.x(),click.y())) return super.mouseClicked(click,doubled)
         uiAdapter.rootComponent.focusHandler()?.focus(null,UIComponent.FocusSource.MOUSE_CLICK)
-        val entry=at(click.x(),click.y()) ?: return true
+        val entry=at(entries(),click.x(),click.y()) ?: return true
         select(entry.key)
         if(click.button()==0) {
             val b=bounds(entry);dragging=entry.key;offsetX=click.x()-b.x;offsetY=click.y()-b.y
@@ -96,22 +112,25 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
     }
     override fun mouseDragged(click:MouseButtonEvent,dx:Double,dy:Double):Boolean {
         val key=dragging ?: return super.mouseDragged(click,dx,dy)
-        val entry=entries().firstOrNull {it.key==key} ?: run {dragging=null;return true}
+        val all=entries();val entry=all.firstOrNull {it.key==key} ?: run {dragging=null;return true}
         val b=bounds(entry)
+        val dragged=HudLayout.drag(entry.hud,click.x(),click.y(),offsetX,offsetY,b,width,height)
+        val snap=HudGuides.snap(dragged.x,dragged.y,b.width,b.height,width,height,all.filter {it.key!=key}.map(::bounds))
+        guideX=snap.guideX;guideY=snap.guideY
+        val positioned=dragged.copy(x=snap.x,y=snap.y)
         if(key=="extra.scoreboard") {
-            val dragged=HudLayout.drag(entry.hud,click.x(),click.y(),offsetX,offsetY,b,width,height)
             val right=(width-b.width).coerceAtLeast(0)
-            change(key,right>0 && dragged.x>=right) {dragged}
-        } else change(key) {HudLayout.drag(it,click.x(),click.y(),offsetX,offsetY,b,width,height)}
+            change(key,right>0 && positioned.x>=right) {positioned}
+        } else change(key) {positioned}
         return true
     }
     override fun mouseReleased(click:MouseButtonEvent):Boolean {
-        val wasDragging=dragging!=null;dragging=null
+        val wasDragging=dragging!=null;dragging=null;guideX=null;guideY=null
         return if(wasDragging) true else super.mouseReleased(click)
     }
     override fun mouseScrolled(x:Double,y:Double,horizontal:Double,vertical:Double):Boolean {
-        if(y in 28.0..51.0 && x>=(width-175).coerceAtLeast(0)) return super.mouseScrolled(x,y,horizontal,vertical)
-        val entry=at(x,y) ?: return true
+        if(::controls.isInitialized && controls.isInBoundingBox(x,y)) return super.mouseScrolled(x,y,horizontal,vertical)
+        val entry=at(entries(),x,y) ?: return true
         if(entry.resizable && vertical!=0.0) {
             select(entry.key)
             change(entry.key) {val hotbar=SolyankaClient.currentGeneral().features.moveHotbar
@@ -133,7 +152,7 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
         } else change(selected) {it.copy(x=(it.x+delta.first).coerceIn(0,10000),y=(it.y+delta.second).coerceIn(0,10000))}
         return true
     }
-    override fun resize(width:Int,height:Int) {dragging=null;super.resize(width,height)}
+    override fun resize(width:Int,height:Int) {dragging=null;guideX=null;guideY=null;super.resize(width,height)}
     override fun removed() {dragging=null;super.removed();dispose();uiAdapter=null}
     override fun onClose() {dragging=null;Minecraft.getInstance().gui.setScreen(null)}
 }

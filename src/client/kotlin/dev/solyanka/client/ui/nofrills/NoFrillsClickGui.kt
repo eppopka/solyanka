@@ -5,7 +5,7 @@ package dev.solyanka.client.ui.nofrills
 
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.client.ui.ConfigUi
-import dev.solyanka.ui.*
+import dev.solyanka.model.*
 import io.wispforest.owo.ui.base.BaseOwoScreen
 import io.wispforest.owo.ui.container.*
 import io.wispforest.owo.ui.core.*
@@ -27,6 +27,8 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     private var cursorX=0;private var cursorY=0
     private var searchBox:FlatTextbox?=null
     private var focusSearch=false
+    private var refreshPending=false
+    private var recentRefreshAt=0L
     private var panel:EmbeddedPanel?=null
     private var toggleError:String?=null
     private val navigation=PanelNavigation<EmbeddedPanel>()
@@ -46,7 +48,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
             // Build first; a failing settings constructor leaves the previous UI usable.
             next.placeAt(panel?.position() ?: panelPosition);next.mount(width,height)
             uiAdapter.rootComponent.focusHandler()?.focus(null,UIComponent.FocusSource.MOUSE_CLICK)
-            panel?.dispose();panel=next;toggleError=null
+            panel?.dispose();panel=next;toggleError=null;UiSounds.open()
         } catch(e:Exception) {
             runCatching {next.dispose()};logger.error("Cannot open settings panel",e)
             toggleError="Settings could not open — details in logs/latest.log"
@@ -81,18 +83,27 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     }
     private fun populate() {
         columns.clearChildren();categoryScrolls.clear();featureCards.clear()
-        val groups=GuiCatalog.search(query,SolyankaClient.currentGeneral().features.clickGui.sortByLength)
+        val config=SolyankaClient.currentGeneral().features.clickGui
+        val groups=GuiCatalog.search(query,config.sortByLength,config.favorites,SolyankaClient.recentModules())
         if(groups.isEmpty()) columns.child(GuiKit.label("No matching features").apply { margins(Insets.of(8)) })
         groups.forEach { (name,features) ->
             val w=maxOf(136,features.maxOf { Minecraft.getInstance().font.width(it.name)+26 })
             val cards=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content())
-            features.forEach { info -> val card=FeatureCard(info,w,
+            features.forEach { info -> val card=FeatureCard(info,w,query,
                 toggle={
                     if(info.id==GuiCatalog.GUI_SETTINGS) dev.solyanka.client.ui.ClickGuiSettingsUi.open(this)
                     else {
                         val states=SolyankaClient.states().toMutableMap();states[info.id]=!SolyankaClient.isEnabled(info.id)
                         toggleError=SolyankaClient.applySettings(SolyankaClient.currentProfile(),states)
+                        // Let the toggle animation finish before rebuilding recent cards.
+                        recentRefreshAt=System.nanoTime()+300_000_000L
                     }
+                },
+                favorite={
+                    val general=SolyankaClient.currentGeneral();val settings=general.features.clickGui
+                    val favorites=if(info.id in settings.favorites) settings.favorites-info.id else settings.favorites+info.id
+                    toggleError=SolyankaClient.applySettings(SolyankaClient.currentProfile(),SolyankaClient.states(),general.copy(features=general.features.copy(clickGui=settings.copy(favorites=favorites))))
+                    refreshPending=true
                 },
                 settings=({ try {if(info.id==GuiCatalog.GUI_SETTINGS) dev.solyanka.client.ui.ClickGuiSettingsUi.open(this) else ConfigUi.openSettings(info.id,this)} catch(e:Exception) {logger.error("Cannot prepare settings for ${info.id}",e);toggleError="Settings unavailable — see logs/latest.log"} })
             );featureCards.add(card);cards.child(card) }
@@ -100,8 +111,8 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
             scroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.BLUE)))
             categoryScrolls.add(scroll)
             val header=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content()).apply {
-                alignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER);padding(Insets.of(6));surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.RAISED,GuiKit.LINE,5)}
-                child(GuiKit.label(name.uppercase()).apply { horizontalTextAlignment(HorizontalAlignment.CENTER) })
+                alignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER);padding(Insets.of(6));surface {g,c->dev.solyanka.client.feature.ChromeDraw.gradientPanel(g,c.x(),c.y(),c.width(),c.height(),dev.solyanka.gfx.ToggleAnimation.mix(GuiKit.RAISED,GuiKit.WHITE,.08),GuiKit.RAISED,GuiKit.LINE,5)}
+                child(GuiKit.label(GuiText.component(name.uppercase()).append(" · ${features.size}")).apply { horizontalTextAlignment(HorizontalAlignment.CENTER) })
             }
             columns.child(UIContainers.verticalFlow(Sizing.fixed(w),Sizing.fill(100)).apply {
                 margins(Insets.of(3,0,4,4));gap(4);child(header);child(scroll)
@@ -113,26 +124,38 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     }
     override fun getFocused():net.minecraft.client.gui.components.events.GuiEventListener? = panel?.focused() ?: super.getFocused()
     override fun extractRenderState(g:GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
+        GuiFrameClock.beginFrame()
         commitNavigation()
+        if(refreshPending || recentRefreshAt!=0L && GuiFrameClock.now>=recentRefreshAt) {refreshPending=false;recentRefreshAt=0L;populate()}
         if(focusSearch && panel==null) {
             searchBox?.let {box->uiAdapter.rootComponent.focusHandler()?.focus(box,UIComponent.FocusSource.MOUSE_CLICK);box.setFocused(true);box.moveCursorToEnd(false);box.setHighlightPos(0)}
             focusSearch=false
         }
-        val seconds=System.nanoTime()/1_000_000_000.0
-        // Each card uses monotonic elapsed time, not the number of rendered frames.
-        val now=System.nanoTime();featureCards.forEach {it.advance(now)}
+        val now=GuiFrameClock.now;val seconds=now/1_000_000_000.0
+        // Each card uses the same monotonic frame time.
+        featureCards.forEach {it.advance(now)}
         // Keep the feature list visible behind modal settings; input/tooltips still belong to the panel.
+        vignette(g)
         super.extractRenderState(g,mx,my,delta)
         cursorX=mx;cursorY=my
         g.text(font,ClickGradient.text("solyanka",seconds),12,12,GuiKit.WHITE)
         if(width>360)g.text(font,"CLIENT UTILITIES  /  26.2",83,12,GuiKit.MUTED)
         g.text(font,if(panel==null) "Right-click: settings | Ctrl+F: search" else "Drag the settings title bar to move it",8,height-43,GuiKit.MUTED)
-        g.text(font,"Left click: toggle  |  Right click: settings",3,height-32,GuiKit.WHITE)
-        toggleError?.let { g.text(font,"Not saved: $it",3,height-54,0xffff5555.toInt()) }
+        g.text(font,"Left: toggle  |  Right: settings  |  Middle: favorite",3,height-32,GuiKit.WHITE)
+        toggleError?.let { g.text(font,it,3,height-54,0xffff5555.toInt()) }
         val current=panel
         if(current!=null)try {current.render(g,mx,my,delta)} catch(e:Exception) {
             logger.error("Settings panel rendering failed",e);navigation.close()
             toggleError="Settings rendering failed — see logs/latest.log"
+        }
+    }
+    private fun vignette(g:GuiGraphicsExtractor) {
+        val depth=minOf(48,width/2,height/2)
+        for(i in 0 until depth step 4) {
+            val a=(((1.0-i.toDouble()/depth)*0x55).toInt() shl 24)
+            val end=minOf(i+4,depth)
+            g.fill(0,i,width,end,a);g.fill(0,height-end,width,height-i,a)
+            g.fill(i,0,end,height,a);g.fill(width-end,0,width-i,height,a)
         }
     }
     override fun mouseScrolled(x:Double,y:Double,horizontal:Double,vertical:Double):Boolean {
@@ -179,19 +202,28 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     }
 }
 
-private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val toggle:()->Unit,private val settings:(()->Unit)?):
+private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val query:String,private val toggle:()->Unit,private val favorite:()->Unit,private val settings:(()->Unit)?):
     FlowLayout(Sizing.fixed(width),Sizing.content(),Algorithm.VERTICAL) {
     private val title=GuiKit.label(info.name)
     private fun active()=info.id==GuiCatalog.GUI_SETTINGS || SolyankaClient.isEnabled(info.id)
     private var progress=if(active()) 1.0 else 0.0
     private var lastNanos=System.nanoTime()
+    private var lastColor:Int?=null
+    private var lastMatchColor:Int?=null
+    private var hoverTarget=false
+    private var hoverProgress=0.0
+    private var pressedAt=0L
     init {
+        cursorStyle(CursorStyle.HAND)
+        mouseEnter().subscribe { hoverTarget=true };mouseLeave().subscribe { hoverTarget=false }
         title.margins(Insets.of(6,6,10,10));title.tooltip(Component.literal(info.description));child(title)
         surface {g,c->
             val palette=SolyankaClient.currentGeneral().features.clickGui
-            val mix=dev.solyanka.utility.ToggleAnimation::mix
-            val background=mix(GuiKit.PANEL,0xf0243948.toInt(),progress)
+            val mix=dev.solyanka.gfx.ToggleAnimation::mix
+            val flash=(1.0-(GuiFrameClock.now-pressedAt)/180_000_000.0).coerceIn(0.0,1.0)
+            val background=mix(mix(GuiKit.PANEL,0xf0243948.toInt(),progress),0xff354b64.toInt(),(hoverProgress*.45+flash*.3).coerceAtMost(1.0))
             val border=mix(palette.disabledBorderColor,palette.enabledColor or 0xff000000.toInt(),progress)
+            if(hoverProgress>.01) dev.solyanka.client.feature.RoundedGlow.draw(g,c.x(),c.y(),c.width(),c.height(),4,palette.enabledColor,hoverProgress*.28,4)
             dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),background,border,4)
             val bar=mix(0, palette.enabledColor or 0xff000000.toInt(),progress)
             if(bar ushr 24>0) g.fill(c.x()+4,c.y()+5,c.x()+6,c.y()+c.height()-5,bar)
@@ -201,14 +233,25 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
     fun advance(now:Long) {
         val palette=SolyankaClient.currentGeneral().features.clickGui
         val seconds=((now-lastNanos).coerceAtLeast(0L))/1_000_000_000.0;lastNanos=now
-        progress=dev.solyanka.utility.ToggleAnimation.step(progress,active(),seconds,palette.toggleAnimations)
-        val color=dev.solyanka.utility.ToggleAnimation.mix(palette.disabledColor,palette.enabledColor,progress)
-        title.text(Component.literal(info.name).withColor(color and 0xffffff))
+        progress=dev.solyanka.gfx.ToggleAnimation.step(progress,active(),seconds,palette.toggleAnimations)
+        hoverProgress=dev.solyanka.gfx.ToggleAnimation.step(hoverProgress,hoverTarget,seconds,palette.toggleAnimations)
+        val color=dev.solyanka.gfx.ToggleAnimation.mix(palette.disabledColor,palette.enabledColor,progress) and 0xffffff
+        val highlight=palette.enabledColor and 0xffffff
+        if(color!=lastColor || highlight!=lastMatchColor) {
+            lastColor=color;lastMatchColor=highlight
+            val term=query.trim();val index=if(term.isEmpty()) -1 else info.name.indexOf(term,ignoreCase=true)
+            val label=if(index<0) Component.literal(info.name).withColor(color) else Component.empty()
+                .append(Component.literal(info.name.substring(0,index)).withColor(color))
+                .append(Component.literal(info.name.substring(index,index+term.length)).withColor(highlight))
+                .append(Component.literal(info.name.substring(index+term.length)).withColor(color))
+            title.text(label)
+        }
     }
     override fun onMouseDown(click:MouseButtonEvent,doubled:Boolean):Boolean {
         return when(click.button()) {
-            GLFW.GLFW_MOUSE_BUTTON_LEFT -> { toggle();advance(System.nanoTime());true }
+            GLFW.GLFW_MOUSE_BUTTON_LEFT -> { pressedAt=System.nanoTime();toggle();UiSounds.toggle(active());advance(pressedAt);true }
             GLFW.GLFW_MOUSE_BUTTON_RIGHT -> { settings?.invoke();true }
+            GLFW.GLFW_MOUSE_BUTTON_MIDDLE -> {favorite();true}
             else -> false
         }
     }

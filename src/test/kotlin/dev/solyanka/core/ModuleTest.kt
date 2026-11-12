@@ -49,4 +49,13 @@ class ModuleTest {
         listOf(a,b).forEach { r.register(it); it.setEnabled(true) }; r.shutdown()
         assertFalse(a.enabled); assertFalse(b.enabled); assertEquals(1,a.stops); assertEquals(1,errors.size)
     }
+    @Test fun `failed settings transition does not prevent other transitions`() {
+        val errors = mutableListOf<String>(); val r = ModuleRegistry { id, _ -> errors.add(id) }
+        val bad = Probe("test.bad").also { it.failStart = true }; val good = Probe("test.good")
+        r.register(bad); r.register(good)
+        assertEquals(listOf("test.bad"), r.applyEnabled(mapOf("test.bad" to true, "test.good" to true)))
+        assertFalse(bad.enabled); assertTrue(good.enabled); assertEquals(listOf("test.bad:settings"), errors)
+        assertEquals(emptyList(), r.applyEnabled(emptyMap()))
+        assertTrue(good.enabled)
+    }
 }

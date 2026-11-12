@@ -2,7 +2,7 @@
 package dev.solyanka.client.ui
 
 import dev.solyanka.client.ui.nofrills.*
-import dev.solyanka.ui.InstantSettings
+import dev.solyanka.model.InstantSettings
 
 object ArchiveDungeonUi {
     fun open(host:NoFrillsClickGui,model:InstantSettings) {

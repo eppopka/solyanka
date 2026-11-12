@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only; user-provided impl.zip MoveHearts adaptation. */
 package dev.solyanka.client.feature
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.client.ui.HudEditorScreen
 import dev.solyanka.utility.HeartLayout
@@ -14,15 +16,15 @@ object VanillaHearts {
         listOf(VanillaHudElements.HEALTH_BAR,VanillaHudElements.ARMOR_BAR).forEach {id->
             HudElementRegistry.replaceElement(id) {original->HudElement {g,d->
                 val c=Minecraft.getInstance();val s=S.currentGeneral().features.moveHearts
-                val active=S.isEnabled(S.MOVE_HEARTS) && c.level!=null && c.player!=null && (id==VanillaHudElements.HEALTH_BAR || s.moveArmor)
+                val active=S.isEnabled(ModuleIds.MOVE_HEARTS) && c.level!=null && c.player!=null && (id==VanillaHudElements.HEALTH_BAR || s.moveArmor)
                 if(!active) original.extractRenderState(g,d)
                 else if(s.hud.enabled && c.gui.screen() !is HudEditorScreen) {
                     val t=HeartLayout.transform(s,c.window.guiScaledWidth,c.window.guiScaledHeight)
-                    val playerHidden=S.isEnabled(S.PLAYER_DISPLAY) && FeatureRuntime.context.skyblock && S.currentGeneral().features.player.hideHearts
+                    val playerHidden=S.isEnabled(ModuleIds.PLAYER_DISPLAY) && FeatureRuntime.context.skyblock && S.currentGeneral().features.player.hideHearts
                     val suppressed=Suppression.on {healthBar==2 || healthBar==1 && FeatureRuntime.context.area!="The Rift"}
                     if(id==VanillaHudElements.HEALTH_BAR && !c.gui.hud.isHidden && c.gameMode?.canHurtPlayer()==true && !playerHidden && !suppressed) {
                         g.pose().pushMatrix()
-                        try {g.pose().translate(t.x.toFloat(),t.y.toFloat());g.pose().scale(t.scale.toFloat(),t.scale.toFloat());HudGlow.draw(g,S.MOVE_HEARTS,0,0,HeartLayout.WIDTH,HeartLayout.HEIGHT)}
+                        try {g.pose().translate(t.x.toFloat(),t.y.toFloat());g.pose().scale(t.scale.toFloat(),t.scale.toFloat());HudGlow.draw(g,ModuleIds.MOVE_HEARTS,0,0,HeartLayout.WIDTH,HeartLayout.HEIGHT)}
                         finally {g.pose().popMatrix()}
                     }
                     g.pose().pushMatrix()
@@ -39,7 +41,7 @@ object VanillaHearts {
         val s=S.currentGeneral().features.moveHearts;g.pose().pushMatrix()
         try {
             g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(s.hud.scale.toFloat(),s.hud.scale.toFloat())
-            HudGlow.draw(g,S.MOVE_HEARTS,0,0,HeartLayout.WIDTH,HeartLayout.HEIGHT)
+            HudGlow.draw(g,ModuleIds.MOVE_HEARTS,0,0,HeartLayout.WIDTH,HeartLayout.HEIGHT)
             g.fill(0,0,HeartLayout.WIDTH,HeartLayout.HEIGHT,0x50c82828)
             g.text(Minecraft.getInstance().font,"Vanilla Hearts",1,0,if(s.hud.enabled) 0xffff5a5a.toInt() else 0xff888888.toInt(),false)
         } finally {g.pose().popMatrix()}

@@ -2,6 +2,8 @@
  * Independently implemented archive-compatible Party Finder blocklist workflow.
  * Original feature credited by impl.zip: qwertycry/Shitterlist. No upstream code copied. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.utility.*
 import net.fabricmc.loader.api.FabricLoader
@@ -53,13 +55,13 @@ object ShitterList {
   }}catch(e:RejectedExecutionException){local("Profile queue is full; request skipped.");done(null)}
  }
  private fun joined(raw:String,overlay:Boolean){
-  if(overlay || !S.isEnabled(S.BLOCKLIST) || !FeatureRuntime.context.skyblock || store.error!=null)return
+  if(overlay || !S.isEnabled(ModuleIds.BLOCKLIST) || !FeatureRuntime.context.skyblock || store.error!=null)return
   val name=BlocklistCodec.joiner(raw) ?: return
   if(resolving.size>=32 || !resolving.add(name.lowercase()))return
   val gen=generation;val world=Minecraft.getInstance().level
   profile(name){p->
    resolving.remove(name.lowercase())
-   if(gen!=generation || world!==Minecraft.getInstance().level || !S.isEnabled(S.BLOCKLIST) || !FeatureRuntime.context.skyblock || p==null)return@profile
+   if(gen!=generation || world!==Minecraft.getInstance().level || !S.isEnabled(ModuleIds.BLOCKLIST) || !FeatureRuntime.context.skyblock || p==null)return@profile
    val entry=store.rows.firstOrNull {it.uuid==p.first} ?: return@profile
    if(p.first==BlocklistCodec.uuid(Minecraft.getInstance().player?.uuid.toString()))return@profile
    val time=now();if(time-(cooldowns[p.first] ?: -10000L)<5000)return@profile
@@ -69,7 +71,7 @@ object ShitterList {
   }
  }
  fun tick(){
-  if(!S.isEnabled(S.BLOCKLIST) || !FeatureRuntime.context.skyblock){if(actions.isNotEmpty() || resolving.isNotEmpty())reset();return}
+  if(!S.isEnabled(ModuleIds.BLOCKLIST) || !FeatureRuntime.context.skyblock){if(actions.isNotEmpty() || resolving.isNotEmpty())reset();return}
   val s=S.currentGeneral().features.blocklist
   if(!s.autoKick){actions.clear();return}
   val connection=Minecraft.getInstance().player?.connection ?: return

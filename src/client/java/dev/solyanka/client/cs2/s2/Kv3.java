@@ -1,5 +1,8 @@
 package dev.solyanka.client.cs2.s2;
 
+import dev.solyanka.client.cs2.thirdparty.lz4.Lz4;
+
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;

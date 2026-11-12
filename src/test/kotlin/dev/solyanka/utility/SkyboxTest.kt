@@ -64,12 +64,43 @@ class SkyboxTest {
  }
  @Test fun `source textures have expected native dimensions and alpha`() {
   val root=Path.of("src/main/resources/assets/solyanka/textures/sky/end")
-  for((prefix,count,size) in listOf(Triple("face",6,1024),Triple("hole",8,1536))) for(i in 0 until count) {val im=ImageIO.read(root.resolve("${prefix}_$i.png").toFile());assertNotNull(im);assertEquals(size,im.width);assertEquals(size,im.height);assertTrue(im.colorModel.hasAlpha())}
+  for((prefix,count,size) in listOf(Triple("face",6,1024))) for(i in 0 until count) {val im=ImageIO.read(root.resolve("${prefix}_$i.png").toFile());assertNotNull(im);assertEquals(size,im.width);assertEquals(size,im.height);assertTrue(im.colorModel.hasAlpha())}
+  val base=ImageIO.read(root.resolve("hole_base.png").toFile());assertEquals(1024,base.width);assertEquals(1024,base.height);assertTrue(base.colorModel.hasAlpha())
+  val atlas=ImageIO.read(root.resolve("hole_atlas.png").toFile());assertEquals(SkyboxAtlas.WIDTH,atlas.width);assertEquals(SkyboxAtlas.HEIGHT,atlas.height);assertTrue(atlas.colorModel.hasAlpha())
+ }
+ @Test fun `atlas reconstructs all resized frames losslessly`() {
+  val expected=listOf("20dda5342c4689c5876f7cffe296f58077162cdcb4a2a21594a057d6dd69fcac","ac47c2102083f3f667d28bf92a8706275c895098858dc99dcacecae2fa7556b6","29cf64652e919dd0ea8da103fb40f4e699f45be05c8a3717e68180e0abb5100a","ab8e0d3aad5c02a3cb66e5a83dcaa4c4341009b92533a90c4cfdb510361ef2bd","eecb48197e76442ae97bc101bfa91fb3fcae2ecfafe0b5633b137e5a63afd5ea","6e79d29abda3a51abedb35cd2e373d32dafb449c00df08815eaccaefe3b2ded4","47088759ea6ec0443ea7765005cc3933b7c5826bab290f162552902921625f05","80594c6bd3be02b25bc36522025dfc9e222d8f221115abd95a2cf62a6ae01f6e")
+  val root=Path.of("src/main/resources/assets/solyanka/textures/sky/end")
+  val base=ImageIO.read(root.resolve("hole_base.png").toFile());val atlas=ImageIO.read(root.resolve("hole_atlas.png").toFile())
+  for(frame in 0..7) {
+   val digest=java.security.MessageDigest.getInstance("SHA-256")
+   for(y in 0 until 1024) for(x in 0 until 1024) {
+    val inside=x in SkyboxAtlas.X0 until SkyboxAtlas.X1 && y in SkyboxAtlas.Y0 until SkyboxAtlas.Y1
+    val rgb=if(inside) atlas.getRGB((frame%2)*SkyboxAtlas.CELL_WIDTH+1+x-SkyboxAtlas.X0,(frame/2)*SkyboxAtlas.CELL_HEIGHT+1+y-SkyboxAtlas.Y0) else base.getRGB(x,y)
+    digest.update((rgb ushr 24).toByte());digest.update((rgb ushr 16).toByte());digest.update((rgb ushr 8).toByte());digest.update(rgb.toByte())
+   }
+   assertEquals(expected[frame],digest.digest().joinToString("") {"%02x".format(it.toInt() and 255)},"frame $frame")
+  }
+ }
+ @Test fun `atlas crop borders and filtering gutters match shared base`() {
+  val root=Path.of("src/main/resources/assets/solyanka/textures/sky/end")
+  val base=ImageIO.read(root.resolve("hole_base.png").toFile());val atlas=ImageIO.read(root.resolve("hole_atlas.png").toFile())
+  for(frame in 0..7) {
+   val tx=(frame%2)*SkyboxAtlas.CELL_WIDTH+1;val ty=(frame/2)*SkyboxAtlas.CELL_HEIGHT+1
+   fun matches(x:Int,y:Int) = assertEquals(base.getRGB(x,y),atlas.getRGB(tx+x-SkyboxAtlas.X0,ty+y-SkyboxAtlas.Y0),"frame=$frame pixel=$x,$y")
+   for(y in SkyboxAtlas.Y0-1..SkyboxAtlas.Y1) for(x in listOf(SkyboxAtlas.X0-1,SkyboxAtlas.X0,SkyboxAtlas.X1-1,SkyboxAtlas.X1)) matches(x,y)
+   for(x in SkyboxAtlas.X0-1..SkyboxAtlas.X1) for(y in listOf(SkyboxAtlas.Y0-1,SkyboxAtlas.Y0,SkyboxAtlas.Y1-1,SkyboxAtlas.Y1)) matches(x,y)
+  }
+ }
+ @Test fun `atlas quads retain original patch geometry`() {
+  val all=SkyboxAtlas.vertices();assertEquals(72,all.size);assertEquals(SkyboxLogic.vertices().take(24),all.take(24));assertEquals(108,SkyboxAtlas.INDEX_COUNT)
+  val frames=all.drop(40).chunked(4);assertEquals(8,frames.size)
+  frames.forEachIndexed {i,q->assertEquals(frames[0].map {it.position},q.map {it.position});assertEquals(60+i*6,SkyboxAtlas.frameIndex(i))}
  }
  @Test fun `renderer resolves uploads before opening pass and uses source crossfade blends`() {
   val f=Path.of("src/client/kotlin/dev/solyanka/client/feature/SkyboxVisual.kt").toFile().readText()
-  assertTrue(f.indexOf("val faceViews=")<f.indexOf(".createRenderPass("));assertTrue(f.indexOf("indices.getBuffer(42)")<f.indexOf(".createRenderPass("));assertFalse(f.contains("getMainRenderTarget"));assertFalse(f.contains("getModelViewStack"))
-  for(t in listOf("TRANSLUCENT_PREMULTIPLIED_ALPHA","BlendFactor.ONE,BlendFactor.ONE","pass.drawIndexed(6,1,36,0,0)","vertices.slice()","owned.clear()","manager.release(it)","quads?.close()")) assertTrue(f.contains(t),t)
+  assertTrue(f.indexOf("val faceViews=")<f.indexOf(".createRenderPass("));assertTrue(f.indexOf("indices.getBuffer(SkyboxAtlas.INDEX_COUNT)")<f.indexOf(".createRenderPass("));assertFalse(f.contains("getMainRenderTarget"));assertFalse(f.contains("getModelViewStack"))
+  for(t in listOf("TRANSLUCENT_PREMULTIPLIED_ALPHA","BlendFactor.ONE,BlendFactor.ONE","SkyboxAtlas.frameIndex(frames.a)","vertices.slice()","owned.clear()","manager.release(it)","quads?.close()")) assertTrue(f.contains(t),t)
  }
  @Test fun `sky hook keeps native end draw and never cancels sky fog guards`() {
   val f=Path.of("src/client/kotlin/dev/solyanka/client/mixin/SkyboxMixin.kt").toFile().readText()

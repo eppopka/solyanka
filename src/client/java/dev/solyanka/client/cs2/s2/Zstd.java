@@ -1,6 +1,6 @@
 package dev.solyanka.client.cs2.s2;
 
-import dev.solyanka.client.cs2.s2.zstd.ZstdFrameDecompressor;
+import dev.solyanka.client.cs2.thirdparty.zstd.ZstdFrameDecompressor;
 
 /** Zstandard frames, via a vendored copy of aircompressor's decoder (Apache 2.0). */
 public final class Zstd {

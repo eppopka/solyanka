@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only; impl.zip BestiaryESP/InvisibugESP/TikiESP adaptation. */
 package dev.solyanka.client.feature
 
+import dev.solyanka.core.ModuleIds
+
 import com.google.gson.JsonParser
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.utility.*
@@ -57,10 +59,10 @@ object HuntingFeatures {
  )
  fun reset() {bugs.clear();matched=emptySet();matchPolicy=null;renderTowers=emptyList();towers.clear();scan=0;center=null;tick=0;listOf("bestiary","invisibug","tiki").forEach(WorldOverlay::clear)}
  private fun inGalatea()=FeatureRuntime.context.skyblock && FeatureRuntime.context.area.equals("Galatea",true)
- fun glow(e:Entity)=matchPolicy==S.currentGeneral().features.bestiary.let {it.names to it.exact} && S.isEnabled(S.BESTIARY) && Minecraft.getInstance().level!=null && e.isAlive && e in matched && !Minecraft.getInstance().gui.hud.isHidden
+ fun glow(e:Entity)=matchPolicy==S.currentGeneral().features.bestiary.let {it.names to it.exact} && S.isEnabled(ModuleIds.BESTIARY) && Minecraft.getInstance().level!=null && e.isAlive && e in matched && !Minecraft.getInstance().gui.hud.isHidden
  fun glowColor()=S.currentGeneral().features.bestiary.color or -0x1000000
  fun particle(p:ClientboundLevelParticlesPacket) {
-  if(!S.isEnabled(S.INVISIBUG) || !inGalatea())return
+  if(!S.isEnabled(ModuleIds.INVISIBUG) || !inGalatea())return
   if(p.particle.type!=ParticleTypes.CRIT || p.count!=1 || p.maxSpeed!=0f || p.xDist!=0f || p.yDist!=0f || p.zDist!=0f || !p.alwaysShow() || !p.isOverrideLimiter)return
   val c=Minecraft.getInstance();val level=c.level ?: return;val player=c.player ?: return;val pos=Vec3(p.x,p.y,p.z)
   val marker=level.getEntities(player,AABB.ofSize(pos,1.0,2.0,1.0)){true}.singleOrNull() as? ArmorStand ?: return
@@ -70,7 +72,7 @@ object HuntingFeatures {
   val level=c.level ?: run {reset();return};val player=c.player ?: run {reset();return};tick++
   val f=S.currentGeneral().features
   val origin=c.gameRenderer.mainCamera().position().add(player.lookAngle.scale(.5))
-  if(S.isEnabled(S.BESTIARY)) {
+  if(S.isEnabled(ModuleIds.BESTIARY)) {
    // Revalidate names and resolve again after metadata arrives late.
    if(tick%5==0) {
     val matches=linkedSetOf<Entity>()
@@ -97,14 +99,14 @@ object HuntingFeatures {
    }
   } else {matched=emptySet();WorldOverlay.clear("bestiary")}
   bugs.tick()
-  if(S.isEnabled(S.INVISIBUG) && inGalatea()) {
+  if(S.isEnabled(ModuleIds.INVISIBUG) && inGalatea()) {
    val s=f.invisibug;val lines=mutableListOf<WorldOverlay.Segment>();val fills=mutableListOf<WorldOverlay.Fill>();val labels=mutableListOf<WorldOverlay.Label>()
    val points=bugs.confirmed().map {Vec3(it.x,it.y,it.z)}
    points.forEach {pos->val box=AABB.ofSize(pos,1.0,1.0,1.0);WorldOverlay.box(lines,box,s.color,false);fills.add(WorldOverlay.Fill(box,s.color,false));labels.add(WorldOverlay.Label(pos.add(0.0,1.3,0.0),"Invisibug"+(if(s.distance) " (${"%.1f".format(java.util.Locale.ROOT,pos.distanceTo(player.position()))}m)" else ""),s.color,false,1.4f))}
    if(s.tracer)points.minByOrNull {it.distanceToSqr(player.position())}?.let {lines.add(WorldOverlay.Segment(origin,it.add(0.0,.5,0.0),s.color,false,2f))}
    WorldOverlay.publish(lines,fills,labels,"invisibug")
   } else {bugs.clear();WorldOverlay.clear("invisibug")}
-  if(S.isEnabled(S.TIKI) && FeatureRuntime.context.skyblock) {
+  if(S.isEnabled(ModuleIds.TIKI) && FeatureRuntime.context.skyblock) {
    val decoded=hashMapOf<BlockPos,String>()
    fun readTexture(pos:BlockPos):String {
     if(!level.hasChunkAt(pos))return ""
@@ -135,7 +137,7 @@ object HuntingFeatures {
  fun collectBestiary(c:net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext,lines:MutableList<WorldOverlay.Segment>) {
   val mc=Minecraft.getInstance();val level=mc.level ?: return;val player=mc.player ?: return
   val s=S.currentGeneral().features.bestiary
-  if(!S.isEnabled(S.BESTIARY) || !s.tracer || matchPolicy!=(s.names to s.exact))return
+  if(!S.isEnabled(ModuleIds.BESTIARY) || !s.tracer || matchPolicy!=(s.names to s.exact))return
   val delta=mc.deltaTracker.getGameTimeDeltaPartialTick(true);val playerPos=player.getPosition(delta)
   val nearest=matched.asSequence().filter {it.isAlive && level.getEntity(it.id)===it}.minByOrNull {it.getPosition(delta).distanceToSqr(playerPos)} ?: return
   val target=nearest.getPosition(delta).add(0.0,nearest.bbHeight.toDouble()/2.0,0.0)
@@ -148,7 +150,7 @@ object HuntingFeatures {
  /** Tick-scanned identity snapshot; render-camera tracers and monotonic per-frame animation. */
  fun collectTiki(c:net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext,lines:MutableList<WorldOverlay.Segment>,fills:MutableList<WorldOverlay.Fill>,labels:MutableList<WorldOverlay.Label>) {
   val mc=Minecraft.getInstance();val player=mc.player ?: return
-  if(mc.level==null || !S.isEnabled(S.TIKI) || !FeatureRuntime.context.skyblock)return
+  if(mc.level==null || !S.isEnabled(ModuleIds.TIKI) || !FeatureRuntime.context.skyblock)return
   val s=S.currentGeneral().features.tiki
   val origin=c.levelState().cameraRenderState.pos.add(player.lookAngle.scale(.5))
   val time=System.nanoTime()/1_000_000_000.0

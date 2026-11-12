@@ -1,25 +1,27 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.ui
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.client.ui.nofrills.*
-import dev.solyanka.ui.*
+import dev.solyanka.model.*
 import dev.solyanka.utility.*
 
 object ArchiveVisualUi {
     fun open(id:String,host:NoFrillsClickGui,model:InstantSettings) {
-        val title=when(id) {S.AMBIENT_PARTICLES->"Ambient Particles";S.ROTATING_ITEM->"Rotating Item";else->"Move Hearts"}
+        val title=when(id) {ModuleIds.AMBIENT_PARTICLES->"Ambient Particles";ModuleIds.ROTATING_ITEM->"Rotating Item";else->"Move Hearts"}
         host.showPanel(SettingsPanel(title,{host.closePanel()},{model.error}) {panel,w->
             fun update(block:(FeatureSettings)->FeatureSettings) {model.updateGeneral {it.copy(features=block(it.features))};panel.refreshStatus()}
             buildList {
                 when(id) {
-                    S.AMBIENT_PARTICLES->{val s=model.general.features.ambientParticles
+                    ModuleIds.AMBIENT_PARTICLES->{val s=model.general.features.ambientParticles
                         add(GuiKit.description(w,"Archive client-only particles around the player; 1–10 spawn attempts per tick, paused with the game. Uses native particle settings and culling, so Reduced/Minimal particles may show fewer. No network traffic; existing particles expire naturally after disabling."))
                         add(GuiKit.choiceRow(w,"Particle",AmbientParticleLogic.labels,AmbientParticleLogic.types.indexOf(s.particle),readCurrent={AmbientParticleLogic.types.indexOf(model.general.features.ambientParticles.particle)}) {i->update {it.copy(ambientParticles=it.ambientParticles.copy(particle=AmbientParticleLogic.types[i]))}})
                         add(GuiKit.sliderRow(w,"Amount per Tick",s.amount.toDouble(),NumberRange(1.0,10.0,1.0)) {v->update {it.copy(ambientParticles=it.ambientParticles.copy(amount=v.toInt()))}})
                         add(GuiKit.sliderRow(w,"Radius",s.radius.toDouble(),NumberRange(4.0,32.0,2.0)) {v->update {it.copy(ambientParticles=it.ambientParticles.copy(radius=v.toInt()))}})
                     }
-                    S.ROTATING_ITEM->{val s=model.general.features.rotatingItem
+                    ModuleIds.ROTATING_ITEM->{val s=model.general.features.rotatingItem
                         add(GuiKit.description(w,"Archive first-person model movement: Chaotic, Clockwise, Counterclockwise, Spin and Wave. Horizontal offset mirrors for the left hand. Maps and empty hands bypass the source transform hook. Item-use animations still run; test bows, crossbows, shields and the Held Item Shader together. Phase restarts on enable/world change."))
                         add(GuiKit.choiceRow(w,"Mode",RotatingItemLogic.labels,RotatingItemLogic.modes.indexOf(s.mode),readCurrent={RotatingItemLogic.modes.indexOf(model.general.features.rotatingItem.mode)}) {i->update {it.copy(rotatingItem=it.rotatingItem.copy(mode=RotatingItemLogic.modes[i]))}})
                         add(GuiKit.sliderRow(w,"Speed",s.speed.toDouble(),NumberRange(5.0,200.0,5.0)) {v->update {it.copy(rotatingItem=it.rotatingItem.copy(speed=v.toInt()))}})
@@ -37,7 +39,7 @@ object ArchiveVisualUi {
                         add(GuiKit.button("Reset Position / Scale",w) {update {it.copy(moveHearts=MoveHeartsSettings(moveArmor=it.moveHearts.moveArmor,hud=HudSpec(x=0,y=0,enabled=it.moveHearts.hud.enabled)))}})
                     }
                 }
-                if(id==S.MOVE_HEARTS) addAll(HudGlowUi.controls(id,model,panel,w))
+                if(id==ModuleIds.MOVE_HEARTS) addAll(HudGlowUi.controls(id,model,panel,w))
             }
         })
     }

@@ -2,10 +2,12 @@
  * NoFrills-derived controls; instant-saving embedded solyanka settings. See NOTICE. */
 package dev.solyanka.client.ui
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.client.ui.nofrills.*
-import dev.solyanka.ui.InstantSettings
-import dev.solyanka.ui.SettingsNumbers
+import dev.solyanka.model.InstantSettings
+import dev.solyanka.model.SettingsNumbers
 import dev.solyanka.utility.*
 import io.wispforest.owo.ui.container.*
 import io.wispforest.owo.ui.core.*
@@ -19,10 +21,10 @@ object ConfigUi {
             SolyankaClient.applySettings(p,SolyankaClient.states(),g)
         }
         when(id) {
-            SolyankaClient.KEYBINDS -> bindings(host,model)
-            SolyankaClient.SHORTCUTS -> shortcuts(host,model)
-            SolyankaClient.CHAT -> general(host,model,true)
-            SolyankaClient.TOOLTIPS -> general(host,model,false)
+            ModuleIds.KEYBINDS -> bindings(host,model)
+            ModuleIds.SHORTCUTS -> shortcuts(host,model)
+            ModuleIds.CHAT -> general(host,model,true)
+            ModuleIds.TOOLTIPS -> general(host,model,false)
             else -> FeatureUi.open(id,host,model)
         }
     }

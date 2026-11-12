@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.ui
 import dev.solyanka.client.ui.nofrills.*
-import dev.solyanka.ui.*
+import dev.solyanka.model.*
 import dev.solyanka.utility.*
 object SkyboxUi {
  fun open(host:NoFrillsClickGui,model:InstantSettings) {

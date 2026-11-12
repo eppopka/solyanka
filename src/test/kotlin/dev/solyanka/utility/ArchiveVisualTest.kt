@@ -2,7 +2,7 @@
 package dev.solyanka.utility
 
 import com.google.gson.*
-import dev.solyanka.ui.*
+import dev.solyanka.model.*
 import org.junit.jupiter.api.Test
 import kotlin.random.Random
 import kotlin.test.*
@@ -56,7 +56,7 @@ class ArchiveVisualTest {
     @Test fun `new sections reject type errors and retain old independent values`() {for(raw in listOf("""{"ambientParticles":{"amount":2.5}}""","""{"rotatingItem":{"offsetX":"0"}}""","""{"moveHearts":{"customPosition":1}}""")) assertFails {FeatureCodec.decode(JsonParser.parseString(raw).asJsonObject)};assertEquals(80,FeatureCodec.decode(JsonParser.parseString("""{"stopwatch":{"hud":{"x":80}}}""").asJsonObject).stopwatch.hud.x)}
     @Test fun `new settings use atomic model commits and reject a failed save`() {val original=GeneralSettings();var live=original;val m=InstantSettings(CommandProfile(),original) {_,g->if(g.features.ambientParticles.amount==9) "read only" else {live=g;null}};assertFalse(m.updateGeneral {it.copy(features=it.features.copy(ambientParticles=AmbientParticleSettings(amount=9)))});assertEquals(original,live);assertEquals(9,m.general.features.ambientParticles.amount);assertTrue(m.pending());assertNotNull(m.error)}
     @Test fun `native heart wrapper delegates and restores the pose stack`() {val s=source("feature/VanillaHearts.kt");assertTrue(s.contains("HudElementRegistry.replaceElement"));assertTrue(s.contains("original.extractRenderState(g,d)"));assertTrue(s.contains("finally {g.pose().popMatrix()}"));assertFalse(s.contains("setHealth"));assertFalse(s.contains("removeElement"));val c=source("SolyankaClient.kt");assertTrue(c.indexOf("Suppression.register()")<c.indexOf("VanillaHearts.register()"))}
-    @Test fun `ambient spawning is world paused bounded and client only`() {val s=source("feature/ArchiveVisuals.kt");for(t in listOf("!S.isEnabled(S.AMBIENT_PARTICLES)","client.isPaused","client.level ?: return","client.player ?: return","repeat(s.amount)","level.addParticle(")) assertTrue(t in s,t);assertFalse("sendCommand" in s);assertFalse("sendChat" in s)}
+    @Test fun `ambient spawning is world paused bounded and client only`() {val s=source("feature/ArchiveVisuals.kt");for(t in listOf("!S.isEnabled(ModuleIds.AMBIENT_PARTICLES)","client.isPaused","client.level ?: return","client.player ?: return","repeat(s.amount)","level.addParticle(")) assertTrue(t in s,t);assertFalse("sendCommand" in s);assertFalse("sendChat" in s)}
     @Test fun `new visual settings are embedded and use sliders and choice rows`() {val s=source("ui/ArchiveVisualUi.kt");for(t in listOf("host.showPanel(SettingsPanel(","model.updateGeneral","GuiKit.choiceRow(","GuiKit.sliderRow(")) assertTrue(t in s,t);assertFalse("setScreen" in s);assertFalse("Save & Back" in s)}
     @Test fun `successful heart change commits immediately without a save button`() {var live=GeneralSettings();var calls=0;val m=InstantSettings(CommandProfile(),live) {_,g->live=g;calls++;null};assertTrue(m.updateGeneral {it.copy(features=HudLayout.update(it.features,"archive.hearts",640,360) {h->h.copy(x=100,y=50,scale=2.0)})});assertEquals(1,calls);assertEquals(100,live.features.moveHearts.hud.x);assertTrue(live.features.moveHearts.customPosition);assertFalse(m.pending())}
     private fun source(path:String)=Path.of("src/client/kotlin/dev/solyanka/client/$path").toFile().readText()

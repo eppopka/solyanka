@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Stray HeldItemShader CC0 adaptation to Minecraft 26.2 bind groups/item preparation. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.utility.*
 import com.mojang.blaze3d.pipeline.*
@@ -52,15 +54,15 @@ object HeldItemCosmetic {
  fun requestCleanup() {ready=false;cleanup=true}
  fun diagnostics():String {
   val s=S.currentGeneral().features.heldItem
-  return "Held Item: enabled=${S.isEnabled(S.HELD_ITEM)}, effect=${s.style}, right=${s.rightHand}, left=${s.leftHand}, arms=${s.arms}, armReplacements=$armReplacements, ready=$ready, status=$status, eligible=$eligible, replaced=$replacements, notReady=$notReady, incompatible=$incompatible"
+  return "Held Item: enabled=${S.isEnabled(ModuleIds.HELD_ITEM)}, effect=${s.style}, right=${s.rightHand}, left=${s.leftHand}, arms=${s.arms}, armReplacements=$armReplacements, ready=$ready, status=$status, eligible=$eligible, replaced=$replacements, notReady=$notReady, incompatible=$incompatible"
  }
  /** Before GameRenderer.renderLevel creates/prepares first-person draws. No dependency on client ticks. */
  fun prepareFrame() {
   if(!RenderSystem.isOnRenderThread()) return
   if(cleanup) close()
   val s=S.currentGeneral().features.heldItem
-  val phase=HeldItemClock.texel(animationClock.sample(System.nanoTime(),s.speed,S.isEnabled(S.HELD_ITEM)))
-  if(!S.isEnabled(S.HELD_ITEM)) {ready=false;return}
+  val phase=HeldItemClock.texel(animationClock.sample(System.nanoTime(),s.speed,S.isEnabled(ModuleIds.HELD_ITEM)))
+  if(!S.isEnabled(ModuleIds.HELD_ITEM)) {ready=false;return}
   if(failed) return
   try {
    val c=Minecraft.getInstance()
@@ -88,7 +90,7 @@ object HeldItemCosmetic {
   } catch(e:Exception) {ready=false;failed=true;status="Settings upload failed; see latest.log";logger.error("Held-item settings upload failed; vanilla rendering retained. Toggle the feature to retry.",e)}
  }
  @Synchronized @JvmStatic fun wrap(original:RenderType,submit:ItemFeatureRenderer.Submit):RenderType {
-  if(!S.isEnabled(S.HELD_ITEM) || !HeldItemPolicy.hand(submit.displayContext().name,S.currentGeneral().features.heldItem)) return original
+  if(!S.isEnabled(ModuleIds.HELD_ITEM) || !HeldItemPolicy.hand(submit.displayContext().name,S.currentGeneral().features.heldItem)) return original
   eligible++
   if(!ready) {notReady++;return original}
   val p=original.pipeline()
@@ -106,7 +108,7 @@ object HeldItemCosmetic {
  /** AvatarRenderer.renderHand only: no third-person player recoloring. */
  @Synchronized @JvmStatic fun wrapArm(original:RenderType,skin:Identifier,right:Boolean):RenderType {
   val s=S.currentGeneral().features.heldItem
-  if(!S.isEnabled(S.HELD_ITEM) || !HeldItemPolicy.arm(right,s) || !ready)return original
+  if(!S.isEnabled(ModuleIds.HELD_ITEM) || !HeldItemPolicy.arm(right,s) || !ready)return original
   if(original.pipeline().vertexFormatBindings.firstOrNull()!=DefaultVertexFormat.ENTITY || original.pipeline().primitiveTopology!=PrimitiveTopology.QUADS)return original
   types[skin]?.let {armReplacements++;return it}
   if(types.size>=64)return original

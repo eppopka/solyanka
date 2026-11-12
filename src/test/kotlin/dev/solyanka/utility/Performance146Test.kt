@@ -1,10 +1,11 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+import dev.solyanka.gfx.ToggleAnimation
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import dev.solyanka.ui.HudLayout
-import dev.solyanka.ui.GuiCatalog
+import dev.solyanka.model.HudLayout
+import dev.solyanka.model.GuiCatalog
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.math.abs
@@ -51,5 +52,12 @@ class Performance146Test {
   val mixin=Files.readString(root.resolve("mixin/PerformanceTimeMixin.kt"));assertTrue(mixin.contains("handleSetTime"));assertTrue(mixin.contains("packet.gameTime()"));assertTrue(mixin.contains("At(\"TAIL\")"))
   val hud=Files.readString(root.resolve("feature/PerformanceHud.kt"));assertTrue(hud.contains("hasSingleplayerServer()"));assertTrue(hud.contains("PerformanceText.format"))
   val outline=Files.readString(root.resolve("feature/BlockSelection.kt"));assertTrue(outline.contains("state.cameraRenderState.pos"));assertTrue(outline.contains("pos.x.toDouble()-camera.x"));assertTrue(outline.contains("submitShapeOutline"));assertTrue(outline.contains("pose.popPose()"))
+ }
+ @Test fun `performance color thresholds and unknown metrics`() {
+  assertEquals(PerformanceText.GOOD,PerformanceText.metricColor("FPS: 120"))
+  assertEquals(PerformanceText.WARN,PerformanceText.metricColor("FPS: 45"))
+  assertEquals(PerformanceText.BAD,PerformanceText.metricColor("TPS: 12.0"))
+  assertEquals(PerformanceText.WARN,PerformanceText.metricColor("Ping: 120 ms"))
+  assertNull(PerformanceText.metricColor("Ping: Local"));assertNull(PerformanceText.metricColor("TPS: —"))
  }
 }

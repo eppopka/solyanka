@@ -58,7 +58,7 @@ object WorldOverlay {
     data class Quad(val points:List<Vec3>,val color:Int,val style:dev.solyanka.utility.WayStyle?,val distance:Double)
     val quads=list.flatMap {f->val b=f.box
      val v=arrayOf(Vec3(b.minX,b.minY,b.minZ),Vec3(b.maxX,b.minY,b.minZ),Vec3(b.maxX,b.maxY,b.minZ),Vec3(b.minX,b.maxY,b.minZ),Vec3(b.minX,b.minY,b.maxZ),Vec3(b.maxX,b.minY,b.maxZ),Vec3(b.maxX,b.maxY,b.maxZ),Vec3(b.minX,b.maxY,b.maxZ))
-     dev.solyanka.utility.OverlayBoxFaces.indices.map {face->
+     dev.solyanka.gfx.OverlayBoxFaces.indices.map {face->
       val points=face.map {v[it]};val center=points.reduce(Vec3::add).scale(.25)
       Quad(points,f.color,f.style,center.distanceToSqr(camera))
      }
@@ -78,7 +78,7 @@ object WorldOverlay {
    }
    snapshot.groupBy { it.depth }.forEach { (depth,list) ->
     c.submitNodeCollector().submitCustomGeometry(pose,if(depth) RenderTypes.LINES else esp) { matrix,buffer ->
-     list.forEach { s -> val direction=dev.solyanka.utility.OverlayLine.direction(s.b.x-s.a.x,s.b.y-s.a.y,s.b.z-s.a.z) ?: return@forEach
+     list.forEach { s -> val direction=dev.solyanka.gfx.OverlayLine.direction(s.b.x-s.a.x,s.b.y-s.a.y,s.b.z-s.a.z) ?: return@forEach
       val dx=direction.x.toFloat();val dy=direction.y.toFloat();val dz=direction.z.toFloat()
       buffer.addVertex(matrix,(s.a.x-camera.x).toFloat(),(s.a.y-camera.y).toFloat(),(s.a.z-camera.z).toFloat()).setColor(styled(s.color,s.style,s.a)).setNormal(matrix,dx,dy,dz).setLineWidth(s.width)
       buffer.addVertex(matrix,(s.b.x-camera.x).toFloat(),(s.b.y-camera.y).toFloat(),(s.b.z-camera.z).toFloat()).setColor(styled(s.color,s.style,s.b)).setNormal(matrix,dx,dy,dz).setLineWidth(s.width)

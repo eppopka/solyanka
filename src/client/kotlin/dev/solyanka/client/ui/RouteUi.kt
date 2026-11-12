@@ -2,7 +2,7 @@
 package dev.solyanka.client.ui
 import dev.solyanka.client.ui.nofrills.*
 import dev.solyanka.client.feature.DungeonWaypoints
-import dev.solyanka.ui.*
+import dev.solyanka.model.*
 import dev.solyanka.utility.*
 object RouteUi {
  fun open(host:NoFrillsClickGui,model:InstantSettings) {

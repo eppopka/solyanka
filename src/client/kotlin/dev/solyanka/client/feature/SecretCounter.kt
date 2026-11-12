@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only; adapted from user-provided SecretCounter.kt. */
 package dev.solyanka.client.feature
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.utility.*
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
@@ -15,7 +17,7 @@ object SecretCounter {
     fun reset() {state.reset();announcement.reset();scope=null}
     private fun active():Boolean {
         val c=Minecraft.getInstance();val ctx=FeatureRuntime.context
-        if(!S.isEnabled(S.SECRET_COUNTER) || c.player==null || c.level==null || !ctx.dungeon) {reset();return false}
+        if(!S.isEnabled(ModuleIds.SECRET_COUNTER) || c.player==null || c.level==null || !ctx.dungeon) {reset();return false}
         val next=ctx.floor to ctx.master
         if(scope!=next) {reset();scope=next}
         return true

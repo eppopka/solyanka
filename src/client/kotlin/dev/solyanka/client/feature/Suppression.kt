@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Adapted from NoFrills NoRender and its render/particle mixins; see NOTICE. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.utility.*
 import net.fabricmc.fabric.api.client.rendering.v1.hud.*
@@ -18,10 +20,10 @@ import net.minecraft.world.level.block.*
 object Suppression {
  private val deadName=Regex(".* 0(?:/.*)?❤")
  fun deadName(text:String)=on { deadEntities } && deadName.matches(ChatLogic.plain(text))
- fun on(test:SuppressionSettings.()->Boolean)=SolyankaClient.isEnabled(SolyankaClient.SUPPRESSION) && SolyankaClient.currentGeneral().features.suppression.test()
+ fun on(test:SuppressionSettings.()->Boolean)=SolyankaClient.isEnabled(ModuleIds.SUPPRESSION) && SolyankaClient.currentGeneral().features.suppression.test()
  private fun texture(s:ItemStack,hash:Int):Boolean = s.item==Items.PLAYER_HEAD && s.get(DataComponents.PROFILE)?.partialProfile()?.properties()?.get("textures")?.any { it.value().hashCode()==hash }==true
  fun hide(e:Entity):Boolean {
-  if(!SolyankaClient.isEnabled(SolyankaClient.SUPPRESSION)) return false
+  if(!SolyankaClient.isEnabled(ModuleIds.SUPPRESSION)) return false
   val s=SolyankaClient.currentGeneral().features.suppression;val c=FeatureRuntime.context
   if(s.deadEntities && e is LivingEntity && !e.isAlive) return true
   if(s.fallingBlocks && e is FallingBlockEntity && c.area!="The Rift") return true
@@ -46,7 +48,7 @@ object Suppression {
   return false
  }
  fun particle(p:ClientboundLevelParticlesPacket):Boolean {
-  if(!SolyankaClient.isEnabled(SolyankaClient.SUPPRESSION)) return false
+  if(!SolyankaClient.isEnabled(ModuleIds.SUPPRESSION)) return false
   val s=SolyankaClient.currentGeneral().features.suppression;val type=p.particle.type
   fun match(t:ParticleType<*>,count:Int,speed:Float,x:Float,y:Float,z:Float)=type==t && p.count==count && p.maxSpeed==speed && p.xDist==x && p.yDist==y && p.zDist==z
   if(s.explosions && type in setOf(ParticleTypes.EXPLOSION,ParticleTypes.EXPLOSION_EMITTER,ParticleTypes.GUST,ParticleTypes.GUST_EMITTER_LARGE)) return true

@@ -2,7 +2,7 @@
 package dev.solyanka.client.ui
 
 import dev.solyanka.client.ui.nofrills.*
-import dev.solyanka.ui.InstantSettings
+import dev.solyanka.model.InstantSettings
 import dev.solyanka.utility.*
 import io.wispforest.owo.ui.container.UIContainers
 import io.wispforest.owo.ui.core.Insets

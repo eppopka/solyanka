@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.feature
 
-import dev.solyanka.utility.GlowBand
-import dev.solyanka.utility.RoundedGlowGeometry
+import dev.solyanka.gfx.GlowBand
+import dev.solyanka.gfx.RoundedGlowGeometry
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import kotlin.math.roundToInt
 

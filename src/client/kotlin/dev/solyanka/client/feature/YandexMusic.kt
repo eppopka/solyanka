@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.feature
 
+import dev.solyanka.core.ModuleIds
+
 import com.google.gson.*
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.client.ui.HudEditorScreen
@@ -165,7 +167,7 @@ object YandexMusic {
                 host.endsWith(".yandex.net") || host.endsWith(".yandex.ru"))
             fun request(withAuth:Boolean):HttpResponse<java.io.InputStream> {
                 val builder=HttpRequest.newBuilder(target).header("Accept","image/*")
-                    .header("User-Agent","Solyanka/1.4.2").timeout(Duration.ofSeconds(10)).GET()
+                    .header("User-Agent",dev.solyanka.client.ModInfo.userAgent).timeout(Duration.ofSeconds(10)).GET()
                 if(withAuth && auth.isNotBlank()) builder.header("Authorization","OAuth $auth")
                 return coverHttp.send(builder.build(),HttpResponse.BodyHandlers.ofInputStream())
             }
@@ -213,7 +215,7 @@ object YandexMusic {
         while(true) {val request=requests.poll() ?: break;request.callback(false,"Music disconnected")}
     }
     fun connectLocalWindows() {
-        if(!S.isEnabled(S.MUSIC)) {status="Enable Yandex Music first";return}
+        if(!S.isEnabled(ModuleIds.MUSIC)) {status="Enable Yandex Music first";return}
         if(!System.getProperty("os.name","").startsWith("Windows",true)) {status="Local mode requires Windows";return}
         disconnect();val gen=generation.get();status="Local: starting Windows media…"
         Thread({
@@ -251,7 +253,7 @@ object YandexMusic {
     }
 
     fun connect() {
-        if(!S.isEnabled(S.MUSIC)) {status="Enable Yandex Music first";return}
+        if(!S.isEnabled(ModuleIds.MUSIC)) {status="Enable Yandex Music first";return}
         val remaining=waitRemainingSeconds()
         if(remaining>0) {status="Music: server requested wait ${remaining}s";return}
         disconnect();val gen=generation.get();status="Requesting sign-in code…"
@@ -412,7 +414,7 @@ object YandexMusic {
             try {
                 fun enc(s:String)=URLEncoder.encode(s,Charsets.UTF_8)
                 fun request(uri:URI):Pair<Int,String> {
-                    val req=HttpRequest.newBuilder(uri).header("User-Agent","Solyanka/1.4.2 (https://github.com/eppopka/solyanka)")
+                    val req=HttpRequest.newBuilder(uri).header("User-Agent",dev.solyanka.client.ModInfo.userAgent)
                         .timeout(Duration.ofSeconds(10)).GET().build()
                     val response=http.send(req,HttpResponse.BodyHandlers.ofInputStream())
                     return response.statusCode() to response.body().use {it.readNBytes(524289).let {bytes->
@@ -501,7 +503,7 @@ object YandexMusic {
     private fun alpha(color:Int,amount:Float):Int = ((amount.coerceIn(0f,1f)*255f).toInt() shl 24) or (color and 0xffffff)
     private fun draw(g:GuiGraphicsExtractor,info:LocalPlayback,s:MusicSettings,cover:Boolean,line:String?) {
         val font=Minecraft.getInstance().font;val tall=height(s)
-        HudGlow.draw(g,S.MUSIC,0,0,WIDTH,tall,7)
+        HudGlow.draw(g,ModuleIds.MUSIC,0,0,WIDTH,tall,7)
         ChromeDraw.panel(g,0,0,WIDTH,tall,0xe9161b27.toInt(),0xff333e50.toInt(),7)
         ChromeDraw.panel(g,7,7,52,52,0xff242d3b.toInt(),0xff3e4b5c.toInt(),4)
         if(cover) g.blit(coverId,9,9,48,48,0f,1f,0f,1f) else g.text(font,"♪",26,27,0xfffd5d65.toInt(),false)
@@ -513,7 +515,12 @@ object YandexMusic {
         g.text(font,fit(info.artist.ifBlank {"Unknown artist"},135),66,34,0xffaab6c7.toInt(),false)
         val position=MusicLogic.elapsed(info,System.nanoTime());val progress=if(info.duration>0) (position/info.duration).coerceIn(0.0,1.0) else 0.0
         val barColor=MusicLogic.progressColor(s.progressColor,s.progressEffect,s.effectSpeed,System.nanoTime()/1_000_000_000.0)
-        g.fill(66,48,201,51,0xff354052.toInt());g.fill(66,48,66+(135*progress).toInt(),51,barColor)
+        ChromeDraw.panel(g,66,47,135,5,0xff354052.toInt(),0xff354052.toInt(),2)
+        val barWidth=(135*progress).toInt().coerceIn(0,135)
+        if(barWidth>0) {
+            RoundedGlow.draw(g,66,47,barWidth,5,2,barColor,.35,3)
+            ChromeDraw.panel(g,66,47,barWidth,5,barColor,barColor,2)
+        }
         val time=if(info.duration>0) MusicLogic.timestamp(position)+" / "+MusicLogic.timestamp(info.duration) else "--:-- / --:--"
         g.pose().pushMatrix();try {g.pose().translate(66f,54f);g.pose().scale(.72f,.72f);g.text(font,time,0,0,0xffaab6c7.toInt(),false)} finally {g.pose().popMatrix()}
         if(s.showLyrics) {
@@ -537,17 +544,16 @@ object YandexMusic {
         if(key!="extra.music") return false
         val s=S.currentGeneral().features.music
         val sample=LocalPlayback("Song title","Artist",74.0,210.0,false,"",System.nanoTime())
-        g.pose().pushMatrix();try {g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(s.hud.scale.toFloat(),s.hud.scale.toFloat());draw(g,sample.copy(playing=true),s,false,"Lyrics preview")} finally {g.pose().popMatrix()}
+        HudFrame.draw(g,s.hud,WIDTH,height(s),x,y) {draw(g,sample.copy(playing=true),s,false,"Lyrics preview")}
         return true
     }
     fun register() {HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT,Identifier.fromNamespaceAndPath("solyanka","yandex_music")) {g,_->
         val c=Minecraft.getInstance();val info=local;val s=S.currentGeneral().features.music
-        refreshLyrics(info,S.isEnabled(S.MUSIC) && s.showLyrics)
+        refreshLyrics(info,S.isEnabled(ModuleIds.MUSIC) && s.showLyrics)
         updateCover(info?.art.orEmpty())
-        if(info==null || !S.isEnabled(S.MUSIC) || c.player==null || c.level==null || c.gui.hud.isHidden) return@attachElementBefore
+        if(info==null || !S.isEnabled(ModuleIds.MUSIC) || c.player==null || c.level==null || c.gui.hud.isHidden) return@attachElementBefore
         val screen=c.gui.screen();if(screen is HudEditorScreen || screen!=null && screen !is ChatScreen && screen !is NoFrillsClickGui) return@attachElementBefore
         val h=s.hud;if(!h.enabled) return@attachElementBefore
-        val scale=h.scale.toFloat();val x=h.x.coerceIn(0,(c.window.guiScaledWidth-WIDTH*scale).roundToInt().coerceAtLeast(0));val y=h.y.coerceIn(0,(c.window.guiScaledHeight-height(s)*scale).roundToInt().coerceAtLeast(0))
         val data=lyrics?.takeIf {it.key==key(info)}
         val line=when {
             info.artist.isBlank() -> "Lyrics need an artist"
@@ -556,6 +562,6 @@ object YandexMusic {
             data.lines.isEmpty() -> "Synced lyrics unavailable"
             else -> MusicLogic.lyricAt(data.lines,MusicLogic.elapsed(info,System.nanoTime()))
         }
-        g.pose().pushMatrix();try {g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale);draw(g,info,s,coverLoaded,line)} finally {g.pose().popMatrix()}
+        HudFrame.draw(g,h,WIDTH,height(s)) {draw(g,info,s,coverLoaded,line)}
     }}
 }

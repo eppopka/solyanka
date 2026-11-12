@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Adapted from NoFrills PriceTooltips, RecipeData and NoFrillsAPI; see NOTICE. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.utility.*
 import com.google.gson.*
@@ -48,13 +50,13 @@ object PriceTooltips {
   finally { tmp?.let { Files.deleteIfExists(it) } }
  }
  private fun get(http:HttpClient,url:String):String {
-  val request=HttpRequest.newBuilder(URI.create(url)).timeout(Duration.ofSeconds(15)).header("User-Agent","solyanka/0.5.0 (Minecraft 26.2)").GET().build()
+  val request=HttpRequest.newBuilder(URI.create(url)).timeout(Duration.ofSeconds(15)).header("User-Agent",dev.solyanka.client.ModInfo.userAgent).GET().build()
   val pending=http.sendAsync(request,BoundedBody.handler(12_000_000))
   try { val r=pending.get(18,java.util.concurrent.TimeUnit.SECONDS);check(r.statusCode()==200) { "HTTP ${r.statusCode()}" };return String(r.body(),Charsets.UTF_8) }
   finally { if(!pending.isDone) pending.cancel(true) }
  }
  fun tick() {
-  if(!SolyankaClient.isEnabled(SolyankaClient.PRICES)) return
+  if(!SolyankaClient.isEnabled(ModuleIds.PRICES)) return
   load()
   if(!SolyankaClient.currentGeneral().features.prices.network) return
   val now=System.nanoTime();if(now<next || !busy.compareAndSet(false,true)) return
@@ -94,7 +96,7 @@ object PriceTooltips {
   if(slot==null || slot==screen.menu.slots.lastOrNull()?.index) observeRecipe(screen)
  }
  private fun observeRecipe(screen:ContainerScreen) {
-  if(!SolyankaClient.isEnabled(SolyankaClient.PRICES) || !SolyankaClient.currentGeneral().features.prices.craftCost || !FeatureRuntime.context.skyblock) return
+  if(!SolyankaClient.isEnabled(ModuleIds.PRICES) || !SolyankaClient.currentGeneral().features.prices.craftCost || !FeatureRuntime.context.skyblock) return
   if(screen.menu.rowCount!=6) return
   val slots=screen.menu.slots;if(slots.size<54 || slots[23].item.item!=Items.CRAFTING_TABLE || ChatLogic.plain(slots[23].item.hoverName.string)!="Crafting Table") return
   val result=slots[25].item;val output=id(result);if(result.isEmpty || output.isBlank()) return
@@ -105,7 +107,7 @@ object PriceTooltips {
   load();val recipe=CraftRecipe(result.count,ingredients);val list=recipes.getOrPut(output) { mutableListOf() };if(recipe !in list) { list.add(recipe);save() }
  }
  fun purchase(slot:Slot) {
-  if(!SolyankaClient.isEnabled(SolyankaClient.PRICES) || !SolyankaClient.currentGeneral().features.prices.pricePaid) return
+  if(!SolyankaClient.isEnabled(ModuleIds.PRICES) || !SolyankaClient.currentGeneral().features.prices.pricePaid) return
   val screen=Minecraft.getInstance().gui.screen() as? ContainerScreen ?: return
   if(ChatLogic.plain(screen.title.string)!="Confirm Purchase" || net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(slot.item.item).toString()!="minecraft:green_terracotta") return
   val cost=PriceLogic.purchaseCost(lore(slot.item));if(cost<=0) return
@@ -113,7 +115,7 @@ object PriceTooltips {
   load();paid[uuid]=cost;save()
  }
  fun register() { ItemTooltipCallback.EVENT.register { stack,_,_,lines ->
-  if(SolyankaClient.isEnabled(SolyankaClient.PRICES)) try {
+  if(SolyankaClient.isEnabled(ModuleIds.PRICES)) try {
    load();val key=id(stack);if(key.isNotBlank()) {
     val s=SolyankaClient.currentGeneral().features.prices;val quantity=PriceLogic.quantity(stack.count,lore(stack));val snapshot=prices;val price=snapshot[key]
     fun line(label:String,unit:Double,n:Int=quantity) { if(unit>0 && unit.isFinite()) lines.add(Component.literal("[solyanka] $label: "+PriceLogic.format(unit*n)+(if(n>1) " ($n× "+PriceLogic.format(unit)+")" else ""))) }

@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.mixin
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.client.feature.FeatureRuntime
 import dev.solyanka.utility.PlayerHudVisibility
@@ -15,6 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 abstract class ExperienceBarMixin {
     @Inject(method=["extractBackground","extractRenderState"],at=[At("HEAD")],cancellable=true,require=2)
     private fun solyankaHideXpBar(ci:CallbackInfo) {
-        if(PlayerHudVisibility.xpBar(SolyankaClient.isEnabled(SolyankaClient.PLAYER_DISPLAY),FeatureRuntime.context.skyblock,SolyankaClient.currentGeneral().features.player)) ci.cancel()
+        if(PlayerHudVisibility.xpBar(SolyankaClient.isEnabled(ModuleIds.PLAYER_DISPLAY),FeatureRuntime.context.skyblock,SolyankaClient.currentGeneral().features.player)) ci.cancel()
     }
 }

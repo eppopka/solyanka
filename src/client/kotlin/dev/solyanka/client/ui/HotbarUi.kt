@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-3.0-only; archive MoveHotbar options. */
 package dev.solyanka.client.ui
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.ui.nofrills.*
-import dev.solyanka.ui.*
+import dev.solyanka.model.*
 import dev.solyanka.utility.*
 object HotbarUi {
  fun controls(w:Int,host:NoFrillsClickGui,model:InstantSettings,panel:SettingsPanel)=buildList<io.wispforest.owo.ui.core.UIComponent> {
@@ -11,10 +13,10 @@ object HotbarUi {
   fun n(name:String,v:Double,a:Double,b:Double,step:Double,block:(MoveHotbarSettings,Double)->MoveHotbarSettings){add(GuiKit.sliderRow(w,name,v,NumberRange(a,b,step)){x->change {block(it,x)}})}
   fun color(name:String,v:Int,block:(MoveHotbarSettings,Int)->MoveHotbarSettings){add(GuiKit.colorRow(w,name,v){x->change {block(it,x)}})}
   add(GuiKit.description(w,"Style changes preserve your colors and effects. Use Original Hotbar Defaults to restore the archive’s Glass setup. Archive-styled hotbar with native item icons, counts, durability and cooldowns. Glass uses the original translucent coating and sheen, not framebuffer blur. HUD Editor handles position/overall scale. Native item-name/XP followers stay horizontal. All four styles use the original archive painter."))
-  add(GuiKit.button("Restore Hotbar",w){change {HotbarLayout.restore(it)};HuntingUi.open(dev.solyanka.client.SolyankaClient.MOVE_HOTBAR,host,model)})
-  add(GuiKit.button("Use Original Hotbar Defaults",w){change {HotbarLayout.archiveDefaults(it)};HuntingUi.open(dev.solyanka.client.SolyankaClient.MOVE_HOTBAR,host,model)})
+  add(GuiKit.button("Restore Hotbar",w){change {HotbarLayout.restore(it)};HuntingUi.open(ModuleIds.MOVE_HOTBAR,host,model)})
+  add(GuiKit.button("Use Original Hotbar Defaults",w){change {HotbarLayout.archiveDefaults(it)};HuntingUi.open(ModuleIds.MOVE_HOTBAR,host,model)})
   add(HudNavigation.button(w))
-  add(GuiKit.choiceRow(w,"Style",listOf("Vanilla","Minimal","Glass","Neon"),listOf("vanilla","minimal","glass","neon").indexOf(s.style),readCurrent={listOf("vanilla","minimal","glass","neon").indexOf(model.general.features.moveHotbar.style)}){i->change {it.copy(style=listOf("vanilla","minimal","glass","neon")[i])};HuntingUi.open(dev.solyanka.client.SolyankaClient.MOVE_HOTBAR,host,model)})
+  add(GuiKit.choiceRow(w,"Style",listOf("Vanilla","Minimal","Glass","Neon"),listOf("vanilla","minimal","glass","neon").indexOf(s.style),readCurrent={listOf("vanilla","minimal","glass","neon").indexOf(model.general.features.moveHotbar.style)}){i->change {it.copy(style=listOf("vanilla","minimal","glass","neon")[i])};HuntingUi.open(ModuleIds.MOVE_HOTBAR,host,model)})
   toggle("Archive Reference Sizing",s.referenceSizing){a,v->a.copy(referenceSizing=v)}
   toggle("Vertical layout",s.vertical){a,v->a.copy(vertical=v)}
   n("Slot Spacing",s.slotGap.toDouble(),0.0,10.0,1.0){a,v->a.copy(slotGap=v.toInt())};n("Padding",s.padding.toDouble(),0.0,12.0,1.0){a,v->a.copy(padding=v.toInt())}

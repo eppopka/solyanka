@@ -3,6 +3,8 @@
  * CC0 adaptations, camberX and contributors. See NOTICE for pinned source. */
 package dev.solyanka.client.feature
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.client.ui.HudEditorScreen
 import dev.solyanka.client.ui.nofrills.NoFrillsClickGui
@@ -24,7 +26,7 @@ object ExtraHuds {
     private var lastLevelTick=Int.MIN_VALUE
     fun reset() {skills.reset();lastLevelTick=Int.MIN_VALUE}
     fun tick(client:Minecraft) {
-        if(!SolyankaClient.isEnabled(SolyankaClient.SKILL_HUD) || !FeatureRuntime.context.skyblock) {reset();return}
+        if(!SolyankaClient.isEnabled(ModuleIds.SKILL_HUD) || !FeatureRuntime.context.skyblock) {reset();return}
         val tick=client.player?.tickCount ?: return
         if(lastLevelTick!=Int.MIN_VALUE && tick>=lastLevelTick && tick-lastLevelTick<10) return
         lastLevelTick=tick
@@ -40,14 +42,9 @@ object ExtraHuds {
         }
     }
     private inline fun frame(g:GuiGraphicsExtractor,h:HudSpec,w:Int,tall:Int,atX:Int?=null,atY:Int?=null,draw:()->Unit) {
-        val c=Minecraft.getInstance();val scale=h.scale.toFloat()
-        val x=atX ?: h.x.coerceIn(0,(c.window.guiScaledWidth-w*scale).roundToInt().coerceAtLeast(0))
-        val y=atY ?: h.y.coerceIn(0,(c.window.guiScaledHeight-tall*scale).roundToInt().coerceAtLeast(0))
-        g.pose().pushMatrix()
-        try {g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale);draw()}
-        finally {g.pose().popMatrix()}
+        HudFrame.draw(g,h,w,tall,atX,atY,paint=draw)
     }
-    private fun panel(g:GuiGraphicsExtractor,w:Int,h:Int,enabled:Boolean,color:Int) {if(enabled) {g.fill(0,0,w,h,color);dev.solyanka.client.ui.nofrills.GuiKit.border(g,0,0,w,h,0xff5ca0bf.toInt())}}
+    private fun panel(g:GuiGraphicsExtractor,w:Int,h:Int,enabled:Boolean,color:Int) {if(enabled) ChromeDraw.panel(g,0,0,w,h,color,dev.solyanka.client.ui.nofrills.GuiKit.LINE,5)}
     private fun inventory(g:GuiGraphicsExtractor,s:InventoryHudSettings,sample:Boolean=false,x:Int?=null,y:Int?=null) {
         StrayInventoryHud.draw(g,s,sample,x,y)
     }
@@ -56,7 +53,7 @@ object ExtraHuds {
         if(!sample && (stack==null || stack.isEmpty)) return
         val text=if(sample) Component.literal("Sample held item") else stack!!.styledHoverName.copy()
         val w=maxOf(80,c.font.width(text)+16)
-        frame(g,s.hud,w,18,x,y) {HudGlow.draw(g,SolyankaClient.ITEM_NAME_HUD,0,0,w,18,0);panel(g,w,18,s.background,s.backgroundColor);g.text(c.font,text,8,5,s.hud.color,true)}
+        frame(g,s.hud,w,18,x,y) {HudGlow.draw(g,ModuleIds.ITEM_NAME_HUD,0,0,w,18,5);panel(g,w,18,s.background,s.backgroundColor);g.text(c.font,text,8,5,s.hud.color,true)}
     }
     private fun icon(kind:SkillKind):Item = when(kind) {
         SkillKind.FARMING->Items.GOLDEN_HOE;SkillKind.MINING->Items.IRON_PICKAXE;SkillKind.COMBAT->Items.DIAMOND_SWORD;SkillKind.FORAGING->Items.GOLDEN_AXE;SkillKind.FISHING->Items.FISHING_ROD;SkillKind.ENCHANTING->Items.ENCHANTED_BOOK;SkillKind.ALCHEMY->Items.BREWING_STAND;SkillKind.TAMING->Items.BONE;SkillKind.CARPENTRY->Items.CRAFTING_TABLE;SkillKind.RUNECRAFTING->Items.MAGMA_CREAM;SkillKind.SOCIAL->Items.EMERALD;SkillKind.CATACOMBS->Items.WITHER_SKELETON_SKULL
@@ -67,7 +64,7 @@ object ExtraHuds {
         val text=(if(s.showGain) "${snap.gained} " else "")+snap.kind.label+(if(s.showLevel && snap.level!=null) " ${snap.level}" else "")+" "+SkillProgress.progressText(snap)
         val iconWidth=if(s.icon) 20 else 0;val w=c.font.width(text)+10+iconWidth
         frame(g,s.hud,w,26,x,y) {
-            HudGlow.draw(g,SolyankaClient.SKILL_HUD,0,0,w,26,0)
+            HudGlow.draw(g,ModuleIds.SKILL_HUD,0,0,w,26,5)
             panel(g,w,26,s.background,s.backgroundColor)
             if(s.icon) g.item(ItemStack(icon(snap.kind)),5,5,310)
             g.text(c.font,text,5+iconWidth,9,s.hud.color,true)
@@ -83,14 +80,14 @@ object ExtraHuds {
         val screen=c.gui.screen()
         if(screen is HudEditorScreen || screen!=null && screen !is ChatScreen && screen !is NoFrillsClickGui) return
         val f=SolyankaClient.currentGeneral().features
-        if(SolyankaClient.isEnabled(SolyankaClient.INVENTORY_HUD) && f.inventoryHud.hud.enabled) inventory(g,f.inventoryHud)
-        if(SolyankaClient.isEnabled(SolyankaClient.ITEM_NAME_HUD) && f.itemNameHud.hud.enabled) itemName(g,f.itemNameHud)
-        if(SolyankaClient.isEnabled(SolyankaClient.SKILL_HUD) && f.skillHud.hud.enabled && FeatureRuntime.context.skyblock) skill(g,f.skillHud)
+        if(SolyankaClient.isEnabled(ModuleIds.INVENTORY_HUD) && f.inventoryHud.hud.enabled) inventory(g,f.inventoryHud)
+        if(SolyankaClient.isEnabled(ModuleIds.ITEM_NAME_HUD) && f.itemNameHud.hud.enabled) itemName(g,f.itemNameHud)
+        if(SolyankaClient.isEnabled(ModuleIds.SKILL_HUD) && f.skillHud.hud.enabled && FeatureRuntime.context.skyblock) skill(g,f.skillHud)
     }
     fun register() {
         HudElementRegistry.replaceElement(VanillaHudElements.HELD_ITEM_TOOLTIP) {original->HudElement {g,d->
             val s=SolyankaClient.currentGeneral().features.itemNameHud
-            if(!(SolyankaClient.isEnabled(SolyankaClient.ITEM_NAME_HUD) && s.hud.enabled && s.hideVanilla)) original.extractRenderState(g,d)
+            if(!(SolyankaClient.isEnabled(ModuleIds.ITEM_NAME_HUD) && s.hud.enabled && s.hideVanilla)) original.extractRenderState(g,d)
         }}
         HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT,Identifier.fromNamespaceAndPath("solyanka","extra_huds")) {g,_->render(g)}
     }

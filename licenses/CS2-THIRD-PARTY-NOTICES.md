@@ -5,9 +5,11 @@ Parts of this package are ported from or based on the projects below.
 | Project | Used for | License |
 | --- | --- | --- |
 | [ValveResourceFormat](https://github.com/ValveResourceFormat/ValveResourceFormat) | VPK, resource blocks, KV3, vtex, models, NmClip/NmSkeleton decoding | MIT |
-| [meshoptimizer](https://github.com/zeux/meshoptimizer) | vertex and index buffer decoding (`s2/Meshopt.java`) | MIT |
+| [meshoptimizer](https://github.com/zeux/meshoptimizer) | vertex and index buffer decoding (`thirdparty/meshopt/Meshopt.java`) | MIT |
 | [DirectXTex](https://github.com/microsoft/DirectXTex) | BC7 partition and index tables (`s2/Bcn.java`) | MIT |
-| [aircompressor](https://github.com/airlift/aircompressor) | Zstandard decoder (`s2/zstd/`) | Apache 2.0 (see the file headers) |
+| [aircompressor](https://github.com/airlift/aircompressor) | Zstandard decoder (`thirdparty/zstd/`) | Apache 2.0 (see the file headers) |
+
+The `thirdparty/lz4/Lz4.java` decoder is kept separate for review; its exact source provenance has not been verified. The zstd package also contains locally adapted helpers without upstream headers.
 
 The Counter-Strike 2 knife data (models, textures, animations) is not part of this repository's
 code; it is published separately on the `cs2-data` branch with permission from Valve, for

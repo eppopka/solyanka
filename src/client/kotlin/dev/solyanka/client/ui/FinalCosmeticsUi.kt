@@ -1,18 +1,20 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.ui
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.client.cs2.Cs2Knives
 import dev.solyanka.client.cs2.Cs2AssetDownload
 import dev.solyanka.client.ui.nofrills.*
-import dev.solyanka.ui.*
+import dev.solyanka.model.*
 import dev.solyanka.utility.*
 object FinalCosmeticsUi {
  private var confirmAssets=false
  fun open(id:String,host:NoFrillsClickGui,model:InstantSettings,advanced:Boolean=false) {
-  if(id==S.CS2_KNIFE && !advanced){host.showPanel(KnifeBrowserPanel(host,model));return}
-  host.showPanel(SettingsPanel(if(id==S.ITEM_AURA)"Item Aura" else "CS2 Knives",{confirmAssets=false;host.closePanel()},{model.error},info={if(id==S.CS2_KNIFE) Cs2AssetDownload.status() else null}) {panel,w->buildList {
+  if(id==ModuleIds.CS2_KNIFE && !advanced){host.showPanel(KnifeBrowserPanel(host,model));return}
+  host.showPanel(SettingsPanel(if(id==ModuleIds.ITEM_AURA)"Item Aura" else "CS2 Knives",{confirmAssets=false;host.closePanel()},{model.error},info={if(id==ModuleIds.CS2_KNIFE) Cs2AssetDownload.status() else null}) {panel,w->buildList {
    fun change(block:(FeatureSettings)->FeatureSettings) {model.updateGeneral {it.copy(features=block(it.features))};panel.refreshStatus()}
-   if(id==S.ITEM_AURA) {
+   if(id==ModuleIds.ITEM_AURA) {
     val s=model.general.features.itemAura
     fun update(block:(ItemAuraSettings)->ItemAuraSettings) {change {it.copy(itemAura=block(it.itemAura))}}
     fun number(name:String,value:Double,min:Double,max:Double,step:Double,block:(ItemAuraSettings,Double)->ItemAuraSettings) {add(GuiKit.sliderRow(w,name,value,NumberRange(min,max,step)){v->update {block(it,v)}})}

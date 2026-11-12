@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
-import dev.solyanka.ui.HudLayout
+import dev.solyanka.model.HudLayout
 import com.google.gson.*
 import kotlin.test.*
 import kotlin.math.roundToInt

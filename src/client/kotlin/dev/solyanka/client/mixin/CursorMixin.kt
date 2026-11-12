@@ -2,6 +2,8 @@
  * Adapted from NoFrills MouseHandlerMixin; see NOTICE. */
 package dev.solyanka.client.mixin
 
+import dev.solyanka.core.ModuleIds
+
 import com.llamalad7.mixinextras.injector.wrapoperation.*
 import com.mojang.blaze3d.platform.Window
 import dev.solyanka.client.SolyankaClient
@@ -17,7 +19,7 @@ abstract class CursorMixin {
     @Shadow private var xpos:Double=0.0
     @Shadow private var ypos:Double=0.0
     @Inject(method=["grabMouse"],at=[At(value="INVOKE",target="Lcom/mojang/blaze3d/platform/Window;getScreenWidth()I",ordinal=0)])
-    private fun solyankaRemember(ci:CallbackInfo) { if(SolyankaClient.isEnabled(SolyankaClient.CURSOR)) FeatureRuntime.cursor.capture(xpos,ypos) }
+    private fun solyankaRemember(ci:CallbackInfo) { if(SolyankaClient.isEnabled(ModuleIds.CURSOR)) FeatureRuntime.cursor.capture(xpos,ypos) }
     @WrapOperation(method=["releaseMouse"],at=[At(value="INVOKE",target="Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(Lcom/mojang/blaze3d/platform/Window;IDD)V")])
     private fun solyankaRestore(window:Window,mode:Int,x:Double,y:Double,original:Operation<Void>) {
         val pos=if(FeatureRuntime.cursorActive()) FeatureRuntime.cursor.position(window.screenWidth,window.screenHeight) else null

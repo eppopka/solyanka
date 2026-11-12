@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.feature
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.utility.SpreadLogic
 import net.minecraft.client.Minecraft
@@ -13,13 +15,13 @@ object SpreadGuesser {
     var spread:Double?=null;private set
     fun reset() {spread=null}
     fun tick(c:Minecraft) {
-        spread=if(S.isEnabled(S.SPREAD_GUESSER) && FeatureRuntime.context.skyblock)
+        spread=if(S.isEnabled(ModuleIds.SPREAD_GUESSER) && FeatureRuntime.context.skyblock)
             SpreadLogic.readTab(c.connection?.listedOnlinePlayers?.mapNotNull {it.tabListDisplayName?.string} ?: emptyList())
         else null
     }
     fun collect(c:Minecraft,lines:MutableList<WorldOverlay.Segment>,fills:MutableList<WorldOverlay.Fill>) {
         val value=spread ?: return
-        if(value<=0 || !S.isEnabled(S.SPREAD_GUESSER) || !FeatureRuntime.context.skyblock || c.gui.screen()!=null) return
+        if(value<=0 || !S.isEnabled(ModuleIds.SPREAD_GUESSER) || !FeatureRuntime.context.skyblock || c.gui.screen()!=null) return
         val level=c.level ?: return
         val hit=c.hitResult as? BlockHitResult ?: return
         if(hit.type != net.minecraft.world.phys.HitResult.Type.BLOCK) return

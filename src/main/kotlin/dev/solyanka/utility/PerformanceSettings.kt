@@ -29,6 +29,17 @@ class ServerTpsEstimator(private val maxSamples:Int=10,private val staleNanos:Lo
 }
 
 object PerformanceText {
+ const val GOOD=0x80e0b0;const val WARN=0xf2c66d;const val BAD=0xf3acac
+ /** Unknown and local measurements retain the user's configured text color. */
+ fun metricColor(segment:String):Int? {
+  val value=segment.substringAfter(": ","").substringBefore(' ').toDoubleOrNull() ?: return null
+  return when {
+   segment.startsWith("FPS:")->if(value>=60) GOOD else if(value>=30) WARN else BAD
+   segment.startsWith("Ping:")->if(value<=80) GOOD else if(value<=150) WARN else BAD
+   segment.startsWith("TPS:")->if(value>=18) GOOD else if(value>=15) WARN else BAD
+   else->null
+  }
+ }
  fun format(s:PerformanceSettings,fps:Int,ping:String,tps:Double?):String = buildList {
   if(s.showFps) add("FPS: $fps")
   if(s.showPing) add("Ping: $ping")

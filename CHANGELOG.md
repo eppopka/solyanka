@@ -1,3 +1,13 @@
+# 1.4.7 — audit follow-up (partial)
+
+- Fixed a startup crash by sharing one registered keybinding category between settings and quick toggle.
+- Improved ClickGUI and HUD styling, editor previews and positioning, and reduced settings/rendering overhead.
+- Added theme presets, favorites, a quick-toggle overlay, HUD layout sharing and opt-in context profiles.
+- Reduced skybox texture use with a shared base and replacement-crop atlas; original textures were resized.
+- Split out command and input routing, module identifiers, shared UI models, graphics helpers and third-party decoders.
+- Added regression tests, partial English/Russian localization and a build-and-test workflow.
+- The Claude audit is not fully complete and the changes have not been verified in Minecraft; see `docs/AUDIT_FOLLOWUP.md` for remaining work.
+
 # 1.3.12
 
 - Added embedded searchable CS2 knife/finish-photo browser, composed preview, seed/wear controls and View tab.

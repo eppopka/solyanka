@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+import dev.solyanka.gfx.ClickGradientMath
+import dev.solyanka.gfx.RoundedGlowGeometry
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import dev.solyanka.ui.GuiCatalog
+import dev.solyanka.model.GuiCatalog
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.math.abs
@@ -17,7 +19,7 @@ class ClickGuiHudMajorTest {
    assertEquals(cards.sortedWith(compareBy({it.name.lowercase()},{it.id})),cards)
   }
   for(cards in GuiCatalog.search("",true).values) {
-   assertEquals(cards.sortedWith(compareByDescending<dev.solyanka.ui.FeatureCardInfo> {it.name.length}.thenBy {it.name.lowercase()}.thenBy {it.id}),cards)
+   assertEquals(cards.sortedWith(compareByDescending<dev.solyanka.model.FeatureCardInfo> {it.name.length}.thenBy {it.name.lowercase()}.thenBy {it.id}),cards)
   }
  }
  @Test fun `gradient changes smoothly over time and varies by character`() {
@@ -102,7 +104,8 @@ class ClickGuiHudMajorTest {
  @Test fun `scoreboard editor uses live rows and actual bounds`() {
   val root=Path.of("src/client/kotlin/dev/solyanka/client")
   val s=Files.readString(root.resolve("feature/ScoreboardHud.kt"))
-  assertTrue(s.contains("val current=layout()"));assertTrue(s.contains("board.listPlayerScores(objective)"))
+  assertTrue(s.contains("val live=layout()"));assertTrue(s.contains("board.listPlayerScores(objective)"))
+  assertTrue(s.contains("editorEntry(entry,width,live)"));assertTrue(s.contains("drawEditor(g,x,y,live)"))
   assertFalse(s.contains("layout(true)"));assertFalse(s.contains("Late Spring 12th"))
   assertTrue(s.contains("baseWidth=w,baseHeight=h"));assertTrue(s.contains("No active scoreboard"))
   val editor=Files.readString(root.resolve("ui/HudEditorScreen.kt"))

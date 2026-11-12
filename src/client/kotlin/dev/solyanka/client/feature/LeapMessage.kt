@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.feature
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.utility.*
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
@@ -11,7 +13,7 @@ import net.minecraft.network.chat.Component
 object LeapMessage {
     private val store by lazy { LeapCountStore(FabricLoader.getInstance().configDir.resolve("solyanka-leap-counts.json")).also { it.load() } }
     private fun message(raw:String,overlay:Boolean) {
-        if(overlay || !S.isEnabled(S.LEAP_MESSAGE) || !FeatureRuntime.context.dungeon) return
+        if(overlay || !S.isEnabled(ModuleIds.LEAP_MESSAGE) || !FeatureRuntime.context.dungeon) return
         val name=LeapMessageLogic.target(raw) ?: return
         val client=Minecraft.getInstance();val player=client.player ?: return
         val settings=S.currentGeneral().features.leapMessage

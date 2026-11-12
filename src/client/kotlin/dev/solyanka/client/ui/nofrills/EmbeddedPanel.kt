@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.ui.nofrills
-import dev.solyanka.ui.PanelDrag
+import dev.solyanka.model.PanelDrag
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.client.input.*

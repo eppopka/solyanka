@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: CC0-1.0; original eppopkaaddons painter, imports adapted only. */
 package dev.solyanka.client.feature.hotbar
 import dev.solyanka.utility.archivehotbar.*
+import dev.solyanka.utility.archivehotbar.HotbarGeometry as HotbarLayout
 
 import dev.solyanka.client.feature.hotbar.GlassRenderer.rounded
 import dev.solyanka.client.feature.hotbar.HotbarPrimitives.drawRect

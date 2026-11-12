@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only; user-provided AmbientParticles/RotatingItem adaptations. */
 package dev.solyanka.client.feature
 
+import dev.solyanka.core.ModuleIds
+
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import dev.solyanka.client.SolyankaClient as S
@@ -13,7 +15,7 @@ object ArchiveVisuals {
     private var rotationEpoch=System.nanoTime()
     fun resetRotation() {rotationEpoch=System.nanoTime()}
     fun tick(client:Minecraft) {
-        if(!S.isEnabled(S.AMBIENT_PARTICLES) || client.isPaused) return
+        if(!S.isEnabled(ModuleIds.AMBIENT_PARTICLES) || client.isPaused) return
         val level=client.level ?: return;val player=client.player ?: return
         val s=S.currentGeneral().features.ambientParticles
         val type=when(s.particle) {
@@ -27,7 +29,7 @@ object ArchiveVisuals {
         }
     }
     fun transform(pose:PoseStack,arm:HumanoidArm) {
-        if(!S.isEnabled(S.ROTATING_ITEM)) return
+        if(!S.isEnabled(ModuleIds.ROTATING_ITEM)) return
         val c=Minecraft.getInstance();if(c.player==null || c.level==null) return
         val m=RotatingItemLogic.motion(System.nanoTime()-rotationEpoch,S.currentGeneral().features.rotatingItem,arm==HumanoidArm.LEFT)
         pose.translate(m.x,m.y,m.z)

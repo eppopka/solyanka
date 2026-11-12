@@ -2,10 +2,12 @@
  * solyanka instant-save embedded editors for Odin/NoFrills-derived settings. */
 package dev.solyanka.client.ui
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.client.ui.nofrills.*
-import dev.solyanka.ui.InstantSettings
-import dev.solyanka.ui.SettingsNumbers
+import dev.solyanka.model.InstantSettings
+import dev.solyanka.model.SettingsNumbers
 import dev.solyanka.utility.*
 import io.wispforest.owo.ui.core.UIComponent
 
@@ -27,12 +29,38 @@ object FeatureUi {
                 } catch(e:IllegalArgumentException) { errors[key]=e.message ?: "Invalid $label";panel.refreshStatus() }
             }
     }
+    private val routes:Map<String,(String,NoFrillsClickGui,InstantSettings)->Unit> = buildMap {
+        fun route(vararg ids:String,handler:(String,NoFrillsClickGui,InstantSettings)->Unit) {
+            ids.forEach {id->check(put(id,handler)==null) {"Duplicate settings route: $id"}}
+        }
+        route(ModuleIds.ITEM_AURA,ModuleIds.CS2_KNIFE) {id,host,model->FinalCosmeticsUi.open(id,host,model)}
+        route(ModuleIds.BLOCKLIST,ModuleIds.MOVE_HOTBAR,ModuleIds.PIP,ModuleIds.PET,ModuleIds.SIMON,ModuleIds.BESTIARY,ModuleIds.INVISIBUG,ModuleIds.TIKI,ModuleIds.CHINA_HAT,ModuleIds.HALO) {id,host,model->HuntingUi.open(id,host,model)}
+        route(ModuleIds.SPREAD_GUESSER) {_,host,model->spread(host,model)}
+        route(ModuleIds.MUSIC) {_,host,model->MusicUi.open(host,model)}
+        route(ModuleIds.CHAT_COMMANDS) {_,host,model->ChatCommandsUi.open(host,model)}
+        route(ModuleIds.LEAP_MESSAGE) {_,host,model->LeapMessageUi.open(host,model)}
+        route(ModuleIds.SECRET_COUNTER) {_,host,model->ArchiveDungeonUi.open(host,model)}
+        route(ModuleIds.AMBIENT_PARTICLES,ModuleIds.ROTATING_ITEM,ModuleIds.MOVE_HEARTS) {id,host,model->ArchiveVisualUi.open(id,host,model)}
+        route(ModuleIds.MOTION_BLUR,ModuleIds.STOPWATCH,ModuleIds.DVD) {id,host,model->ReleaseOneUi.open(id,host,model)}
+        route(ModuleIds.SKYBOX) {_,host,model->SkyboxUi.open(host,model)}
+        route(ModuleIds.HELD_ITEM) {_,host,model->HeldItemUi.open(host,model)}
+        route(ModuleIds.SCOREBOARD,ModuleIds.THEMED_CHAT) {id,host,model->HudStyleUi.open(id,host,model)}
+        route(ModuleIds.PLAYER_GLOW,ModuleIds.NAMETAGS,ModuleIds.BLOCK_OUTLINE,ModuleIds.TITANIUM) {id,host,model->WorldVisualUi.open(id,host,model)}
+        route(ModuleIds.INVENTORY_HUD,ModuleIds.ITEM_NAME_HUD,ModuleIds.SKILL_HUD) {id,host,model->ExtraHudUi.open(id,host,model)}
+        route(ModuleIds.PUZZLE_SOLVERS) {_,host,model->PuzzleSolversUi.open(host,model)}
+        route(ModuleIds.WAYPOINTS) {_,host,model->WaypointUi.open(host,model)}
+        route(ModuleIds.AMBIENCE,ModuleIds.ASPECT,ModuleIds.FOG,ModuleIds.DOORS,ModuleIds.MAP_INFO,ModuleIds.ICE,ModuleIds.BLAZE,ModuleIds.BEAMS,ModuleIds.MIMIC,ModuleIds.MIMIC_CHEST,ModuleIds.PRICES,ModuleIds.EXPERIMENTS,ModuleIds.SUPPRESSION) {id,host,model->AdvancedUi.open(id,host,model)}
+        route(ModuleIds.PERFORMANCE) {_,host,model->PerformanceUi.open(host,model)}
+        route(ModuleIds.TICK_TIMERS) {_,host,model->timers(View(host,model))}
+        route(ModuleIds.PLAYER_DISPLAY) {_,host,model->player(View(host,model))}
+        route(ModuleIds.ANIMATION,ModuleIds.MIDDLE_FIX,ModuleIds.MIDDLE_OVERRIDE,ModuleIds.CURSOR,ModuleIds.LOADING) {id,host,model->fixes(View(host,model),id)}
+    }
     fun open(id:String,host:NoFrillsClickGui,model:InstantSettings) {
-        val v=View(host,model)
-        when(id) {
-            SolyankaClient.ITEM_AURA,SolyankaClient.CS2_KNIFE->FinalCosmeticsUi.open(id,host,model)
-            SolyankaClient.BLOCKLIST,SolyankaClient.MOVE_HOTBAR,SolyankaClient.PIP,SolyankaClient.PET,SolyankaClient.SIMON,SolyankaClient.BESTIARY,SolyankaClient.INVISIBUG,SolyankaClient.TIKI,SolyankaClient.CHINA_HAT,SolyankaClient.HALO->HuntingUi.open(id,host,model)
-            SolyankaClient.SPREAD_GUESSER -> host.showPanel(SettingsPanel("Spread Guesser",{host.closePanel()},{model.error}) {panel,w ->
+        val handler=routes[id] ?: error("No settings panel registered for $id")
+        handler(id,host,model)
+    }
+    private fun spread(host:NoFrillsClickGui,model:InstantSettings) {
+        host.showPanel(SettingsPanel("Spread Guesser",{host.closePanel()},{model.error}) {panel,w ->
                 val s=model.general.features.spreadGuesser
                 fun change(block:(SpreadGuesserSettings)->SpreadGuesserSettings) {
                     model.updateGeneral {it.copy(features=it.features.copy(spreadGuesser=block(it.features.spreadGuesser)))};panel.refreshStatus()
@@ -45,25 +73,6 @@ object FeatureUi {
                     GuiKit.colorRow(w,"Fill Color",s.fillColor) {color->change {it.copy(fillColor=color)}}
                 )
             })
-            SolyankaClient.MUSIC->MusicUi.open(host,model)
-            SolyankaClient.CHAT_COMMANDS->ChatCommandsUi.open(host,model)
-            SolyankaClient.LEAP_MESSAGE->LeapMessageUi.open(host,model)
-            SolyankaClient.SECRET_COUNTER->ArchiveDungeonUi.open(host,model)
-            SolyankaClient.AMBIENT_PARTICLES,SolyankaClient.ROTATING_ITEM,SolyankaClient.MOVE_HEARTS->ArchiveVisualUi.open(id,host,model)
-            SolyankaClient.MOTION_BLUR,SolyankaClient.STOPWATCH,SolyankaClient.DVD->ReleaseOneUi.open(id,host,model)
-            SolyankaClient.SKYBOX->SkyboxUi.open(host,model)
-            SolyankaClient.HELD_ITEM->HeldItemUi.open(host,model)
-            SolyankaClient.SCOREBOARD,SolyankaClient.THEMED_CHAT->HudStyleUi.open(id,host,model)
-            SolyankaClient.PLAYER_GLOW,SolyankaClient.NAMETAGS,SolyankaClient.BLOCK_OUTLINE,SolyankaClient.TITANIUM->WorldVisualUi.open(id,host,model)
-            SolyankaClient.INVENTORY_HUD,SolyankaClient.ITEM_NAME_HUD,SolyankaClient.SKILL_HUD->ExtraHudUi.open(id,host,model)
-            SolyankaClient.PUZZLE_SOLVERS->PuzzleSolversUi.open(host,model)
-            SolyankaClient.WAYPOINTS->WaypointUi.open(host,model)
-            SolyankaClient.AMBIENCE,SolyankaClient.ASPECT,SolyankaClient.FOG,SolyankaClient.DOORS,SolyankaClient.MAP_INFO,SolyankaClient.ICE,SolyankaClient.BLAZE,SolyankaClient.BEAMS,SolyankaClient.MIMIC,SolyankaClient.MIMIC_CHEST,SolyankaClient.PRICES,SolyankaClient.EXPERIMENTS,SolyankaClient.SUPPRESSION -> AdvancedUi.open(id,host,model)
-            SolyankaClient.PERFORMANCE -> PerformanceUi.open(host,model)
-            SolyankaClient.TICK_TIMERS -> timers(v)
-            SolyankaClient.PLAYER_DISPLAY -> player(v)
-            else -> fixes(v,id)
-        }
     }
     private fun whole(n:Double,label:String):Int { require(n%1.0==0.0 && n in 0.0..10000.0) { "$label must be a whole number (0–10000)" };return n.toInt() }
     private fun timers(v:View) {
@@ -81,7 +90,7 @@ object FeatureUi {
                         { value -> update { current -> current.withHud(id,current.huds().getValue(id).copy(enabled=value)) } },
                         { net.minecraft.client.Minecraft.getInstance().setScreenAndShow(HudEditorScreen()) }))
                 }
-                addAll(HudGlowUi.controls(SolyankaClient.TICK_TIMERS,v.model,panel,w))
+                addAll(HudGlowUi.controls(ModuleIds.TICK_TIMERS,v.model,panel,w))
             }
         })
     }
@@ -109,7 +118,7 @@ object FeatureUi {
                         { value -> update { current -> current.withHud(id,current.huds().getValue(id).copy(enabled=value)) } },
                         { hud(v,false,id) }))
                 }
-                addAll(HudGlowUi.controls(SolyankaClient.PLAYER_DISPLAY,v.model,panel,w))
+                addAll(HudGlowUi.controls(ModuleIds.PLAYER_DISPLAY,v.model,panel,w))
             }
         })
     }
@@ -129,21 +138,21 @@ object FeatureUi {
         })
     }
     private fun fixes(v:View,id:String) {
-        val title=when(id) { SolyankaClient.ANIMATION->"Animation Fix";SolyankaClient.MIDDLE_FIX->"Middle Click Fix";SolyankaClient.MIDDLE_OVERRIDE->"Middle Click Override";SolyankaClient.CURSOR->"No Cursor Reset";else->"No Loading Screen" }
+        val title=when(id) { ModuleIds.ANIMATION->"Animation Fix";ModuleIds.MIDDLE_FIX->"Middle Click Fix";ModuleIds.MIDDLE_OVERRIDE->"Middle Click Override";ModuleIds.CURSOR->"No Cursor Reset";else->"No Loading Screen" }
         v.host.showPanel(SettingsPanel(title,{ v.host.closePanel() },{ v.error() }) { panel,w ->
             val f=v.model.general.features.fixes
             fun update(block:(UtilityFixSettings)->UtilityFixSettings)=v.change(panel) { it.copy(fixes=block(it.fixes)) }
             when(id) {
-                SolyankaClient.ANIMATION -> listOf(
+                ModuleIds.ANIMATION -> listOf(
                     GuiKit.description(w,"Filters the first server POSE metadata entry for your local player only; preserves every other metadata entry and other players. No outgoing packet automation."),
                     GuiKit.toggleRow(w,"SkyBlock Only",f.animationSkyblockOnly) { value -> update { it.copy(animationSkyblockOnly=value) } }
                 )
-                SolyankaClient.MIDDLE_FIX -> listOf(GuiKit.description(w,"Allows the configured pick-item click to reach vanilla's CLONE path in survival container screens. Does not grant creative items. Turn the feature card off to restore vanilla behavior."))
-                SolyankaClient.MIDDLE_OVERRIDE -> listOf(
+                ModuleIds.MIDDLE_FIX -> listOf(GuiKit.description(w,"Allows the configured pick-item click to reach vanilla's CLONE path in survival container screens. Does not grant creative items. Turn the feature card off to restore vanilla behavior."))
+                ModuleIds.MIDDLE_OVERRIDE -> listOf(
                     GuiKit.description(w,"Only eligible manual left PICKUP clicks in SkyBlock chest menus become middle CLONE. Vanilla inventories, shift-clicks, carried items, transactions in blacklisted menus and loadout editing are protected. Review server rules; test harmless menus first."),
                     GuiKit.toggleRow(w,"Debug Feedback",f.middleDebug) { value -> update { it.copy(middleDebug=value) } }
                 )
-                SolyankaClient.CURSOR -> listOf(
+                ModuleIds.CURSOR -> listOf(
                     GuiKit.description(w,"Remembers the cursor when returning to gameplay and restores it on GUI reopen. Expiry counts only in-world ticks with no GUI. World changes/disable clear it; Spirit Leap remains centered."),
                     v.number(panel,w,"cursor.expiry","Clear After Ticks",f.cursorClearTicks.toString(),"0–1200; 0 retains until reset.") { features,n -> features.copy(fixes=features.fixes.copy(cursorClearTicks=whole(n,"Clear After Ticks"))) }
                 )

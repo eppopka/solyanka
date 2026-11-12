@@ -4,7 +4,7 @@ package dev.solyanka.utility
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import dev.solyanka.ui.GuiCatalog
+import dev.solyanka.model.GuiCatalog
 import dev.solyanka.config.ConfigStore
 import java.nio.file.Files
 import kotlin.test.*
@@ -58,13 +58,13 @@ class HudGlowSettingsTest {
  @Test fun `glow controls are appended to each feature panel`() {
   val root=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/ui")
   val sources=mapOf(
-   "HuntingUi.kt" to "if(id in setOf(S.MOVE_HOTBAR,S.PIP,S.PET,S.SIMON)) addAll(HudGlowUi.controls",
-   "ArchiveVisualUi.kt" to "if(id==S.MOVE_HEARTS) addAll(HudGlowUi.controls",
-   "ReleaseOneUi.kt" to "if(id==S.STOPWATCH || id==S.DVD) addAll(HudGlowUi.controls",
+   "HuntingUi.kt" to "if(id in setOf(ModuleIds.MOVE_HOTBAR,ModuleIds.PIP,ModuleIds.PET,ModuleIds.SIMON)) addAll(HudGlowUi.controls",
+   "ArchiveVisualUi.kt" to "if(id==ModuleIds.MOVE_HEARTS) addAll(HudGlowUi.controls",
+   "ReleaseOneUi.kt" to "if(id==ModuleIds.STOPWATCH || id==ModuleIds.DVD) addAll(HudGlowUi.controls",
    "HudStyleUi.kt" to "addAll(HudGlowUi.controls(id,model,panel,w))",
    "ExtraHudUi.kt" to "addAll(HudGlowUi.controls(id,model,panel,w))",
-   "MusicUi.kt" to "addAll(HudGlowUi.controls(dev.solyanka.client.SolyankaClient.MUSIC",
-   "FeatureUi.kt" to "addAll(HudGlowUi.controls(SolyankaClient.PLAYER_DISPLAY"
+   "MusicUi.kt" to "addAll(HudGlowUi.controls(ModuleIds.MUSIC",
+   "FeatureUi.kt" to "addAll(HudGlowUi.controls(ModuleIds.PLAYER_DISPLAY"
   )
   for((file,marker) in sources) {
    val text=Files.readString(root.resolve(file))
@@ -74,7 +74,7 @@ class HudGlowSettingsTest {
    assertTrue(text.substringAfter(marker).substringAfter('\n').trimStart().startsWith("}"),file)
    assertEquals(if(file=="FeatureUi.kt") 2 else 1,Regex("HudGlowUi\\.controls\\(").findAll(text).count(),file)
   }
-  for((file,id) in listOf("FeatureUi.kt" to "SolyankaClient.TICK_TIMERS", "AdvancedUi.kt" to "id", "WaypointUi.kt" to "dev.solyanka.client.SolyankaClient.WAYPOINTS")) {
+  for((file,id) in listOf("FeatureUi.kt" to "ModuleIds.TICK_TIMERS", "AdvancedUi.kt" to "id", "WaypointUi.kt" to "ModuleIds.WAYPOINTS")) {
    val text=Files.readString(root.resolve(file));val marker="addAll(HudGlowUi.controls($id"
    assertTrue(text.contains(marker),file)
    assertTrue(text.substringAfter(marker).substringAfter('\n').trimStart().startsWith("}"),file)
@@ -85,8 +85,11 @@ class HudGlowSettingsTest {
  }
  @Test fun `feature renderers use the shared opt in halo`() {
   val root=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature")
-  val files=listOf("ArchiveHuds.kt","ExtraHuds.kt","FeatureRuntime.kt","PetDisplay.kt","PictureInPicture.kt","ScoreboardHud.kt","StrayInventoryHud.kt","ThemedChat.kt","VanillaHearts.kt","VanillaHotbar.kt","YandexMusic.kt")
+  val files=listOf("ExtraHuds.kt","FeatureRuntime.kt","PetDisplay.kt","PictureInPicture.kt","StrayInventoryHud.kt","ThemedChat.kt","VanillaHearts.kt","VanillaHotbar.kt","YandexMusic.kt")
   files.forEach {assertTrue(Files.readString(root.resolve(it)).contains("HudGlow.draw("),it)}
+  val frame=Files.readString(root.resolve("HudFrame.kt"));assertTrue(frame.contains("HudGlow.draw(g, glowModule"))
+  assertTrue(Files.readString(root.resolve("ArchiveHuds.kt")).contains("HudFrame.draw(g,h,160,34,atX,atY,ModuleIds.STOPWATCH)"))
+  assertTrue(Files.readString(root.resolve("ScoreboardHud.kt")).contains("HudFrame.draw(g,s.hud,layout.width,layout.height,x,atY,ModuleIds.SCOREBOARD)"))
   val draw=Files.readString(root.resolve("HudGlow.kt"))
   assertTrue(draw.contains("f.hudLighting.enabled"));assertTrue(draw.contains("RoundedGlow.draw("))
  }

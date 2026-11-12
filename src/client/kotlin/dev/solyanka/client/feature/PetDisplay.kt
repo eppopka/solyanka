@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only; impl.zip PetDisplay server snapshot adaptation. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.utility.*
 import net.minecraft.client.Minecraft
@@ -26,7 +28,7 @@ object PetDisplay {
   history.clear();active=found.singleOrNull();cached=active!=null;pending=name
  }
  private fun message(text:String,overlay:Boolean){
-  if(overlay || !S.isEnabled(S.PET) || !FeatureRuntime.context.skyblock)return
+  if(overlay || !S.isEnabled(ModuleIds.PET) || !FeatureRuntime.context.skyblock)return
   val t=ChatLogic.plain(text)
   if(t.startsWith("You despawned your ")){clearActive();pending="";return}
   val auto=Regex("^Autopet equipped your (.+?)(?:!|$)").find(t)?.groupValues?.get(1)
@@ -36,7 +38,7 @@ object PetDisplay {
   if(auto!=null && s.autoTitle && (!s.titleDungeonOnly || FeatureRuntime.context.dungeon)){title=active?.reading?.name ?: pending;titleTicks=40}
  }
  fun tick(){
-  val c=Minecraft.getInstance();if(!S.isEnabled(S.PET) || c.level==null || !FeatureRuntime.context.skyblock){reset();return}
+  val c=Minecraft.getInstance();if(!S.isEnabled(ModuleIds.PET) || c.level==null || !FeatureRuntime.context.skyblock){reset();return}
   if(titleTicks>0)titleTicks--
   val screen=c.gui.screen() as? AbstractContainerScreen<*> ?: run {menu=null;selectedSlot=-1;lastSignature="";return}
   if(!Regex("^Pets(?: \\(\\d+/\\d+\\))?$").matches(ChatLogic.plain(screen.title.string))) {menu=null;selectedSlot=-1;return}
@@ -60,17 +62,17 @@ object PetDisplay {
   }
  }
  fun overlay(g:net.minecraft.client.gui.GuiGraphicsExtractor,slot:net.minecraft.world.inventory.Slot,x:Int,y:Int){
-  if(S.isEnabled(S.PET) && S.currentGeneral().features.pet.highlight && menu!=null && slot.index==selectedSlot)g.fill(x,y,x+16,y+16,S.currentGeneral().features.pet.highlightColor)
+  if(S.isEnabled(ModuleIds.PET) && S.currentGeneral().features.pet.highlight && menu!=null && slot.index==selectedSlot)g.fill(x,y,x+16,y+16,S.currentGeneral().features.pet.highlightColor)
  }
- fun sync(){val c=Minecraft.getInstance();if(S.isEnabled(S.PET) && FeatureRuntime.context.skyblock)c.player?.connection?.sendCommand("pets")}
+ fun sync(){val c=Minecraft.getInstance();if(S.isEnabled(ModuleIds.PET) && FeatureRuntime.context.skyblock)c.player?.connection?.sendCommand("pets")}
  fun register(){
   ClientReceiveMessageEvents.GAME.register {m,o->message(m.string,o)};ClientReceiveMessageEvents.GAME_CANCELED.register {m,o->message(m.string,o)}
   HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT,Identifier.fromNamespaceAndPath("solyanka","pet")){g,_->
    val c=Minecraft.getInstance();val s=S.currentGeneral().features.pet;val h=s.hud
-   if(!S.isEnabled(S.PET) || c.level==null || c.gui.hud.isHidden || !FeatureRuntime.context.skyblock || c.gui.screen() is dev.solyanka.client.ui.HudEditorScreen)return@attachElementBefore
+   if(!S.isEnabled(ModuleIds.PET) || c.level==null || c.gui.hud.isHidden || !FeatureRuntime.context.skyblock || c.gui.screen() is dev.solyanka.client.ui.HudEditorScreen)return@attachElementBefore
    if(h.enabled && (active!=null || pending.isNotBlank())) {
     g.pose().pushMatrix();try{g.pose().translate(h.x.toFloat(),h.y.toFloat());g.pose().scale(h.scale.toFloat(),h.scale.toFloat())
-     HudGlow.draw(g,S.PET,0,0,220,57,5)
+     HudGlow.draw(g,ModuleIds.PET,0,0,220,57,5)
      if(s.style!=0)ChromeDraw.panel(g,0,0,220,57,s.background,if(s.style==2)s.accent else 0x40555555,5)
      val a=active;val read=a?.reading
      if(a!=null)g.item(a.stack,5,5)

@@ -2,6 +2,8 @@
  * Adapted from NoFrills InfoTooltips, Utils.getMarketId and ShardData; see NOTICE. */
 package dev.solyanka.client.feature
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.utility.*
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback
@@ -24,7 +26,7 @@ object InfoTooltips {
     // The museum setting is the explicit opt-in. No player/item/server data or credentials are sent.
     private const val ENDPOINT="https://api.hypixel.net/v2/resources/skyblock/items"
     fun tick() {
-        if(!SolyankaClient.isEnabled(SolyankaClient.TOOLTIPS) || !SolyankaClient.currentGeneral().tooltips.museum) return
+        if(!SolyankaClient.isEnabled(ModuleIds.TOOLTIPS) || !SolyankaClient.currentGeneral().tooltips.museum) return
         val now=System.nanoTime()
         if((attempted && now-nextAttempt<0) || !busy.compareAndSet(false,true)) return
         attempted=true;nextAttempt=now+Duration.ofMinutes(10).toNanos()
@@ -32,7 +34,7 @@ object InfoTooltips {
             try {
                 HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(8)).followRedirects(HttpClient.Redirect.NEVER).build().use { http ->
                     val request=HttpRequest.newBuilder(URI.create(ENDPOINT)).timeout(Duration.ofSeconds(12))
-                        .header("User-Agent","solyanka/0.4.0 (Minecraft 26.2)").GET().build()
+                        .header("User-Agent",dev.solyanka.client.ModInfo.userAgent).GET().build()
                     val pending=http.sendAsync(request,BoundedBody.handler(8_388_608))
                     try {
                         val response=pending.get(15,java.util.concurrent.TimeUnit.SECONDS)
@@ -47,7 +49,7 @@ object InfoTooltips {
     private fun ints(tag:CompoundTag)=tag.keySet().associateWith { tag.getIntOr(it,0) }
     fun register() {
         ItemTooltipCallback.EVENT.register { stack,_,_,lines ->
-            if(SolyankaClient.isEnabled(SolyankaClient.TOOLTIPS)) {
+            if(SolyankaClient.isEnabled(ModuleIds.TOOLTIPS)) {
                 try {
                     val data=stack.get(DataComponents.CUSTOM_DATA)?.copyTag()
                     if(data!=null) {

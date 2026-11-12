@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+import dev.solyanka.gfx.PanelGeometry
 import org.junit.jupiter.api.Test
 import kotlin.test.*
 import java.nio.file.Path

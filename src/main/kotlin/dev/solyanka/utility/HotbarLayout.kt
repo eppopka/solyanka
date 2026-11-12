@@ -27,7 +27,7 @@ object HotbarLayout {
   fun cell(b:dev.solyanka.utility.archivehotbar.HotbarBox)=HotbarCell(b.x.roundToInt(),b.y.roundToInt(),b.width.roundToInt(),b.height.roundToInt())
   return StyledHotbarLayout(a.width.roundToInt(),a.height.roundToInt(),cell(a.mainPanel),(0..8).map {cell(a.slot(it.toFloat()))},a.offhand?.let(::cell),a.attackIndicator?.let(::cell),(a.slotSize+a.gap).roundToInt(),s.vertical)
  }
- fun originalGeometry(s:MoveHotbarSettings,offhand:Boolean=false,offhandBefore:Boolean=true,attack:Boolean=false)=dev.solyanka.utility.archivehotbar.HotbarLayout(s.vertical,if(s.style=="vanilla")20f else 22f,if(s.style=="vanilla")0f else s.slotGap.toFloat(),if(s.style=="vanilla")1f else s.padding.toFloat(),offhand,offhandBefore,attack)
+ fun originalGeometry(s:MoveHotbarSettings,offhand:Boolean=false,offhandBefore:Boolean=true,attack:Boolean=false)=dev.solyanka.utility.archivehotbar.HotbarGeometry(s.vertical,if(s.style=="vanilla")20f else 22f,if(s.style=="vanilla")0f else s.slotGap.toFloat(),if(s.style=="vanilla")1f else s.padding.toFloat(),offhand,offhandBefore,attack)
  fun referenceScale(s:MoveHotbarSettings,w:Int,h:Int)=if(s.referenceSizing)dev.solyanka.utility.archivehotbar.HotbarViewport.fromGui(w,h).scale.toDouble() else 1.0
 
  fun anchor(s:MoveHotbarSettings,w:Int,h:Int,g:StyledHotbarLayout):HudSpec {

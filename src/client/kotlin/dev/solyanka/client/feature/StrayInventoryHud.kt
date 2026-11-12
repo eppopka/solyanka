@@ -2,6 +2,8 @@
  * Adapted from camberX/Stray CC0 InventoryHudRenderer, HudChrome, GuiDraw and Theme.
  * Pinned d91fcd4515b4eda647ee8fd7fa99408f473e5718; see audit/stray-ui-blur-source-manifest.json. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.utility.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
@@ -41,7 +43,7 @@ object StrayInventoryHud {
   g.pose().pushMatrix()
   try {
    g.pose().translate(x.toFloat(),y.toFloat());g.pose().scale(scale,scale)
-   HudGlow.draw(g,dev.solyanka.client.SolyankaClient.INVENTORY_HUD,0,0,m.width,m.height)
+   HudGlow.draw(g,ModuleIds.INVENTORY_HUD,0,0,m.width,m.height)
    // Stray classic chrome. No costly frost/starfield pass in solyanka's inventory overlay.
    if(s.background) ChromeDraw.panel(g,0,0,m.width,m.height,s.backgroundColor,LINE,6)
    fun small(text:String,tx:Float,ty:Float,color:Int) {

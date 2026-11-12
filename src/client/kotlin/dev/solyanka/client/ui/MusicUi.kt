@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.ui
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.feature.YandexMusic
 import dev.solyanka.client.ui.nofrills.*
-import dev.solyanka.ui.InstantSettings
-import dev.solyanka.ui.NumberRange
+import dev.solyanka.model.InstantSettings
+import dev.solyanka.model.NumberRange
 import dev.solyanka.utility.MusicSettings
 import net.minecraft.client.Minecraft
 import net.minecraft.util.Util
@@ -42,7 +44,7 @@ object MusicUi {
                 add(GuiKit.section(w,"Lyrics","Lyrics use LRCLIB only when enabled. Missing tracks fall back to a title/artist search."))
                 add(GuiKit.toggleRow(w,"Show Synced Lyrics",s.showLyrics,"Sends the current title, artist and duration to LRCLIB. Lyrics may be missing or mismatched.") {v->update {it.copy(showLyrics=v)}})
                 add(GuiKit.description(w,"Local mode cannot search or change the Yandex queue. Account mode is required for !suggest."))
-                addAll(HudGlowUi.controls(dev.solyanka.client.SolyankaClient.MUSIC,model,panel,w))
+                addAll(HudGlowUi.controls(ModuleIds.MUSIC,model,panel,w))
             }
         })
     }

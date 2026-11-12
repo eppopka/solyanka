@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-3.0-only; impl.zip MoveHotbar native-item/appearance adaptation. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.client.ui.HudEditorScreen
-import dev.solyanka.ui.HudEntry
+import dev.solyanka.model.HudEntry
 import dev.solyanka.utility.*
 import net.fabricmc.fabric.api.client.rendering.v1.hud.*
 import net.minecraft.client.Minecraft
@@ -23,7 +25,7 @@ object VanillaHotbar {
   HudElementRegistry.replaceElement(id){original->HudElement {g,d->
    val c=Minecraft.getInstance();val s=S.currentGeneral().features.moveHotbar;val p=c.cameraEntity as? Player
    val follower=when(id){VanillaHudElements.HOTBAR->true;VanillaHudElements.HELD_ITEM_TOOLTIP->s.moveItemName;VanillaHudElements.INFO_BAR->s.moveInfoBar;else->s.moveXpLevel}
-   if(!S.isEnabled(S.MOVE_HOTBAR) || c.level==null || p==null || p.isSpectator || !follower || !s.hud.enabled){if(id==VanillaHudElements.HOTBAR)lastFrame=0;original.extractRenderState(g,d)}
+   if(!S.isEnabled(ModuleIds.MOVE_HOTBAR) || c.level==null || p==null || p.isSpectator || !follower || !s.hud.enabled){if(id==VanillaHudElements.HOTBAR)lastFrame=0;original.extractRenderState(g,d)}
    else if(s.hud.enabled && !c.gui.hud.isHidden && c.gui.screen() !is HudEditorScreen){
     if(id==VanillaHudElements.HOTBAR) {
      val geo=geometry(s);val at=HotbarLayout.anchor(s,c.window.guiScaledWidth,c.window.guiScaledHeight,geo)
@@ -67,9 +69,9 @@ object VanillaHotbar {
   // Preserve the upstream painter; render its shadow/glow with the shared anti-aliased contour.
   if(s.shadow) RoundedGlow.draw(g,0,2,geo.width,geo.height,corner,0xff000000.toInt(),s.shadowStrength*.38,spread)
   val features=S.currentGeneral().features
-  val lighting=features.hudGlow.style(S.MOVE_HOTBAR,features.hudLighting)
+  val lighting=features.hudGlow.style(ModuleIds.MOVE_HOTBAR,features.hudLighting)
   if(s.glow) RoundedGlow.draw(g,0,0,geo.width,geo.height,corner,lighting.color,s.glowStrength*lighting.intensity*if(s.style=="neon") .35 else .19,spread)
-  HudGlow.draw(g,S.MOVE_HOTBAR,0,0,geo.width,geo.height,corner)
+  HudGlow.draw(g,ModuleIds.MOVE_HOTBAR,0,0,geo.width,geo.height,corner)
   dev.solyanka.client.feature.hotbar.HotbarPainter.background(g,layout,look,seconds)
   val slot=if(sample)0 else player?.inventory?.selectedSlot ?: 0
   val selected=if(sample)slot.toFloat()else selection.update(slot,elapsed,s.slideSpeed.toFloat(),s.smoothSelection)

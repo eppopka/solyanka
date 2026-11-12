@@ -4,7 +4,7 @@
 package dev.solyanka.client.ui.nofrills
 
 import dev.solyanka.utility.InputDevice
-import dev.solyanka.ui.PanelDrag
+import dev.solyanka.model.PanelDrag
 import io.wispforest.owo.ui.component.LabelComponent
 import io.wispforest.owo.ui.component.ButtonComponent
 import io.wispforest.owo.ui.container.*
@@ -36,11 +36,18 @@ class SettingsPanel(
     private lateinit var frame:FlowLayout
     private lateinit var header:FlowLayout
     private var initialPosition:PanelDrag.Point?=null
+    private var openedAt=0L
     override fun position()=drag.position
     override fun placeAt(point:PanelDrag.Point?) {initialPosition=point}
-    private fun reposition() {drag.position?.let {frame.positioning(Positioning.absolute(it.x,it.y))}}
+    private fun reposition() {drag.position?.let {
+        val animated=dev.solyanka.client.SolyankaClient.currentGeneral().features.clickGui.toggleAnimations && !drag.dragging
+        val t=if(animated) ((System.nanoTime()-openedAt)/160_000_000.0).coerceIn(0.0,1.0) else 1.0
+        val offset=((1.0-t)*(1.0-t)*(1.0-t)*10).toInt()
+        frame.positioning(Positioning.absolute(it.x,it.y+offset))
+    }}
     override fun render(g:net.minecraft.client.gui.GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
         val currentInfo=info();if(currentInfo!=lastInfo){lastInfo=currentInfo;refreshStatus()}
+        if(System.nanoTime()-openedAt<170_000_000L && !drag.dragging) reposition()
         adapter.extractRenderState(g,mx,my,delta);adapter.drawTooltip(g,mx,my,delta)
     }
     override fun mouseDragged(event:MouseButtonEvent,dx:Double,dy:Double):Boolean {
@@ -52,7 +59,7 @@ class SettingsPanel(
     }
     override fun mount(width:Int,height:Int) {
         if(::adapter.isInitialized) adapter.dispose()
-        capture=null
+        capture=null;openedAt=System.nanoTime()
         adapter=OwoUIAdapter.createWithoutScreen(0,0,width,height) { w,h -> UIContainers.verticalFlow(w,h) }
         val root=adapter.rootComponent
         val outerWidth=minOf(400,(width-24).coerceAtLeast(100))
@@ -62,13 +69,14 @@ class SettingsPanel(
         frame=UIContainers.verticalFlow(Sizing.fixed(outerWidth),Sizing.content()).apply {
             padding(Insets.of(6));gap(4)
             surface {g,c->
-                dev.solyanka.client.feature.ChromeDraw.panel(g,c.x()+3,c.y()+4,c.width(),c.height(),0x50000000,0x10000000,7)
+                dev.solyanka.client.feature.RoundedGlow.draw(g,c.x(),c.y()+3,c.width(),c.height(),7,0xff000000.toInt(),.8,10)
                 dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.PANEL,GuiKit.LINE,7)
             }
         }
         header=UIContainers.horizontalFlow(Sizing.fixed(w),Sizing.fixed(28)).apply {
+            cursorStyle(CursorStyle.MOVE)
             verticalAlignment(VerticalAlignment.CENTER);padding(Insets.of(4));gap(6)
-            surface {g,c->dev.solyanka.client.feature.ChromeDraw.panel(g,c.x(),c.y(),c.width(),c.height(),GuiKit.RAISED,GuiKit.LINE,4)}
+            surface {g,c->dev.solyanka.client.feature.ChromeDraw.gradientPanel(g,c.x(),c.y(),c.width(),c.height(),dev.solyanka.gfx.ToggleAnimation.mix(GuiKit.RAISED,GuiKit.WHITE,.08),GuiKit.RAISED,GuiKit.LINE,4)}
             if(centeredTitle) child(UIContainers.horizontalFlow(Sizing.fixed(54),Sizing.fixed(1)))
             child(GuiKit.label(title).apply {if(centeredTitle) horizontalTextAlignment(HorizontalAlignment.CENTER);horizontalSizing(Sizing.fixed((w-if(centeredTitle) 136 else 76).coerceAtLeast(1)));tooltip(Component.literal("Drag this title bar to move settings"))})
             child(GuiKit.button("Back",54,true) {capture=null;back()})
@@ -90,7 +98,7 @@ class SettingsPanel(
     fun refreshStatus() {
         if(!::statusLabel.isInitialized) return
         val error=status()
-        statusLabel.text(Component.literal(if(error==null) info() ?: "" else "Not saved: $error"))
+        statusLabel.text(Component.literal(if(error==null) info() ?: "" else error))
         statusLabel.color(Color.ofArgb(if(error==null) GuiKit.MUTED else 0xffff5555.toInt()))
     }
     override fun dispose() { capture=null;drag.end();if(::adapter.isInitialized) adapter.dispose() }

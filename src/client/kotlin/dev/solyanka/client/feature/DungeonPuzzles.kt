@@ -2,6 +2,8 @@
  * Ports Odin WorldScan/RoomRotation/IceFillSolver/BlazeSolver/BeamsSolver/Mimic;
  * (c)2025 odtheking BSD-3-Clause. Mimic Chest adapted from supplied impl.zip. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import com.google.gson.*
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.utility.*
@@ -69,11 +71,11 @@ object DungeonPuzzles {
   if(++ticks%5!=0) return
   val client=Minecraft.getInstance();val level=client.level ?: return;val ctx=FeatureRuntime.context
   DungeonWaypoints.worldGeometry()
-  val active=listOf(SolyankaClient.ICE,SolyankaClient.BLAZE,SolyankaClient.BEAMS,SolyankaClient.MIMIC,SolyankaClient.MIMIC_CHEST,SolyankaClient.DOORS,SolyankaClient.MAP_INFO,SolyankaClient.WAYPOINTS).any(SolyankaClient::isEnabled)
-  if(!ctx.dungeon || !active || ctx.boss && !SolyankaClient.isEnabled(SolyankaClient.MIMIC_CHEST)) {room=null;WorldOverlay.publish(emptyList());return}
+  val active=listOf(ModuleIds.ICE,ModuleIds.BLAZE,ModuleIds.BEAMS,ModuleIds.MIMIC,ModuleIds.MIMIC_CHEST,ModuleIds.DOORS,ModuleIds.MAP_INFO,ModuleIds.WAYPOINTS).any(SolyankaClient::isEnabled)
+  if(!ctx.dungeon || !active || ctx.boss && !SolyankaClient.isEnabled(ModuleIds.MIMIC_CHEST)) {room=null;WorldOverlay.publish(emptyList());return}
   room=if(ctx.boss) null else scan()
   val cfg=SolyankaClient.currentGeneral().features.puzzles;val lines=mutableListOf<WorldOverlay.Segment>();val fills=mutableListOf<WorldOverlay.Fill>();val labels=mutableListOf<WorldOverlay.Label>();val current=room
-  if(current?.name=="Ice Fill" && current.origin!=null && SolyankaClient.isEnabled(SolyankaClient.ICE)) {
+  if(current?.name=="Ice Fill" && current.origin!=null && SolyankaClient.isEnabled(ModuleIds.ICE)) {
    val ids=ice.getAsJsonArray("identifier");val patterns=ice.getAsJsonArray(if(cfg.optimizeIce) "hard" else "easy")
    val route=mutableListOf<Vec3>();var identified=0
    for(floor in 0..2) {
@@ -87,7 +89,7 @@ object DungeonPuzzles {
    }
    if(identified==3) route.zipWithNext().forEach {(a,b)->lines.add(WorldOverlay.Segment(a,b,0xff55ffff.toInt(),cfg.iceDepthTest))}
   }
-  if(current?.name in setOf("Higher Blaze","Lower Blaze") && SolyankaClient.isEnabled(SolyankaClient.BLAZE)) {
+  if(current?.name in setOf("Higher Blaze","Lower Blaze") && SolyankaClient.isEnabled(ModuleIds.BLAZE)) {
    val candidates=level.entitiesForRendering().filterIsInstance<ArmorStand>().filter { it.isAlive && it.id !in deadTags && DungeonLogic.tile(it.blockX,it.blockZ)==(current!!.tx to current.tz) }
     .mapNotNull { e -> DungeonLogic.blazeHealth(e.name.string)?.let {hp->e to hp} }.sortedBy {if(current?.name=="Lower Blaze") -it.second else it.second}
    var previous:Vec3?=null
@@ -95,15 +97,15 @@ object DungeonPuzzles {
     WorldOverlay.box(lines,b,color,cfg.blazeDepthTest);if(cfg.blazeLines && previous!=null && i<=3) lines.add(WorldOverlay.Segment(previous!!,b.center,color,cfg.blazeDepthTest));previous=b.center
    }
   }
-  if(current?.name=="Creeper Beams" && current.origin!=null && SolyankaClient.isEnabled(SolyankaClient.BEAMS)) beams.forEachIndexed { i,v ->
+  if(current?.name=="Creeper Beams" && current.origin!=null && SolyankaClient.isEnabled(ModuleIds.BEAMS)) beams.forEachIndexed { i,v ->
    val a=current.real(GridPos(v[0],v[1],v[2]))!!;val b=current.real(GridPos(v[3],v[4],v[5]))!!
    if(level.hasChunkAt(a) && level.hasChunkAt(b) && level.getBlockState(a).block==Blocks.SEA_LANTERN && level.getBlockState(b).block==Blocks.SEA_LANTERN) {
     val color=colors[i%colors.size];WorldOverlay.box(lines,AABB(a),color,cfg.beamDepthTest);WorldOverlay.box(lines,AABB(b),color,cfg.beamDepthTest)
     if(cfg.beamLines) lines.add(WorldOverlay.Segment(Vec3.atCenterOf(a),Vec3.atCenterOf(b),color,false))
    }
   }
-  if(!ctx.boss && SolyankaClient.isEnabled(SolyankaClient.MIMIC) && !mimicKilled && ctx.floor in setOf(6,7)) level.entitiesForRendering().filterIsInstance<Zombie>().filter {it.isBaby && it.isAlive}.forEach { WorldOverlay.box(lines,it.boundingBox.inflate(0.08),0xffff5555.toInt(),true) }
-  if(SolyankaClient.isEnabled(SolyankaClient.MIMIC_CHEST)) {
+  if(!ctx.boss && SolyankaClient.isEnabled(ModuleIds.MIMIC) && !mimicKilled && ctx.floor in setOf(6,7)) level.entitiesForRendering().filterIsInstance<Zombie>().filter {it.isBaby && it.isAlive}.forEach { WorldOverlay.box(lines,it.boundingBox.inflate(0.08),0xffff5555.toInt(),true) }
+  if(SolyankaClient.isEnabled(ModuleIds.MIMIC_CHEST)) {
    chestCountdown-=5
    if(chestCountdown<=0) {
     chestCountdown=20
@@ -122,13 +124,13 @@ object DungeonPuzzles {
   val ctx=FeatureRuntime.context
   if(!ctx.dungeon || ctx.boss || id!=3) return
   if(e is Blaze) deadTags.add(e.id+1)
-  if(SolyankaClient.isEnabled(SolyankaClient.MIMIC) && DungeonLogic.mimicDeath(id,e is Zombie && e.isBaby,ctx.floor,true,mimicKilled)) {
+  if(SolyankaClient.isEnabled(ModuleIds.MIMIC) && DungeonLogic.mimicDeath(id,e is Zombie && e.isBaby,ctx.floor,true,mimicKilled)) {
    mimicKilled=true;message("Mimic Killed!",SolyankaClient.currentGeneral().features.puzzles.announceMimic)
   }
  }
  private fun message(text:String,party:Boolean) {val p=Minecraft.getInstance().player ?: return;p.sendSystemMessage(Component.literal("[solyanka] $text"));if(party) p.connection.sendCommand("pc $text")}
  fun register() { WorldOverlay.register();ClientReceiveMessageEvents.GAME.register {component,overlay ->
-  if(!overlay && (SolyankaClient.isEnabled(SolyankaClient.MIMIC) || SolyankaClient.isEnabled(SolyankaClient.MAP_INFO)) && FeatureRuntime.context.dungeon && !FeatureRuntime.context.boss) {
+  if(!overlay && (SolyankaClient.isEnabled(ModuleIds.MIMIC) || SolyankaClient.isEnabled(ModuleIds.MAP_INFO)) && FeatureRuntime.context.dungeon && !FeatureRuntime.context.boss) {
    val cfg=SolyankaClient.currentGeneral().features.puzzles
    when(ChatLogic.plain(component.string)) {
     "A Prince falls. +1 Bonus Score" ->if(!princeKilled) {princeKilled=true;message("Prince Killed!",cfg.announcePrince)}

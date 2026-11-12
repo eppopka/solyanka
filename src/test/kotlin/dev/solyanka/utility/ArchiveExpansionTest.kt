@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+import dev.solyanka.gfx.OverlayLine
 import kotlin.test.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir

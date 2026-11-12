@@ -12,6 +12,6 @@ abstract class ThemedChatMixin {
  @WrapMethod(method=["extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;IIILnet/minecraft/client/gui/components/ChatComponent\$DisplayMode;Z)V"])
  private fun solyankaPane(g:GuiGraphicsExtractor,font:Font,ticks:Int,mx:Int,my:Int,mode:ChatComponent.DisplayMode,click:Boolean,original:Operation<Void>) {
   val previous=ThemedChat.begin(g,this as Any as ChatComponent,ticks,mode)
-  try {original.call(g,font,ticks,mx,my,mode,click)} finally {ThemedChat.end(previous)}
+  try {original.call(g,font,ticks,mx,my,mode,click);ThemedChat.topFade(g,this as Any as ChatComponent,ticks,mode)} finally {ThemedChat.end(previous)}
  }
 }

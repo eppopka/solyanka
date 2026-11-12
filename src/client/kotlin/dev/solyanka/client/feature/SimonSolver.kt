@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only; impl.zip SimonSays adaptation, manual solver. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.utility.*
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
@@ -23,7 +25,7 @@ object SimonSolver {
  private var phase=false;private var monitoring=false;private var tick=0L;private var began=-1L
  private var quiet=0;private var canBreak=false;private var broken=false
  fun reset() {logic.reset();phase=false;monitoring=false;tick=0;began=-1;quiet=0;canBreak=false;broken=false;WorldOverlay.clear("simon")}
- private fun eligible()=S.isEnabled(S.SIMON) && FeatureRuntime.context.let {it.dungeon && it.floor==7 && it.boss} && Minecraft.getInstance().level!=null && Minecraft.getInstance().player!=null
+ private fun eligible()=S.isEnabled(ModuleIds.SIMON) && FeatureRuntime.context.let {it.dungeon && it.floor==7 && it.boss} && Minecraft.getInstance().level!=null && Minecraft.getInstance().player!=null
  private fun active()=eligible() && phase
  fun observe(pos:BlockPos,state:BlockState) {
   if(!active())return;val level=Minecraft.getInstance().level ?: return
@@ -92,7 +94,7 @@ object SimonSolver {
   HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT,Identifier.fromNamespaceAndPath("solyanka","simon")) {g,_->
    val c=Minecraft.getInstance();val s=S.currentGeneral().features.simon;val h=s.hud
    if(active() && s.progress && h.enabled && logic.stage>0 && !c.gui.hud.isHidden && c.gui.screen() !is dev.solyanka.client.ui.HudEditorScreen) {
-    g.pose().pushMatrix();try {g.pose().translate(h.x.toFloat(),h.y.toFloat());g.pose().scale(h.scale.toFloat(),h.scale.toFloat());val text="SS: ${logic.stage}/5";HudGlow.draw(g,S.SIMON,0,0,c.font.width(text),9,0);g.text(c.font,text,0,0,h.color,true)}finally{g.pose().popMatrix()}
+    g.pose().pushMatrix();try {g.pose().translate(h.x.toFloat(),h.y.toFloat());g.pose().scale(h.scale.toFloat(),h.scale.toFloat());val text="SS: ${logic.stage}/5";HudGlow.draw(g,ModuleIds.SIMON,0,0,c.font.width(text),9,0);g.text(c.font,text,0,0,h.color,true)}finally{g.pose().popMatrix()}
    }
   }
  }

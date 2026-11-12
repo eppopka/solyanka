@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.*
 import com.google.gson.*
 import java.nio.file.Path
-import dev.solyanka.ui.HudLayout
+import dev.solyanka.model.HudLayout
 class ReleaseOneTest {
  @Test fun `new feature defaults migrate from old empty objects`() {assertEquals(FeatureSettings(),FeatureCodec.decode(JsonObject()))}
  @Test fun `all blur modes roundtrip and remain bounded`() {for(mode in BlurPolicy.modes) {val f=FeatureSettings(motionBlur=MotionBlurSettings(mode=mode));assertEquals(f,FeatureCodec.decode(Gson().toJsonTree(f).asJsonObject));assertTrue(BlurPolicy.factor(f.motionBlur) in 0f..1f)}}
@@ -35,6 +35,6 @@ class ReleaseOneTest {
  @Test fun `dvd reset and negative monotonic epoch cannot flash before hit`() {val d=DvdMotion();assertEquals(0,d.flashAlpha(-100_000_000));d.step(0,119,65,DvdSettings());d.step(50_000_000,119,65,DvdSettings());d.reset();assertEquals(0,d.cornerHits);assertEquals(24.0,d.x);assertEquals(0,d.flashAlpha(-1))}
  @Test fun `dvd coordinates stay bounded over resize and repeated bounces`() {val d=DvdMotion();for(i in 0..500) {val w=if(i%2==0) 150 else 600;val h=if(i%3==0) 90 else 400;d.step(i*40_000_000L,w,h,DvdSettings());assertTrue(d.x in 0.0..(w-92).toDouble());assertTrue(d.y in 0.0..(h-38).toDouble());assertTrue(d.colorIndex in 0..5)}}
  @Test fun `blur uses disjoint history targets and native target format`() {val s=source("feature/TemporalBlur.kt");for(token in listOf("false,format)","GpuFormat.RGBA16_FLOAT","copy(next,main);read=next;write=previous","pass.draw(3,1,0,0)","now-lastFrame>500_000_000L","if(!seeded","writeToBuffer","destroyBuffers()")) assertTrue(s.contains(token),token);assertTrue(s.indexOf("encoder.writeToBuffer")<s.indexOf("encoder.createRenderPass"));assertFalse(s.contains("copyDepthFrom"));assertFalse(s.contains("getMainRenderTarget"))}
- @Test fun `timer input precedes command module gate and is world only`() {val s=source("SolyankaClient.kt");assertTrue(s.indexOf("ArchiveHuds.input(device,key)")<s.indexOf("if (!isEnabled(KEYBINDS))"));val a=source("feature/ArchiveHuds.kt");for(token in listOf("c.gui.screen()!=null","!c.isWindowActive","sendSystemMessage","soundPending=false")) assertTrue(a.contains(token));assertFalse(a.contains("sendCommand"));assertFalse(a.contains("sendChat"))}
+ @Test fun `timer input precedes command module gate and is world only`() {val s=source("InputRouter.kt");assertTrue(s.indexOf("ArchiveHuds.input(device,key)")<s.indexOf("if (!S.isEnabled(ModuleIds.KEYBINDS))"));val a=source("feature/ArchiveHuds.kt");for(token in listOf("c.gui.screen()!=null","!c.isWindowActive","sendSystemMessage","soundPending=false")) assertTrue(a.contains(token));assertFalse(a.contains("sendCommand"));assertFalse(a.contains("sendChat"))}
  private fun source(path:String)=Path.of("src/client/kotlin/dev/solyanka/client/$path").toFile().readText()
 }

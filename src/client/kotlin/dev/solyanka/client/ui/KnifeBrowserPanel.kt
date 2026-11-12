@@ -1,11 +1,13 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Stray Cs2KnifeScreen CC0 layout/preview concepts; native embedded solyanka adaptation. */
 package dev.solyanka.client.ui
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.client.cs2.*
 import dev.solyanka.client.feature.ChromeDraw
 import dev.solyanka.client.ui.nofrills.*
-import dev.solyanka.ui.*
+import dev.solyanka.model.*
 import dev.solyanka.utility.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
@@ -86,11 +88,11 @@ class KnifeBrowserPanel(private val host:NoFrillsClickGui,private val model:Inst
    surface(g,Box(0,0,W,H),0xf0181b20.toInt(),0xff41464e.toInt())
    val choice=selection();val names=Cs2Knives.knives();val current=names.firstOrNull {it.id()==choice.knife}
    text(g,"CS2 Knife",12,10);text(g,if(editingUuid==null)"Global selection"else "Item: ${binding()?.label ?: "removed"}",12,25,muted,325)
-   button(g,if(S.isEnabled(S.CS2_KNIFE))"Enabled"else "Enable",Box(148,8,65,18),S.isEnabled(S.CS2_KNIFE)) {val states=S.states().toMutableMap();states[S.CS2_KNIFE]=!S.isEnabled(S.CS2_KNIFE);notice=S.applySettings(S.currentProfile(),states)}
+   button(g,if(S.isEnabled(ModuleIds.CS2_KNIFE))"Enabled"else "Enable",Box(148,8,65,18),S.isEnabled(ModuleIds.CS2_KNIFE)) {val states=S.states().toMutableMap();states[ModuleIds.CS2_KNIFE]=!S.isEnabled(ModuleIds.CS2_KNIFE);notice=S.applySettings(S.currentProfile(),states)}
    button(g,"Inspect",Box(222,8,59,18)){Cs2Viewmodel.inspect()}
    button(g,"Presets",Box(286,8,57,18),tab==3){tab=3}
    button(g,"Global",Box(347,8,56,18),editingUuid==null){editingUuid=null;seedBox?.value=selection().seed.toString();previewChanged=System.nanoTime()}
-   button(g,"Assets / More",Box(410,8,104,18)){FinalCosmeticsUi.open(S.CS2_KNIFE,host,model,true)}
+   button(g,"Assets / More",Box(410,8,104,18)){FinalCosmeticsUi.open(ModuleIds.CS2_KNIFE,host,model,true)}
    button(g,"X",Box(520,8,18,18)){host.closePanel()}
    g.fill(12,38,W-12,39,0xff50565f.toInt())
    surface(g,Box(12,46,122,18));knifeSearch?.visible=true
@@ -143,7 +145,7 @@ class KnifeBrowserPanel(private val host:NoFrillsClickGui,private val model:Inst
    button(g,"Animations: ${if(settings().animations)"On"else "Off"}",Box(332,278,204,18),settings().animations){update {it.copy(animations=!it.animations)}}
    button(g,"Third person: ${if(settings().thirdPerson)"On"else "Off"}",Box(332,300,204,18),settings().thirdPerson){update {it.copy(thirdPerson=!it.thirdPerson)}}
    fields().forEach {it.extractRenderState(g,mouse.first.toInt(),mouse.second.toInt(),delta)}
-   text(g,model.error?.let {"Not saved: $it"} ?: notice ?: Cs2Knives.status(),12,320,if(model.error!=null)0xffff9090.toInt()else muted,310)
+   text(g,model.error ?: notice ?: Cs2Knives.status(),12,320,if(model.error!=null)0xffff9090.toInt()else muted,310)
   }finally {g.pose().popMatrix()}
  }
  private fun bindings(g:GuiGraphicsExtractor) {

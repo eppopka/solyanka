@@ -1,11 +1,13 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.client.ui
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.feature.DungeonWaypoints
 import dev.solyanka.client.feature.FeatureRuntime
 import dev.solyanka.client.ui.nofrills.*
-import dev.solyanka.ui.InstantSettings
-import dev.solyanka.ui.NumberRange
+import dev.solyanka.model.InstantSettings
+import dev.solyanka.model.NumberRange
 import dev.solyanka.utility.*
 import net.minecraft.client.Minecraft
 
@@ -115,7 +117,7 @@ object WaypointUi {
    add(GuiKit.row(w).apply {child(GuiKit.button("Reload packs",100) {act {DungeonWaypoints.reload()};refresh()});child(GuiKit.button("Reset collected",115) {act {DungeonWaypoints.resetClicked()}})})
    add(GuiKit.description(w,"Current area: ${FeatureRuntime.context.area.ifBlank {"not recognized"}}"))
    runCatching {DungeonWaypoints.roomRows()}.getOrDefault(emptyList()).forEachIndexed {i,way->add(GuiKit.row(w).apply {child(GuiKit.label("${i+1}: ${way.blockPos} ${way.title}").apply {horizontalSizing(io.wispforest.owo.ui.core.Sizing.fixed(w-100))});child(GuiKit.button("Delete",60) {act {DungeonWaypoints.remove(i)};refresh()})})}
-   addAll(HudGlowUi.controls(dev.solyanka.client.SolyankaClient.WAYPOINTS,model,p,w))
+   addAll(HudGlowUi.controls(ModuleIds.WAYPOINTS,model,p,w))
   }}
   host.showPanel(panel)
  }

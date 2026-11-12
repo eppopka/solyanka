@@ -2,6 +2,8 @@
  * Adapted from WhatYouThing/NoFrills ChatTweaks; see NOTICE. */
 package dev.solyanka.client.feature
 
+import dev.solyanka.core.ModuleIds
+
 import dev.solyanka.client.SolyankaClient
 import dev.solyanka.client.mixin.ChatComponentAccessor
 import dev.solyanka.utility.*
@@ -13,7 +15,7 @@ import kotlin.math.floor
 
 object ChatTweaks {
     fun copy(client:Minecraft,device:InputDevice,key:Int):Boolean {
-        if(!SolyankaClient.isEnabled(SolyankaClient.CHAT) || client.gui.screen() !is ChatScreen || !client.isWindowActive) return false
+        if(!SolyankaClient.isEnabled(ModuleIds.CHAT) || client.gui.screen() !is ChatScreen || !client.isWindowActive) return false
         val s=SolyankaClient.currentGeneral().chat
         val single=s.copyLine.matches(device,key)
         if(!single && !s.copy.matches(device,key)) return false

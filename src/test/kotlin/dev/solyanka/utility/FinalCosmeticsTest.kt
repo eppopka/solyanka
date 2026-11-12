@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+import dev.solyanka.gfx.ItemAuraMesh
 import org.junit.jupiter.api.Test
 import org.joml.Matrix4f
 import kotlin.test.*

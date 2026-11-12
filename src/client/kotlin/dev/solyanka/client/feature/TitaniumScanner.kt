@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only
  * Stray CC0 TitaniumTracker/MiningTracker adaptation; bounded loaded-only scan. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import com.google.gson.JsonParser
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.utility.*
@@ -25,7 +27,7 @@ object TitaniumScanner {
  fun reset() {jobs.clear();candidates.clear();plan=null;cooldown=0;WorldOverlay.clear("titanium")}
  fun tick(c:Minecraft) {
   val level=c.level;val player=c.player
-  if(level==null || player==null || !S.isEnabled(S.TITANIUM) || !TitaniumLogic.miningArea(FeatureRuntime.context.skyblock,FeatureRuntime.context.area)) {reset();return}
+  if(level==null || player==null || !S.isEnabled(ModuleIds.TITANIUM) || !TitaniumLogic.miningArea(FeatureRuntime.context.skyblock,FeatureRuntime.context.area)) {reset();return}
   val s=S.currentGeneral().features.worldVisuals.titanium
   val tab=c.connection?.listedOnlinePlayers?.sortedWith(compareByDescending<net.minecraft.client.multiplayer.PlayerInfo> {it.tabListOrder}.thenBy {if(it.gameMode==net.minecraft.world.level.GameType.SPECTATOR) 1 else 0}.thenBy {it.team?.name ?: ""}.thenBy(String.CASE_INSENSITIVE_ORDER) {it.profile.name})?.mapNotNull {it.tabListDisplayName?.string} ?: emptyList()
   val filter=TitaniumLogic.filter(TitaniumLogic.commissions(tab),s.all)

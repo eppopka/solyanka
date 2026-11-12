@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only; Stray CC0 FrameBlendingManager temporal modes, bounded native 26.2 integration. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient as S
 import dev.solyanka.utility.*
 import com.mojang.blaze3d.*
@@ -43,7 +45,7 @@ object TemporalBlur {
   if(!RenderSystem.isOnRenderThread()) return
   if(cleanup) close()
   val c=Minecraft.getInstance();val s=S.currentGeneral().features.motionBlur
-  if(!S.isEnabled(S.MOTION_BLUR) || s.strength==0.0 || c.level==null || s.pauseInMenus && c.gui.screen()!=null) {if(read!=null || frameOutput!=null) close();return}
+  if(!S.isEnabled(ModuleIds.MOTION_BLUR) || s.strength==0.0 || c.level==null || s.pauseInMenus && c.gui.screen()!=null) {if(read!=null || frameOutput!=null) close();return}
   if(failed) return
   try {draw(target,s)} catch(e:Exception) {close();failed=true;log.error("Motion Blur disabled for this session; native frame retained. Toggle to retry.",e)}
  }

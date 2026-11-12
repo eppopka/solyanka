@@ -1,11 +1,13 @@
 /* SPDX-License-Identifier: GPL-3.0-only; Stray CC0 selection contour adaptation. */
 package dev.solyanka.client.feature
+
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient as S
 import net.fabricmc.fabric.api.client.rendering.v1.level.*
 import net.minecraft.client.Minecraft
 
 object BlockSelection {
- private fun enabled()=S.isEnabled(S.BLOCK_OUTLINE) && !Minecraft.getInstance().gui.hud.isHidden
+ private fun enabled()=S.isEnabled(ModuleIds.BLOCK_OUTLINE) && !Minecraft.getInstance().gui.hud.isHidden
  fun register() {LevelRenderEvents.BEFORE_BLOCK_OUTLINE.register {_:LevelRenderContext,outline:net.minecraft.client.renderer.state.level.BlockOutlineRenderState?-> !enabled() || outline==null || outline.shape().isEmpty}}
  fun collect(c:LevelRenderContext,fills:MutableList<WorldOverlay.Fill>) {
   if(!enabled()) return
