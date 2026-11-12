@@ -27,20 +27,23 @@ import java.net.http.HttpResponse
 import java.net.http.WebSocket
 import java.nio.ByteBuffer
 import java.security.MessageDigest
+import java.security.SecureRandom
 import java.time.Duration
 import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.CancellationException
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.UUID
+import java.util.Base64
 import kotlin.math.roundToInt
 
 /** Windows local media session; LRCLIB is contacted only when lyrics are explicitly enabled. */
 object YandexMusic {
     private const val CLIENT_ID="23cabbbdc6cd418abb4b39c32c41195d"
-    private const val CLIENT_SECRET="53bc75238f0c4d08a118e51fe9203300"
     private val generation=AtomicInteger()
     private val localLock=Any()
     private var localProcess:Process?=null
@@ -48,8 +51,9 @@ object YandexMusic {
     private data class Request(val query:String,val callback:(Boolean,String)->Unit)
     @Volatile var status="Disconnected";private set
     @Volatile private var local:LocalPlayback?=null
-    data class Verification(val url:URI,val code:String)
+    data class Verification(val url:URI)
     @Volatile var verification:Verification?=null;private set
+    @Volatile private var pendingAuthorizationCode:CompletableFuture<String>?=null
     @Volatile private var socket:WebSocket?=null
     @Volatile private var authenticated=false
     @Volatile private var retryAfterNanos:Long?=null
@@ -208,11 +212,19 @@ object YandexMusic {
 
     fun disconnect() {
         generation.incrementAndGet()
+        pendingAuthorizationCode?.completeExceptionally(CancellationException("Disconnected"));pendingAuthorizationCode=null
         synchronized(localLock) {localProcess?.destroyForcibly();localProcess=null}
         authenticated=false;socket?.abort();socket=null;verification=null
         local=null;lyrics=null;requestedKey="";lyricRetryAtMillis=0L;lyricJob?.cancel(true);lyricJob=null
         lyricsEnabled=false;status="Disconnected"
         while(true) {val request=requests.poll() ?: break;request.callback(false,"Music disconnected")}
+    }
+    fun submitVerificationCode(value:String):Boolean {
+        if(!MusicLogic.authorizationCodeValid(value)) {status="Enter the 7-digit authorization code";return false}
+        val pending=pendingAuthorizationCode ?: run {status="No sign-in request is waiting";return false}
+        val submitted=pending.complete(value)
+        if(submitted) status="Checking sign-in code…"
+        return submitted
     }
     fun connectLocalWindows() {
         if(!S.isEnabled(ModuleIds.MUSIC)) {status="Enable Yandex Music first";return}
@@ -261,30 +273,28 @@ object YandexMusic {
             var ws:WebSocket?=null
             var stage="Sign-in code"
             try {
-                val deviceCodeId=UUID.randomUUID().toString().replace("-","").take(12)
-                val code=httpJson("https://oauth.yandex.ru/device/code",form=mapOf("client_id" to CLIENT_ID,"device_id" to deviceCodeId,"device_name" to "Solyanka"))
-                val url=URI(code.get("verification_url").asString)
-                require(url.scheme=="https" && url.host in setOf("oauth.yandex.ru","ya.ru") && url.userInfo==null && url.port==-1)
-                val userCode=code.get("user_code").asString
-                require(userCode.matches(Regex("[A-Za-z0-9-]{1,32}")))
-                val privateCode=code.get("device_code").asString
-                val expires=code.get("expires_in").asLong.coerceIn(10,900)
-                var interval=code.get("interval").asLong.coerceIn(3,30)
-                val deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(expires)
-                verification=Verification(url,userCode);status="${url.host}${url.path}  code: $userCode"
+                val verifierBytes=ByteArray(32).also {SecureRandom().nextBytes(it)}
+                val verifier=Base64.getUrlEncoder().withoutPadding().encodeToString(verifierBytes)
+                val challenge=MusicLogic.pkceChallenge(verifier)
+                val redirectUri="https://oauth.yandex.com/verification_code"
+                val params=linkedMapOf(
+                    "response_type" to "code","client_id" to CLIENT_ID,
+                    "device_id" to UUID.randomUUID().toString(),"device_name" to "Solyanka",
+                    "redirect_uri" to redirectUri,"code_challenge" to challenge,
+                    "code_challenge_method" to "S256"
+                )
+                val url=URI("https://oauth.yandex.com/authorize?"+params.entries.joinToString("&") {enc(it.key)+"="+enc(it.value)})
+                val pending=CompletableFuture<String>();pendingAuthorizationCode=pending
+                verification=Verification(url);status="Sign in, then enter the 7-digit authorization code"
                 stage="Sign-in"
-                var token:String?=null
-                while(token==null && gen==generation.get() && System.nanoTime()<deadline) {
-                    Thread.sleep(interval*1000)
-                    if(gen!=generation.get()) return@Thread
-                    val result=httpJson("https://oauth.yandex.ru/token",form=mapOf(
-                        "grant_type" to "device_code","code" to privateCode,
-                        "client_id" to CLIENT_ID,"client_secret" to CLIENT_SECRET
-                    ))
-                    if(result.get("error")?.asString=="slow_down") interval=(interval+5).coerceAtMost(30)
-                    token=result.get("access_token")?.asString
-                }
-                val auth=token ?: throw MusicServiceFailure("code expired")
+                val authorizationCode=pending.get(10,TimeUnit.MINUTES)
+                if(gen!=generation.get()) return@Thread
+                pendingAuthorizationCode=null
+                val tokenResponse=httpJson("https://oauth.yandex.com/token",form=mapOf(
+                    "grant_type" to "authorization_code","code" to authorizationCode,
+                    "client_id" to CLIENT_ID,"redirect_uri" to redirectUri,"code_verifier" to verifier
+                ))
+                val auth=tokenResponse.get("access_token")?.asString ?: throw MusicServiceFailure("authorization failed")
                 if(gen!=generation.get()) return@Thread
                 val device=deviceId(auth)
                 verification=null;status="Connecting…"
@@ -385,7 +395,7 @@ object YandexMusic {
             } catch(e:Exception) {if(gen==generation.get()) status=MusicLogic.failure(stage,e)}
             finally {
                 ws?.abort()
-                if(gen==generation.get()) {authenticated=false;socket=null;verification=null;while(true) {val request=requests.poll() ?: break;request.callback(false,"Music disconnected")}}
+                if(gen==generation.get()) {pendingAuthorizationCode=null;authenticated=false;socket=null;verification=null;while(true) {val request=requests.poll() ?: break;request.callback(false,"Music disconnected")}}
             }
         },"solyanka-yandex-music").apply {isDaemon=true;start()}
     }

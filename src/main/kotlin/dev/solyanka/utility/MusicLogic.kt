@@ -4,6 +4,8 @@ package dev.solyanka.utility
 import com.google.gson.*
 import java.net.http.HttpTimeoutException
 import java.net.http.WebSocketHandshakeException
+import java.security.MessageDigest
+import java.util.Base64
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.CompletionException
 import java.util.concurrent.TimeoutException
@@ -25,6 +27,13 @@ class MusicServerFailure(val code:Int?,val retryDelays:List<Long>,val goAway:Boo
 )
 
 object MusicLogic {
+    fun authorizationCodeValid(value:String):Boolean = value.matches(Regex("[0-9]{7}"))
+    fun pkceChallenge(verifier:String):String {
+        require(verifier.matches(Regex("[A-Za-z0-9._~-]{43,128}")))
+        val digest=MessageDigest.getInstance("SHA-256").digest(verifier.toByteArray(Charsets.US_ASCII))
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(digest)
+    }
+
     fun failure(stage:String,error:Throwable):String {
         var cause=error
         while((cause is ExecutionException || cause is CompletionException) && cause.cause!=null) cause=cause.cause!!
