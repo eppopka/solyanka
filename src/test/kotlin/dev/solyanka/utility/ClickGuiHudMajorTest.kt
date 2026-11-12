@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+
+import dev.solyanka.testutil.readSourceText
 import dev.solyanka.gfx.ClickGradientMath
 import dev.solyanka.gfx.RoundedGlowGeometry
 
@@ -94,21 +96,21 @@ class ClickGuiHudMajorTest {
  }
  @Test fun `145 Dev settings action and logo-only gradient are wired`() {
   assertEquals("Dev",GuiCatalog.search("GUI Settings").values.flatten().single {it.id==GuiCatalog.GUI_SETTINGS}.category)
-  val ui=Files.readString(Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt"))
+  val ui=Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt").readSourceText()
   assertEquals(1,Regex("ClickGradient\\.text\\(").findAll(ui).count());assertTrue(ui.contains("ClickGradient.text(\"solyanka\""))
   assertFalse(ui.contains("gradientHeaders"));assertTrue(ui.contains("info.id==GuiCatalog.GUI_SETTINGS ||"))
   assertTrue(ui.contains("palette.disabledBorderColor"));assertFalse(ui.contains("GuiKit.button(\"GUI Settings\""))
-  val panel=Files.readString(Path.of("src/client/kotlin/dev/solyanka/client/ui/ClickGuiSettingsUi.kt"))
+  val panel=Path.of("src/client/kotlin/dev/solyanka/client/ui/ClickGuiSettingsUi.kt").readSourceText()
   assertTrue(panel.contains("Disabled Modules Border Color"));assertTrue(panel.contains("Soft HUD Glow"))
  }
  @Test fun `scoreboard editor uses live rows and actual bounds`() {
   val root=Path.of("src/client/kotlin/dev/solyanka/client")
-  val s=Files.readString(root.resolve("feature/ScoreboardHud.kt"))
+  val s=root.resolve("feature/ScoreboardHud.kt").readSourceText()
   assertTrue(s.contains("val live=layout()"));assertTrue(s.contains("board.listPlayerScores(objective)"))
   assertTrue(s.contains("editorEntry(entry,width,live)"));assertTrue(s.contains("drawEditor(g,x,y,live)"))
   assertFalse(s.contains("layout(true)"));assertFalse(s.contains("Late Spring 12th"))
   assertTrue(s.contains("baseWidth=w,baseHeight=h"));assertTrue(s.contains("No active scoreboard"))
-  val editor=Files.readString(root.resolve("ui/HudEditorScreen.kt"))
+  val editor=root.resolve("ui/HudEditorScreen.kt").readSourceText()
   assertTrue(editor.contains("ScoreboardHud.editorEntry"));assertTrue(editor.contains("anchorRight=scoreboardAnchor"))
  }
 }

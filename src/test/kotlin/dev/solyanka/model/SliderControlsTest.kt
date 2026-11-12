@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.model
 
+import dev.solyanka.testutil.readSourceText
+
 import kotlin.test.*
 import org.junit.jupiter.api.Test
 import java.nio.file.Path
@@ -49,7 +51,7 @@ class SliderControlsTest {
             SettingsNumbers.range("waypoints",it.key,320,180,it.value.asDouble)
         }
     }
-    private fun ui(file:String)=Path.of("src/client/kotlin/dev/solyanka/client/ui/$file").readText()
+    private fun ui(file:String)=Path.of("src/client/kotlin/dev/solyanka/client/ui/$file").readSourceText()
     @Test fun `UI contains sliders compact HUD rows and explicit right click handling`() {
         val kit=ui("nofrills/GuiKit.kt")
         assertTrue(kit.contains("SlimSliderComponent("));assertTrue(kit.contains("fun hudRow("))
@@ -60,10 +62,10 @@ class SliderControlsTest {
     }
     @Test fun `timed preview implementation and commands are removed`() {
         val base=Path.of("src/client/kotlin/dev/solyanka/client")
-        val client=base.resolve("SolyankaClient.kt").readText()
-        val commands=base.resolve("Commands.kt").readText()
+        val client=base.resolve("SolyankaClient.kt").readSourceText()
+        val commands=base.resolve("Commands.kt").readSourceText()
         assertFalse(commands.contains("literal(\"preview\")"))
-        assertFalse(base.resolve("feature/FeatureRuntime.kt").readText().contains("previewUntil"))
+        assertFalse(base.resolve("feature/FeatureRuntime.kt").readSourceText().contains("previewUntil"))
         assertTrue(commands.contains("literal(\"gui\").executes { S.requestHud();1 }"))
         assertTrue(client.contains("client.setScreenAndShow(dev.solyanka.client.ui.HudEditorScreen())"))
         val editor=ui("HudEditorScreen.kt")

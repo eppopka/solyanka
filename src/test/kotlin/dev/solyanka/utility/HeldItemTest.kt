@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+
+import dev.solyanka.testutil.readSourceText
 import com.google.gson.*
 import kotlin.math.abs
 import kotlin.test.*
@@ -37,14 +39,14 @@ class HeldItemTest {
   assertEquals(0,(HeldItemPolicy.pixels(HeldItemSettings(intensity=.1))[1] ushr 8) and 255);assertEquals(255,(HeldItemPolicy.pixels(HeldItemSettings(intensity=1.5))[1] ushr 8) and 255)
  }
  @Test fun `shader source reads bounded data texture and retains upstream effects`() {
-  val f=java.nio.file.Path.of("src/main/resources/assets/solyanka/shaders/core/held_item.fsh").toFile().readText()
+  val f=java.nio.file.Path.of("src/main/resources/assets/solyanka/shaders/core/held_item.fsh").toFile().readSourceText()
   for(token in listOf("texelFetch(Sampler5, ivec2(0, 0), 0)","texelFetch(Sampler5, ivec2(1, 0), 0)","style > 2.5","style > 1.5","style > 0.5","float smoke","tex.a < ALPHA_CUTOUT","shaderTime")) assertTrue(f.contains(token),token)
  }
  @Test fun `render hook changes only main item preparation not foil or outlines`() {
-  val f=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/mixin/HeldItemFeatureMixin.kt").toFile().readText();assertTrue(f.contains("prepareMainSubmit("));assertFalse(f.contains("prepareFoilSubmit"));assertFalse(f.contains("prepareOutlineSubmit"));assertFalse(f.contains("GlRenderPass"))
+  val f=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/mixin/HeldItemFeatureMixin.kt").toFile().readSourceText();assertTrue(f.contains("prepareMainSubmit("));assertFalse(f.contains("prepareFoilSubmit"));assertFalse(f.contains("prepareOutlineSubmit"));assertFalse(f.contains("GlRenderPass"))
  }
  @Test fun `texture lifecycle bounded cache and vanilla fallbacks are explicit`() {
-  val f=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/HeldItemCosmetic.kt").toFile().readText()
+  val f=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/HeldItemCosmetic.kt").toFile().readSourceText()
   for(token in listOf("NativeImage(3,1,false)","types.size>=64","!ready","RenderSystem.isOnRenderThread()","textureManager.release(configId)","if(last==s && lastPhase==phase && texture!=null)","return original")) assertTrue(f.contains(token),token)
   assertEquals(1,Regex("RenderPipelines.register").findAll(f).count())
  }

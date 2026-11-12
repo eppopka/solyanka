@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
 
+import dev.solyanka.testutil.readSourceText
+
 import com.google.gson.*
 import dev.solyanka.model.*
 import org.junit.jupiter.api.Test
@@ -59,5 +61,5 @@ class ArchiveVisualTest {
     @Test fun `ambient spawning is world paused bounded and client only`() {val s=source("feature/ArchiveVisuals.kt");for(t in listOf("!S.isEnabled(ModuleIds.AMBIENT_PARTICLES)","client.isPaused","client.level ?: return","client.player ?: return","repeat(s.amount)","level.addParticle(")) assertTrue(t in s,t);assertFalse("sendCommand" in s);assertFalse("sendChat" in s)}
     @Test fun `new visual settings are embedded and use sliders and choice rows`() {val s=source("ui/ArchiveVisualUi.kt");for(t in listOf("host.showPanel(SettingsPanel(","model.updateGeneral","GuiKit.choiceRow(","GuiKit.sliderRow(")) assertTrue(t in s,t);assertFalse("setScreen" in s);assertFalse("Save & Back" in s)}
     @Test fun `successful heart change commits immediately without a save button`() {var live=GeneralSettings();var calls=0;val m=InstantSettings(CommandProfile(),live) {_,g->live=g;calls++;null};assertTrue(m.updateGeneral {it.copy(features=HudLayout.update(it.features,"archive.hearts",640,360) {h->h.copy(x=100,y=50,scale=2.0)})});assertEquals(1,calls);assertEquals(100,live.features.moveHearts.hud.x);assertTrue(live.features.moveHearts.customPosition);assertFalse(m.pending())}
-    private fun source(path:String)=Path.of("src/client/kotlin/dev/solyanka/client/$path").toFile().readText()
+    private fun source(path:String)=Path.of("src/client/kotlin/dev/solyanka/client/$path").toFile().readSourceText()
 }

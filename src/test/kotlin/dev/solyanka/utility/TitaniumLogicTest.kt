@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+
+import dev.solyanka.testutil.readSourceText
 import kotlin.test.*
 import org.junit.jupiter.api.Test
 class TitaniumLogicTest {
@@ -34,7 +36,7 @@ class TitaniumLogicTest {
  }
  @Test fun `sphere distance uses inclusive boundary and long math`() {assertTrue(TitaniumLogic.within(96,0,0,0,0,0,96));assertFalse(TitaniumLogic.within(96,1,0,0,0,0,96));assertFalse(TitaniumLogic.within(30000000,0,0,0,0,0,96))}
  @Test fun `scanner budgets loaded-only access and own overlay are wired`() {
-  val text=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/TitaniumScanner.kt").toFile().readText()
+  val text=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/TitaniumScanner.kt").toFile().readSourceText()
   assertTrue(text.contains("budget=32768"));assertTrue(text.contains("sections++<64"));assertTrue(text.contains("ChunkStatus.FULL,false"));assertTrue(text.contains("candidates.size<4096"));assertTrue(text.contains("owner=\"titanium\""));assertFalse(text.contains("ChunkStatus.FULL,true"))
  }
  @Test fun `all source marker names deserialize and preserve 320 nodes`() {

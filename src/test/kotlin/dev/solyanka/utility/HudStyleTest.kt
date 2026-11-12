@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+
+import dev.solyanka.testutil.readSourceText
 import dev.solyanka.model.HudLayout
 import com.google.gson.*
 import kotlin.test.*
@@ -41,14 +43,14 @@ class HudStyleTest {
  @Test fun `scoreboard HUD editor entry has dedicated immutable layout`() {val f=FeatureSettings();val e=HudLayout.entries(f).single {it.key=="extra.scoreboard"};assertEquals(220,e.baseWidth);val next=HudLayout.update(f,e.key) {it.copy(x=17,y=35,scale=1.5,enabled=false)};assertEquals(17,next.scoreboardHud.hud.x);assertFalse(next.scoreboardHud.hud.enabled);assertEquals(f.player,next.player);assertEquals(f.themedChat,next.themedChat)}
  @Test fun `chat hooks preserve message security and vanilla text interaction`() {
   val root=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client")
-  val mixin=root.resolve("mixin/ThemedChatMixin.kt").toFile().readText();assertTrue(mixin.contains("finally {ThemedChat.end(previous)}"));assertTrue(mixin.contains("original.call(g,font,ticks,mx,my,mode,click)"))
-  val fills=root.resolve("mixin/ThemedChatFillMixin.kt").toFile().readText();assertFalse(fills.contains("handleTag"));assertFalse(fills.contains("handleMessage"))
-  val feature=root.resolve("feature/ThemedChat.kt").toFile().readText();assertTrue(feature.contains("ThreadLocal"));assertTrue(feature.contains("x1-x0>4"));assertFalse(feature.contains("sendChat"))
+  val mixin=root.resolve("mixin/ThemedChatMixin.kt").toFile().readSourceText();assertTrue(mixin.contains("finally {ThemedChat.end(previous)}"));assertTrue(mixin.contains("original.call(g,font,ticks,mx,my,mode,click)"))
+  val fills=root.resolve("mixin/ThemedChatFillMixin.kt").toFile().readSourceText();assertFalse(fills.contains("handleTag"));assertFalse(fills.contains("handleMessage"))
+  val feature=root.resolve("feature/ThemedChat.kt").toFile().readSourceText();assertTrue(feature.contains("ThreadLocal"));assertTrue(feature.contains("x1-x0>4"));assertFalse(feature.contains("sendChat"))
  }
  @Test fun `nameplate retains styled components and source scaling`() {
-  val s=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/WorldVisuals.kt").toFile().readText();assertTrue(s.contains("e.displayName.copy()"));assertTrue(s.contains("VisualChrome.distanceScale(distance)"));assertTrue(s.contains("ChromeDraw.panel"));assertFalse(s.contains("Policy.tag("))
+  val s=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/WorldVisuals.kt").toFile().readSourceText();assertTrue(s.contains("e.displayName.copy()"));assertTrue(s.contains("VisualChrome.distanceScale(distance)"));assertTrue(s.contains("ChromeDraw.panel"));assertFalse(s.contains("Policy.tag("))
  }
  @Test fun `scoreboard uses team objective hidden entries and formatting`() {
-  val s=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/ScoreboardHud.kt").toFile().readText();for(token in listOf("team?.color?.orElse(null)?.displaySlot()","filterNot {it.isHidden}","take(15)","PlayerTeam.formatNameForTeam","entry.formatValue","original.extractRenderState","finally {g.disableScissor()}")) assertTrue(s.contains(token),token)
+  val s=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/ScoreboardHud.kt").toFile().readSourceText();for(token in listOf("team?.color?.orElse(null)?.displaySlot()","filterNot {it.isHidden}","take(15)","PlayerTeam.formatNameForTeam","entry.formatValue","original.extractRenderState","finally {g.disableScissor()}")) assertTrue(s.contains(token),token)
  }
 }
