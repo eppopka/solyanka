@@ -17,6 +17,7 @@ Baseline: `9f4cb3507a0a1a8bd48e6b0b31424d046d46804e` (Solyanka 1.4.6). This work
 - P11: Module transition failures are reported and actual states saved when possible; hook side effects are not transactional.
 - P12: Existing Kotlin mixins are not assumed broken just because they use Kotlin. New mixins should be reviewed individually.
 - The title gradient is cached. The PowerShell resource is in use; see `LOCAL_MUSIC.md`. The root ignore rules have been consolidated, and the historical foundation notes retained under `docs/`. Render-thread checks and wider font caching remain open.
+- Render review: inspected Fabric HUD and level callbacks enter through the vanilla client render path, and inspected background workers do not use Minecraft's font. This does not establish a thread-affinity guarantee for other renderers; no new thread assertions or font cache were added without evidence that they are needed.
 
 ## UI improvements
 
