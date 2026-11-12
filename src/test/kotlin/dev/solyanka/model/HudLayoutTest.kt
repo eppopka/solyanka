@@ -2,10 +2,31 @@
 package dev.solyanka.model
 
 import dev.solyanka.utility.*
+import dev.solyanka.core.ModuleIds
 import kotlin.test.*
 import org.junit.jupiter.api.Test
 
 class HudLayoutTest {
+    @Test fun `HUD owners stay mapped to their feature modules`() {
+        val expected=mapOf(
+            "archive.hotbar" to ModuleIds.MOVE_HOTBAR, "extra.pip" to ModuleIds.PIP,
+            "extra.music" to ModuleIds.MUSIC, "archive.pet" to ModuleIds.PET,
+            "archive.route" to ModuleIds.WAYPOINTS, "archive.simon" to ModuleIds.SIMON,
+            "archive.hearts" to ModuleIds.MOVE_HEARTS, "archive.stopwatch" to ModuleIds.STOPWATCH,
+            "extra.inventory" to ModuleIds.INVENTORY_HUD, "extra.item_name" to ModuleIds.ITEM_NAME_HUD,
+            "extra.skill" to ModuleIds.SKILL_HUD, "extra.performance" to ModuleIds.PERFORMANCE,
+            "extra.scoreboard" to ModuleIds.SCOREBOARD, "map" to ModuleIds.MAP_INFO,
+        )
+        HudLayout.entries(FeatureSettings()).forEach { entry ->
+            val owner=when {
+                entry.key.startsWith("timer.")->ModuleIds.TICK_TIMERS
+                entry.key.startsWith("player.")->ModuleIds.PLAYER_DISPLAY
+                else->expected.getValue(entry.key)
+            }
+            assertEquals(owner,HudLayout.owner(entry.key),entry.key)
+        }
+        assertFails {HudLayout.owner("unknown.hud")}
+    }
     @Test fun `editor covers every implemented movable HUD`() {
         val all=HudLayout.entries(FeatureSettings())
         assertEquals(27,all.size);assertEquals(27,all.map {it.key}.distinct().size)
