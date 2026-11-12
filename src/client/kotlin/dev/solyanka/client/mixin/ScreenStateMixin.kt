@@ -10,6 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 @Mixin(Gui::class)
 abstract class ScreenStateMixin {
-    @Inject(method=["setScreen"],at=[At("TAIL")])
-    private fun solyankaScreenChanged(screen:Screen?,ci:CallbackInfo) { FeatureRuntime.screenChanged() }
+  @Inject(method = ["setScreen"], at = [At("TAIL")])
+  private fun solyankaScreenChanged(screen: Screen?, ci: CallbackInfo) {
+    FeatureRuntime.screenChanged()
+  }
 }

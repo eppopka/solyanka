@@ -12,6 +12,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 @Mixin(LevelLoadingScreen::class)
 abstract class LoadingScreenMixin {
-    @Inject(method=["extractRenderState","extractBackground"],at=[At("HEAD")],cancellable=true,require=2)
-    private fun solyankaHideLoading(g:GuiGraphicsExtractor,x:Int,y:Int,delta:Float,ci:CallbackInfo) { if(FeatureRuntime.hideLoading()) ci.cancel() }
+  @Inject(
+    method = ["extractRenderState", "extractBackground"],
+    at = [At("HEAD")],
+    cancellable = true,
+    require = 2,
+  )
+  private fun solyankaHideLoading(
+    g: GuiGraphicsExtractor,
+    x: Int,
+    y: Int,
+    delta: Float,
+    ci: CallbackInfo,
+  ) {
+    if (FeatureRuntime.hideLoading()) ci.cancel()
+  }
 }
