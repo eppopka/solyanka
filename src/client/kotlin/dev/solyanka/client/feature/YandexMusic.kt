@@ -9,6 +9,9 @@ import dev.solyanka.client.ui.HudEditorScreen
 import dev.solyanka.client.ui.nofrills.NoFrillsClickGui
 import dev.solyanka.utility.LocalPlayback
 import dev.solyanka.utility.LyricLine
+import dev.solyanka.utility.LrclibClient
+import dev.solyanka.utility.LrclibRequestController
+import dev.solyanka.utility.LrclibRetryPolicy
 import dev.solyanka.utility.MusicLogic
 import dev.solyanka.utility.MusicSessionGuard
 import dev.solyanka.utility.MusicServerFailure
@@ -57,14 +60,14 @@ object YandexMusic {
     @Volatile private var socket:WebSocket?=null
     @Volatile private var authenticated=false
     @Volatile private var retryAfterNanos:Long?=null
-    private data class Lyrics(val key:String,val lines:List<LyricLine>)
+    private data class Lyrics(val key:String,val lines:List<LyricLine>,val outcome:LrclibRetryPolicy.Outcome)
     @Volatile private var lyrics:Lyrics?=null
     @Volatile private var lyricsEnabled=false
-    @Volatile private var requestedKey=""
-    @Volatile private var retryAfterMillis=0L
-    @Volatile private var lyricRetryAtMillis=0L
+    @Volatile private var lyricTrackKey:String?=null
+    private val lyricRequests=LrclibRequestController()
     private val http=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(8)).followRedirects(HttpClient.Redirect.NEVER).build()
     private val coverHttp=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(8)).followRedirects(HttpClient.Redirect.NORMAL).build()
+    private val lyricClient by lazy {LrclibClient(httpClient=http,userAgent=dev.solyanka.client.ModInfo.userAgent)}
     private val lyricWorker:ExecutorService=Executors.newSingleThreadExecutor {r->Thread(r,"solyanka-lyrics").apply {isDaemon=true}}
     @Volatile private var lyricJob:Future<*>?=null
     // Artwork must not block the Ynison state loop. A slow avatar response otherwise
@@ -218,7 +221,7 @@ object YandexMusic {
             verification=null
             pendingAuthorizationCode=null
             previousSocket=socket;socket=null;authenticated=false
-            local=null;lyrics=null;requestedKey="";lyricRetryAtMillis=0L;lyricJob?.cancel(true);lyricJob=null
+            local=null;lyrics=null;lyricTrackKey=null;lyricRequests.clear();lyricJob?.cancel(true);lyricJob=null
             lyricsEnabled=false;status="Disconnected"
         }
         pending?.completeExceptionally(CancellationException("Disconnected"))
@@ -456,67 +459,33 @@ object YandexMusic {
 
     private fun refreshLyrics(info:LocalPlayback?,enabled:Boolean) {
         lyricsEnabled=enabled
-        if(!enabled || info==null) {lyrics=null;requestedKey="";return}
-        val k=key(info)
-        if(lyrics?.key!=k) {
-            lyrics=null
-            if(requestedKey!=k) lyricJob?.cancel(true)
-            requestedKey="";lyricRetryAtMillis=0L
+        if(!enabled || info==null || info.title.isBlank() || info.artist.isBlank()) {
+            lyricRequests.clear()
+            lyricTrackKey=null;lyrics=null
+            lyricJob?.cancel(true);lyricJob=null
+            return
         }
-        val now=System.currentTimeMillis()
-        if(info.title.isBlank() || info.artist.isBlank() || requestedKey==k ||
-            now<retryAfterMillis || now<lyricRetryAtMillis) return
-        requestedKey=k
+        val k=key(info)
+        if(lyricTrackKey!=k) {
+            lyricTrackKey=k;lyrics=null
+            lyricJob?.cancel(true);lyricJob=null
+        }
+        val ticket=lyricRequests.refresh(k,true,System.currentTimeMillis()) ?: return
         val gen=sessionGuard.current()
         lyricJob=lyricWorker.submit {
-            if(!lyricsEnabled || !sessionGuard.isCurrent(gen) || local?.let(::key)!=k) return@submit
-            try {
-                fun enc(s:String)=URLEncoder.encode(s,Charsets.UTF_8)
-                fun request(uri:URI):Pair<Int,String> {
-                    val req=HttpRequest.newBuilder(uri).header("User-Agent",dev.solyanka.client.ModInfo.userAgent)
-                        .timeout(Duration.ofSeconds(10)).GET().build()
-                    val response=http.send(req,HttpResponse.BodyHandlers.ofInputStream())
-                    return response.statusCode() to response.body().use {it.readNBytes(524289).let {bytes->
-                        if(bytes.size>524288) "" else bytes.toString(Charsets.UTF_8)
-                    }}
-                }
-                fun setRateLimit(status:Int) {
-                    if(status!=429) return
-                    val wait=60L
-                    val now=System.currentTimeMillis()
-                    retryAfterMillis=if(wait>(Long.MAX_VALUE-now)/1000) Long.MAX_VALUE else now+wait*1000
-                }
-                fun syncedFromObject(body:String):List<LyricLine> = runCatching {
-                    val result=JsonParser.parseString(body).asJsonObject
-                    val synced=result.get("syncedLyrics")?.takeIf {it.isJsonPrimitive && it.asJsonPrimitive.isString}?.asString.orEmpty()
-                    MusicLogic.lyrics(synced)
-                }.getOrDefault(emptyList())
-                var lines=emptyList<LyricLine>()
-                if(info.duration in 1.0..3600.0) {
-                    val result=request(URI("https://lrclib.net/api/get?track_name=${enc(info.title)}&artist_name=${enc(info.artist)}&duration=${info.duration.roundToInt()}"))
-                    setRateLimit(result.first)
-                    if(result.first==200) lines=syncedFromObject(result.second)
-                }
-                if(lines.isEmpty() && System.currentTimeMillis()>=retryAfterMillis) {
-                    val result=request(URI("https://lrclib.net/api/search?track_name=${enc(info.title)}&artist_name=${enc(info.artist)}"))
-                    setRateLimit(result.first)
-                    if(result.first==200) lines=runCatching {
-                        JsonParser.parseString(result.second).asJsonArray.asSequence()
-                            .mapNotNull {it.takeIf(JsonElement::isJsonObject)?.asJsonObject}
-                            .map {it.get("syncedLyrics")?.takeIf {v->v.isJsonPrimitive && v.asJsonPrimitive.isString}?.asString.orEmpty()}
-                            .firstOrNull(String::isNotBlank).orEmpty().let(MusicLogic::lyrics)
-                    }.getOrDefault(emptyList())
-                }
-                if(lyricsEnabled && sessionGuard.isCurrent(gen) && local?.let(::key)==k) {
-                    lyrics=Lyrics(k,lines)
-                    lyricRetryAtMillis=0L
-                }
+            val result=try {
+                lyricClient.fetch(info.title,info.artist,info.duration)
+            } catch(e:InterruptedException) {
+                Thread.currentThread().interrupt()
+                return@submit
             } catch(e:Exception) {
-                if(lyricsEnabled && sessionGuard.isCurrent(gen) && local?.let(::key)==k) {
-                    // Keep a stable UI state instead of submitting the same
-                    // failing request every render frame. A later refresh can
-                    // retry transient network failures.
-                    lyrics=Lyrics(k,emptyList());lyricRetryAtMillis=System.currentTimeMillis()+15_000L
+                LrclibClient.FetchResult(LrclibRetryPolicy.networkFailure(System.currentTimeMillis()),emptyList())
+            }
+            sessionGuard.ifCurrent(gen) {
+                if(lyricsEnabled && local?.let(::key)==k) {
+                    lyricRequests.complete(ticket,result.decision) {
+                        lyrics=Lyrics(k,result.lines,result.decision.outcome)
+                    }
                 }
             }
         }
@@ -616,8 +585,10 @@ object YandexMusic {
         val data=lyrics?.takeIf {it.key==key(info)}
         val line=when {
             info.artist.isBlank() -> "Lyrics need an artist"
-            System.currentTimeMillis()<retryAfterMillis && data==null -> "Lyrics temporarily rate limited"
+            lyricRequests.isRateLimited(System.currentTimeMillis()) -> "Lyrics temporarily rate limited"
             data==null -> "Loading lyrics…"
+            data.outcome==LrclibRetryPolicy.Outcome.TRANSIENT_FAILURE -> "Lyrics unavailable; retrying…"
+            data.outcome==LrclibRetryPolicy.Outcome.PERMANENT_FAILURE -> "Lyrics service unavailable"
             data.lines.isEmpty() -> "Synced lyrics unavailable"
             else -> MusicLogic.lyricAt(data.lines,MusicLogic.elapsed(info,System.nanoTime()))
         }
