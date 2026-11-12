@@ -10,7 +10,7 @@ Baseline: `9f4cb3507a0a1a8bd48e6b0b31424d046d46804e` (Solyanka 1.4.6). This work
 - P4: HUD styling and generic feature panels use typed settings updates instead of full Gson encode/decode cycles. Persisting configuration still serializes it.
 - P5: Repository-wide formatting and CI enforcement remain open. A GitHub Actions workflow runs the build and tests. In an isolated experiment, ktfmt passed after normalizing leading-dot literals, but 61 tests failed after formatting. Many tests inspect source text and need careful, behavior-preserving updates before formatting and its CI enforcement can be accepted.
 - P6: Presets and shared ClickGUI palette defaults have been introduced, but some hard-coded colors remain.
-- P7: Common controls, category labels, and feature-card names have English/Russian translations with English fallback. Descriptions, some controls, and search by translated names remain untranslated. The unused key-capture screen and command draft were removed.
+- P7: Common controls, category labels, and feature-card names have English/Russian translations with English fallback. Feature search matches translated names as well as English names and descriptions. Descriptions and some controls remain untranslated. The unused key-capture screen and command draft were removed.
 - P8: Version logging and user agents use Fabric metadata rather than hard-coded release strings.
 - P9: The archive hotbar geometry has been renamed; the suggested package migration remains open.
 - P10: Editor input tests use the actual control bounds.

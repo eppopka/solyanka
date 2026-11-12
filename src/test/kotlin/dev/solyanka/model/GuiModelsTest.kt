@@ -26,6 +26,21 @@ class GuiModelsTest {
         assertEquals("utility.command_keybinds",GuiCatalog.search("dungeon class").values.flatten().single().id)
         assertTrue(GuiCatalog.search("not-a-feature").isEmpty())
     }
+    @Test fun `search matches injected translated names without changing grouping or order`() {
+        val translatedName:(FeatureCardInfo)->String = { card -> when(card.id) {
+            "utility.command_keybinds" -> "Клавиши команд"
+            "utility.command_shortcuts" -> "Быстрые команды"
+            else -> card.name
+        } }
+
+        val groups=GuiCatalog.search("КОМАНД",favorites=listOf("utility.command_shortcuts"),recent=listOf("utility.command_keybinds","utility.command_shortcuts"),translatedName=translatedName)
+
+        assertEquals(listOf("Favorites","Recently changed","General"),groups.keys.toList())
+        assertEquals(listOf("utility.command_shortcuts"),groups.getValue("Favorites").map { it.id })
+        assertEquals(listOf("utility.command_keybinds","utility.command_shortcuts"),groups.getValue("Recently changed").map { it.id })
+        assertEquals(listOf("utility.command_keybinds","utility.command_shortcuts"),groups.getValue("General").map { it.id })
+        assertEquals("utility.command_keybinds",GuiCatalog.search("dungeon class",translatedName=translatedName).values.flatten().single().id)
+    }
     @Test fun `cards are sorted within categories`() {
         GuiCatalog.search("").values.forEach { assertEquals(it.sortedWith(compareBy<FeatureCardInfo> { c -> c.name.lowercase() }.thenBy { c -> c.id }),it) }
     }
