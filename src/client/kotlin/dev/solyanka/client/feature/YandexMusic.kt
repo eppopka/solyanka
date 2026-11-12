@@ -36,7 +36,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.UUID
 import java.util.Base64
 import kotlin.math.roundToInt
@@ -44,9 +43,8 @@ import kotlin.math.roundToInt
 /** Windows local media session; LRCLIB is contacted only when lyrics are explicitly enabled. */
 object YandexMusic {
     private const val CLIENT_ID="23cabbbdc6cd418abb4b39c32c41195d"
-    private val generation=AtomicInteger()
+    private val sessionGuard=MusicSessionGuard()
     private val localLock=Any()
-    private val authorizationLock=Any()
     private var localProcess:Process?=null
     private val requests=ArrayBlockingQueue<Request>(8)
     private data class Request(val query:String,val callback:(Boolean,String)->Unit)
