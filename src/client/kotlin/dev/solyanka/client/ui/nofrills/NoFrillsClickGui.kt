@@ -73,10 +73,10 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
         root.child(mainScroll)
         val search=FlatTextbox(Sizing.fixed(minOf(200,(width-100).coerceAtLeast(80))))
         searchBox=search
-        search.text(query);search.setSuggestion(if(query.isEmpty()) "Search... (Ctrl+F)" else null)
-        search.tooltip(Component.literal("Ctrl+F: focus feature search"))
+        search.text(query);search.setSuggestion(if(query.isEmpty()) GuiText.component("Search... (Ctrl+F)").string else null)
+        search.tooltip(GuiText.component("Ctrl+F: focus feature search"))
         search.positioning(Positioning.relative(50,100));search.margins(Insets.of(0,3,0,0))
-        search.onChanged().subscribe { query=it;search.setSuggestion(if(it.isEmpty()) "Search... (Ctrl+F)" else null);populate() };root.child(search)
+        search.onChanged().subscribe { query=it;search.setSuggestion(if(it.isEmpty()) GuiText.component("Search... (Ctrl+F)").string else null);populate() };root.child(search)
         root.child(GuiKit.button("Done",55) { onClose() }.apply {
             positioning(Positioning.relative(100,100));margins(Insets.of(0,3,0,3))
         })
@@ -85,7 +85,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     private fun populate() {
         columns.clearChildren();categoryScrolls.clear();featureCards.clear()
         val config=SolyankaClient.currentGeneral().features.clickGui
-        val groups=GuiCatalog.search(query,config.sortByLength,config.favorites,SolyankaClient.recentModules())
+        val groups=GuiCatalog.search(query,config.sortByLength,config.favorites,SolyankaClient.recentModules()) { GuiText.component(it.name).string }
         if(groups.isEmpty()) columns.child(GuiKit.label("No matching features").apply { margins(Insets.of(8)) })
         groups.forEach { (name,features) ->
             val w=maxOf(136,features.maxOf { Minecraft.getInstance().font.width(GuiText.component(it.name))+26 })
@@ -141,8 +141,8 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
         cursorX=mx;cursorY=my
         g.text(font,ClickGradient.text("solyanka",seconds),12,12,GuiKit.WHITE)
         if(width>360)g.text(font,"CLIENT UTILITIES  /  26.2",83,12,GuiKit.MUTED)
-        g.text(font,if(panel==null) "Right-click: settings | Ctrl+F: search" else "Drag the settings title bar to move it",8,height-43,GuiKit.MUTED)
-        g.text(font,"Left: toggle  |  Right: settings  |  Middle: favorite",3,height-32,GuiKit.WHITE)
+        g.text(font,GuiText.component(if(panel==null) "Right-click: settings | Ctrl+F: search" else "Drag the settings title bar to move it"),8,height-43,GuiKit.MUTED)
+        g.text(font,GuiText.component("Left: toggle  |  Right: settings  |  Middle: favorite"),3,height-32,GuiKit.WHITE)
         toggleError?.let { g.text(font,it,3,height-54,0xffff5555.toInt()) }
         val current=panel
         if(current!=null)try {current.render(g,mx,my,delta)} catch(e:Exception) {
@@ -245,7 +245,7 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
         if(highlight!=lastMatchColor) {
             lastMatchColor=highlight
             val localized=GuiText.component(info.name)
-            title.text(featureCardTitle(localized,info.name,localized.string,query,highlight))
+            title.text(featureCardTitle(localized,localized.string,query,highlight))
         }
     }
     override fun onMouseDown(click:MouseButtonEvent,doubled:Boolean):Boolean {
@@ -258,9 +258,9 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
     }
 }
 
-internal fun featureCardTitle(localized:Component,fallbackName:String,localizedName:String,query:String,highlightColor:Int):Component {
+internal fun featureCardTitle(localized:Component,localizedName:String,query:String,highlightColor:Int):Component {
     val term=query.trim()
-    if(term.isEmpty() || fallbackName.indexOf(term,ignoreCase=true)<0) return localized
+    if(term.isEmpty()) return localized
     val index=localizedName.indexOf(term,ignoreCase=true)
     if(index<0) return localized
     return Component.empty()
