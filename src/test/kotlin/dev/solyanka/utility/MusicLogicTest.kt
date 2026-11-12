@@ -118,4 +118,12 @@ class MusicLogicTest {
         val radio=state();radio.getAsJsonObject("playerState").getAsJsonObject("playerQueue").add("queue",JsonParser.parseString("{\"waveQueue\":{}}"))
         assertFails {MusicLogic.appendRequest(radio,"123","remote","rid",1000)}
     }
+    @Test fun `PKCE S256 matches RFC vector and sign-in codes are bounded`() {
+        assertEquals("E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",MusicLogic.pkceChallenge("dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"))
+        assertTrue(MusicLogic.authorizationCodeValid("1234567"))
+        assertFalse(MusicLogic.authorizationCodeValid("123456"))
+        assertFalse(MusicLogic.authorizationCodeValid("12345678"))
+        assertFalse(MusicLogic.authorizationCodeValid("1234abc"))
+        assertFails {MusicLogic.pkceChallenge("short")}
+    }
 }
