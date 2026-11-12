@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+
+import dev.solyanka.testutil.readSourceText
 import kotlin.test.*
 import org.junit.jupiter.api.Test
 import java.nio.file.Path
 class PlaybackAndPipTest {
- private fun source(path:String)=Path.of(path).toFile().readText()
+ private fun source(path:String)=Path.of(path).toFile().readSourceText()
  @Test fun `local clock matches native twenty minute phase units`() {val c=HeldItemClock();assertEquals(0f,c.sample(0,1.0));assertEquals(1f,c.sample(1_200_000_000_000,1.0))}
  @Test fun `local phase never loops at native clock boundary`() {val c=HeldItemClock();c.sample(0,1.0);assertEquals(1.001f,c.sample(1_201_200_000_000,1.0));assertEquals(2f,c.sample(2_400_000_000_000,1.0))}
  @Test fun `speed edits change velocity without snapping phase`() {val c=HeldItemClock();c.sample(0,1.0);assertEquals(1f,c.sample(1_200_000_000_000,4.0));assertEquals(5f,c.sample(2_400_000_000_000,0.0));assertEquals(5f,c.sample(3_600_000_000_000,0.0))}

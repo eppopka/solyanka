@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
+
+import dev.solyanka.testutil.readSourceText
 import com.google.gson.*
 import java.util.UUID
 import kotlin.test.*
@@ -33,18 +35,18 @@ class WorldVisualTest {
   assertEquals("Alex",PlayerVisualPolicy.tag("Alex",Double.NaN,Double.NaN,0.0,true,true))
  }
  @Test fun `worldvisuals have no forced enabled module flags`() {
-  val source=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/SolyankaClient.kt").toFile().readText()
+  val source=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/SolyankaClient.kt").toFile().readSourceText()
   assertTrue(source.contains("config.enabled(module.info.id)"));assertFalse(source.contains("setEnabled(true)"))
  }
  @Test fun `overlay channels keep dungeon and mining independent`() {
-  val text=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/WorldOverlay.kt").toFile().readText()
+  val text=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/WorldOverlay.kt").toFile().readSourceText()
   assertTrue(text.contains("owner:String=\"dungeon\""));assertTrue(text.contains("channels=channels-owner"));assertTrue(text.contains("BlockSelection.collect(c,filled)"));assertTrue(text.contains("BlockSelection.submit(c)"));assertTrue(text.contains("setLineWidth(s.width)"))
  }
  @Test fun `outline callback accepts nullable Fabric selection`() {
-  val text=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/BlockSelection.kt").toFile().readText();assertTrue(text.contains("BlockOutlineRenderState?"));assertTrue(text.contains("outline==null"))
+  val text=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature/BlockSelection.kt").toFile().readSourceText();assertTrue(text.contains("BlockOutlineRenderState?"));assertTrue(text.contains("outline==null"))
  }
  @Test fun `state flag resets unconditionally on every extraction`() {
-  val text=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/mixin/VisualEntityRendererMixin.kt").toFile().readText()
+  val text=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/mixin/VisualEntityRendererMixin.kt").toFile().readSourceText()
   assertTrue(text.contains("solyankaHideName=WorldVisuals.hideName(e)"));assertTrue(text.contains("!e.isCurrentlyGlowing"));assertTrue(text.contains("submitNameDisplay("))
  }
 }

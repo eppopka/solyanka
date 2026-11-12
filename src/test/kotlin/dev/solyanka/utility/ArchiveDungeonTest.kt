@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
 
+import dev.solyanka.testutil.readSourceText
+
 import com.google.gson.*
 import dev.solyanka.model.*
 import org.junit.jupiter.api.Test
@@ -47,5 +49,5 @@ class ArchiveDungeonTest {
     @Test fun `server actions have fixed commands no aliases and opt in announcements`() {val s=source("feature/SecretCounter.kt");assertEquals(1,Regex("sendCommand\\(\"showextrastats\"\\)").findAll(s).count());assertTrue("announcement.poll(now,s.autoAnnounce)" in s);assertTrue("connection.sendCommand(\"pc $" in s);assertTrue("connection.sendChat(text)" in s)}
     @Test fun `settings stay embedded and successful counter changes save immediately`() {val ui=source("ui/ArchiveDungeonUi.kt");assertTrue("host.showPanel(SettingsPanel(" in ui);assertFalse("setScreen" in ui);var saved=GeneralSettings();val m=InstantSettings(CommandProfile(),saved) {_,g->saved=g;null};assertTrue(m.updateGeneral {it.copy(features=it.features.copy(secretCounter=SecretCounterSettings(true,"party")))});assertTrue(saved.features.secretCounter.autoAnnounce);assertEquals("party",saved.features.secretCounter.channel);assertFalse(m.pending())}
     private fun requested()=SecretCounterState().also {it.finish(0);assertEquals(SecretCounterState.Action.REQUEST_STATS,it.poll(1000))}
-    private fun source(path:String)=Path.of("src/client/kotlin/dev/solyanka/client/$path").toFile().readText()
+    private fun source(path:String)=Path.of("src/client/kotlin/dev/solyanka/client/$path").toFile().readSourceText()
 }

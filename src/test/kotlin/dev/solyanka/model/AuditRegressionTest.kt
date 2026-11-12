@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.model
 
+import dev.solyanka.testutil.readSourceText
+
 import dev.solyanka.utility.ClickGuiSettings
 import dev.solyanka.utility.ThemeColors
 import org.junit.jupiter.api.Test
@@ -8,7 +10,7 @@ import kotlin.test.*
 import java.nio.file.Path
 
 class AuditRegressionTest {
- private fun source(path:String)=Path.of("src/client/kotlin/dev/solyanka/client",path).toFile().readText()
+ private fun source(path:String)=Path.of("src/client/kotlin/dev/solyanka/client",path).toFile().readSourceText()
  @Test fun `shared colors preserve existing defaults`() {
   val s=ClickGuiSettings()
   assertEquals(ThemeColors.ACCENT,s.enabledColor);assertEquals(ThemeColors.LINE,s.disabledBorderColor)

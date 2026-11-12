@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.model
+
+import dev.solyanka.testutil.readSourceText
 import dev.solyanka.gfx.OverlayBoxFaces
 import dev.solyanka.utility.*
 import dev.solyanka.config.ConfigStore
@@ -10,7 +12,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.*
 class KnifePresetTikiTest {
  private val choice=KnifeChoice("weapon_knife_butterfly","am_fade",42,.0123)
- private fun source(name:String)=Path.of("src/client/kotlin/dev/solyanka/client/$name.kt").toFile().readText()
+ private fun source(name:String)=Path.of("src/client/kotlin/dev/solyanka/client/$name.kt").toFile().readSourceText()
  @Test fun `named preset keeps exact model finish seed and wear`() {val p=KnifePresets.save(emptyList(),"  My   Butterfly  ",choice).single();assertEquals("My Butterfly",p.name);assertEquals(choice,p.choice())}
  @Test fun `same name replaces without adding duplicates`() {val first=KnifePresets.save(emptyList(),"Knife",choice);val next=KnifePresets.save(first,"KNIFE",choice.copy(seed=5));assertEquals(1,next.size);assertEquals(5,next.single().seed)}
  @Test fun `distinct presets preserve order and independent choices`() {val p=KnifePresets.save(KnifePresets.save(emptyList(),"One",choice),"Two",choice.copy(knife="weapon_knife_karambit"));assertEquals(listOf("One","Two"),p.map {it.name});assertNotEquals(p[0].knife,p[1].knife)}

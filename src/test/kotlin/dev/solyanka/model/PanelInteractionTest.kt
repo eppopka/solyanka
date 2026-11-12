@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.model
+
+import dev.solyanka.testutil.readSourceText
 import org.junit.jupiter.api.Test
 import kotlin.test.*
 import java.nio.file.Path
@@ -22,7 +24,7 @@ class PanelInteractionTest {
  @Test fun `close supersedes queued open`() {val n=PanelNavigation<String>();n.open("held item");n.close();assertNotNull(n.take().also {assertNull(it!!.panel)})}
  @Test fun `new open supersedes pending close`() {val n=PanelNavigation<String>();n.close();n.open("new");assertEquals("new",n.take()!!.panel)}
  @Test fun `dispose clears queued work`() {val n=PanelNavigation<String>();n.open("held item");n.clear();assertFalse(n.pending());assertNull(n.take())}
- private fun source(name:String)=Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/$name").readText()
+ private fun source(name:String)=Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/$name").readSourceText()
  @Test fun `screen navigation is deferred until frame boundary`() {val s=source("NoFrillsClickGui.kt");assertTrue("fun showPanel(next:EmbeddedPanel) {navigation.open(next)}" in s);val frame=s.substringAfter("override fun extractRenderState(");assertTrue(frame.indexOf("commitNavigation()")>=0);assertTrue(frame.indexOf("commitNavigation()")<frame.indexOf("if(focusSearch"));assertTrue(frame.indexOf("commitNavigation()")<frame.indexOf("super.extractRenderState"));assertTrue(s.indexOf("next.mount(width,height)")<s.indexOf("panel?.dispose();panel=next"))}
  @Test fun `header drag never remounts or writes feature settings`() {val s=source("SettingsPanel.kt");val body=s.substringAfter("fun mouseDragged(").substringBefore("fun mouseReleased(");assertTrue("drag.move(" in body);assertFalse("mount(" in body);assertFalse("updateGeneral" in body);assertFalse("root.surface(" in s)}
  @Test fun `palette construction is lazy and after explicit edit action`() {val s=source("GuiKit.kt").substringAfter("fun colorRow(").substringBefore("fun choiceRow(");assertTrue(s.indexOf("edit.onPress {")<s.indexOf("ColorPickerComponent()"));assertTrue("container.child(palette)" in s);assertTrue("catch(e:Exception)" in s)}

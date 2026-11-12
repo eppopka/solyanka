@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.model
+
+import dev.solyanka.testutil.readSourceText
 import dev.solyanka.utility.*
 import dev.solyanka.utility.archivehotbar.HotbarViewport
 import dev.solyanka.utility.archivehotbar.HotbarSelection as OriginalSelection
@@ -7,7 +9,7 @@ import java.nio.file.Path
 import kotlin.test.*
 import org.junit.jupiter.api.Test
 class OriginalHotbarPortTest {
- private fun text(s:String)=Path.of(s).toFile().readText()
+ private fun text(s:String)=Path.of(s).toFile().readSourceText()
  @Test fun `original painter implementation is unchanged beyond package and imports`() {val a=text("audit/original-hotbar-source/HotbarPainter.kt").substringAfter("object HotbarPainter");val b=text("src/client/kotlin/dev/solyanka/client/feature/hotbar/HotbarPainter.kt").substringAfter("object HotbarPainter");assertEquals(a,b)}
  @Test fun `original glass renderer implementation is unchanged`() {assertEquals(text("audit/original-hotbar-source/GlassRenderer.kt").substringAfter("object GlassRenderer"),text("src/client/kotlin/dev/solyanka/client/feature/hotbar/GlassRenderer.kt").substringAfter("object GlassRenderer"))}
  @Test fun `original pure helpers unchanged beyond package`() {assertEquals(text("audit/original-hotbar-source/HotbarLayout.kt").substringAfter("import kotlin.math.exp"),text("src/main/kotlin/dev/solyanka/utility/archivehotbar/HotbarGeometry.kt").substringAfter("import kotlin.math.exp").replace("HotbarGeometry","HotbarLayout"))}
