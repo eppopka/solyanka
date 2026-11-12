@@ -2,20 +2,35 @@
  * Stray CustomAmbience/AspectFov/CustomFog CC0 adapters; see NOTICE. */
 package dev.solyanka.client.feature
 
-import dev.solyanka.core.ModuleIds
 import dev.solyanka.client.SolyankaClient
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.utility.*
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.fog.FogData
-import net.fabricmc.loader.api.FabricLoader
+
 object Environment {
- fun settings()=SolyankaClient.currentGeneral().features.environment
- fun ambience()=SolyankaClient.isEnabled(ModuleIds.AMBIENCE) && Minecraft.getInstance().level!=null
- fun aspect(value:Float)=if(SolyankaClient.isEnabled(ModuleIds.ASPECT) && Minecraft.getInstance().level!=null) value*settings().aspectRatio.toFloat() else value
- fun fog(data:FogData,distance:Int,atmospheric:Boolean) {
-  // No Render wins. Never override blindness, darkness, fluids or powder-snow fog.
-  if(!atmospheric || Suppression.on {fog} || !SolyankaClient.isEnabled(ModuleIds.FOG)) return
-  val s=EnvironmentLogic.fog(settings(),distance,FabricLoader.getInstance().isModLoaded("sodium"))
-  data.environmentalStart=s.start;data.renderDistanceStart=s.start;data.environmentalEnd=s.end;data.renderDistanceEnd=s.end;data.skyEnd=s.end;data.cloudEnd=s.end;data.color.set(s.red,s.green,s.blue,s.alpha)
- }
+  fun settings() = SolyankaClient.currentGeneral().features.environment
+
+  fun ambience() =
+    SolyankaClient.isEnabled(ModuleIds.AMBIENCE) && Minecraft.getInstance().level != null
+
+  fun aspect(value: Float) =
+    if (SolyankaClient.isEnabled(ModuleIds.ASPECT) && Minecraft.getInstance().level != null)
+      value * settings().aspectRatio.toFloat()
+    else value
+
+  fun fog(data: FogData, distance: Int, atmospheric: Boolean) {
+    // No Render wins. Never override blindness, darkness, fluids or powder-snow fog.
+    if (!atmospheric || Suppression.on { fog } || !SolyankaClient.isEnabled(ModuleIds.FOG)) return
+    val s =
+      EnvironmentLogic.fog(settings(), distance, FabricLoader.getInstance().isModLoaded("sodium"))
+    data.environmentalStart = s.start
+    data.renderDistanceStart = s.start
+    data.environmentalEnd = s.end
+    data.renderDistanceEnd = s.end
+    data.skyEnd = s.end
+    data.cloudEnd = s.end
+    data.color.set(s.red, s.green, s.blue, s.alpha)
+  }
 }

@@ -13,8 +13,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 @Mixin(MouseHandler::class)
 abstract class MouseHandlerMixin {
-    @Inject(method = ["onButton"], at = [At("HEAD")], cancellable = true)
-    private fun solyankaInput(window: Long, event: MouseButtonInfo, action: Int, ci: CallbackInfo) {
-        if (SolyankaClient.handleInput(window, action, InputDevice.MOUSE, event.button(), event.modifiers())) ci.cancel()
-    }
+  @Inject(method = ["onButton"], at = [At("HEAD")], cancellable = true)
+  private fun solyankaInput(window: Long, event: MouseButtonInfo, action: Int, ci: CallbackInfo) {
+    if (
+      SolyankaClient.handleInput(
+        window,
+        action,
+        InputDevice.MOUSE,
+        event.button(),
+        event.modifiers(),
+      )
+    )
+      ci.cancel()
+  }
 }
