@@ -2,6 +2,8 @@
 package dev.solyanka.client.ui.nofrills
 
 import java.util.Locale
+import dev.solyanka.model.FeatureCardInfo
+import dev.solyanka.model.GuiCatalog
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 
@@ -13,4 +15,5 @@ object GuiText {
   val key=unsafe.replace(text.lowercase(Locale.ROOT),"_").trim('_')
   return if(key.isEmpty()) Component.literal(text) else Component.translatableWithFallback("solyanka.ui.$key",text)
  }
+ fun featureDescription(info:FeatureCardInfo):MutableComponent = Component.translatableWithFallback(GuiCatalog.featureDescriptionTranslationKey(info.id),info.description)
 }

@@ -85,7 +85,11 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     private fun populate() {
         columns.clearChildren();categoryScrolls.clear();featureCards.clear()
         val config=SolyankaClient.currentGeneral().features.clickGui
-        val groups=GuiCatalog.search(query,config.sortByLength,config.favorites,SolyankaClient.recentModules()) { GuiText.component(it.name).string }
+        val groups=GuiCatalog.search(
+            query,config.sortByLength,config.favorites,SolyankaClient.recentModules(),
+            translatedName={ GuiText.component(it.name).string },
+            translatedDescription={ GuiText.featureDescription(it).string },
+        )
         if(groups.isEmpty()) columns.child(GuiKit.label("No matching features").apply { margins(Insets.of(8)) })
         groups.forEach { (name,features) ->
             val w=maxOf(136,features.maxOf { Minecraft.getInstance().font.width(GuiText.component(it.name))+26 })
@@ -217,7 +221,7 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
     init {
         cursorStyle(CursorStyle.HAND)
         mouseEnter().subscribe { hoverTarget=true };mouseLeave().subscribe { hoverTarget=false }
-        title.margins(Insets.of(6,6,10,10));title.tooltip(Component.literal(info.description));child(title)
+        title.margins(Insets.of(6,6,10,10));title.tooltip(GuiText.featureDescription(info));child(title)
         surface {g,c->
             val palette=SolyankaClient.currentGeneral().features.clickGui
             val mix=dev.solyanka.gfx.ToggleAnimation::mix
