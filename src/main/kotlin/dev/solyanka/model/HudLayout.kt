@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.model
 
+import dev.solyanka.core.ModuleIds
 import dev.solyanka.utility.*
 import kotlin.math.roundToInt
 
@@ -32,10 +33,26 @@ object HudLayout {
         add(HudEntry("extra.scoreboard","Scoreboard",f.scoreboardHud.hud,listOf("Scoreboard sample"),baseWidth=f.scoreboardHud.maxWidth,baseHeight=ScoreboardLayout.height(5,f.scoreboardHud.header)))
         add(HudEntry("map","Map Info",HudSpec(x=f.map.x,y=f.map.y),listOf("Secrets: 25/30 | Score~: 295","Deaths: 0 | Crypts: 5","Sample room | 05:00"),false))
     }
+    private val owners = mapOf(
+        "archive.hotbar" to ModuleIds.MOVE_HOTBAR,
+        "extra.pip" to ModuleIds.PIP,
+        "extra.music" to ModuleIds.MUSIC,
+        "archive.pet" to ModuleIds.PET,
+        "archive.route" to ModuleIds.WAYPOINTS,
+        "archive.simon" to ModuleIds.SIMON,
+        "archive.hearts" to ModuleIds.MOVE_HEARTS,
+        "archive.stopwatch" to ModuleIds.STOPWATCH,
+        "extra.inventory" to ModuleIds.INVENTORY_HUD,
+        "extra.item_name" to ModuleIds.ITEM_NAME_HUD,
+        "extra.skill" to ModuleIds.SKILL_HUD,
+        "extra.performance" to ModuleIds.PERFORMANCE,
+        "extra.scoreboard" to ModuleIds.SCOREBOARD,
+        "map" to ModuleIds.MAP_INFO,
+    )
     fun owner(key:String):String=when {
-        key.startsWith("timer.")->"dungeon.tick_timers"
-        key.startsWith("player.")->"hud.player_display"
-        else->mapOf("archive.hotbar" to "custom.move_hotbar","extra.pip" to "render.picture_in_picture","extra.music" to "hud.yandex_music","archive.pet" to "custom.pet_display","archive.route" to "dungeon.waypoints","archive.simon" to "custom.simon_says","archive.hearts" to "custom.move_hearts","archive.stopwatch" to "custom.stopwatch","extra.inventory" to "hud.inventory","extra.item_name" to "hud.item_name","extra.skill" to "hud.skill_progress","extra.performance" to "hud.performance","extra.scoreboard" to "hud.scoreboard","map" to "dungeon.map_info").getValue(key)
+        key.startsWith("timer.")->ModuleIds.TICK_TIMERS
+        key.startsWith("player.")->ModuleIds.PLAYER_DISPLAY
+        else->owners.getValue(key)
     }
     fun visibleEntries(f:FeatureSettings,enabled:Set<String>,width:Int=960,height:Int=540)=entries(f,width,height).filter {owner(it.key) in enabled && it.hud.enabled && (it.key!="archive.route" || f.route.progress)}
     fun update(f:FeatureSettings,key:String,width:Int=960,height:Int=540,change:(HudSpec)->HudSpec):FeatureSettings {
