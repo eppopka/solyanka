@@ -60,13 +60,34 @@ class LocalizationTest {
   assertTrue(names.isNotEmpty())
   assertTrue("GuiKit.label(GuiText.component(info.name))" in gui)
   assertTrue("font.width(GuiText.component(it.name))" in gui)
-  assertTrue("GuiCatalog.search(query,config.sortByLength,config.favorites,SolyankaClient.recentModules()) { GuiText.component(it.name).string }" in gui)
+  assertTrue("translatedName={ GuiText.component(it.name).string }" in gui)
+  assertTrue("translatedDescription={ GuiText.featureDescription(it).string }" in gui)
   assertTrue("fun label(text:String) = label(GuiText.component(text))" in kit)
   names.forEach { name ->
    val key="solyanka.ui."+name.lowercase(Locale.ROOT).replace(Regex("[^a-z0-9]+"),"_").trim('_')
    assertEquals(name,en.get(key)?.asString,"English fallback for $key")
    assertTrue(ru.has(key),"Missing Russian translation for $name")
    assertTrue(ru.get(key).asString.isNotBlank(),key)
+  }
+ }
+
+ @Test fun `feature card descriptions have ID-based translations and English fallbacks`() {
+  val lang=Path.of("src/main/resources/assets/solyanka/lang")
+  val en=JsonParser.parseString(lang.resolve("en_us.json").readText()).asJsonObject
+  val ru=JsonParser.parseString(lang.resolve("ru_ru.json").readText()).asJsonObject
+  val guiText=Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/GuiText.kt").readText()
+  val gui=Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt").readText()
+
+  assertTrue("Component.translatableWithFallback(GuiCatalog.featureDescriptionTranslationKey(info.id),info.description)" in guiText)
+  assertTrue("translatedDescription={ GuiText.featureDescription(it).string }" in gui)
+  assertTrue("client.font.split(GuiText.featureDescription(info),tooltipWidth)" in gui)
+  assertTrue("title.tooltip(description.map(ClientTooltipComponent::create))" in gui)
+  GuiCatalog.features.forEach { feature ->
+   val key=GuiCatalog.featureDescriptionTranslationKey(feature.id)
+   assertEquals(feature.description,en.get(key)?.asString,"English fallback for $key")
+   assertTrue(ru.has(key),"Missing Russian description for ${feature.id}")
+   assertTrue(ru.get(key).asString.isNotBlank(),key)
+   assertNotEquals(en.get(key).asString,ru.get(key).asString,"Untranslated description for ${feature.id}")
   }
  }
 
