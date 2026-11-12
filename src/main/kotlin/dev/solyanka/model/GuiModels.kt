@@ -68,10 +68,11 @@ object GuiCatalog {
         FeatureCardInfo("utility.command_keybinds","Command Keybinds","General","Create keyboard and mouse binds for commands or chat. Modifier, GUI, island and dungeon class filters."),
         FeatureCardInfo("utility.command_shortcuts","Command Shortcuts","General","Create command aliases with arguments, live expansion and cycle protection.")
     )
-    fun search(query: String,sortByLength:Boolean=false,favorites:List<String> = emptyList(),recent:List<String> = emptyList(),translatedName:(FeatureCardInfo)->String = {it.name}): Map<String,List<FeatureCardInfo>> {
+    fun featureDescriptionTranslationKey(id: String) = "solyanka.ui.feature.$id.description"
+    fun search(query: String,sortByLength:Boolean=false,favorites:List<String> = emptyList(),recent:List<String> = emptyList(),translatedName:(FeatureCardInfo)->String = {it.name},translatedDescription:(FeatureCardInfo)->String = {it.description}): Map<String,List<FeatureCardInfo>> {
         fun normalized(value: String) = value.lowercase().filterNot { it.isWhitespace() }
         val term=normalized(query)
-        val matches=features.filter { term.isEmpty() || normalized(it.name+" "+it.description).contains(term) || normalized(translatedName(it)).contains(term) }
+        val matches=features.filter { term.isEmpty() || normalized(it.name+" "+it.description).contains(term) || normalized(translatedName(it)).contains(term) || normalized(translatedDescription(it)).contains(term) }
         fun sort(cards:List<FeatureCardInfo>)=if(sortByLength) cards.sortedWith(compareByDescending<FeatureCardInfo> {it.name.length}.thenBy {it.name.lowercase()}.thenBy {it.id}) else cards.sortedWith(compareBy<FeatureCardInfo> {it.name.lowercase()}.thenBy {it.id})
         val pinned=sort(matches.filter {it.id in favorites})
         val categories=matches.groupBy {it.category}.mapValues {(_,cards)->sort(cards)}
