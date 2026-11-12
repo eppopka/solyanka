@@ -12,8 +12,21 @@ import org.spongepowered.asm.mixin.injection.At
 
 @Mixin(Hud::class)
 abstract class HudMixin {
-    @WrapOperation(method=["onDisconnected"],at=[At(value="INVOKE",target="Lnet/minecraft/client/gui/components/ChatComponent;clearMessages(Z)V")])
-    private fun solyankaKeepHistory(chat:ChatComponent,history:Boolean,original:Operation<Void>) {
-        if(!SolyankaClient.keepChatHistory()) original.call(chat,history)
-    }
+  @WrapOperation(
+    method = ["onDisconnected"],
+    at =
+      [
+        At(
+          value = "INVOKE",
+          target = "Lnet/minecraft/client/gui/components/ChatComponent;clearMessages(Z)V",
+        ),
+      ],
+  )
+  private fun solyankaKeepHistory(
+    chat: ChatComponent,
+    history: Boolean,
+    original: Operation<Void>,
+  ) {
+    if (!SolyankaClient.keepChatHistory()) original.call(chat, history)
+  }
 }
