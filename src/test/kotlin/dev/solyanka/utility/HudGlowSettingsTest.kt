@@ -85,11 +85,12 @@ class HudGlowSettingsTest {
  }
  @Test fun `feature renderers use the shared opt in halo`() {
   val root=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature")
-  val files=listOf("ExtraHuds.kt","FeatureRuntime.kt","PetDisplay.kt","PictureInPicture.kt","StrayInventoryHud.kt","ThemedChat.kt","VanillaHearts.kt","VanillaHotbar.kt","YandexMusic.kt")
+  val files=listOf("ExtraHuds.kt","FeatureRuntime.kt","PetDisplay.kt","PictureInPicture.kt","ThemedChat.kt","VanillaHearts.kt","VanillaHotbar.kt","YandexMusic.kt")
   files.forEach {assertTrue(Files.readString(root.resolve(it)).contains("HudGlow.draw("),it)}
   val frame=Files.readString(root.resolve("HudFrame.kt"));assertTrue(frame.contains("HudGlow.draw(g, glowModule"))
   assertTrue(Files.readString(root.resolve("ArchiveHuds.kt")).contains("HudFrame.draw(g,h,160,34,atX,atY,ModuleIds.STOPWATCH)"))
   assertTrue(Files.readString(root.resolve("ScoreboardHud.kt")).contains("HudFrame.draw(g,s.hud,layout.width,layout.height,x,atY,ModuleIds.SCOREBOARD)"))
+  assertTrue(Files.readString(root.resolve("StrayInventoryHud.kt")).contains("HudFrame.draw(g,s.hud,m.width,m.height,atX,atY,ModuleIds.INVENTORY_HUD)"))
   val draw=Files.readString(root.resolve("HudGlow.kt"))
   assertTrue(draw.contains("f.hudLighting.enabled"));assertTrue(draw.contains("RoundedGlow.draw("))
  }
