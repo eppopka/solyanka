@@ -4,7 +4,7 @@
 ![](https://img.shields.io/badge/AI_GENERATED-NOT_README?25-orange?style=for-the-badge)
 # ⚡️ `s o l y a n k a` ⚡️
 
-<sub>we(me(ai)) cooked everything🔥🔥🔥 · 我们把一切都煮熟了</sub>
+<sub>we(me(ai)) cooked everythin🔥🔥🔥 · 我们把一切都煮熟了</sub>
 
 ---
 
