@@ -16,7 +16,15 @@ $maxArtBytes = 1048576
 # shortcut: polling every two seconds, upgrade to event subscriptions after validating the Windows prototype.
 while (Get-Process -Id __PARENT_PID__ -ErrorAction SilentlyContinue) {
     try {
-        $session = $manager.GetSessions() | Where-Object { [IO.Path]::GetFileName($_.SourceAppUserModelId) -in @('Яндекс Музыка.exe', 'Yandex Music.exe') } | Select-Object -First 1
+        $session = $manager.GetSessions() | Where-Object {
+            $id = [string]$_.SourceAppUserModelId
+            if ('__MEDIA_SOURCE__' -eq 'spotify') {
+                # Spotify desktop executable or the Microsoft Store package. Never read another app's session.
+                [IO.Path]::GetFileName($id) -ieq 'Spotify.exe' -or $id -like 'SpotifyAB.SpotifyMusic_*'
+            } else {
+                [IO.Path]::GetFileName($id) -in @('Яндекс Музыка.exe', 'Yandex Music.exe')
+            }
+        } | Select-Object -First 1
         if ($null -eq $session) {
             $result = @{state='waiting'}; $lastKey = ''; $art = ''
         } else {

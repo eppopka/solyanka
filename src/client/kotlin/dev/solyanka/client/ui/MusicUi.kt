@@ -8,11 +8,32 @@ import dev.solyanka.client.ui.nofrills.*
 import dev.solyanka.model.InstantSettings
 import dev.solyanka.model.NumberRange
 import dev.solyanka.utility.MusicSettings
-import net.minecraft.client.Minecraft
 import net.minecraft.util.Util
 
 object MusicUi {
+    fun spotify(host:NoFrillsClickGui,model:InstantSettings) {
+        host.showPanel(SettingsPanel("Spotify",{host.closePanel()},{model.error},{YandexMusic.status}) {panel,w->
+            val s=model.general.features.music
+            fun update(change:(MusicSettings)->MusicSettings) {
+                model.updateGeneral {it.copy(features=it.features.copy(music=change(it.features.music)))};panel.refreshStatus()
+            }
+            buildList {
+                add(GuiKit.description(w,"Spotify desktop integration for Windows 10/11. Reads track, artist, playback progress and available cover art from Windows media sessions. No account token or Spotify client secret is needed."))
+                add(GuiKit.button("Connect Spotify desktop",185) {YandexMusic.connectLocalWindows(spotify=true)})
+                add(GuiKit.button("Disconnect Spotify",150) {YandexMusic.disconnectSource(ModuleIds.SPOTIFY)})
+                add(GuiKit.description(w,"Spotify and Yandex share one media HUD: the last connected source wins. Layout, lyrics and progress settings are shared. This is not a Spotify Web API or browser integration; !suggest remains Yandex-account-only."))
+                add(HudNavigation.button(w))
+                add(GuiKit.colorRow(w,"HUD Text Color",s.hud.color) {v->update {it.copy(hud=it.hud.copy(color=v))}})
+                add(GuiKit.colorRow(w,"Progress Color",s.progressColor) {v->update {it.copy(progressColor=v)}})
+                add(GuiKit.toggleRow(w,"Show Synced Lyrics",s.showLyrics,"Sends track title, artist and duration to LRCLIB only when enabled.") {v->update {it.copy(showLyrics=v)}})
+                add(GuiKit.description(w,"Open the Spotify app and play a track. Missing artwork automatically collapses the cover slot."))
+                addAll(HudGlowUi.controls(ModuleIds.SPOTIFY,model,panel,w))
+            }
+        })
+    }
+
     fun open(host:NoFrillsClickGui,model:InstantSettings) {
+        var authorizationCode=""
         host.showPanel(SettingsPanel("Yandex Music",{host.closePanel()},{model.error},{YandexMusic.status}) {panel,w->
             val s=model.general.features.music
             fun update(change:(MusicSettings)->MusicSettings) {
@@ -23,11 +44,12 @@ object MusicUi {
                 add(GuiKit.section(w,"Connection","Choose one source. Local mode reads the Windows desktop player; account mode controls the Yandex queue."))
                 add(GuiKit.button("Connect local (Windows)",180) {YandexMusic.connectLocalWindows()})
                 add(GuiKit.button("Connect Yandex account",180) {YandexMusic.connect()})
-                add(GuiKit.button("Disconnect",100) {YandexMusic.disconnect()})
+                add(GuiKit.button("Disconnect",100) {YandexMusic.disconnectSource(ModuleIds.MUSIC)})
                 add(GuiKit.row(w).apply {
                     child(GuiKit.button("Open sign-in page",135) {YandexMusic.verification?.let {Util.getPlatform().openUri(it.url)}})
-                    child(GuiKit.button("Copy code",100) {YandexMusic.verification?.let {Minecraft.getInstance().keyboardHandler.clipboard=it.code}})
                 })
+                add(GuiKit.textRow(w,"Authorization code",authorizationCode,"Enter the 7-digit code shown by Yandex after approving sign-in.") {v->authorizationCode=v.filter(Char::isDigit).take(7)})
+                add(GuiKit.button("Submit authorization code",190) {YandexMusic.submitVerificationCode(authorizationCode)})
                 add(GuiKit.section(w,"Queue controls","Use !suggest <song name> after account mode reports Connected."))
                 add(GuiKit.toggleRow(w,"Allow !suggest",s.suggest,"Account mode only. Searches Yandex Music and appends the first matching track to the current queue.") {v->update {it.copy(suggest=v)}})
                 add(GuiKit.toggleRow(w,"Announce Added Track",s.announce,"Only announces after Yandex confirms the queue update.") {v->update {it.copy(announce=v)}})

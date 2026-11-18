@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component
 
 object ChatCommands {
     private val echoes=ChatReplyEchoes()
+    private val results=ChatCommandResultCache()
     private fun receive(raw:String,overlay:Boolean) {
         if(overlay || !S.isEnabled(ModuleIds.CHAT_COMMANDS)) return
         val client=Minecraft.getInstance();val player=client.player ?: return
@@ -22,7 +23,9 @@ object ChatCommands {
         if(!ChatCommandsLogic.allowed(config,chat.channel)) return
         val matched=ChatCommandsLogic.match(config,chat.text,S.currentGeneral().features.music.suggest) ?: return
         val suggestion=matched.suggestion
-        val response=matched.command?.let {ChatCommandsLogic.formatResponse(it,chat.name)}
+        val requested=matched.target
+        val target=if(requested==null)chat.name else client.connection?.listedOnlinePlayers?.firstOrNull {it.profile.name.equals(requested,true)}?.profile?.name ?: requested
+        val response=matched.command?.let {results.response(it,target,chat.name,System.nanoTime()/1_000_000L)}
         if(suggestion==null && response==null) return
         fun send(text:String) {
             val current=S.currentGeneral().features

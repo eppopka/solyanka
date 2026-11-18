@@ -1,0 +1,20 @@
+{
+  "version": "1.4.8",
+  "minecraft": "26.2",
+  "status": "UNVERIFIED_SOURCE_CANDIDATE",
+  "build": "BLOCKED_BEFORE_COMPILATION",
+  "build_error": "UnknownHostException: services.gradle.org",
+  "kotlin_compilation": "NOT_RUN",
+  "junit": "NOT_RUN",
+  "minecraft_runtime": "NOT_RUN",
+  "visual_qa": "NOT_RUN",
+  "compiled_mod_jar": false,
+  "github_fork_created": false,
+  "completed_checks": {
+    "jvm_regex_fixture_assertions": 31,
+    "source_consistency": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "uploaded_zip_sha256": "d81692a7168560b85ffac541c524a25f8dea47233c599a264f29e0cd83c4abbc",
+  "notes": "Older validation/audit reports were provided in the upload and do not validate this candidate."
+}

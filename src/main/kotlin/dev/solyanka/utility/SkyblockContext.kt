@@ -15,8 +15,8 @@ object ContextParser {
         val dungeon=floor!=null || area=="Catacombs" || area=="The Catacombs" || area=="Dungeon"
         val n=floor?.groupValues?.get(2)?.toIntOrNull()
         val boss=dungeon && when(n) { 1->x> -71 && z> -39;2,3,4->x> -39 && z> -39;5,6->x> -39 && z> -7;7->x> -7 && z> -7;else->false }
-        val variant=if(area.contains("mineshaft",true)) clean.firstNotNullOfOrNull { line ->
-            Regex("\\b(?:TOPA|SAPP|AMET|AMBE|JADE|TITA|UMBE|TUNG|FAIR|RUBY|ONYX|AQUA|CITR|PERI|JASP|OPAL)_[12C]\\b").find(line)?.value
+        val variant=if(area.contains("mineshaft",true)) (clean+tab.map {ChatLogic.plain(it)}).firstNotNullOfOrNull { line ->
+            Regex("\\b(?:(?:TOPA|SAPP|AMET|AMBE|JADE|TITA|UMBE|TUNG|FAIR|RUBY|ONYX|AQUA|CITR|PERI|JASP|OPAL)_[12C]|LITT_L)\\b").find(line)?.value
         } else null
         return SkyblockContext(true,dungeon,n,floor?.groupValues?.get(1)=="M",boss,area,variant)
     }

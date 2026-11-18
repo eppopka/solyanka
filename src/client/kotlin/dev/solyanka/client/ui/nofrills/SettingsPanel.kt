@@ -26,7 +26,7 @@ class SettingsPanel(
     private val content:(SettingsPanel,Int)->List<UIComponent>
 ):EmbeddedPanel {
     lateinit var adapter:OwoUIAdapter<FlowLayout>;private set
-    private lateinit var scroll:ScrollContainer<FlowLayout>
+    private lateinit var scroll:RetainedScroll
     private lateinit var statusLabel:LabelComponent
     private var lastInfo:String?=null
     private data class Capture(val button:ButtonComponent,val device:InputDevice,val key:Int,val accept:(InputDevice,Int)->Unit)
@@ -37,6 +37,16 @@ class SettingsPanel(
     private lateinit var header:FlowLayout
     private var initialPosition:PanelDrag.Point?=null
     private var openedAt=0L
+    private var initialScroll=0.0
+    private var inheritedView=false
+    private var pendingSize:Pair<Int,Int>?=null
+    /** Button callbacks only queue a rebuild; never dispose the adapter during its input dispatch. */
+    fun rebuild(width:Int,height:Int) {pendingSize=width to height}
+    fun inheritView(previous:SettingsPanel?) {
+        if(previous==null || previous.title!=title)return
+        initialScroll=if(previous::scroll.isInitialized)previous.scroll.offset() else previous.initialScroll
+        inheritedView=true
+    }
     override fun position()=drag.position
     override fun placeAt(point:PanelDrag.Point?) {initialPosition=point}
     private fun reposition() {drag.position?.let {
@@ -46,6 +56,7 @@ class SettingsPanel(
         frame.positioning(Positioning.absolute(it.x,it.y+offset))
     }}
     override fun render(g:net.minecraft.client.gui.GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
+        pendingSize?.also {pendingSize=null;mount(it.first,it.second)}
         val currentInfo=info();if(currentInfo!=lastInfo){lastInfo=currentInfo;refreshStatus()}
         if(System.nanoTime()-openedAt<170_000_000L && !drag.dragging) reposition()
         adapter.extractRenderState(g,mx,my,delta);adapter.drawTooltip(g,mx,my,delta)
@@ -58,8 +69,12 @@ class SettingsPanel(
         val moved=drag.end();val handled=adapter.mouseReleased(event);return moved || handled
     }
     override fun mount(width:Int,height:Int) {
-        if(::adapter.isInitialized) adapter.dispose()
-        capture=null;openedAt=System.nanoTime()
+        val rebuilding=::adapter.isInitialized
+        val savedPosition=initialPosition ?: drag.position
+        val savedScroll=if(::scroll.isInitialized)scroll.offset() else initialScroll
+        if(rebuilding) adapter.dispose()
+        capture=null
+        if(!rebuilding) openedAt=if(inheritedView) 0L else System.nanoTime()
         adapter=OwoUIAdapter.createWithoutScreen(0,0,width,height) { w,h -> UIContainers.verticalFlow(w,h) }
         val root=adapter.rootComponent
         val outerWidth=minOf(400,(width-24).coerceAtLeast(100))
@@ -78,12 +93,12 @@ class SettingsPanel(
             verticalAlignment(VerticalAlignment.CENTER);padding(Insets.of(4));gap(6)
             surface {g,c->dev.solyanka.client.feature.ChromeDraw.gradientPanel(g,c.x(),c.y(),c.width(),c.height(),dev.solyanka.gfx.ToggleAnimation.mix(GuiKit.RAISED,GuiKit.WHITE,.08),GuiKit.RAISED,GuiKit.LINE,4)}
             if(centeredTitle) child(UIContainers.horizontalFlow(Sizing.fixed(54),Sizing.fixed(1)))
-            child(GuiKit.label(title).apply {if(centeredTitle) horizontalTextAlignment(HorizontalAlignment.CENTER);horizontalSizing(Sizing.fixed((w-if(centeredTitle) 136 else 76).coerceAtLeast(1)));tooltip(Component.literal("Drag this title bar to move settings"))})
+            child(GuiKit.label(title).apply {cursorStyle(CursorStyle.MOVE);if(centeredTitle) horizontalTextAlignment(HorizontalAlignment.CENTER);horizontalSizing(Sizing.fixed((w-if(centeredTitle) 136 else 76).coerceAtLeast(1)));tooltip(Component.literal("Drag this title bar to move settings"))})
             child(GuiKit.button("Back",54,true) {capture=null;back()})
         }
         val rows=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content()).apply {gap(2)}
         content(this,w).forEach {rows.child(it)}
-        scroll=UIContainers.verticalScroll(Sizing.fixed(w),Sizing.fixed((frameHeight-72).coerceAtLeast(16)),rows)
+        scroll=RetainedScroll(ScrollContainer.ScrollDirection.VERTICAL,Sizing.fixed(w),Sizing.fixed((frameHeight-72).coerceAtLeast(16)),rows)
         scroll.scrollbarThiccness(3).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.BLUE)))
         statusLabel=GuiKit.label("").apply {horizontalSizing(Sizing.fixed((w-10).coerceAtLeast(1)))}
         frame.child(header);frame.child(scroll)
@@ -91,7 +106,9 @@ class SettingsPanel(
         drag.layout(width,height,outerWidth,frameHeight)
         initialPosition?.let {drag.place(it)};initialPosition=null
         reposition();root.child(frame);refreshStatus();adapter.inflateAndMount()
-        drag.layout(width,height,frame.width(),frame.height());reposition()
+        drag.layout(width,height,frame.width(),frame.height())
+        savedPosition?.let {drag.place(it)}
+        scroll.restoreOffset(savedScroll);reposition()
     }
     override fun focused():net.minecraft.client.gui.components.events.GuiEventListener?=if(::adapter.isInitialized)adapter else null
     override fun mouseScrolled(x:Double,y:Double,horizontal:Double,vertical:Double)=adapter.mouseScrolled(x,y,horizontal,vertical)
@@ -101,7 +118,7 @@ class SettingsPanel(
         statusLabel.text(Component.literal(if(error==null) info() ?: "" else error))
         statusLabel.color(Color.ofArgb(if(error==null) GuiKit.MUTED else 0xffff5555.toInt()))
     }
-    override fun dispose() { capture=null;drag.end();if(::adapter.isInitialized) adapter.dispose() }
+    override fun dispose() { pendingSize=null;capture=null;drag.end();if(::adapter.isInitialized) adapter.dispose() }
     fun inputRow(width:Int,device:InputDevice,key:Int,updated:(InputDevice,Int)->Unit):FlowLayout {
         var currentDevice=device;var currentKey=key
         val button=GuiKit.button(keyName(device,key),125) {}

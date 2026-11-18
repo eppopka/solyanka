@@ -33,7 +33,7 @@ class HudEditorScreen:BaseOwoScreen<FlowLayout>(Component.literal("solyanka HUD 
     private fun entries(scoreboard:((HudEntry)->HudEntry)?=null)=HudLayout.visibleEntries(SolyankaClient.currentGeneral().features,SolyankaClient.states().filter { (id,enabled)->enabled && SolyankaClient.isEnabled(id) }.keys,width,height).map {
         val hotbar=dev.solyanka.client.feature.VanillaHotbar.editorEntry(it,width,height)
         val score=if(hotbar.key=="extra.scoreboard" && scoreboard!=null) scoreboard(hotbar) else dev.solyanka.client.feature.ScoreboardHud.editorEntry(hotbar,width)
-        dev.solyanka.client.feature.PerformanceHud.editorEntry(score)
+        dev.solyanka.client.feature.ItemTracker.editorEntry(dev.solyanka.client.feature.PerformanceHud.editorEntry(score))
     }
     private var controlKeys:List<String> = emptyList()
     private fun syncSelection(list:List<HudEntry>) {if(list.none {it.key==selected}) selected=list.firstOrNull()?.key ?: ""}

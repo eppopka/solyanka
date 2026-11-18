@@ -16,9 +16,15 @@ import net.minecraft.resources.Identifier
 import kotlin.math.roundToInt
 
 object PerformanceHud {
- private val tps=ServerTpsEstimator()
+ private val tps=ServerTpsEstimator(staleNanos=15_000_000_000L)
  fun reset()=tps.reset()
- fun observe(ticks:Long) {tps.observe(ticks,System.nanoTime())}
+ fun observe(ticks:Long) {tps.observe(ticks,System.nanoTime(),cadenceFallback=!Minecraft.getInstance().hasSingleplayerServer())}
+ fun status():String {
+  val value=tps.value(System.nanoTime())
+  val state=if(value==null) "Waiting for fresh server time updates (need 2 packets)" else
+      if(tps.usingPacketCadence) "TPS estimate: time-packet cadence (server clock not advancing)" else "TPS estimate: server game ticks / elapsed time"
+  return "$state · ${tps.updates} packets"
+ }
  private fun text():String {
   val c=Minecraft.getInstance();val s=S.currentGeneral().features.performance
   val ping=if(c.hasSingleplayerServer()) "Local" else c.player?.let {c.connection?.getPlayerInfo(it.uuid)?.latency}?.takeIf {it>=0}?.let {"$it ms"} ?: "—"

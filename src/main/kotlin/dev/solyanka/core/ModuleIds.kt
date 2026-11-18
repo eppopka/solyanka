@@ -3,6 +3,12 @@ package dev.solyanka.core
 
 /** Stable module identifiers shared by the registry, UI and configuration. */
 object ModuleIds {
+ const val HIDE_PLAYERS="general.hide_players"
+ const val RNG_ANNOUNCE="general.rng_announce"
+ const val POWDER_CHEST="mining.powder_chest"
+ const val MINESHAFT="mining.mineshaft"
+ const val SPOTIFY="hud.spotify"
+ const val TRACKER="hud.tracker"
  const val KEYBINDS="utility.command_keybinds"
  const val SHORTCUTS="utility.command_shortcuts"
  const val SPREAD_GUESSER="utility.spread_guesser"

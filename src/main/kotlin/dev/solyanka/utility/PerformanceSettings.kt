@@ -11,14 +11,23 @@ class ServerTpsEstimator(private val maxSamples:Int=10,private val staleNanos:Lo
  private val samples=ArrayDeque<Sample>()
  private var lastTime:Long?=null
  private var lastTicks:Long?=null
- fun reset() {samples.clear();lastTime=null;lastTicks=null}
- fun observe(ticks:Long,now:Long) {
+ private var cadenceMode:Boolean?=null
+ var usingPacketCadence=false;private set
+ var updates=0L;private set
+ fun reset() {samples.clear();lastTime=null;lastTicks=null;cadenceMode=null;usingPacketCadence=false;updates=0}
+ /** Some proxies freeze/rewind gameTime. Their normal time-update cadence is once per 20 ticks.
+  * This opt-in fallback is a packet-cadence ESTIMATE, never a client tick counter or hard-coded TPS. */
+ fun observe(ticks:Long,now:Long,cadenceFallback:Boolean=false) {
   val previousTime=lastTime;val previousTicks=lastTicks
-  lastTime=now;lastTicks=ticks
+  lastTime=now;lastTicks=ticks;updates++
   if(previousTime==null || previousTicks==null) return
   val elapsed=now-previousTime;val advance=ticks-previousTicks
-  if(elapsed<=0 || elapsed>30_000_000_000L || advance<0) {samples.clear();return}
-  samples.addLast(Sample(advance,elapsed));while(samples.size>maxSamples.coerceAtLeast(1)) samples.removeFirst()
+  if(elapsed<=0 || elapsed>30_000_000_000L || (advance<0 && !cadenceFallback)) {samples.clear();cadenceMode=null;return}
+  val cadence=cadenceFallback && advance<=0
+  if(cadenceMode!=cadence)samples.clear()
+  cadenceMode=cadence;usingPacketCadence=cadence
+  samples.addLast(Sample(if(cadence)20L else advance,elapsed))
+  while(samples.size>maxSamples.coerceAtLeast(1)) samples.removeFirst()
  }
  fun value(now:Long):Double? {
   val last=lastTime ?: return null

@@ -93,7 +93,7 @@ class ClickGuiHudMajorTest {
   assertFalse(roundTrip.hudLighting.enabled);assertEquals(0xff123456.toInt(),roundTrip.clickGui.disabledBorderColor)
  }
  @Test fun `145 Dev settings action and logo-only gradient are wired`() {
-  assertEquals("Dev",GuiCatalog.search("GUI Settings").values.flatten().single {it.id==GuiCatalog.GUI_SETTINGS}.category)
+  assertEquals("HUD",GuiCatalog.search("GUI Settings").values.flatten().single {it.id==GuiCatalog.GUI_SETTINGS}.category)
   val ui=Files.readString(Path.of("src/client/kotlin/dev/solyanka/client/ui/nofrills/NoFrillsClickGui.kt"))
   assertEquals(1,Regex("ClickGradient\\.text\\(").findAll(ui).count());assertTrue(ui.contains("ClickGradient.text(\"solyanka\""))
   assertFalse(ui.contains("gradientHeaders"));assertTrue(ui.contains("info.id==GuiCatalog.GUI_SETTINGS ||"))

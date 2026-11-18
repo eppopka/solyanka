@@ -49,7 +49,7 @@ class Performance146Test {
  }
  @Test fun `packet hook and frame aligned outline use same render state`() {
   val root=Path.of("src/client/kotlin/dev/solyanka/client")
-  val mixin=Files.readString(root.resolve("mixin/PerformanceTimeMixin.kt"));assertTrue(mixin.contains("handleSetTime"));assertTrue(mixin.contains("packet.gameTime()"));assertTrue(mixin.contains("At(\"TAIL\")"))
+  val mixin=Files.readString(root.resolve("mixin/PerformanceTimeMixin.kt"));assertTrue(mixin.contains("handleSetTime"));assertTrue(mixin.contains("packet.gameTime()"));assertTrue(mixin.contains("ClientboundSetTimePacket;gameTime()J"));assertTrue(mixin.contains("ordinal=0"))
   val hud=Files.readString(root.resolve("feature/PerformanceHud.kt"));assertTrue(hud.contains("hasSingleplayerServer()"));assertTrue(hud.contains("PerformanceText.format"))
   val outline=Files.readString(root.resolve("feature/BlockSelection.kt"));assertTrue(outline.contains("state.cameraRenderState.pos"));assertTrue(outline.contains("pos.x.toDouble()-camera.x"));assertTrue(outline.contains("submitShapeOutline"));assertTrue(outline.contains("pose.popPose()"))
  }

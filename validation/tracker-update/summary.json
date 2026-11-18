@@ -1,0 +1,15 @@
+{
+  "source_candidate": true,
+  "minecraft": "26.2",
+  "mod_version": "1.4.8",
+  "changed_files_from_dev_copy": 30,
+  "patch_application": "pass",
+  "patch_file_equality": "pass",
+  "source_integration_checks": "pass",
+  "existing_rng_jvm_regex_assertions": 68,
+  "kotlin_compilation": "not reached",
+  "junit_tests": "not run",
+  "in_game_checks": "not run",
+  "build_blocker": "UnknownHostException: services.gradle.org",
+  "jar_included": false
+}

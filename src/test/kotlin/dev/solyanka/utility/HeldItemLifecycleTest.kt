@@ -14,8 +14,12 @@ class HeldItemLifecycleTest {
  @Test fun `fill pipeline matches Stray opaque color state`() {
   val s=source();assertTrue("withColorTargetState(ColorTargetState.DEFAULT)" in s);assertFalse("BlendFunction.TRANSLUCENT" in s)
  }
- @Test fun `pipeline metadata registers during client init not first render alone`() {
-  val s=root.resolve("SolyankaClient.kt").readText();assertTrue(s.indexOf("HeldItemCosmetic.register()")<s.indexOf("modules.register("))
+ @Test fun `pipeline metadata registers before client module catalog`() {
+  val client=root.resolve("SolyankaClient.kt").readText()
+  val catalog=root.resolve("ClientModuleCatalog.kt").readText()
+  assertTrue(client.indexOf("HeldItemCosmetic.register()")<client.indexOf("ClientModuleCatalog.register(modules)"))
+  assertTrue(client.indexOf("ClientModuleCatalog.register(modules)")<client.indexOf("config.load()"))
+  assertTrue("modules.register(" in catalog)
  }
  @Test fun `native pipeline validation precedes readiness and texture uploads`() {
   val s=source();assertTrue(s.indexOf("precompilePipeline(pipeline)")<s.indexOf("if(last==s && lastPhase==phase && texture!=null)"))

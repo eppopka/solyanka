@@ -1,0 +1,14 @@
+{
+  "changed_source_files": 17,
+  "new_junit_tests": 11,
+  "junit_execution": "not run",
+  "kotlin_compilation": "not reached",
+  "full_gradle_build": "blocked before compilation: UnknownHostException services.gradle.org",
+  "jar_included": false,
+  "in_game_testing": "not run",
+  "whitespace_check": "pass",
+  "translation_key_parity": "pass",
+  "exact_tracker_regex_jvm_assertions": 12,
+  "incremental_patch_apply_and_equality": "pass",
+  "complete_zip_crc_and_all_source_equality": "pass"
+}

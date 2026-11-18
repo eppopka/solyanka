@@ -26,7 +26,8 @@ class AuditRegressionTest {
   assertFalse("toJsonTree" in style);assertFalse("FeatureCodec.decode" in style)
   assertTrue("scoreboardHud=change(" in style);assertTrue("themedChat=change(" in style)
   val gui=source("ui/nofrills/NoFrillsClickGui.kt")
-  assertTrue("if(color!=lastColor || highlight!=lastMatchColor)" in gui);assertTrue("ClickGradient.text(\"solyanka\"" in gui)
+  assertTrue("if(color!=lastColor)" in gui);assertTrue("if(highlight!=lastMatchColor)" in gui)
+  assertTrue("ClickGradient.text(\"solyanka\"" in gui)
   assertFalse("ClickGradient.text(name" in gui)
  }
  @Test fun `runtime version is read from fabric metadata`() {

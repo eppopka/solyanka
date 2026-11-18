@@ -17,7 +17,7 @@ data class ChatCommandsSettings(val prefix:String="!",val commands:List<ChatComm
     }
 }
 data class IncomingCommandChat(val channel:String,val name:String,val text:String)
-data class MatchedChatCommand(val command:ChatCommand?=null,val suggestion:String?=null)
+data class MatchedChatCommand(val command:ChatCommand?=null,val suggestion:String?=null,val target:String?=null)
 
 /** Suppress only echoes of our own command-like replies, not manually typed commands. */
 class ChatReplyEchoes {
@@ -56,22 +56,45 @@ object ChatCommandsLogic {
             val name=tail.takeWhile {!it.isWhitespace()}
             val argument=tail.substring(name.length).trim()
             if(allowSuggestion && name.equals("suggest",true) && argument.isNotEmpty()) return MatchedChatCommand(suggestion=argument)
-            if(!s.matchAnywhere && argument.isNotEmpty()) continue
+            val target=argument.takeWhile {!it.isWhitespace()}.takeIf {it.matches(Regex("[A-Za-z0-9_]{1,16}"))}
+            if(!s.matchAnywhere && argument.isNotEmpty() && (target==null || argument!=target)) continue
             val command=s.commands.firstOrNull {it.name.equals(name,true)} ?: continue
-            return MatchedChatCommand(command=command)
+            return MatchedChatCommand(command=command,target=target)
         }
         return null
     }
     fun response(s:ChatCommandsSettings,chat:IncomingCommandChat,randomGenerator:Random=Random.Default):String? {
         if(!allowed(s,chat.channel)) return null
-        val command=match(s,chat.text,false)?.command ?: return null
-        return formatResponse(command,chat.name,randomGenerator)
+        val matched=match(s,chat.text,false) ?: return null
+        val command=matched.command ?: return null
+        return formatResponse(command,matched.target ?: chat.name,randomGenerator,chat.name)
     }
-    fun formatResponse(command:ChatCommand,name:String,randomGenerator:Random=Random.Default):String? {
-        val formatted=random.replace(command.response.replace("{name}",name)) { result ->
-            val low=result.groupValues[1].toLong();val high=result.groupValues[2].toLong()
-            if(low>high || low < -1_000_000 || high > 1_000_000) result.value else randomGenerator.nextLong(low,high+1).toString()
-        }.trim()
-        return formatted.takeIf {it.isNotEmpty() && it.length<=200 && !it.startsWith('/')}
+    fun randomize(template:String,randomGenerator:Random=Random.Default):String = random.replace(template) { result ->
+        val low=result.groupValues[1].toLong();val high=result.groupValues[2].toLong()
+        if(low>high || low < -1_000_000 || high > 1_000_000) result.value else randomGenerator.nextLong(low,high+1).toString()
+    }
+    fun render(template:String,name:String,sender:String=name):String? {
+        val formatted=template.replace("{name}",name).replace("{target}",name).replace("{sender}",sender).trim()
+        return formatted.takeIf {it.isNotEmpty() && it.length<=200 && !it.startsWith('/') && it.none {c->c.isISOControl() || c=='§'}}
+    }
+    fun formatResponse(command:ChatCommand,name:String,randomGenerator:Random=Random.Default,sender:String=name):String? =
+        render(randomize(command.response,randomGenerator),name,sender)
+
+}
+
+/** Fixed, non-sliding 2-minute random-result cache shared by all requesters of a command/target. */
+class ChatCommandResultCache {
+    private data class Key(val command:String,val target:String,val template:String)
+    private data class Value(val template:String,val created:Long)
+    private val values=linkedMapOf<Key,Value>()
+    fun clear()=values.clear()
+    fun response(command:ChatCommand,target:String,sender:String,now:Long,random:kotlin.random.Random=kotlin.random.Random.Default):String? {
+        values.entries.removeIf {now<it.value.created || now-it.value.created>=120_000L}
+        val key=Key(command.name.lowercase(java.util.Locale.ROOT),target.lowercase(java.util.Locale.ROOT),command.response)
+        val stored=values[key] ?: run {
+            if(values.size>=512)values.remove(values.keys.first())
+            Value(ChatCommandsLogic.randomize(command.response,random),now).also {values[key]=it}
+        }
+        return ChatCommandsLogic.render(stored.template,target,sender)
     }
 }

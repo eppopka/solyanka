@@ -10,13 +10,13 @@ import dev.solyanka.utility.PerformanceSettings
 
 object PerformanceUi {
  fun open(host:NoFrillsClickGui,model:InstantSettings) {
-  host.showPanel(SettingsPanel("Performance",{host.closePanel()},{model.error}) {panel,w->
+  host.showPanel(SettingsPanel("Performance",{host.closePanel()},{model.error},{dev.solyanka.client.feature.PerformanceHud.status()}) {panel,w->
    val s=model.general.features.performance
    fun update(change:(PerformanceSettings)->PerformanceSettings) {
     model.updateGeneral {it.copy(features=it.features.copy(performance=change(it.features.performance)))};panel.refreshStatus()
    }
    buildList {
-    add(GuiKit.description(w,"Live FPS and ping; TPS is estimated from received world-time updates. Singleplayer ping is Local."))
+    add(GuiKit.description(w,"Live FPS and ping; TPS uses received server game ticks and elapsed time. Remote servers with frozen/reset clocks fall back to the usual 20-tick time-packet cadence (an estimate, not a client tick counter). Wait for two updates after joining. Singleplayer ping is Local."))
     add(GuiKit.toggleRow(w,"HUD Visible",s.hud.enabled) {v->update {it.copy(hud=it.hud.copy(enabled=v))}})
     add(HudNavigation.button(w))
     add(GuiKit.toggleRow(w,"Show FPS",s.showFps) {v->update {it.copy(showFps=v)}})

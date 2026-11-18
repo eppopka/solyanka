@@ -15,6 +15,8 @@ data class HudGlowSettings(
  val itemName:Boolean=false,
  val skill:Boolean=false,
  val music:Boolean=false,
+ val spotify:Boolean=false,
+ val tracker:Boolean=false,
  val player:Boolean=false,
  val timers:Boolean=false,
  val simon:Boolean=false,
@@ -39,6 +41,8 @@ data class HudGlowSettings(
   "hud.item_name"->itemName
   "hud.skill_progress"->skill
   "hud.yandex_music"->music
+  "hud.spotify"->spotify
+  "hud.tracker"->tracker
   "hud.player_display"->player
   "dungeon.tick_timers"->timers
   "custom.simon_says"->simon
@@ -60,6 +64,8 @@ data class HudGlowSettings(
   "hud.item_name"->copy(itemName=value)
   "hud.skill_progress"->copy(skill=value)
   "hud.yandex_music"->copy(music=value)
+  "hud.spotify"->copy(spotify=value)
+  "hud.tracker"->copy(tracker=value)
   "hud.player_display"->copy(player=value)
   "dungeon.tick_timers"->copy(timers=value)
   "custom.simon_says"->copy(simon=value)
@@ -84,6 +90,8 @@ data class HudGlowIntensity(
  val itemName:Double=1.0,
  val skill:Double=1.0,
  val music:Double=1.0,
+ val spotify:Double=1.0,
+ val tracker:Double=1.0,
  val player:Double=1.0,
  val timers:Double=1.0,
  val simon:Double=1.0,
@@ -91,7 +99,7 @@ data class HudGlowIntensity(
  val mapInfo:Double=1.0,
  val performance:Double=1.0
 ) {
- fun validate() {listOf(hotbar,pictureInPicture,pet,hearts,stopwatch,dvd,scoreboard,themedChat,inventory,itemName,skill,music,player,timers,simon,route,mapInfo,performance).forEach {
+ fun validate() {listOf(hotbar,pictureInPicture,pet,hearts,stopwatch,dvd,scoreboard,themedChat,inventory,itemName,skill,music,spotify,tracker,player,timers,simon,route,mapInfo,performance).forEach {
   require(it.isFinite() && it in .25..2.0) {"HUD glow intensity must be 0.25–2"}
  }}
  fun value(id:String):Double=when(id) {
@@ -107,6 +115,8 @@ data class HudGlowIntensity(
   "hud.item_name"->itemName
   "hud.skill_progress"->skill
   "hud.yandex_music"->music
+  "hud.spotify"->spotify
+  "hud.tracker"->tracker
   "hud.player_display"->player
   "dungeon.tick_timers"->timers
   "custom.simon_says"->simon
@@ -128,6 +138,8 @@ data class HudGlowIntensity(
   "hud.item_name"->copy(itemName=value)
   "hud.skill_progress"->copy(skill=value)
   "hud.yandex_music"->copy(music=value)
+  "hud.spotify"->copy(spotify=value)
+  "hud.tracker"->copy(tracker=value)
   "hud.player_display"->copy(player=value)
   "dungeon.tick_timers"->copy(timers=value)
   "custom.simon_says"->copy(simon=value)
@@ -159,6 +171,8 @@ data class HudGlowOverrides(
  val itemName:Boolean=false,
  val skill:Boolean=false,
  val music:Boolean=false,
+ val spotify:Boolean=false,
+ val tracker:Boolean=false,
  val player:Boolean=false,
  val timers:Boolean=false,
  val simon:Boolean=false,
@@ -179,6 +193,8 @@ data class HudGlowOverrides(
   "hud.item_name"->itemName
   "hud.skill_progress"->skill
   "hud.yandex_music"->music
+  "hud.spotify"->spotify
+  "hud.tracker"->tracker
   "hud.player_display"->player
   "dungeon.tick_timers"->timers
   "custom.simon_says"->simon
@@ -200,6 +216,8 @@ data class HudGlowOverrides(
   "hud.item_name"->copy(itemName=value)
   "hud.skill_progress"->copy(skill=value)
   "hud.yandex_music"->copy(music=value)
+  "hud.spotify"->copy(spotify=value)
+  "hud.tracker"->copy(tracker=value)
   "hud.player_display"->copy(player=value)
   "dungeon.tick_timers"->copy(timers=value)
   "custom.simon_says"->copy(simon=value)
@@ -223,6 +241,8 @@ data class HudGlowColors(
  val itemName:Int=0xff7dd3fc.toInt(),
  val skill:Int=0xff7dd3fc.toInt(),
  val music:Int=0xff7dd3fc.toInt(),
+ val spotify:Int=0xff7dd3fc.toInt(),
+ val tracker:Int=0xff7dd3fc.toInt(),
  val player:Int=0xff7dd3fc.toInt(),
  val timers:Int=0xff7dd3fc.toInt(),
  val simon:Int=0xff7dd3fc.toInt(),
@@ -243,6 +263,8 @@ data class HudGlowColors(
   "hud.item_name"->itemName
   "hud.skill_progress"->skill
   "hud.yandex_music"->music
+  "hud.spotify"->spotify
+  "hud.tracker"->tracker
   "hud.player_display"->player
   "dungeon.tick_timers"->timers
   "custom.simon_says"->simon
@@ -264,6 +286,8 @@ data class HudGlowColors(
   "hud.item_name"->copy(itemName=value)
   "hud.skill_progress"->copy(skill=value)
   "hud.yandex_music"->copy(music=value)
+  "hud.spotify"->copy(spotify=value)
+  "hud.tracker"->copy(tracker=value)
   "hud.player_display"->copy(player=value)
   "dungeon.tick_timers"->copy(timers=value)
   "custom.simon_says"->copy(simon=value)

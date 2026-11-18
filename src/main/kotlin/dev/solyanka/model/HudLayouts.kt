@@ -24,6 +24,7 @@ object HudLayouts {
   put("extra.pip",f.pip.hud);put("archive.pet",f.pet.hud);put("extra.music",f.music.hud)
   put("archive.route",f.route.hud);put("archive.simon",f.simon.hud);put("archive.stopwatch",f.stopwatch.hud)
   put("extra.inventory",f.inventoryHud.hud);put("extra.item_name",f.itemNameHud.hud);put("extra.skill",f.skillHud.hud);put("extra.performance",f.performance.hud)
+  put("extra.tracker",f.tracker.hud)
   put("map",HudSpec(x=f.map.x,y=f.map.y))
   return HudLayoutSnapshot(values)
  }

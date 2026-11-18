@@ -16,7 +16,7 @@ object WaypointUi {
   var newName="";var transferName="";var actionError:String?=null
   val rename=mutableMapOf<String,String>()
   lateinit var panel:SettingsPanel
-  fun refresh()=panel.mount(host.width,host.height)
+  fun refresh()=panel.rebuild(host.width,host.height)
   fun act(action:()->Unit) {try {action();actionError=null} catch(e:Exception) {actionError=e.message ?: "Waypoint operation failed"};panel.refreshStatus()}
   fun update(block:(WaypointSettings)->WaypointSettings):Boolean {
    val old=model.general

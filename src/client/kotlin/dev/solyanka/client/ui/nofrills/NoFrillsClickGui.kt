@@ -12,17 +12,22 @@ import io.wispforest.owo.ui.core.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.Style
 import org.lwjgl.glfw.GLFW
 
 class NoFrillsClickGui(private val previous:Screen?,private var query:String=""):
     BaseOwoScreen<FlowLayout>(Component.literal("solyanka")) {
     private lateinit var columns:FlowLayout
-    private lateinit var mainScroll:ScrollContainer<FlowLayout>
-    private val categoryScrolls=mutableListOf<ScrollContainer<FlowLayout>>()
+    private lateinit var mainScroll:RetainedScroll
+    private val categoryScrolls=mutableListOf<RetainedScroll>()
+    private val categoryOffsets=linkedMapOf<String,Double>()
+    private val categoryNames=mutableListOf<String>()
+    private var populatedQuery=query
     private val featureCards=mutableListOf<FeatureCard>()
     private var cursorX=0;private var cursorY=0
     private var searchBox:FlatTextbox?=null
@@ -46,7 +51,9 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
         }
         try {
             // Build first; a failing settings constructor leaves the previous UI usable.
-            next.placeAt(panel?.position() ?: panelPosition);next.mount(width,height)
+            next.placeAt(panel?.position() ?: panelPosition)
+            (next as? SettingsPanel)?.inheritView(panel as? SettingsPanel)
+            next.mount(width,height)
             uiAdapter.rootComponent.focusHandler()?.focus(null,UIComponent.FocusSource.MOUSE_CLICK)
             panel?.dispose();panel=next;toggleError=null;UiSounds.open()
         } catch(e:Exception) {
@@ -66,28 +73,36 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
     override fun build(root:FlowLayout) {
         // Transparent root: opening the GUI or a settings panel does not dim the world.
         columns=UIContainers.horizontalFlow(Sizing.content(),Sizing.fill(100))
-        mainScroll=UIContainers.horizontalScroll(Sizing.fixed((width-16).coerceAtLeast(1)),Sizing.fixed((height-92).coerceAtLeast(35)),columns)
+        mainScroll=RetainedScroll(ScrollContainer.ScrollDirection.HORIZONTAL,Sizing.fixed((width-16).coerceAtLeast(1)),Sizing.fixed((height-92).coerceAtLeast(35)),columns)
         mainScroll.positioning(Positioning.absolute(8,32))
         mainScroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.WHITE)))
         root.child(mainScroll)
         val search=FlatTextbox(Sizing.fixed(minOf(200,(width-100).coerceAtLeast(80))))
         searchBox=search
-        search.text(query);search.setSuggestion(if(query.isEmpty()) "Search... (Ctrl+F)" else null)
-        search.tooltip(Component.literal("Ctrl+F: focus feature search"))
+        search.text(query);search.setSuggestion(if(query.isEmpty()) GuiText.component("Search... (Ctrl+F)").string else null)
+        search.tooltip(GuiText.component("Ctrl+F: focus feature search"))
         search.positioning(Positioning.relative(50,100));search.margins(Insets.of(0,3,0,0))
-        search.onChanged().subscribe { query=it;search.setSuggestion(if(it.isEmpty()) "Search... (Ctrl+F)" else null);populate() };root.child(search)
+        search.onChanged().subscribe { query=it;search.setSuggestion(if(it.isEmpty()) GuiText.component("Search... (Ctrl+F)").string else null);populate() };root.child(search)
         root.child(GuiKit.button("Done",55) { onClose() }.apply {
             positioning(Positioning.relative(100,100));margins(Insets.of(0,3,0,3))
         })
         populate()
     }
     private fun populate() {
-        columns.clearChildren();categoryScrolls.clear();featureCards.clear()
+        val sameQuery=query==populatedQuery
+        val horizontal=if(sameQuery) mainScroll.offset() else 0.0
+        if(sameQuery) categoryNames.zip(categoryScrolls).forEach {(name,scroll)->categoryOffsets[name]=scroll.offset()}
+        else {categoryOffsets.clear();populatedQuery=query}
+        columns.clearChildren();categoryScrolls.clear();categoryNames.clear();featureCards.clear()
         val config=SolyankaClient.currentGeneral().features.clickGui
-        val groups=GuiCatalog.search(query,config.sortByLength,config.favorites,SolyankaClient.recentModules())
+        val groups=GuiCatalog.search(
+            query,config.sortByLength,config.favorites,SolyankaClient.recentModules(),
+            translatedName={ GuiText.component(it.name).string },
+            translatedDescription={ GuiText.featureDescription(it).string },
+        )
         if(groups.isEmpty()) columns.child(GuiKit.label("No matching features").apply { margins(Insets.of(8)) })
         groups.forEach { (name,features) ->
-            val w=maxOf(136,features.maxOf { Minecraft.getInstance().font.width(it.name)+26 })
+            val w=maxOf(136,features.maxOf { Minecraft.getInstance().font.width(GuiText.component(it.name))+26 })
             val cards=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content())
             features.forEach { info -> val card=FeatureCard(info,w,query,
                 toggle={
@@ -107,9 +122,9 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
                 },
                 settings=({ try {if(info.id==GuiCatalog.GUI_SETTINGS) dev.solyanka.client.ui.ClickGuiSettingsUi.open(this) else ConfigUi.openSettings(info.id,this)} catch(e:Exception) {logger.error("Cannot prepare settings for ${info.id}",e);toggleError="Settings unavailable — see logs/latest.log"} })
             );featureCards.add(card);cards.child(card) }
-            val scroll=UIContainers.verticalScroll(Sizing.fixed(w),Sizing.fill(90),cards)
+            val scroll=RetainedScroll(ScrollContainer.ScrollDirection.VERTICAL,Sizing.fixed(w),Sizing.fill(90),cards)
             scroll.scrollbarThiccness(2).scrollbar(ScrollContainer.Scrollbar.flat(Color.ofArgb(GuiKit.BLUE)))
-            categoryScrolls.add(scroll)
+            categoryScrolls.add(scroll);categoryNames.add(name)
             val header=UIContainers.verticalFlow(Sizing.fixed(w),Sizing.content()).apply {
                 alignment(HorizontalAlignment.CENTER,VerticalAlignment.CENTER);padding(Insets.of(6));surface {g,c->dev.solyanka.client.feature.ChromeDraw.gradientPanel(g,c.x(),c.y(),c.width(),c.height(),dev.solyanka.gfx.ToggleAnimation.mix(GuiKit.RAISED,GuiKit.WHITE,.08),GuiKit.RAISED,GuiKit.LINE,5)}
                 child(GuiKit.label(GuiText.component(name.uppercase()).append(" · ${features.size}")).apply { horizontalTextAlignment(HorizontalAlignment.CENTER) })
@@ -118,6 +133,8 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
                 margins(Insets.of(3,0,4,4));gap(4);child(header);child(scroll)
             })
         }
+        categoryNames.zip(categoryScrolls).forEach {(name,scroll)->scroll.restoreOffset(categoryOffsets[name] ?: 0.0)}
+        mainScroll.restoreOffset(horizontal)
     }
     override fun drawComponentTooltip(g:GuiGraphicsExtractor,mx:Int,my:Int,delta:Float) {
         if(panel==null) super.drawComponentTooltip(g,mx,my,delta)
@@ -139,9 +156,10 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
         super.extractRenderState(g,mx,my,delta)
         cursorX=mx;cursorY=my
         g.text(font,ClickGradient.text("solyanka",seconds),12,12,GuiKit.WHITE)
-        if(width>360)g.text(font,"CLIENT UTILITIES  /  26.2",83,12,GuiKit.MUTED)
-        g.text(font,if(panel==null) "Right-click: settings | Ctrl+F: search" else "Drag the settings title bar to move it",8,height-43,GuiKit.MUTED)
-        g.text(font,"Left: toggle  |  Right: settings  |  Middle: favorite",3,height-32,GuiKit.WHITE)
+        g.text(font,"v${dev.solyanka.client.ModInfo.version} / ${net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer("minecraft").map {it.metadata.version.friendlyString}.orElse("unknown")}",
+            12+font.width("solyanka")+6,12,GuiKit.MUTED)
+        g.text(font,GuiText.component(if(panel==null) "Right-click: settings | Ctrl+F: search" else "Drag the settings title bar to move it"),8,height-43,GuiKit.MUTED)
+        g.text(font,GuiText.component("Left: toggle  |  Right: settings  |  Middle: favorite"),3,height-32,GuiKit.WHITE)
         toggleError?.let { g.text(font,it,3,height-54,0xffff5555.toInt()) }
         val current=panel
         if(current!=null)try {current.render(g,mx,my,delta)} catch(e:Exception) {
@@ -204,7 +222,7 @@ class NoFrillsClickGui(private val previous:Screen?,private var query:String="")
 
 private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val query:String,private val toggle:()->Unit,private val favorite:()->Unit,private val settings:(()->Unit)?):
     FlowLayout(Sizing.fixed(width),Sizing.content(),Algorithm.VERTICAL) {
-    private val title=GuiKit.label(info.name)
+    private val title=GuiKit.label(GuiText.component(info.name))
     private fun active()=info.id==GuiCatalog.GUI_SETTINGS || SolyankaClient.isEnabled(info.id)
     private var progress=if(active()) 1.0 else 0.0
     private var lastNanos=System.nanoTime()
@@ -216,7 +234,10 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
     init {
         cursorStyle(CursorStyle.HAND)
         mouseEnter().subscribe { hoverTarget=true };mouseLeave().subscribe { hoverTarget=false }
-        title.margins(Insets.of(6,6,10,10));title.tooltip(Component.literal(info.description));child(title)
+        val client=Minecraft.getInstance()
+        val tooltipWidth=minOf(280,(client.window.guiScaledWidth-24).coerceAtLeast(40))
+        val description=client.font.split(GuiText.featureDescription(info),tooltipWidth)
+        title.margins(Insets.of(6,6,10,10));title.tooltip(description.map(ClientTooltipComponent::create));child(title)
         surface {g,c->
             val palette=SolyankaClient.currentGeneral().features.clickGui
             val mix=dev.solyanka.gfx.ToggleAnimation::mix
@@ -237,14 +258,14 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
         hoverProgress=dev.solyanka.gfx.ToggleAnimation.step(hoverProgress,hoverTarget,seconds,palette.toggleAnimations)
         val color=dev.solyanka.gfx.ToggleAnimation.mix(palette.disabledColor,palette.enabledColor,progress) and 0xffffff
         val highlight=palette.enabledColor and 0xffffff
-        if(color!=lastColor || highlight!=lastMatchColor) {
-            lastColor=color;lastMatchColor=highlight
-            val term=query.trim();val index=if(term.isEmpty()) -1 else info.name.indexOf(term,ignoreCase=true)
-            val label=if(index<0) Component.literal(info.name).withColor(color) else Component.empty()
-                .append(Component.literal(info.name.substring(0,index)).withColor(color))
-                .append(Component.literal(info.name.substring(index,index+term.length)).withColor(highlight))
-                .append(Component.literal(info.name.substring(index+term.length)).withColor(color))
-            title.text(label)
+        if(color!=lastColor) {
+            lastColor=color
+            title.color(Color.ofArgb(color or 0xff000000.toInt()))
+        }
+        if(highlight!=lastMatchColor) {
+            lastMatchColor=highlight
+            val localized=GuiText.component(info.name)
+            title.text(featureCardTitle(localized,localized.string,query,highlight))
         }
     }
     override fun onMouseDown(click:MouseButtonEvent,doubled:Boolean):Boolean {
@@ -255,4 +276,15 @@ private class FeatureCard(private val info:FeatureCardInfo,width:Int,private val
             else -> false
         }
     }
+}
+
+internal fun featureCardTitle(localized:Component,localizedName:String,query:String,highlightColor:Int):Component {
+    val term=query.trim()
+    if(term.isEmpty()) return localized
+    val index=localizedName.indexOf(term,ignoreCase=true)
+    if(index<0) return localized
+    return Component.empty()
+        .append(Component.literal(localizedName.substring(0,index)))
+        .append(Component.literal(localizedName.substring(index,index+term.length)).withStyle(Style.EMPTY.withColor(highlightColor)))
+        .append(Component.literal(localizedName.substring(index+term.length)))
 }

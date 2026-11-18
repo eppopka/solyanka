@@ -8,17 +8,23 @@ data class FeatureCardInfo(val id: String, val name: String, val category: Strin
 object GuiCatalog {
     const val GUI_SETTINGS="dev.gui_settings"
     val features = listOf(
+        FeatureCardInfo("general.hide_players","Hide Players","General","Hide nearby real players, excluding yourself and NPCs. Optional dungeon-only filter."),
+        FeatureCardInfo("general.rng_announce","Auto RNG Announce","General","Announce your RNG drops to selected chats with a SkyHanni value filter and duplicate protection."),
+        FeatureCardInfo("mining.powder_chest","Powder Chest","Mining","Highlight newly spawned Crystal Hollows treasure chests with optional tracers."),
+        FeatureCardInfo("mining.mineshaft","Mineshaft Helper","Mining","Mineshaft detection, corpse TAB summary, typed Corpse ESP, tracers and Waypoints export."),
+        FeatureCardInfo("hud.spotify","Spotify","HUD","Read track metadata and cover art from the Spotify desktop app through Windows media sessions."),
+        FeatureCardInfo("hud.tracker","Tracker","HUD","Track selected item gains, estimated value and coins per active hour, with 30-second AFK rollback and optional persistent totals."),
         FeatureCardInfo("hud.performance","Performance","HUD","Live FPS, player ping and estimated server TPS from world-time packets."),
-        FeatureCardInfo(GUI_SETTINGS,"GUI Settings","Dev","Always available: ClickGUI colors, sorting and global HUD lighting."),
+        FeatureCardInfo(GUI_SETTINGS,"GUI Settings","HUD","Always available: ClickGUI colors, sorting and global HUD lighting."),
         FeatureCardInfo("custom.item_aura","Item Aura","Visual","Archive first-person orbit rings, DNA helix, comet swarm, vortex and fireflies; gradient orbs, stars and trails."),
         FeatureCardInfo("cosmetic.cs2_knife","CS2 Knives","Visual","Stray Source 2 models, finishes and viewmodel animations from your local CS2 install or an explicitly downloaded verified Stray pack. No assets bundled."),
         FeatureCardInfo("custom.shitter_list","ShitterList","Dungeons","UUID-backed local blocklist, Party Finder warnings, opt-in kicks and Mojang lookups; /sl management."),
         FeatureCardInfo("custom.move_hotbar","Move Hotbar","HUD","Archive Vanilla/Minimal/Glass/Neon hotbar, horizontal/vertical layouts, item decorations, selection animation and effects."),
         FeatureCardInfo("render.picture_in_picture","Picture in Picture","HUD","Windows-only explicit window capture. Session-only target, no desktop fallback or title guessing."),
         FeatureCardInfo("custom.pet_display","Pet Display","HUD","Observed active pet, server total XP, snapshot-only XP rate and /pets sync. No guessed level curve."),
-        FeatureCardInfo("custom.bestiary_esp","Bestiary ESP","ESP","Archive nameplate matching, mob silhouette glow and nearest-match tracer."),
-        FeatureCardInfo("custom.invisibug_esp","Invisibug ESP","ESP","Galatea marker/particle correlation with four-observation confirmation and expiry."),
-        FeatureCardInfo("custom.tiki_esp","Tiki ESP","ESP","Loaded skull texture tower recognition, labels, tracers and three particle patterns."),
+        FeatureCardInfo("custom.bestiary_esp","Bestiary ESP","General","Archive nameplate matching, mob silhouette glow and nearest-match tracer."),
+        FeatureCardInfo("custom.invisibug_esp","Invisibug ESP","General","Galatea marker/particle correlation with four-observation confirmation and expiry."),
+        FeatureCardInfo("custom.tiki_esp","Tiki ESP","General","Loaded skull texture tower recognition, labels, tracers and three particle patterns."),
         FeatureCardInfo("custom.china_hat","ChinaHat","Visual","Archive local-player cone, fill, rim/spokes and optional rainbow."),
         FeatureCardInfo("custom.halo","Halo","Visual","Archive three-shell torus with shimmer, bobbing and optional filled disc."),
         FeatureCardInfo("custom.secret_counter","Secret Counter","Dungeons","Archive personal secrets: one post-run /showextrastats request, local result and opt-in chat announcement."),
@@ -35,7 +41,7 @@ object GuiCatalog {
         FeatureCardInfo("render.player_glow","Player Glow","Visual","Native player silhouette outlines; optional visible-only mode."),
         FeatureCardInfo("render.nametags","Nametags","Visual","Player name, health and distance panels; real-account filter."),
         FeatureCardInfo("render.block_outline","Block Outline","Visual","Selected voxel shape contour and fill; no blur shader."),
-        FeatureCardInfo("mining.titanium","Titanium ESP","Visual","Loaded-chunk titanium scanner with commission and region filters."),
+        FeatureCardInfo("mining.titanium","Titanium ESP","Mining","Loaded-chunk titanium scanner with commission and region filters."),
         FeatureCardInfo("hud.inventory","Inventory HUD","HUD","Stray: inventory grid, optional armor/offhand and hotbar, filled count; display only."),
         FeatureCardInfo("hud.item_name","Item Name HUD","HUD","Stray: persistent styled held-item name and optional vanilla-name suppression."),
         FeatureCardInfo("hud.skill_progress","Skill Progress HUD","HUD","Stray: SkyBlock skill gains, ratio/percent/MAXED and observed level hints; no network requests."),
@@ -51,7 +57,7 @@ object GuiCatalog {
         FeatureCardInfo("dungeon.map_info","Map Info","Dungeons","Odin: secrets, estimated score, crypts, deaths, bonus flags, room secrets and portal highlight."),
         FeatureCardInfo("dungeon.mimic","Mimic Detection","Dungeons","Odin: baby-zombie death, prince and bat detection, optional party announcements; baby-zombie highlights."),
         FeatureCardInfo("custom.mimic_chest","Mimic Chest","Dungeons","impl.zip: trapped-chest highlights, loaded chunks only; no forced chunk loads."),
-        FeatureCardInfo("utility.spread_guesser","Spread Guesser","General","Approximate adjacent block hints based on the Mining Spread stat in the tab list."),
+        FeatureCardInfo("utility.spread_guesser","Spread Guesser","Mining","Approximate adjacent block hints based on the Mining Spread stat in the tab list."),
         FeatureCardInfo("utility.price_tooltips","Price Tooltips","General","NoFrills: market prices, observed crafting recipes and local purchase costs. Online data is opt-in."),
         FeatureCardInfo("solver.experiments","Experiment Solver","General","Chronomatron, Ultrasequencer and Superpairs memory overlays, next-click hints and optional wrong-click prevention."),
         FeatureCardInfo("render.suppression","No Render","Visual","Independent particle, entity, overlay, fog, recipe-book and HUD suppression filters."),
@@ -68,10 +74,11 @@ object GuiCatalog {
         FeatureCardInfo("utility.command_keybinds","Command Keybinds","General","Create keyboard and mouse binds for commands or chat. Modifier, GUI, island and dungeon class filters."),
         FeatureCardInfo("utility.command_shortcuts","Command Shortcuts","General","Create command aliases with arguments, live expansion and cycle protection.")
     )
-    fun search(query: String,sortByLength:Boolean=false,favorites:List<String> = emptyList(),recent:List<String> = emptyList()): Map<String,List<FeatureCardInfo>> {
+    fun featureDescriptionTranslationKey(id: String) = "solyanka.ui.feature.$id.description"
+    fun search(query: String,sortByLength:Boolean=false,favorites:List<String> = emptyList(),recent:List<String> = emptyList(),translatedName:(FeatureCardInfo)->String = {it.name},translatedDescription:(FeatureCardInfo)->String = {it.description}): Map<String,List<FeatureCardInfo>> {
         fun normalized(value: String) = value.lowercase().filterNot { it.isWhitespace() }
         val term=normalized(query)
-        val matches=features.filter { term.isEmpty() || normalized(it.name+" "+it.description).contains(term) }
+        val matches=features.filter { term.isEmpty() || normalized(it.name+" "+it.description).contains(term) || normalized(translatedName(it)).contains(term) || normalized(translatedDescription(it)).contains(term) }
         fun sort(cards:List<FeatureCardInfo>)=if(sortByLength) cards.sortedWith(compareByDescending<FeatureCardInfo> {it.name.length}.thenBy {it.name.lowercase()}.thenBy {it.id}) else cards.sortedWith(compareBy<FeatureCardInfo> {it.name.lowercase()}.thenBy {it.id})
         val pinned=sort(matches.filter {it.id in favorites})
         val categories=matches.groupBy {it.category}.mapValues {(_,cards)->sort(cards)}
@@ -79,8 +86,8 @@ object GuiCatalog {
         val recentlyChanged=recent.distinct().mapNotNull {byId[it]}
         return linkedMapOf<String,List<FeatureCardInfo>>().apply {
             if(pinned.isNotEmpty()) put("Favorites",pinned)
-            if(recentlyChanged.isNotEmpty()) put("Recently changed",recentlyChanged)
             putAll(categories)
+            if(recentlyChanged.isNotEmpty()) put("Recently changed",recentlyChanged)
         }
     }
 }

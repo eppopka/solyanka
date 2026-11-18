@@ -11,9 +11,12 @@ import kotlin.test.*
 import org.junit.jupiter.api.Test
 
 class HudGlowSettingsTest {
- private val ids=GuiCatalog.features.filter {it.category=="HUD"}.map {it.id}
+ private val ids=GuiCatalog.features.filter {it.category=="HUD" && it.id!=GuiCatalog.GUI_SETTINGS}.map {it.id}
  @Test fun `each HUD feature has an independent default off toggle`() {
-  assertEquals(14,ids.size)
+  assertEquals(16,ids.size)
+  assertTrue("hud.spotify" in ids)
+  assertTrue("hud.tracker" in ids)
+  assertFalse(GuiCatalog.GUI_SETTINGS in ids)
   val original=FeatureCodec.decode(JsonObject()).hudGlow
   assertTrue(ids.none {original.enabled(it)})
   for(id in ids) {
@@ -23,6 +26,25 @@ class HudGlowSettingsTest {
    assertEquals(original,changed.withEnabled(id,false))
   }
   assertFalse(original.enabled("unknown"));assertFails {original.withEnabled("unknown",true)}
+ }
+ @Test fun `Spotify glow styles migrate and stay independent of Yandex`() {
+  val legacy=FeatureCodec.decode(JsonParser.parseString("""{"hudGlow":{"music":true,"intensity":{"music":1.5}}}""").asJsonObject).hudGlow
+  assertTrue(legacy.enabled("hud.yandex_music"))
+  assertFalse(legacy.enabled("hud.spotify"))
+  assertEquals(1.0,legacy.intensity.value("hud.spotify"))
+  val changed=legacy.withEnabled("hud.spotify",true).copy(
+   custom=legacy.custom.withValue("hud.spotify",true),
+   intensity=legacy.intensity.withValue("hud.spotify",1.75),
+   colors=legacy.colors.withValue("hud.spotify",0xff123456.toInt())
+  )
+  assertTrue(changed.custom.value("hud.spotify"))
+  assertFalse(changed.custom.value("hud.yandex_music"))
+  assertEquals(1.5,changed.intensity.value("hud.yandex_music"))
+  assertEquals(1.75,changed.intensity.value("hud.spotify"))
+  assertEquals(0xff123456.toInt(),changed.colors.value("hud.spotify"))
+  assertEquals(0xff7dd3fc.toInt(),changed.colors.value("hud.yandex_music"))
+  val features=FeatureSettings(hudGlow=changed)
+  assertEquals(features,FeatureCodec.decode(Gson().toJsonTree(features).asJsonObject))
  }
  @Test fun `settings roundtrip and reject non boolean values`() {
   val glow=HudGlowSettings().withEnabled("render.picture_in_picture",true).withEnabled("hud.inventory",true).copy(intensity=HudGlowIntensity().withValue("hud.inventory",1.5))
@@ -72,7 +94,7 @@ class HudGlowSettingsTest {
    assertFalse(text.contains("HudGlowUi.row("),file)
    // After the glow rows, the next statement closes the current buildList.
    assertTrue(text.substringAfter(marker).substringAfter('\n').trimStart().startsWith("}"),file)
-   assertEquals(if(file=="FeatureUi.kt") 2 else 1,Regex("HudGlowUi\\.controls\\(").findAll(text).count(),file)
+   assertEquals(if(file=="FeatureUi.kt" || file=="MusicUi.kt") 2 else 1,Regex("HudGlowUi\\.controls\\(").findAll(text).count(),file)
   }
   for((file,id) in listOf("FeatureUi.kt" to "ModuleIds.TICK_TIMERS", "AdvancedUi.kt" to "id", "WaypointUi.kt" to "ModuleIds.WAYPOINTS")) {
    val text=Files.readString(root.resolve(file));val marker="addAll(HudGlowUi.controls($id"
@@ -85,11 +107,12 @@ class HudGlowSettingsTest {
  }
  @Test fun `feature renderers use the shared opt in halo`() {
   val root=java.nio.file.Path.of("src/client/kotlin/dev/solyanka/client/feature")
-  val files=listOf("ExtraHuds.kt","FeatureRuntime.kt","PetDisplay.kt","PictureInPicture.kt","StrayInventoryHud.kt","ThemedChat.kt","VanillaHearts.kt","VanillaHotbar.kt","YandexMusic.kt")
+  val files=listOf("ExtraHuds.kt","FeatureRuntime.kt","PetDisplay.kt","PictureInPicture.kt","ThemedChat.kt","VanillaHearts.kt","VanillaHotbar.kt","YandexMusic.kt")
   files.forEach {assertTrue(Files.readString(root.resolve(it)).contains("HudGlow.draw("),it)}
   val frame=Files.readString(root.resolve("HudFrame.kt"));assertTrue(frame.contains("HudGlow.draw(g, glowModule"))
   assertTrue(Files.readString(root.resolve("ArchiveHuds.kt")).contains("HudFrame.draw(g,h,160,34,atX,atY,ModuleIds.STOPWATCH)"))
   assertTrue(Files.readString(root.resolve("ScoreboardHud.kt")).contains("HudFrame.draw(g,s.hud,layout.width,layout.height,x,atY,ModuleIds.SCOREBOARD)"))
+  assertTrue(Files.readString(root.resolve("StrayInventoryHud.kt")).contains("HudFrame.draw(g,s.hud,m.width,m.height,atX,atY,ModuleIds.INVENTORY_HUD)"))
   val draw=Files.readString(root.resolve("HudGlow.kt"))
   assertTrue(draw.contains("f.hudLighting.enabled"));assertTrue(draw.contains("RoundedGlow.draw("))
  }

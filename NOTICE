@@ -238,9 +238,10 @@ Source records: audit/held-item-recheck-source-manifest.json. GUI feature-list
 visibility was restored at the user's request while retaining coalesced geometry.
 
 1.3.6: Stray CC0 CS2 Source 2 loaders, animation/skin code and metallic shaders
-adapted under dev.solyanka.client.cs2. Includes third-party MIT/Apache-2.0
-components: see licenses/CS2-THIRD-PARTY-NOTICES.md and licenses/Apache-2.0.txt.
-Headers retained. No Counter-Strike/Valve game assets are included or downloaded.
+adapted under dev.solyanka.client.cs2. Third-party MIT/Apache-2.0 attributions,
+retained headers and unresolved decoder provenance are documented in
+licenses/CS2-THIRD-PARTY-NOTICES.md and licenses/Apache-2.0.txt. No
+Counter-Strike/Valve game assets are included or downloaded.
 ItemAura particle math and sprite geometry adapted from the user-provided impl.zip.
 
 1.3.7: PiP title-independent HWND/process lifetime checks and application labels;
@@ -257,3 +258,26 @@ External game assets retain their owners' terms; not licensed by this project's 
 Hotbar 1.3.11: original eppopkaaddons CC0-1.0 HotbarPainter, HotbarLayout/Viewport/Selection, GlassRenderer, Rect and Render2D.drawRect ported from the user-supplied 26.2 project. Original files and SHA-256 provenance are retained in audit/original-hotbar-source. Only required helpers are imported; AetherOSSettings, clocks and unrelated project content remain excluded.
 
 1.3.12: Stray CC0 Cs2KnifeScreen layout/preview concepts and original SoftwareRender body adapted from pinned commit d91fcd4515b4eda647ee8fd7fa99408f473e5718. Selected source files and hashes are retained in audit/stray-knife-menu-source. First-person hand shader routing references Stray HeldItemShader and AvatarRendererMixin; solyanka reuses its existing native pipeline. UUID Item Bindings are a local integration. No Valve game assets are redistributed.
+
+
+1.4.8 additions:
+- Hide Players adapts the user-supplied Odin HidePlayers.kt (com.odtheking.odin),
+  BSD-3-Clause; see licenses/Odin-BSD-3-Clause.txt.
+- Mineshaft corpse IDs and TAB formats follow user-supplied SkyHanni
+  CorpseType.kt / CorpseFinder.kt (at.hannibal2.skyhanni). SkyHanni upstream
+  is LGPL-2.1: https://github.com/SkyHanniStudios/SkyHanni. The new helper
+  independently implements these observed identifiers/formats; no upstream
+  source files or route data are bundled.
+  CorpseSharing.kt was reviewed as a reference; automatic coordinate sharing
+  and upstream route data are not copied or bundled.
+- Powder Chest transition tracking and RNG announce logic are new implementations.
+
+Tracker research (2026-11-18): SkyHanniStudios/SkyHanni (LGPL-2.1), beta:
+- utils/tracker/SkyHanniItemTracker.kt
+- data/ItemAddManager.kt
+- data/SackApi.kt
+- utils/ItemPriceUtils.kt
+Reviewed for item-gain sources, native Sacks hover format, and price-source behavior.
+The new solyanka Tracker/AFK/cache implementations are independent; these upstream
+source files are not bundled or claimed as fully ported. Specialized shard and
+activity-specific SkyHanni event integrations are not included.

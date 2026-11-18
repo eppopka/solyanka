@@ -12,6 +12,8 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 import com.mojang.brigadier.arguments.StringArgumentType
+import com.mojang.brigadier.arguments.IntegerArgumentType
+import dev.solyanka.client.feature.DevCopy
 
 /** Client-only commands. Screens are requested for the next tick to preserve chat behavior. */
 object Commands {
@@ -41,6 +43,29 @@ object Commands {
                         } catch(e:Exception) {ctx.source.sendError(Component.literal("Invalid or unsupported layout share string."));0}
                     }))
                 .then(literal("waypoint").then(literal("add").executes { ctx -> try {DungeonWaypoints.addTarget();ctx.source.sendFeedback(Component.literal("Waypoint saved"));1} catch(e:Exception) {ctx.source.sendError(Component.literal(e.message ?: "Cannot add waypoint"));0} }.then(argument("title",StringArgumentType.greedyString()).executes {ctx ->try {DungeonWaypoints.addTarget(StringArgumentType.getString(ctx,"title"));ctx.source.sendFeedback(Component.literal("Waypoint saved"));1} catch(e:Exception) {ctx.source.sendError(Component.literal(e.message ?: "Cannot add waypoint"));0}})))
+                .then(literal("copy")
+                    .executes {ctx->DevCopy.run("message",1, {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}
+                    .then(literal("message").executes {ctx->DevCopy.run("message",1, {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}
+                        .then(argument("index",IntegerArgumentType.integer(1,100)).executes {ctx->DevCopy.run("message",IntegerArgumentType.getInteger(ctx,"index"), {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}))
+                    .then(literal("ampersand").executes {ctx->DevCopy.run("ampersand",1, {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}
+                        .then(argument("index",IntegerArgumentType.integer(1,100)).executes {ctx->DevCopy.run("ampersand",IntegerArgumentType.getInteger(ctx,"index"), {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}))
+                    .then(literal("json").executes {ctx->DevCopy.run("json",1, {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}
+                        .then(argument("index",IntegerArgumentType.integer(1,100)).executes {ctx->DevCopy.run("json",IntegerArgumentType.getInteger(ctx,"index"), {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}))
+                    .then(literal("chat").executes {ctx->DevCopy.run("chat",10, {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}
+                        .then(argument("count",IntegerArgumentType.integer(1,100)).executes {ctx->DevCopy.run("chat",IntegerArgumentType.getInteger(ctx,"count"), {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}))
+                    .then(literal("around").executes {ctx->DevCopy.run("around",3, {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}
+                        .then(argument("radius",IntegerArgumentType.integer(1,16)).executes {ctx->DevCopy.run("around",IntegerArgumentType.getInteger(ctx,"radius"), {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}))
+                    .then(literal("all").executes {ctx->DevCopy.run("all",3, {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}
+                        .then(argument("radius",IntegerArgumentType.integer(1,16)).executes {ctx->DevCopy.run("all",IntegerArgumentType.getInteger(ctx,"radius"), {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})}))
+                    .then(literal("tab").executes {ctx->DevCopy.run("tab",1, {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})})
+                    .then(literal("scoreboard").executes {ctx->DevCopy.run("scoreboard",1, {ctx.source.sendFeedback(Component.literal(it))}, {ctx.source.sendError(Component.literal(it))})})
+                )
+                .then(literal("rngstatus").executes {ctx->
+                    ctx.source.sendFeedback(Component.literal("[solyanka] "+dev.solyanka.client.feature.RngAnnounce.diagnostics()));1
+                })
+                .then(literal("rngtest").then(argument("message",StringArgumentType.greedyString()).executes {ctx->
+                    ctx.source.sendFeedback(Component.literal("[solyanka] "+dev.solyanka.client.feature.RngAnnounce.preview(StringArgumentType.getString(ctx,"message"))));1
+                }))
                 .then(literal("knifestatus").executes { ctx -> ctx.source.sendFeedback(Component.literal(dev.solyanka.client.cs2.Cs2Knives.status()));1 })
                 .then(literal("helditemstatus").executes { ctx -> ctx.source.sendFeedback(Component.literal(HeldItemCosmetic.diagnostics()));1 })
                 .then(literal("status").executes { ctx ->

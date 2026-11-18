@@ -69,7 +69,7 @@ class FinalCosmeticsTest {
   val full=InventoryHudLayout.metrics(InventoryHudSettings());assertEquals(118,full.height)
  }
  @Test fun `new modules have actual settings and registered implementations`() {
-  val client=Path.of("src/client/kotlin/dev/solyanka/client/SolyankaClient.kt").readText();assertTrue("ModuleInfo(ITEM_AURA" in client);assertTrue("ModuleInfo(CS2_KNIFE" in client)
+  val catalog=Path.of("src/client/kotlin/dev/solyanka/client/ClientModuleCatalog.kt").readText();assertTrue("ModuleInfo(ModuleIds.ITEM_AURA" in catalog);assertTrue("ModuleInfo(ModuleIds.CS2_KNIFE" in catalog)
   val ui=Path.of("src/client/kotlin/dev/solyanka/client/ui/FeatureUi.kt").readText();assertTrue("FinalCosmeticsUi.open(id,host,model)" in ui)
  }
  @Test fun `aura flush is after hand features but before matrix pop`() {

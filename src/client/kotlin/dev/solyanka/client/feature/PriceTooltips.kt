@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory
 object PriceTooltips {
  private val log=LoggerFactory.getLogger("solyanka/prices")
  @Volatile private var prices:Map<String,MarketPrice> = emptyMap()
+ @Volatile private var trackerNames:Map<String,String> = emptyMap()
  @Volatile private var updated=0L
  @Volatile private var status="Prices not downloaded"
  private val busy=AtomicBoolean(false)
@@ -56,9 +57,11 @@ object PriceTooltips {
   finally { if(!pending.isDone) pending.cancel(true) }
  }
  fun tick() {
-  if(!SolyankaClient.isEnabled(ModuleIds.PRICES)) return
+  val f=SolyankaClient.currentGeneral().features
+  val tooltipOnline=SolyankaClient.isEnabled(ModuleIds.PRICES) && f.prices.network
+  val trackerOnline=SolyankaClient.isEnabled(ModuleIds.TRACKER) && f.tracker.onlinePrices && f.tracker.priceMode!="manual"
+  if(!tooltipOnline && !trackerOnline) return
   load()
-  if(!SolyankaClient.currentGeneral().features.prices.network) return
   val now=System.nanoTime();if(now<next || !busy.compareAndSet(false,true)) return
   next=now+Duration.ofMinutes(5).toNanos()
   Thread.startVirtualThread {
@@ -80,10 +83,29 @@ object PriceTooltips {
      check(result.isNotEmpty()) { "All public price providers unavailable" }
      prices=result.toMap();updated=System.currentTimeMillis();status="Public fallback; unavailable: "+missing.joinToString()
     }
+    try {
+     val root=JsonParser.parseString(get(http,"https://api.hypixel.net/v2/resources/skyblock/items")).asJsonObject
+     check(root.get("success")?.asBoolean==true)
+     val enriched=prices.toMutableMap()
+     val pairs=root.getAsJsonArray("items").mapNotNull {value->
+      val o=value.asJsonObject;val id=o.get("id")?.asString ?: return@mapNotNull null
+      val name=o.get("name")?.asString ?: return@mapNotNull null
+      if(id.length>128 || name.length>160)return@mapNotNull null
+      val npc=o.get("npc_sell_price")?.asDouble ?: 0.0
+      if(npc>0 && npc.isFinite())enriched[id]=(enriched[id] ?: MarketPrice()).copy(npc=npc)
+      TrackerLogic.nameKey(name) to id
+     }
+     prices=enriched.toMap()
+     trackerNames=pairs.groupBy({it.first},{it.second}).filterValues {it.distinct().size==1}.mapValues {it.value.first()}
+    } catch(e:Exception) {log.debug("Tracker item-name catalog unavailable; retained prior catalog",e)}
    } } catch(e:Exception) { status="Price refresh failed; "+if(prices.isEmpty()) "no cache" else "showing stale cache";log.warn(status,e) }
    finally { busy.set(false) }
   }
  }
+ fun trackerPrice(id:String):MarketPrice?=prices[id] ?: prices[id.uppercase(java.util.Locale.ROOT)]
+ fun trackerIdByName(name:String):String?=trackerNames[TrackerLogic.nameKey(name)]
+ fun trackerItemId(stack:ItemStack):String=runCatching {id(stack)}.getOrDefault("")
+ fun trackerPriceStatus():String=status+(if(updated>0) " · ${((System.currentTimeMillis()-updated).coerceAtLeast(0)/1000)}s old" else "")
  private fun data(s:ItemStack)=s.get(DataComponents.CUSTOM_DATA)?.copyTag()
  private fun lore(s:ItemStack)=s.get(DataComponents.LORE)?.lines()?.map { ChatLogic.plain(it.string) } ?: emptyList()
  private fun id(s:ItemStack):String {

@@ -36,6 +36,8 @@ object FeatureUi {
         route(ModuleIds.ITEM_AURA,ModuleIds.CS2_KNIFE) {id,host,model->FinalCosmeticsUi.open(id,host,model)}
         route(ModuleIds.BLOCKLIST,ModuleIds.MOVE_HOTBAR,ModuleIds.PIP,ModuleIds.PET,ModuleIds.SIMON,ModuleIds.BESTIARY,ModuleIds.INVISIBUG,ModuleIds.TIKI,ModuleIds.CHINA_HAT,ModuleIds.HALO) {id,host,model->HuntingUi.open(id,host,model)}
         route(ModuleIds.SPREAD_GUESSER) {_,host,model->spread(host,model)}
+        route(ModuleIds.HIDE_PLAYERS,ModuleIds.RNG_ANNOUNCE,ModuleIds.POWDER_CHEST,ModuleIds.MINESHAFT) {id,host,model->MiningHelpersUi.open(id,host,model)}
+        route(ModuleIds.SPOTIFY) {_,host,model->MusicUi.spotify(host,model)}
         route(ModuleIds.MUSIC) {_,host,model->MusicUi.open(host,model)}
         route(ModuleIds.CHAT_COMMANDS) {_,host,model->ChatCommandsUi.open(host,model)}
         route(ModuleIds.LEAP_MESSAGE) {_,host,model->LeapMessageUi.open(host,model)}
@@ -50,6 +52,7 @@ object FeatureUi {
         route(ModuleIds.PUZZLE_SOLVERS) {_,host,model->PuzzleSolversUi.open(host,model)}
         route(ModuleIds.WAYPOINTS) {_,host,model->WaypointUi.open(host,model)}
         route(ModuleIds.AMBIENCE,ModuleIds.ASPECT,ModuleIds.FOG,ModuleIds.DOORS,ModuleIds.MAP_INFO,ModuleIds.ICE,ModuleIds.BLAZE,ModuleIds.BEAMS,ModuleIds.MIMIC,ModuleIds.MIMIC_CHEST,ModuleIds.PRICES,ModuleIds.EXPERIMENTS,ModuleIds.SUPPRESSION) {id,host,model->AdvancedUi.open(id,host,model)}
+        route(ModuleIds.TRACKER) {_,host,model->TrackerUi.open(host,model)}
         route(ModuleIds.PERFORMANCE) {_,host,model->PerformanceUi.open(host,model)}
         route(ModuleIds.TICK_TIMERS) {_,host,model->timers(View(host,model))}
         route(ModuleIds.PLAYER_DISPLAY) {_,host,model->player(View(host,model))}

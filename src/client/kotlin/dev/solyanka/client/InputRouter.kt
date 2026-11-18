@@ -46,6 +46,7 @@ object InputRouter {
         if (action == GLFW.GLFW_RELEASE) return ownedInputs.remove(token)
         if (action == GLFW.GLFW_REPEAT) return token in ownedInputs
         if (action != GLFW.GLFW_PRESS) return false
+        if(device==InputDevice.MOUSE)dev.solyanka.client.feature.ItemTracker.inputActivity()
         try {
             if(ChatTweaks.copy(client,device,key)) { ownedInputs.add(token);return true }
         } catch(e:Exception) { logger.error("Chat copy failure",e) }
