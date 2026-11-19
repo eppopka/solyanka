@@ -11,7 +11,7 @@ object TrackerHudStyle {
     const val PROFIT=0xff95e2ac.toInt()
     const val MUTED=0xffa1adbd.toInt()
     const val WARNING=0xffeba47f.toInt()
-    private val item=Regex("^(.*)( x[0-9,]+)( \\()(.+?)( coins\\))$")
+    private val item=Regex("^(.*)( x[0-9,]+)( \\()(.+?)((?: coins)?\\))$")
     fun spans(line:String,baseColor:Int,colorful:Boolean=true):List<TrackerHudSpan> {
         if(!colorful)return listOf(TrackerHudSpan(line,baseColor))
         fun part(s:String,rgb:Int)=TrackerHudSpan(s,(baseColor and -0x1000000) or (rgb and 0xffffff))

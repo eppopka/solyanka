@@ -14,7 +14,7 @@ object GuiCatalog {
         FeatureCardInfo("mining.vanguard_announce","Vanguard Announce","Mining","Announce a Vanguard Mineshaft to guild chat and invite up to three unique guild replies for 60 seconds."),
         FeatureCardInfo("mining.mineshaft","Mineshaft Helper","Mining","Mineshaft detection, corpse TAB summary, typed Corpse ESP, tracers and Waypoints export."),
         FeatureCardInfo("hud.spotify","Spotify","HUD","Read track metadata and cover art from the Spotify desktop app through Windows media sessions."),
-        FeatureCardInfo("hud.tracker","Tracker","HUD","Track selected item gains, estimated value and coins per active hour, with 30-second AFK rollback and optional persistent totals."),
+        FeatureCardInfo("hud.tracker","Tracker","HUD","Items, value and coins/hour. 60-second AFK pause and selectable reset modes."),
         FeatureCardInfo("hud.performance","Performance","HUD","Live FPS, player ping and estimated server TPS from world-time packets."),
         FeatureCardInfo(GUI_SETTINGS,"GUI Settings","HUD","Always available: ClickGUI colors, sorting and global HUD lighting."),
         FeatureCardInfo("custom.item_aura","Item Aura","Visual","Archive first-person orbit rings, DNA helix, comet swarm, vortex and fireflies; gradient orbs, stars and trails."),

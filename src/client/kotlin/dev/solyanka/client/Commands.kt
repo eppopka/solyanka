@@ -19,7 +19,7 @@ import dev.solyanka.client.feature.DevCopy
 object Commands {
  fun register() {
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
-            dispatcher.register(literal("solyanka")
+            val solyanka=dispatcher.register(literal("solyanka")
                 .executes {
                     // Open next tick, after vanilla has finished closing the chat screen.
                     S.requestSettings(); 1
@@ -83,6 +83,7 @@ object Commands {
                         else { ctx.source.sendFeedback(Component.literal("$id: ${if (S.states()[id]==true) "on" else "off"}${if(id in PuzzleSolverModules.children && !S.isEnabled(ModuleIds.PUZZLE_SOLVERS)) " (Puzzle Solvers off)" else ""}")); 1 }
                     }
                 })))
+            dispatcher.register(literal("so").executes {S.requestSettings();1}.redirect(solyanka))
         }
  }
 }

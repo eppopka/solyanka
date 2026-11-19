@@ -9,12 +9,12 @@ import dev.solyanka.core.ModuleIds
 import dev.solyanka.model.*
 
 class TrackerLogicTest {
-    @Test fun `thirty seconds AFK rolls back the whole idle interval`() {
+    @Test fun `sixty seconds AFK rolls back the whole idle interval`() {
         val c=TrackerClock()
         c.step(0,true,true,false,false)
         c.step(10_000,true,false,false,false);assertEquals(10_000L,c.elapsedMillis)
-        c.step(29_999,true,false,false,false);assertEquals(29_999L,c.elapsedMillis)
-        c.step(30_000,true,false,false,false);assertEquals(0L,c.elapsedMillis);assertTrue(c.paused)
+        c.step(59_999,true,false,false,false);assertEquals(59_999L,c.elapsedMillis)
+        c.step(60_000,true,false,false,false);assertEquals(0L,c.elapsedMillis);assertTrue(c.paused)
         c.step(100_000,true,true,false,false);assertEquals(0L,c.elapsedMillis);assertFalse(c.paused)
         c.step(101_000,true,true,false,false);assertEquals(1_000L,c.elapsedMillis)
     }
@@ -23,16 +23,16 @@ class TrackerLogicTest {
         c.step(0,true,true,false,false);c.step(1000,true,true,false,false)
         c.step(5000,true,false,false,false);assertEquals(10_000L,c.elapsedMillis)
         c.step(6000,true,true,false,false);assertEquals(11_000L,c.committedMillis)
-        c.step(36_000,true,false,false,false);assertEquals(11_000L,c.elapsedMillis)
+        c.step(66_000,true,false,false,false);assertEquals(11_000L,c.elapsedMillis)
     }
     @Test fun `item mode waits for actual tracked gains and ignores movement for resume`() {
         val c=TrackerClock()
         c.step(0,true,true,false,true);assertTrue(c.paused);assertEquals(0L,c.elapsedMillis)
         c.step(10_000,true,false,true,true);assertFalse(c.paused);assertEquals(0L,c.elapsedMillis)
         c.step(20_000,true,true,false,true);assertEquals(10_000L,c.elapsedMillis)
-        c.step(40_000,true,true,false,true);assertTrue(c.paused);assertEquals(0L,c.elapsedMillis)
-        c.step(50_000,true,true,false,true);assertTrue(c.paused)
-        c.step(60_000,true,false,true,true);assertFalse(c.paused);assertEquals(0L,c.elapsedMillis)
+        c.step(70_000,true,true,false,true);assertTrue(c.paused);assertEquals(0L,c.elapsedMillis)
+        c.step(80_000,true,true,false,true);assertTrue(c.paused)
+        c.step(90_000,true,false,true,true);assertFalse(c.paused);assertEquals(0L,c.elapsedMillis)
     }
     @Test fun `disconnects do not count offline time and checkpoints omit provisional idle time`() {
         val c=TrackerClock()

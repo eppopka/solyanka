@@ -1,0 +1,16 @@
+{
+  "version": "1.4.8.2",
+  "minecraft": "26.2",
+  "changed_files": 21,
+  "new_junit_tests": 11,
+  "kotlin_compilation": "not reached",
+  "junit_execution": "not run",
+  "live_sacks_and_game_testing": "not run",
+  "build_blocker": "UnknownHostException: services.gradle.org",
+  "jar_included": false,
+  "source_whitespace": "pass",
+  "translation_key_parity": "pass",
+  "exact_jvm_regex_fixtures": 84,
+  "patch_round_trip": "pass",
+  "zip_crc_all_source_equality_executable_wrapper": "pass"
+}

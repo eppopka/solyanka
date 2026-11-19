@@ -113,8 +113,8 @@ class Release1481Test {
         assertTrue(s.contains("IdentityHashMap<ItemStack,StackMatch>"))
         assertTrue(s.contains("stackMatches.size>=128"));assertTrue(s.contains("tick%20==0)stackMatches.clear()"))
         assertTrue(s.contains("idIndex="));assertTrue(s.contains("nameIndex="))
-        assertTrue(s.contains("tick%2==0"));assertTrue(s.contains("tick%4==0)pollSacks()"))
-        assertTrue(s.contains("latest===lastChatParent"));assertTrue(s.contains("!active)inventory.reset()"))
+        assertTrue(s.contains("tick%2==0"));assertTrue(s.contains("tick%2==0)pollSacks()"))
+        assertTrue(s.contains("all.take(16)"));assertTrue(s.contains("!active)inventory.reset()"))
         assertTrue(s.contains("time-pending.peek().time>=750"))
     }
     @Test fun `Vanguard network sends remain gated and expire queued invitations too`() {

@@ -272,7 +272,6 @@
   "solyanka.ui.tracker": "Трекер",
   "solyanka.ui.skyblock_only": "Только SkyBlock",
   "solyanka.ui.online_tracker_prices": "Онлайн-цены трекера",
-  "solyanka.ui.visible_item_rows": "Видимых строк предметов",
   "solyanka.ui.new_tracked_item_name": "Имя нового отслеживаемого предмета",
   "solyanka.ui.add_tracked_item": "Добавить предмет",
   "solyanka.ui.add_held_item": "Добавить предмет в руке",
@@ -280,8 +279,7 @@
   "solyanka.ui.manual_unit_price": "Цена за штуку вручную",
   "solyanka.ui.remove_item": "Убрать предмет",
   "solyanka.ui.reset_totals_and_timer": "Сбросить счётчики и время",
-  "solyanka.ui.feature.hud.tracker.description": "Выбранные предметы, их примерная стоимость и монеты за активный час; откат 30 секунд AFK и сохранение итогов по выбору.",
-  "solyanka.ui.colorful_tracker_hud": "Разноцветный Tracker HUD",
+  "solyanka.ui.feature.hud.tracker.description": "Предметы, стоимость и монеты в час. AFK: 60 секунд. Выбор режима сброса.",
   "solyanka.ui.vanguard_announce": "Vanguard Announce",
   "solyanka.ui.guild_announcement": "Сообщение гильдии",
   "solyanka.ui.invite_keyword": "Ключевое слово приглашения",
@@ -292,5 +290,8 @@
   "solyanka.ui.horizontal": "Горизонтально",
   "solyanka.ui.vertical": "Вертикально",
   "solyanka.ui.metric_status_colors": "Цвета состояния показателей",
-  "solyanka.ui.feature.mining.vanguard_announce.description": "Сообщение о Vanguard Mineshaft в гильдию и до трёх уникальных приглашений по ответам за 60 секунд."
+  "solyanka.ui.feature.mining.vanguard_announce.description": "Сообщение о Vanguard Mineshaft в гильдию и до трёх уникальных приглашений по ответам за 60 секунд.",
+  "solyanka.ui.compact_values": "Короткие значения",
+  "solyanka.ui.track_sacks": "Учитывать Sacks",
+  "solyanka.ui.online_prices": "Онлайн-цены"
 }

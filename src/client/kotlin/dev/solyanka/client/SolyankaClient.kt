@@ -150,6 +150,7 @@ object SolyankaClient : ClientModInitializer {
             if (world !== previousWorld) {
                 if(world==null) FeatureRuntime.flushHudProfile()
                 modules.reset(if (world == null) ResetReason.DISCONNECTED else ResetReason.WORLD_CHANGED)
+                if(!isEnabled(dev.solyanka.core.ModuleIds.TRACKER))dev.solyanka.client.feature.ItemTracker.worldChanged()
                 InputRouter.clear()
                 dev.solyanka.client.feature.PerformanceHud.reset();FeatureRuntime.reset();dev.solyanka.client.feature.RngAnnounce.reset();dev.solyanka.client.feature.MiningHelpers.reset();Experiments.reset();DungeonPuzzles.reset();DungeonMap.reset();DungeonWaypoints.reset();WorldVisuals.reset();TitaniumScanner.reset()
                 previousWorld = world

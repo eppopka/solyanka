@@ -10,7 +10,7 @@ data class TrackerItem(val name:String="",val itemId:String="",val manualPrice:D
 data class TrackerSettings(val hud:HudSpec=HudSpec(x=12,y=240),val items:List<TrackerItem> = emptyList(),
     val priceMode:String="instant_sell",val onlinePrices:Boolean=false,val persistence:String="session",
     val activityMode:String="movement",val countSacks:Boolean=true,val skyblockOnly:Boolean=true,
-    val maxRows:Int=10,val background:Boolean=true,val colorful:Boolean=true) {
+    val maxRows:Int=10,val background:Boolean=true,val colorful:Boolean=true,val compactValues:Boolean=false) {
     fun validate() {
         hud.validate();require(items.size<=32 && items.map {it.key()}.distinct().size==items.size) {"Use up to 32 uniquely named tracked items"}
         val explicit=items.map {it.itemId.uppercase(Locale.ROOT)}.filter {it.isNotBlank()}
@@ -19,7 +19,7 @@ data class TrackerSettings(val hud:HudSpec=HudSpec(x=12,y=240),val items:List<Tr
             require(it.itemId.isEmpty() || it.itemId.matches(Regex("[A-Za-z0-9_:;.\\-]{1,128}")))
             require(it.manualPrice.isFinite() && it.manualPrice in 0.0..1.0e12)}
         require(priceMode in listOf("instant_sell","sell_offer","lowest_bin","npc","manual"))
-        require(persistence in listOf("session","never"));require(activityMode in listOf("movement","item"));require(maxRows in 1..16)
+        require(persistence in listOf("session","never","world_change"));require(activityMode in listOf("movement","item"));require(maxRows in 1..16)
     }
 }
 data class TrackerSaved(val elapsedMillis:Long=0,val counts:Map<String,Long> = emptyMap()) {
@@ -27,7 +27,7 @@ data class TrackerSaved(val elapsedMillis:Long=0,val counts:Map<String,Long> = e
         require(counts.all {(k,v)->k.isNotBlank() && k.length<=80 && k.none {it.isISOControl()} && v in 0..1_000_000_000_000L})}
 }
 /** Time since the latest activity remains provisional until the next activity or an explicit pause.
- * At exactly 30 seconds the ENTIRE idle interval is rolled back, including its first 30 seconds. */
+ * At exactly 60 seconds the entire idle interval is rolled back. */
 class TrackerClock(initialMillis:Long=0) {
     var committedMillis:Long=initialMillis.coerceAtLeast(0);private set
     private var provisional=0L
@@ -51,7 +51,7 @@ class TrackerClock(initialMillis:Long=0) {
             return
         }
         val gap=(now-at).coerceAtLeast(0)
-        if(gap>=30_000) {provisional=0;paused=true} else {provisional=gap;paused=false}
+        if(gap>=60_000) {provisional=0;paused=true} else {provisional=gap;paused=false}
         if(active) {
             if(!paused)committedMillis+=provisional
             provisional=0;signal=now;paused=false

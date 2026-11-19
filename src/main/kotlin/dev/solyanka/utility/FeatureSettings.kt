@@ -65,6 +65,7 @@ object FeatureCodec {
                 }
             }
         }
-        return gson.fromJson(defaults,FeatureSettings::class.java).also { it.validate() }
+        val decoded=gson.fromJson(defaults,FeatureSettings::class.java)
+        return decoded.copy(tracker=decoded.tracker.copy(hud=decoded.tracker.hud.copy(enabled=true),skyblockOnly=true,colorful=true)).also {it.validate()}
     }
 }

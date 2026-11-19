@@ -52,6 +52,9 @@ object ItemTracker {
     private var primed=false
     private val displayed=java.util.Collections.newSetFromMap(java.util.IdentityHashMap<net.minecraft.client.multiplayer.chat.GuiMessage,Boolean>())
     private var lastSack="";private var lastSackTime=0L
+    private val sackSnapshots=java.util.IdentityHashMap<Component,String>()
+    private val recentSacks=linkedMapOf<String,Long>()
+    private val localSackVersions=java.util.IdentityHashMap<net.minecraft.client.multiplayer.chat.GuiMessage,String>()
     private fun now()=System.nanoTime()/1_000_000L
     private fun cfg()=S.currentGeneral().features.tracker
     private fun session()=owner?.let {sessions[it]}
@@ -85,7 +88,11 @@ object ItemTracker {
     fun suspend() {
         session()?.clock?.freeze();flush();owner=null
         inventory.reset();losses.clear();pending.clear();position=null;ids.clear();displayed.clear();primed=false
-        definitions="";indexedItems=null;stackMatches.clear();lastChatParent=null;lastChatSize=-1;renderedAt=Long.MIN_VALUE;ignoreUntil=now()+2000;sackIgnoreUntil=now()+10_000;lastSack=""
+        definitions="";sackSnapshots.clear();recentSacks.clear();localSackVersions.clear();indexedItems=null;stackMatches.clear();lastChatParent=null;lastChatSize=-1;renderedAt=Long.MIN_VALUE;ignoreUntil=now()+2000;sackIgnoreUntil=0L;lastSack=""
+    }
+    fun worldChanged() {
+        suspend()
+        if(cfg().persistence=="world_change")sessions.clear()
     }
     fun resetTotals() {
         val key=owner ?: error("Join a world with Tracker enabled first")
@@ -112,7 +119,7 @@ object ItemTracker {
     }
     private fun eligible():Boolean {
         val c=Minecraft.getInstance()
-        return S.isEnabled(ModuleIds.TRACKER) && c.player!=null && c.level!=null && (!cfg().skyblockOnly || FeatureRuntime.context.skyblock) && cfg().items.isNotEmpty()
+        return S.isEnabled(ModuleIds.TRACKER) && c.player!=null && c.level!=null && FeatureRuntime.context.skyblock && cfg().items.isNotEmpty()
     }
     private fun totals():Map<String,Long> {
         val player=Minecraft.getInstance().player ?: return emptyMap();val result=mutableMapOf<String,Long>()
@@ -157,7 +164,7 @@ object ItemTracker {
     }
     private fun sack(component:Component) {
         val time=now()
-        if(!eligible() || !cfg().countSacks || time<sackIgnoreUntil || time<ignoreUntil)return
+        if(!eligible() || !cfg().countSacks || session()==null || time<sackIgnoreUntil)return
         if(!ChatLogic.plain(component.string).trimStart().startsWith("[Sacks]"))return
         val hoverTexts=linkedSetOf<String>();val seen=hashSetOf<Any>()
         // SHOW_TEXT is a record on modern Minecraft; discover only a no-argument Component getter.
@@ -173,7 +180,14 @@ object ItemTracker {
         }
         val joined=hoverTexts.joinToString("\n")
         if(joined.isEmpty()) {detail="Sacks summary seen, but item hover details unavailable";return}
-        if(joined==lastSack && time-lastSackTime in 0..300)return
+        if(sackSnapshots[component]==joined)return
+        if(sackSnapshots.size>=128)sackSnapshots.clear()
+        sackSnapshots[component]=joined
+        // Identical GAME/GAME_CANCELED/local echoes are coalesced only briefly, not for 30 s.
+        recentSacks.entries.removeIf {time-it.value>250 || time<it.value}
+        if(recentSacks.containsKey(joined))return
+        if(recentSacks.size>=64)recentSacks.remove(recentSacks.keys.first())
+        recentSacks[joined]=time
         lastSack=joined;lastSackTime=time
         val changes=TrackerLogic.sackChanges(joined.lines())
         for((name,amount) in changes) {
@@ -188,10 +202,18 @@ object ItemTracker {
         if(!cfg().countSacks || !eligible()) {primed=false;lastChatParent=null;return}
         val all=(Minecraft.getInstance().gui.hud.chat as ChatComponentAccessor).solyankaLines()
         val latest=all.firstOrNull()?.parent()
-        if(primed && latest===lastChatParent && all.size==lastChatSize)return
+        // Re-read the small recent window: Sacks overlays may edit the same parent in place.
         lastChatParent=latest;lastChatSize=all.size
-        val parents=all.take(128).map {it.parent()}.distinct()
-        if(primed)parents.asReversed().filterNot {it in displayed}.forEach {sack(it.content())}
+        val parents=all.take(16).map {it.parent()}.distinct()
+        parents.asReversed().forEach {parent->
+            val content=parent.content()
+            if(content.string.length<=32768 && ChatLogic.plain(content.string).trimStart().startsWith("[Sacks]")) {
+                val version=content.toString() // Includes hover styles, not just visible '+N items'.
+                val previous=localSackVersions.put(parent,version)
+                if(primed && (parent !in displayed || previous!=version))sack(content)
+            }
+        }
+        localSackVersions.keys.retainAll(parents.toSet())
         displayed.clear();displayed.addAll(parents);primed=true
     }
     fun tick() {
@@ -208,7 +230,13 @@ object ItemTracker {
             stackMatches.clear()
         }
         val container=c.gui.screen() is AbstractContainerScreen<*>
-        if(container) {ignoreUntil=time+1500;sackIgnoreUntil=time+10_000;pending.clear();losses.clear()}
+        if(container) {
+            ignoreUntil=time+1500
+            pending.removeIf {it.source=="inventory"}
+            // Only a Sacks transfer screen suppresses Sacks, not every menu in the game.
+            val title=ChatLogic.plain(c.gui.screen()?.title?.string.orEmpty())
+            if(title.contains("sack",true)) {sackIgnoreUntil=time+1000;pending.removeIf {it.source=="sacks"}}
+        }
         val active=eligible() && !container && time>=ignoreUntil
         ++tick
         if(tick%20==0)stackMatches.clear()
@@ -217,13 +245,13 @@ object ItemTracker {
             val changes=inventory.observe(totals(),false)
             changes.forEach {(key,n)->delta(key,n,"inventory",time)}
         }
-        if(tick%4==0)pollSacks()
-        val gained=if(active)acceptPending(time) else {pending.clear();false}
+        if(tick%2==0)pollSacks()
+        val gained=if(eligible())acceptPending(time) else {pending.clear();false}
         val pos=c.player?.position();val old=position
         val moved=pos!=null && old!=null && pos.distanceToSqr(old)>0.000001
         position=pos
         val click=time-clicked in 0..250 || c.options.keyAttack.isDown || c.options.keyUse.isDown
-        record.clock.step(time,active,c.isWindowActive && (moved || click),gained,s.activityMode=="item")
+        record.clock.step(time,eligible(),c.isWindowActive && (moved || click),gained,s.activityMode=="item")
         if(time-lastFlush>=10_000)flush()
     }
     fun status():String {
@@ -231,7 +259,7 @@ object ItemTracker {
         return (storageError?.let {"$it | "} ?: "")+state+" | "+detail+" | "+PriceTooltips.trackerPriceStatus()
     }
     private fun lines(sample:Boolean=false):List<String> {
-        if(sample)return listOf("Tracker · 00:12:30","Flint x13,943 (194,293 coins)","Total: 194,293 coins","Profit/h*: 932,606 coins")
+        if(sample) {val value=TrackerValues.format(194293.0,cfg().compactValues);return listOf("Tracker · 00:12:30","Flint x13,943 ($value)","Total: $value","Profit/h*: "+TrackerValues.format(932606.0,cfg().compactValues))}
         val s=cfg();val time=now()
         if(s===renderedSettings && renderedAt!=Long.MIN_VALUE && time-renderedAt in 0..99)return renderedLines
         val record=session();val counts=record?.counts.orEmpty();val elapsed=record?.clock?.elapsedMillis ?: 0
@@ -242,14 +270,17 @@ object ItemTracker {
             val unit=TrackerLogic.unitPrice(item,s.priceMode,PriceTooltips.trackerPrice(id))
             if(unit==null && count>0)unknown++
             val price=unit?.times(count);if(price!=null)total+=price
-            item.name+" x"+"%,d".format(java.util.Locale.US,count)+" ("+(price?.let {PriceLogic.format(it)} ?: "?")+" coins)"
+            item.name+" x"+"%,d".format(java.util.Locale.US,count)+" ("+TrackerValues.format(price,s.compactValues)+")"
         }
         val result=buildList {
             add("Tracker · "+TrackerLogic.duration(elapsed)+(if(record?.clock?.paused!=false) " [paused]" else ""))
-            if(rows.isEmpty())add("Add items in Tracker settings") else addAll(rows.take(s.maxRows))
-            if(rows.size>s.maxRows)add("+${rows.size-s.maxRows} more tracked items")
-            add("Total: "+PriceLogic.format(total)+" coins"+(if(unknown>0) " + ?" else ""))
-            add("Profit/h*: "+(TrackerLogic.perHour(total,elapsed)?.let {PriceLogic.format(it)} ?: "—")+(if(unknown>0) " + ?" else "")+" coins")
+            if(rows.isEmpty())add("Add items in Tracker settings") else {
+                val capacity=((Minecraft.getInstance().window.guiScaledHeight/s.hud.scale-67)/11).toInt().coerceIn(1,32)
+                addAll(rows.take(capacity))
+                if(rows.size>capacity)add("+${rows.size-capacity} more tracked items")
+            }
+            add("Total: "+TrackerValues.format(total,s.compactValues)+(if(unknown>0) " + ?" else ""))
+            add("Profit/h*: "+TrackerValues.format(TrackerLogic.perHour(total,elapsed),s.compactValues)+(if(unknown>0) " + ?" else ""))
             if(unknown>0)add("? = unavailable price; totals incomplete")
         }
         renderedAt=time;renderedSettings=s;renderedLines=result
@@ -268,7 +299,7 @@ object ItemTracker {
             if(s.background)ChromeDraw.panel(g,0,0,w,h,0xc9151b24.toInt(),0x405e7791,5)
             list.forEachIndexed {i,line->
                 var cursor=7
-                for(span in TrackerHudStyle.spans(line,s.hud.color,s.colorful)) {
+                for(span in TrackerHudStyle.spans(line,s.hud.color)) {
                     val room=w-7-cursor
                     if(room<=0)break
                     val text=c.font.plainSubstrByWidth(span.text,room)
@@ -280,12 +311,16 @@ object ItemTracker {
         }
     }
     fun register() {
+        ClientReceiveMessageEvents.MODIFY_GAME.register {message,overlay->
+            if(!overlay && message.string.length<=32768)sack(message)
+            message
+        }
         ClientReceiveMessageEvents.GAME.register {message,overlay->if(!overlay && message.string.length<=32768)Minecraft.getInstance().execute {sack(message)}}
         ClientReceiveMessageEvents.GAME_CANCELED.register {message,overlay->if(!overlay && message.string.length<=32768)Minecraft.getInstance().execute {sack(message)}}
         HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT,Identifier.fromNamespaceAndPath("solyanka","tracker")) {g,_->
             val c=Minecraft.getInstance();val screen=c.gui.screen()
-            if(S.isEnabled(ModuleIds.TRACKER) && cfg().hud.enabled && c.player!=null && c.level!=null && !c.gui.hud.isHidden &&
-                (!cfg().skyblockOnly || FeatureRuntime.context.skyblock) && (screen==null || screen is ChatScreen || screen is dev.solyanka.client.ui.nofrills.NoFrillsClickGui))draw(g)
+            if(S.isEnabled(ModuleIds.TRACKER) && c.player!=null && c.level!=null && !c.gui.hud.isHidden &&
+                FeatureRuntime.context.skyblock && (screen==null || screen is ChatScreen || screen is dev.solyanka.client.ui.nofrills.NoFrillsClickGui))draw(g)
         }
     }
 }

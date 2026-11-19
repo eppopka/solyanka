@@ -46,7 +46,7 @@ object ClientModuleCatalog {
         modules.register(object : Module(ModuleInfo(ModuleIds.PERFORMANCE,"Performance",Category.HUD)) {})
         modules.register(object : Module(ModuleInfo(ModuleIds.TRACKER,"Tracker",Category.HUD)) {
             override fun onDisable() {dev.solyanka.client.feature.ItemTracker.suspend()}
-            override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.ItemTracker.suspend()}
+            override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.ItemTracker.worldChanged()}
         })
         listOf(ModuleIds.INVENTORY_HUD to "Inventory HUD",ModuleIds.ITEM_NAME_HUD to "Item Name HUD",ModuleIds.SKILL_HUD to "Skill Progress HUD").forEach {(id,name)->
             modules.register(object : Module(ModuleInfo(id,name,Category.HUD)) {override fun onDisable() {if(id==ModuleIds.SKILL_HUD) ExtraHuds.reset()}})

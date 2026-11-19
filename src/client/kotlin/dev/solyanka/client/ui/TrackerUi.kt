@@ -23,31 +23,26 @@ object TrackerUi {
         panel=SettingsPanel("Tracker",{host.closePanel()},{error ?: model.error},{ItemTracker.status()}) {_,w->
             val s=model.general.features.tracker
             buildList {
-                add(GuiKit.description(w,"Counts new gains of selected items. Existing inventory is only a baseline. Inventory moves are aggregated; container transfers are ignored. Detailed native Sacks hover messages are optional. This is not a complete SkyHanni tracker port."))
-                add(GuiKit.toggleRow(w,"HUD Visible",s.hud.enabled) {v->update {it.copy(hud=it.hud.copy(enabled=v))}})
                 add(HudNavigation.button(w))
-                add(GuiKit.toggleRow(w,"SkyBlock only",s.skyblockOnly,"Disable for local/singleplayer testing.") {v->update {it.copy(skyblockOnly=v)}})
-                add(GuiKit.toggleRow(w,"Online Tracker prices",s.onlinePrices,"Opt-in public price/catalog downloads using the shared pricing service. No inventory, IGN or counts are uploaded.") {v->update {it.copy(onlinePrices=v)}})
+                add(GuiKit.toggleRow(w,"Online prices",s.onlinePrices,"Downloads public prices; no inventory data is uploaded.") {v->update {it.copy(onlinePrices=v)}})
                 val modes=listOf("instant_sell","sell_offer","lowest_bin","npc","manual")
                 val priceNames=listOf("Bazaar instant-sell","Bazaar sell-offer estimate","Lowest BIN","NPC sell","Manual prices")
                 add(GuiKit.button("Prices: "+priceNames[modes.indexOf(s.priceMode)],(w-8).coerceAtMost(310)) {
                     if(update {it.copy(priceMode=modes[(modes.indexOf(it.priceMode)+1)%modes.size])})remount()
                 })
-                add(GuiKit.description(w,"Bazaar modes fall back to lowest BIN, then NPC when unavailable. Sell-offer uses the current ask price, not a guaranteed sale. Profit/h* is estimated gross item value divided by active time: no costs or selling fees. Unknown prices show ? rather than zero."))
-                add(GuiKit.button(if(s.persistence=="session") "Reset mode: Session" else "Reset mode: Never",(w-8).coerceAtMost(280)) {
-                    if(update {it.copy(persistence=if(it.persistence=="session") "never" else "session")})remount()
+                val resetModes=listOf("session","never","world_change")
+                val resetNames=listOf("Session","Never","World Change")
+                add(GuiKit.button("Reset mode: "+resetNames[resetModes.indexOf(s.persistence)],(w-8).coerceAtMost(280)) {
+                    if(update {it.copy(persistence=resetModes[(resetModes.indexOf(it.persistence)+1)%resetModes.size])})remount()
                 })
-                add(GuiKit.description(w,"Session resets when Minecraft restarts, not on server/world changes. Never saves totals and active time locally until manual reset. Storage is per Minecraft account; reset when changing SkyBlock profiles."))
                 add(GuiKit.button(if(s.activityMode=="item") "AFK mode: Until tracked item" else "AFK mode: Movement or clicks",(w-8).coerceAtMost(300)) {
                     if(update {it.copy(activityMode=if(it.activityMode=="item") "movement" else "item")})remount()
                 })
-                add(GuiKit.description(w,"After 30 seconds without activity, the entire idle interval is removed. Movement/click mode resumes on movement or clicks. Until tracked item starts/resumes only on a tracked gain; 30 seconds without gains pauses it again. Moving alone does not resume that mode."))
-                add(GuiKit.toggleRow(w,"Count native Sacks gains",s.countSacks,"Requires detailed [Sacks] hover data. Summaries without item details cannot be counted. Sack/container transfers are conservatively suppressed.") {v->update {it.copy(countSacks=v)}})
+                add(GuiKit.toggleRow(w,"Track Sacks",s.countSacks,"Requires per-item Sacks message details.") {v->update {it.copy(countSacks=v)}})
+                add(GuiKit.toggleRow(w,"Compact values",s.compactValues,"319,284 coins → 319k") {v->update {it.copy(compactValues=v)}})
                 add(GuiKit.toggleRow(w,"Background",s.background) {v->update {it.copy(background=v)}})
-                add(GuiKit.sliderRow(w,"Visible item rows",s.maxRows.toDouble(),NumberRange(1.0,16.0,1.0)) {v->update {it.copy(maxRows=v.toInt())}})
-                add(GuiKit.toggleRow(w,"Colorful Tracker HUD",s.colorful,"Distinct colors for time, quantities, coin values and profit/hour. Text Color still controls item names; disable for a single color.") {v->update {it.copy(colorful=v)}})
                 add(GuiKit.colorRow(w,"Text Color",s.hud.color) {v->update {it.copy(hud=it.hud.copy(color=v))}})
-                add(GuiKit.textRow(w,"New tracked item name",newName,"Exact item display name, ignoring colors and letter case. Add several items separately.") {newName=it})
+                add(GuiKit.textRow(w,"New tracked item name",newName,"Exact item name.") {newName=it})
                 add(GuiKit.button("Add tracked item",150) {
                     if(update {it.copy(items=it.items+TrackerItem(newName.trim()))}) {newName="";remount()}
                 })
@@ -58,8 +53,8 @@ object TrackerUi {
                 s.items.forEachIndexed {i,item->
                     fun change(block:(TrackerItem)->TrackerItem) {update {it.copy(items=it.items.mapIndexed {j,v->if(i==j)block(v) else v})}}
                     add(GuiKit.textRow(w,"Item ${i+1}",names.getOrPut(i) {item.name}) {v->names[i]=v;change {it.copy(name=v)}})
-                    add(GuiKit.textRow(w,"SkyBlock item ID (optional)",ids.getOrPut(i) {item.itemId},"Use Add held item to capture an ID. Blank matches the exact display name; names resolve through the public item catalog for pricing.") {v->ids[i]=v;change {it.copy(itemId=v.trim())}})
-                    add(GuiKit.textRow(w,"Manual unit price",prices.getOrPut(i) {item.manualPrice.toString()},"Used when the price mode is Manual prices.") {v->
+                    add(GuiKit.textRow(w,"SkyBlock item ID (optional)",ids.getOrPut(i) {item.itemId},"Blank = match by name.") {v->ids[i]=v;change {it.copy(itemId=v.trim())}})
+                    add(GuiKit.textRow(w,"Manual unit price",prices.getOrPut(i) {item.manualPrice.toString()},"Used in Manual price mode.") {v->
                         prices[i]=v;val n=v.replace(",","").toDoubleOrNull()
                         if(n==null) {error="Manual price must be a finite non-negative number";panel.refreshStatus()} else change {it.copy(manualPrice=n)}
                     })

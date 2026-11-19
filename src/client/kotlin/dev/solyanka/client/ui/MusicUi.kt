@@ -18,10 +18,10 @@ object MusicUi {
                 model.updateGeneral {it.copy(features=it.features.copy(music=change(it.features.music)))};panel.refreshStatus()
             }
             buildList {
-                add(GuiKit.description(w,"Spotify desktop integration for Windows 10/11. Reads track, artist, playback progress and available cover art from Windows media sessions. No account token or Spotify client secret is needed."))
+                add(GuiKit.description(w,"Windows Spotify desktop playback. No account token required."))
                 add(GuiKit.button("Connect Spotify desktop",185) {YandexMusic.connectLocalWindows(spotify=true)})
                 add(GuiKit.button("Disconnect Spotify",150) {YandexMusic.disconnectSource(ModuleIds.SPOTIFY)})
-                add(GuiKit.description(w,"Spotify and Yandex share one media HUD: the last connected source wins. Layout, lyrics and progress settings are shared. This is not a Spotify Web API or browser integration; !suggest remains Yandex-account-only."))
+                add(GuiKit.description(w,"Shared media HUD: the last connected source is shown."))
                 add(HudNavigation.button(w))
                 add(GuiKit.colorRow(w,"HUD Text Color",s.hud.color) {v->update {it.copy(hud=it.hud.copy(color=v))}})
                 add(GuiKit.colorRow(w,"Progress Color",s.progressColor) {v->update {it.copy(progressColor=v)}})
@@ -40,7 +40,7 @@ object MusicUi {
                 model.updateGeneral {it.copy(features=it.features.copy(music=change(it.features.music)))};panel.refreshStatus()
             }
             buildList {
-                add(GuiKit.description(w,"A focused music panel: connect once, then keep the HUD lightweight. Account mode enables authenticated search and !suggest; the token is kept in memory only."))
+                add(GuiKit.description(w,"Account mode enables search and !suggest. Sign-in tokens stay in memory."))
                 add(GuiKit.section(w,"Connection","Choose one source. Local mode reads the Windows desktop player; account mode controls the Yandex queue."))
                 add(GuiKit.button("Connect local (Windows)",180) {YandexMusic.connectLocalWindows()})
                 add(GuiKit.button("Connect Yandex account",180) {YandexMusic.connect()})

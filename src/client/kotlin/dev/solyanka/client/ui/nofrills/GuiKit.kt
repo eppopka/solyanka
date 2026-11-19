@@ -140,18 +140,18 @@ object GuiKit {
         }
     }
     fun description(width:Int,text:String) = UIContainers.verticalFlow(Sizing.fixed(width),Sizing.content()).apply {
-        padding(Insets.of(6));child(label(text).apply { color(Color.ofArgb(MUTED));horizontalSizing(Sizing.fixed((width-12).coerceAtLeast(1))) })
+        padding(Insets.of(4));child(label(dev.solyanka.utility.UiHelp.summary(text)).apply {tooltip(Component.literal(text));color(Color.ofArgb(MUTED));horizontalSizing(Sizing.fixed((width-8).coerceAtLeast(1))) })
     }
     /** Compact section card used to keep long feature panels scannable. */
     fun section(width:Int,title:String,subtitle:String="") = UIContainers.verticalFlow(Sizing.fixed(width),Sizing.content()).apply {
         padding(Insets.of(7));gap(2)
         surface {g,c->
-            val x=c.x().toInt();val y=c.y().toInt();val w=c.width().toInt();val h=c.height().toInt()
+            val x=c.x();val y=c.y();val w=c.width();val h=c.height()
             dev.solyanka.client.feature.ChromeDraw.panel(g,x,y,w,h,0x6b263448.toInt(),0x8a435870.toInt(),6)
             g.fill(x,y+6,x+2,y+h-6,BLUE)
         }
         child(label(title).apply {color(Color.ofArgb(BLUE));horizontalSizing(Sizing.fixed((width-14).coerceAtLeast(1)))})
-        if(subtitle.isNotBlank()) child(label(subtitle).apply {color(Color.ofArgb(MUTED));horizontalSizing(Sizing.fixed((width-14).coerceAtLeast(1)))})
+        if(subtitle.isNotBlank())tooltip(Component.literal(subtitle))
     }
 }
 

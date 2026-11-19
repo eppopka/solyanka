@@ -65,7 +65,7 @@ class MenuTrackerPerformance148Test {
         val old=JsonObject().apply {add("tracker",JsonObject().apply {addProperty("background",false)})}
         assertTrue(FeatureCodec.decode(old).tracker.colorful)
         val disabled=JsonObject().apply {add("tracker",JsonObject().apply {addProperty("colorful",false)})}
-        assertFalse(FeatureCodec.decode(disabled).tracker.colorful)
+        assertTrue(FeatureCodec.decode(disabled).tracker.colorful)
     }
     private fun source(name:String)=Files.readString(Path.of("src/client/kotlin/dev/solyanka/client/$name"))
     @Test fun `settings rebuild preserves offset and does not restart opening animation`() {
@@ -96,7 +96,7 @@ class MenuTrackerPerformance148Test {
         assertTrue(performance.contains("cadenceFallback=!Minecraft.getInstance().hasSingleplayerServer()"))
         assertTrue(source("ui/PerformanceUi.kt").contains("PerformanceHud.status()"))
         val tracker=source("feature/ItemTracker.kt")
-        assertTrue(tracker.contains("TrackerHudStyle.spans(line,s.hud.color,s.colorful)"))
+        assertTrue(tracker.contains("TrackerHudStyle.spans(line,s.hud.color)"))
         assertTrue(tracker.contains("span.color,true"))
     }
 }
