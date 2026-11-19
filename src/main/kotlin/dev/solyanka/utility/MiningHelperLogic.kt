@@ -15,7 +15,7 @@ data class RngAnnounceSettings(val allChat:Boolean=false,val guildChat:Boolean=f
 }
 data class PowderChestSettings(val tracer:Boolean=true,val color:Int=0xffffcc55.toInt())
 data class CorpseStyle(val color:Int,val tracer:Boolean=true)
-data class MineshaftSettings(val announceType:Boolean=false,val announceCorpses:Boolean=false,val coordinates:Boolean=false,
+data class MineshaftSettings(val announceType:Boolean=false,val announceCorpses:Boolean=false,val coordinates:Boolean=true,val hideOnClick:Boolean=true,
     val tracerRadius:Double=5.0,val lapis:CorpseStyle=CorpseStyle(0xff5555ff.toInt()),
     val tungsten:CorpseStyle=CorpseStyle(0xffaaaaaa.toInt()),val umber:CorpseStyle=CorpseStyle(0xffffaa00.toInt()),
     val vanguard:CorpseStyle=CorpseStyle(-1)) {

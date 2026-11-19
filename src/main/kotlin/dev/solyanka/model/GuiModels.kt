@@ -11,6 +11,7 @@ object GuiCatalog {
         FeatureCardInfo("general.hide_players","Hide Players","General","Hide nearby real players, excluding yourself and NPCs. Optional dungeon-only filter."),
         FeatureCardInfo("general.rng_announce","Auto RNG Announce","General","Announce your RNG drops to selected chats with a SkyHanni value filter and duplicate protection."),
         FeatureCardInfo("mining.powder_chest","Powder Chest","Mining","Highlight newly spawned Crystal Hollows treasure chests with optional tracers."),
+        FeatureCardInfo("mining.vanguard_announce","Vanguard Announce","Mining","Announce a Vanguard Mineshaft to guild chat and invite up to three unique guild replies for 60 seconds."),
         FeatureCardInfo("mining.mineshaft","Mineshaft Helper","Mining","Mineshaft detection, corpse TAB summary, typed Corpse ESP, tracers and Waypoints export."),
         FeatureCardInfo("hud.spotify","Spotify","HUD","Read track metadata and cover art from the Spotify desktop app through Windows media sessions."),
         FeatureCardInfo("hud.tracker","Tracker","HUD","Track selected item gains, estimated value and coins per active hour, with 30-second AFK rollback and optional persistent totals."),

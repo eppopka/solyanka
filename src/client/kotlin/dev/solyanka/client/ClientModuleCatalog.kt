@@ -28,6 +28,10 @@ object ClientModuleCatalog {
                 override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.MiningHelpers.reset()}
             })
         }
+        modules.register(object:Module(ModuleInfo(ModuleIds.VANGUARD_ANNOUNCE,"Vanguard Announce",Category.MINING)) {
+            override fun onDisable() {dev.solyanka.client.feature.VanguardAnnounce.reset()}
+            override fun onReset(reason:ResetReason) {dev.solyanka.client.feature.VanguardAnnounce.reset()}
+        })
         modules.register(object:Module(ModuleInfo(ModuleIds.SPOTIFY,"Spotify",Category.HUD)) {
             override fun onDisable() {dev.solyanka.client.feature.YandexMusic.disconnectSource(ModuleIds.SPOTIFY)}
         })

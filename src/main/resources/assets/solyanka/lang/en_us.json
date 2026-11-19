@@ -281,5 +281,16 @@
   "solyanka.ui.remove_item": "Remove item",
   "solyanka.ui.reset_totals_and_timer": "Reset totals and timer",
   "solyanka.ui.feature.hud.tracker.description": "Track selected item gains, estimated value and coins per active hour, with 30-second AFK rollback and optional persistent totals.",
-  "solyanka.ui.colorful_tracker_hud": "Colorful Tracker HUD"
+  "solyanka.ui.colorful_tracker_hud": "Colorful Tracker HUD",
+  "solyanka.ui.vanguard_announce": "Vanguard Announce",
+  "solyanka.ui.guild_announcement": "Guild announcement",
+  "solyanka.ui.invite_keyword": "Invite keyword",
+  "solyanka.ui.hide_clicked_corpses": "Hide clicked Corpses",
+  "solyanka.ui.name_color": "Name Color",
+  "solyanka.ui.value_color": "Value Color",
+  "solyanka.ui.direction": "Direction",
+  "solyanka.ui.horizontal": "Horizontal",
+  "solyanka.ui.vertical": "Vertical",
+  "solyanka.ui.metric_status_colors": "Metric status colors",
+  "solyanka.ui.feature.mining.vanguard_announce.description": "Announce a Vanguard Mineshaft to guild chat and invite up to three unique guild replies for 60 seconds."
 }

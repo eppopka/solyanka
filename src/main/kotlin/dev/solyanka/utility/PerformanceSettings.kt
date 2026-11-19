@@ -1,8 +1,9 @@
 /* SPDX-License-Identifier: GPL-3.0-only */
 package dev.solyanka.utility
 
-data class PerformanceSettings(val hud:HudSpec=HudSpec(x=12,y=12),val showFps:Boolean=true,val showPing:Boolean=true,val showTps:Boolean=true) {
- fun validate()=hud.validate()
+data class PerformanceSettings(val hud:HudSpec=HudSpec(x=12,y=12),val showFps:Boolean=true,val showPing:Boolean=true,val showTps:Boolean=true,
+ val nameColor:Int=0xff3296dc.toInt(),val valueColor:Int=-1,val direction:String="horizontal",val metricColors:Boolean=false) {
+ fun validate() {hud.validate();require(direction in listOf("horizontal","vertical"))}
 }
 
 /** Estimate server tick rate from elapsed monotonic time and world-game-time updates. */

@@ -12,8 +12,8 @@ object MiningHelpersUi {
     fun open(id:String,host:NoFrillsClickGui,model:InstantSettings) {
         var status=""
         var rngTestMessage=""
-        val title=when(id) {ModuleIds.HIDE_PLAYERS->"Hide Players";ModuleIds.RNG_ANNOUNCE->"Auto RNG Announce";ModuleIds.POWDER_CHEST->"Powder Chest";else->"Mineshaft Helper"}
-        host.showPanel(SettingsPanel(title,{host.closePanel()},{model.error},{status}) {panel,w->
+        val title=when(id) {ModuleIds.HIDE_PLAYERS->"Hide Players";ModuleIds.RNG_ANNOUNCE->"Auto RNG Announce";ModuleIds.POWDER_CHEST->"Powder Chest";ModuleIds.VANGUARD_ANNOUNCE->"Vanguard Announce";else->"Mineshaft Helper"}
+        host.showPanel(SettingsPanel(title,{host.closePanel()},{model.error},{if(id==ModuleIds.VANGUARD_ANNOUNCE)dev.solyanka.client.feature.VanguardAnnounce.status() else status}) {panel,w->
             val f=model.general.features
             fun update(change:(FeatureSettings)->FeatureSettings) {model.updateGeneral {it.copy(features=change(it.features))};panel.refreshStatus()}
             buildList {
@@ -37,6 +37,12 @@ object MiningHelpersUi {
                         add(GuiKit.button("Preview only (no sending)",190) {status=dev.solyanka.client.feature.RngAnnounce.preview(rngTestMessage);panel.refreshStatus()})
                         add(GuiKit.button("Check RNG status",150) {status=dev.solyanka.client.feature.RngAnnounce.diagnostics();panel.refreshStatus()})
                     }
+                    ModuleIds.VANGUARD_ANNOUNCE -> {
+                        val s=f.vanguardAnnounce
+                        add(GuiKit.description(w,"Hypixel SkyBlock only. Once per Vanguard Mineshaft, sends a guild announcement and accepts at most 3 unique guild replies for 60 seconds. Failed invitations still consume a slot; no automatic party warp. Enable only when you want to recruit."))
+                        add(GuiKit.textRow(w,"Guild announcement",s.message,"Plain text or /gc message; other commands are not accepted.") {v->update {it.copy(vanguardAnnounce=it.vanguardAnnounce.copy(message=v))}})
+                        add(GuiKit.textRow(w,"Invite keyword",s.keyword,"Exact guild reply, with surrounding reply spaces ignored. Default: +") {v->update {it.copy(vanguardAnnounce=it.vanguardAnnounce.copy(keyword=v))}})
+                    }
                     ModuleIds.POWDER_CHEST -> {
                         add(GuiKit.description(w,"Marks nearby non-chest to chest block updates in the Crystal Hollows. Existing structure chests are not scanned. Markers expire after two minutes or block removal."))
                         add(GuiKit.toggleRow(w,"Tracer",f.powderChest.tracer) {v->update {it.copy(powderChest=it.powderChest.copy(tracer=v))}})
@@ -47,7 +53,8 @@ object MiningHelpersUi {
                         add(GuiKit.toggleRow(w,"Announce Mineshaft to Party",s.announceType) {v->update {it.copy(mineshaft=it.mineshaft.copy(announceType=v))}})
                         add(GuiKit.toggleRow(w,"Announce Corpse TAB summary",s.announceCorpses) {v->update {it.copy(mineshaft=it.mineshaft.copy(announceCorpses=v))}})
                         add(GuiKit.toggleRow(w,"Print Corpse coordinates",s.coordinates) {v->update {it.copy(mineshaft=it.mineshaft.copy(coordinates=v))}})
-                        add(GuiKit.sliderRow(w,"Tracer disable radius",s.tracerRadius,NumberRange(0.0,32.0,.5)) {v->update {it.copy(mineshaft=it.mineshaft.copy(tracerRadius=v))}})
+                        add(GuiKit.toggleRow(w,"Hide clicked Corpses",s.hideOnClick,"Left/right clicking a corpse hides its ESP, label and tracer until leaving the shaft.") {v->update {it.copy(mineshaft=it.mineshaft.copy(hideOnClick=v))}})
+                        add(GuiKit.sliderRow(w,"Tracer disable radius",s.tracerRadius,NumberRange(0.0,32.0,.5),"Hides ESP, label and tracer inside the radius. Set 0 to disable proximity hiding.") {v->update {it.copy(mineshaft=it.mineshaft.copy(tracerRadius=v))}})
                         CorpseKind.entries.forEach {kind->
                             fun change(block:(CorpseStyle)->CorpseStyle) {update {features->
                                 val m=features.mineshaft;val next=block(m.style(kind))

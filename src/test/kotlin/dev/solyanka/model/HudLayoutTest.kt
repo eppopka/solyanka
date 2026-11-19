@@ -40,6 +40,7 @@ class HudLayoutTest {
                 "extra.inventory" to HudPreviewRenderer.EXTRA_HUDS,
                 "extra.item_name" to HudPreviewRenderer.EXTRA_HUDS,
                 "extra.tracker" to HudPreviewRenderer.EXTRA_HUDS,
+                "extra.performance" to HudPreviewRenderer.EXTRA_HUDS,
                 "extra.skill" to HudPreviewRenderer.EXTRA_HUDS,
                 "extra.scoreboard" to HudPreviewRenderer.SCOREBOARD,
             ),

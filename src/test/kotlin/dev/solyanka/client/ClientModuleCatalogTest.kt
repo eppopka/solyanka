@@ -19,6 +19,7 @@ class ClientModuleCatalogTest {
                 ModuleIds.RNG_ANNOUNCE,
                 ModuleIds.POWDER_CHEST,
                 ModuleIds.MINESHAFT,
+                ModuleIds.VANGUARD_ANNOUNCE,
                 ModuleIds.SPOTIFY,
                 ModuleIds.KEYBINDS,
                 ModuleIds.SHORTCUTS,

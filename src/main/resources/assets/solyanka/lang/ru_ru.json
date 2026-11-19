@@ -281,5 +281,16 @@
   "solyanka.ui.remove_item": "Убрать предмет",
   "solyanka.ui.reset_totals_and_timer": "Сбросить счётчики и время",
   "solyanka.ui.feature.hud.tracker.description": "Выбранные предметы, их примерная стоимость и монеты за активный час; откат 30 секунд AFK и сохранение итогов по выбору.",
-  "solyanka.ui.colorful_tracker_hud": "Разноцветный Tracker HUD"
+  "solyanka.ui.colorful_tracker_hud": "Разноцветный Tracker HUD",
+  "solyanka.ui.vanguard_announce": "Vanguard Announce",
+  "solyanka.ui.guild_announcement": "Сообщение гильдии",
+  "solyanka.ui.invite_keyword": "Ключевое слово приглашения",
+  "solyanka.ui.hide_clicked_corpses": "Скрывать отмеченные нажатием трупы",
+  "solyanka.ui.name_color": "Цвет подписей",
+  "solyanka.ui.value_color": "Цвет значений",
+  "solyanka.ui.direction": "Направление",
+  "solyanka.ui.horizontal": "Горизонтально",
+  "solyanka.ui.vertical": "Вертикально",
+  "solyanka.ui.metric_status_colors": "Цвета состояния показателей",
+  "solyanka.ui.feature.mining.vanguard_announce.description": "Сообщение о Vanguard Mineshaft в гильдию и до трёх уникальных приглашений по ответам за 60 секунд."
 }

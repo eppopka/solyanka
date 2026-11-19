@@ -55,7 +55,7 @@ object HudLayout {
         HudDescriptor("extra.item_name",ModuleIds.ITEM_NAME_HUD,HudSettingTarget.ItemName,HudPreviewRenderer.EXTRA_HUDS),
         HudDescriptor("extra.skill",ModuleIds.SKILL_HUD,HudSettingTarget.Skill,HudPreviewRenderer.EXTRA_HUDS),
         HudDescriptor("extra.tracker",ModuleIds.TRACKER,HudSettingTarget.Tracker,HudPreviewRenderer.EXTRA_HUDS),
-        HudDescriptor("extra.performance",ModuleIds.PERFORMANCE,HudSettingTarget.Performance),
+        HudDescriptor("extra.performance",ModuleIds.PERFORMANCE,HudSettingTarget.Performance,HudPreviewRenderer.EXTRA_HUDS),
         HudDescriptor("extra.scoreboard",ModuleIds.SCOREBOARD,HudSettingTarget.Scoreboard,HudPreviewRenderer.SCOREBOARD),
         HudDescriptor("map",ModuleIds.MAP_INFO,HudSettingTarget.Map),
     ).associateBy { it.key }

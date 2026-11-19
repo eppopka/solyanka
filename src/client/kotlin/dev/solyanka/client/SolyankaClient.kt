@@ -135,7 +135,7 @@ object SolyankaClient : ClientModInitializer {
         PriceTooltips.register()
         Suppression.register()
         dev.solyanka.client.feature.VanillaHotbar.register();VanillaHearts.register() // Wrap existing visibility filters; never bypass their decisions.
-        DungeonPuzzles.register();DungeonMap.register();DungeonWaypoints.register();dev.solyanka.client.feature.LeapMessage.register();dev.solyanka.client.feature.ChatCommands.register();dev.solyanka.client.feature.YandexMusic.register();dev.solyanka.client.feature.RngAnnounce.register()
+        DungeonPuzzles.register();DungeonMap.register();DungeonWaypoints.register();dev.solyanka.client.feature.LeapMessage.register();dev.solyanka.client.feature.ChatCommands.register();dev.solyanka.client.feature.YandexMusic.register();dev.solyanka.client.feature.RngAnnounce.register();dev.solyanka.client.feature.VanguardAnnounce.register()
         modules.all().forEach { module ->
             try { module.setEnabled(if(module.info.id==PUZZLE_SOLVERS) PuzzleSolverModules.masterEnabled(config.configured(PUZZLE_SOLVERS),PuzzleSolverModules.children.any(config::enabled)) else config.enabled(module.info.id)) }
             catch (e: Exception) { logger.error("Cannot enable ${module.info.id}", e) }
@@ -171,7 +171,7 @@ object SolyankaClient : ClientModInitializer {
                 openSettingsRequested = false
                 client.setScreenAndShow(ConfigUi.create(null))
             }
-            if (world != null && client.player != null) { FeatureRuntime.tick(client);dev.solyanka.client.feature.ItemTracker.tick();dev.solyanka.client.feature.RngAnnounce.tick();dev.solyanka.client.feature.MiningHelpers.tick(client);dev.solyanka.client.feature.SpreadGuesser.tick(client);dev.solyanka.client.feature.ShitterList.tick();dev.solyanka.client.feature.PetDisplay.tick();dev.solyanka.client.feature.SimonSolver.tick();dev.solyanka.client.feature.HuntingFeatures.tick(client);SecretCounter.tick(); ArchiveVisuals.tick(client);ExtraHuds.tick(client);WorldVisuals.reset();TitaniumScanner.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
+            if (world != null && client.player != null) { FeatureRuntime.tick(client);dev.solyanka.client.feature.ItemTracker.tick();dev.solyanka.client.feature.RngAnnounce.tick();dev.solyanka.client.feature.MiningHelpers.tick(client);dev.solyanka.client.feature.VanguardAnnounce.tick(client);dev.solyanka.client.feature.SpreadGuesser.tick(client);dev.solyanka.client.feature.ShitterList.tick();dev.solyanka.client.feature.PetDisplay.tick();dev.solyanka.client.feature.SimonSolver.tick();dev.solyanka.client.feature.HuntingFeatures.tick(client);SecretCounter.tick(); ArchiveVisuals.tick(client);ExtraHuds.tick(client);WorldVisuals.reset();TitaniumScanner.tick(client); modules.tick(); InfoTooltips.tick();Experiments.update();PriceTooltips.tick();DungeonPuzzles.tick();DungeonMap.tick() }
         }
         InputRouter.register()
         ClientLifecycleEvents.CLIENT_STOPPING.register {

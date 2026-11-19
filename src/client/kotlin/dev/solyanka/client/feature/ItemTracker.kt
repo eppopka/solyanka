@@ -38,6 +38,16 @@ object ItemTracker {
     private var position:Vec3?=null;private var clicked=Long.MIN_VALUE
     private var tick=0;private var ignoreUntil=0L;private var sackIgnoreUntil=0L
     private var definitions="";private var lastFlush=0L
+    private data class StackMatch(val key:String?,val marketId:String)
+    private val stackMatches=java.util.IdentityHashMap<ItemStack,StackMatch>()
+    private var indexedItems:List<TrackerItem>?=null
+    private var idIndex=emptyMap<String,TrackerItem>()
+    private var nameIndex=emptyMap<String,TrackerItem>()
+    private var lastChatParent:Any?=null
+    private var lastChatSize=-1
+    private var renderedAt=Long.MIN_VALUE
+    private var renderedLines:List<String> = emptyList()
+    private var renderedSettings:TrackerSettings?=null
     private var detail="Waiting for tracked gains";private var storageError:String?=null
     private var primed=false
     private val displayed=java.util.Collections.newSetFromMap(java.util.IdentityHashMap<net.minecraft.client.multiplayer.chat.GuiMessage,Boolean>())
@@ -75,7 +85,7 @@ object ItemTracker {
     fun suspend() {
         session()?.clock?.freeze();flush();owner=null
         inventory.reset();losses.clear();pending.clear();position=null;ids.clear();displayed.clear();primed=false
-        definitions="";ignoreUntil=now()+2000;sackIgnoreUntil=now()+10_000;lastSack=""
+        definitions="";indexedItems=null;stackMatches.clear();lastChatParent=null;lastChatSize=-1;renderedAt=Long.MIN_VALUE;ignoreUntil=now()+2000;sackIgnoreUntil=now()+10_000;lastSack=""
     }
     fun resetTotals() {
         val key=owner ?: error("Join a world with Tracker enabled first")
@@ -105,22 +115,29 @@ object ItemTracker {
         return S.isEnabled(ModuleIds.TRACKER) && c.player!=null && c.level!=null && (!cfg().skyblockOnly || FeatureRuntime.context.skyblock) && cfg().items.isNotEmpty()
     }
     private fun totals():Map<String,Long> {
-        val player=Minecraft.getInstance().player ?: return emptyMap();val s=cfg();val result=mutableMapOf<String,Long>()
+        val player=Minecraft.getInstance().player ?: return emptyMap();val result=mutableMapOf<String,Long>()
         fun add(stack:ItemStack) {
             if(stack.isEmpty)return
-            val name=TrackerLogic.nameKey(stack.hoverName.string);val id=PriceTooltips.trackerItemId(stack)
-            val item=s.items.firstOrNull {it.itemId.isNotBlank() && it.itemId.equals(id,true)}
-                ?: s.items.firstOrNull {it.itemId.isBlank() && it.key()==name}
-            if(item!=null) {
-                val key=item.key();result[key]=(result[key] ?: 0)+stack.count
-                if(id.isNotBlank())ids[key]=id
+            val match=stackMatches[stack] ?: run {
+                // Exact-ID priority is retained. Names/market facts are decoded once per stack identity,
+                // not once per item definition on every scan; in-place metadata is refreshed every second.
+                val id=if(idIndex.isNotEmpty())PriceTooltips.trackerItemId(stack) else ""
+                val item=idIndex[id.uppercase(java.util.Locale.ROOT)] ?: nameIndex[TrackerLogic.nameKey(stack.hoverName.string)]
+                val actualId=if(item!=null && id.isBlank())PriceTooltips.trackerItemId(stack) else id
+                StackMatch(item?.key(),actualId).also {
+                    if(stackMatches.size>=128)stackMatches.clear()
+                    stackMatches[stack]=it
+                }
             }
+            val key=match.key ?: return
+            result[key]=(result[key] ?: 0)+stack.count // Quantity stays live, even for a cached identity.
+            if(match.marketId.isNotBlank())ids[key]=match.marketId
         }
         for(i in 0 until 36)add(player.inventory.getItem(i))
-        for(slot in listOf(EquipmentSlot.HEAD,EquipmentSlot.CHEST,EquipmentSlot.LEGS,EquipmentSlot.FEET,EquipmentSlot.OFFHAND))add(player.getItemBySlot(slot))
-        // All container screens and their close cooldown are baselined, not counted.
+        for(slot in EQUIPMENT)add(player.getItemBySlot(slot))
         return result
     }
+    private val EQUIPMENT=arrayOf(EquipmentSlot.HEAD,EquipmentSlot.CHEST,EquipmentSlot.LEGS,EquipmentSlot.FEET,EquipmentSlot.OFFHAND)
     private fun delta(key:String,amount:Long,source:String,time:Long) {
         if(amount<0)losses.record(key,source,-amount,time)
         else if(amount>0 && pending.size<128)pending.add(Gain(key,amount,source,time))
@@ -168,7 +185,12 @@ object ItemTracker {
         if(joined.contains("other items",true))detail="Sacks hover omits some items; hidden details cannot be counted"
     }
     private fun pollSacks() {
-        val parents=(Minecraft.getInstance().gui.hud.chat as ChatComponentAccessor).solyankaLines().take(128).map {it.parent()}.distinct()
+        if(!cfg().countSacks || !eligible()) {primed=false;lastChatParent=null;return}
+        val all=(Minecraft.getInstance().gui.hud.chat as ChatComponentAccessor).solyankaLines()
+        val latest=all.firstOrNull()?.parent()
+        if(primed && latest===lastChatParent && all.size==lastChatSize)return
+        lastChatParent=latest;lastChatSize=all.size
+        val parents=all.take(128).map {it.parent()}.distinct()
         if(primed)parents.asReversed().filterNot {it in displayed}.forEach {sack(it.content())}
         displayed.clear();displayed.addAll(parents);primed=true
     }
@@ -177,16 +199,25 @@ object ItemTracker {
         if(!S.isEnabled(ModuleIds.TRACKER) || c.player==null || c.level==null) {if(owner!=null)suspend();return}
         account();val record=session() ?: return;val time=now();val s=cfg()
         if(lastMode!=s.persistence) {lastMode=s.persistence;flush()}
-        val nextDefinitions=s.items.joinToString("|") {it.name+":"+it.itemId}
-        if(definitions!=nextDefinitions) {definitions=nextDefinitions;inventory.reset();losses.clear();pending.clear();ids.clear();ignoreUntil=time+2000}
+        if(indexedItems!==s.items) {
+            val nextDefinitions=s.items.joinToString("|") {it.name+":"+it.itemId}
+            if(definitions!=nextDefinitions) {definitions=nextDefinitions;inventory.reset();losses.clear();pending.clear();ids.clear();ignoreUntil=time+2000}
+            indexedItems=s.items
+            idIndex=s.items.filter {it.itemId.isNotBlank()}.associateBy {it.itemId.uppercase(java.util.Locale.ROOT)}
+            nameIndex=s.items.filter {it.itemId.isBlank()}.associateBy {it.key()}
+            stackMatches.clear()
+        }
         val container=c.gui.screen() is AbstractContainerScreen<*>
         if(container) {ignoreUntil=time+1500;sackIgnoreUntil=time+10_000;pending.clear();losses.clear()}
         val active=eligible() && !container && time>=ignoreUntil
-        if(++tick%4==0) {
-            val changes=inventory.observe(totals(),!active)
-            if(active)changes.forEach {(key,n)->delta(key,n,"inventory",time)}
+        ++tick
+        if(tick%20==0)stackMatches.clear()
+        if(!active)inventory.reset()
+        else if(tick%2==0) {
+            val changes=inventory.observe(totals(),false)
+            changes.forEach {(key,n)->delta(key,n,"inventory",time)}
         }
-        pollSacks()
+        if(tick%4==0)pollSacks()
         val gained=if(active)acceptPending(time) else {pending.clear();false}
         val pos=c.player?.position();val old=position
         val moved=pos!=null && old!=null && pos.distanceToSqr(old)>0.000001
@@ -201,7 +232,9 @@ object ItemTracker {
     }
     private fun lines(sample:Boolean=false):List<String> {
         if(sample)return listOf("Tracker · 00:12:30","Flint x13,943 (194,293 coins)","Total: 194,293 coins","Profit/h*: 932,606 coins")
-        val s=cfg();val record=session();val counts=record?.counts.orEmpty();val elapsed=record?.clock?.elapsedMillis ?: 0
+        val s=cfg();val time=now()
+        if(s===renderedSettings && renderedAt!=Long.MIN_VALUE && time-renderedAt in 0..99)return renderedLines
+        val record=session();val counts=record?.counts.orEmpty();val elapsed=record?.clock?.elapsedMillis ?: 0
         var total=0.0;var unknown=0
         val rows=s.items.map {item->
             val count=counts[item.key()] ?: 0
@@ -211,7 +244,7 @@ object ItemTracker {
             val price=unit?.times(count);if(price!=null)total+=price
             item.name+" x"+"%,d".format(java.util.Locale.US,count)+" ("+(price?.let {PriceLogic.format(it)} ?: "?")+" coins)"
         }
-        return buildList {
+        val result=buildList {
             add("Tracker · "+TrackerLogic.duration(elapsed)+(if(record?.clock?.paused!=false) " [paused]" else ""))
             if(rows.isEmpty())add("Add items in Tracker settings") else addAll(rows.take(s.maxRows))
             if(rows.size>s.maxRows)add("+${rows.size-s.maxRows} more tracked items")
@@ -219,6 +252,8 @@ object ItemTracker {
             add("Profit/h*: "+(TrackerLogic.perHour(total,elapsed)?.let {PriceLogic.format(it)} ?: "—")+(if(unknown>0) " + ?" else "")+" coins")
             if(unknown>0)add("? = unavailable price; totals incomplete")
         }
+        renderedAt=time;renderedSettings=s;renderedLines=result
+        return result
     }
     private fun dimensions(lines:List<String>):Pair<Int,Int> = (minOf(400,lines.maxOfOrNull {Minecraft.getInstance().font.width(it)} ?: 100)+14) to (lines.size*11+12)
     fun editorEntry(entry:HudEntry):HudEntry {

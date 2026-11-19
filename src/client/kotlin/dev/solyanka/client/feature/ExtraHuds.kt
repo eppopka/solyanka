@@ -72,7 +72,7 @@ object ExtraHuds {
     }
     fun editor(g:GuiGraphicsExtractor,key:String,x:Int,y:Int):Boolean {
         val f=SolyankaClient.currentGeneral().features
-        when(key) {"extra.tracker"->ItemTracker.preview(g,x,y);"extra.inventory"->inventory(g,f.inventoryHud,true,x,y);"extra.item_name"->itemName(g,f.itemNameHud,true,x,y);"extra.skill"->skill(g,f.skillHud,true,x,y);else->return false}
+        when(key) {"extra.performance"->PerformanceHud.preview(g,x,y);"extra.tracker"->ItemTracker.preview(g,x,y);"extra.inventory"->inventory(g,f.inventoryHud,true,x,y);"extra.item_name"->itemName(g,f.itemNameHud,true,x,y);"extra.skill"->skill(g,f.skillHud,true,x,y);else->return false}
         return true
     }
     private fun render(g:GuiGraphicsExtractor) {

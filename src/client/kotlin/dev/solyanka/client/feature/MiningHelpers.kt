@@ -18,10 +18,12 @@ import net.minecraft.world.phys.*
 
 /** Loaded data only: no chunk loads, automatic clicks, teleports or server requests. */
 object MiningHelpers {
-    private data class Corpse(val id:java.util.UUID,val kind:CorpseKind,val pos:Vec3)
+    private data class Corpse(val stand:ArmorStand,val kind:CorpseKind) {val id get()=stand.uuid;val pos get()=stand.position()}
     private val chests=linkedMapOf<BlockPos,Long>()
     private var corpses=emptyList<Corpse>()
     private val printed=mutableSetOf<java.util.UUID>()
+    private val clicked=mutableSetOf<java.util.UUID>()
+    private var scanTick=0
     private var scope=""
     private var announcedType=false
     private var announcedCorpses=false
@@ -30,7 +32,7 @@ object MiningHelpers {
     private var nextPartyAt=0L
     private val party=java.util.ArrayDeque<String>()
     fun reset() {
-        chests.clear();corpses=emptyList();printed.clear();scope="";announcedType=false;announcedCorpses=false
+        chests.clear();corpses=emptyList();printed.clear();clicked.clear();scanTick=0;scope="";announcedType=false;announcedCorpses=false
         tabSignature="";stableSince=0L;party.clear();nextPartyAt=0L;WorldOverlay.clear("mining-helpers")
     }
     private fun chest(s:BlockState)=s.`is`(Blocks.CHEST) || s.`is`(Blocks.TRAPPED_CHEST)
@@ -54,13 +56,12 @@ object MiningHelpers {
         if(player==null || level==null || !ctx.skyblock || !RngAnnounce.hypixel()) {reset();return}
         val now=System.nanoTime()/1000000L
         val shaft=S.isEnabled(ModuleIds.MINESHAFT) && ctx.area.contains("mineshaft",true)
-        val newScope=if(shaft) "${ctx.area}:${ctx.mineshaftVariant.orEmpty()}" else ""
+        val newScope=if(shaft) ctx.area else ""
         if(scope!=newScope) {
-            scope=newScope;corpses=emptyList();printed.clear();announcedType=false;announcedCorpses=false
+            scope=newScope;corpses=emptyList();printed.clear();clicked.clear();announcedType=false;announcedCorpses=false
             tabSignature="";stableSince=now;party.clear()
         }
         val lines=mutableListOf<WorldOverlay.Segment>();val labels=mutableListOf<WorldOverlay.Label>()
-        val origin=c.gameRenderer.mainCamera().position().add(player.lookAngle.scale(.5))
         if(S.isEnabled(ModuleIds.POWDER_CHEST) && ctx.area.equals("Crystal Hollows",true)) {
             chests.entries.removeIf {(pos,expiry)->expiry<now || !level.hasChunkAt(pos) || !chest(level.getBlockState(pos))}
             val s=S.currentGeneral().features.powderChest
@@ -68,7 +69,7 @@ object MiningHelpers {
                 WorldOverlay.box(lines,AABB(pos).inflate(.005),s.color,false)
                 val point=Vec3.atCenterOf(pos)
                 labels.add(WorldOverlay.Label(point.add(0.0,.8,0.0),"Powder Chest",s.color,false))
-                if(s.tracer)lines.add(WorldOverlay.Segment(origin,point,s.color,false))
+                // Tracer origin is resolved by collect() using the current render camera.
             }
         } else chests.clear()
         if(shaft) {
@@ -84,22 +85,12 @@ object MiningHelpers {
             if(s.announceCorpses && !announcedCorpses && counts.isNotEmpty() && now-stableSince>=2000) {
                 partyMessage(MineshaftLogic.summary(counts));announcedCorpses=true
             }
-            // Re-evaluate equipment each tick; helmets often arrive after entity spawn metadata.
-            corpses=level.entitiesForRendering().asSequence().filterIsInstance<ArmorStand>().take(4096).mapNotNull {stand->
-                if(!stand.isAlive)return@mapNotNull null
-                val data=stand.getItemBySlot(EquipmentSlot.HEAD).get(DataComponents.CUSTOM_DATA)?.copyTag() ?: return@mapNotNull null
-                val attrs=data.getCompound("ExtraAttributes").orElse(null) ?: data
-                val kind=CorpseKind.fromHelmet(attrs.getStringOr("id","")) ?: return@mapNotNull null
-                Corpse(stand.uuid,kind,stand.position())
-            }.take(64).toList()
+            // Recheck late equipment metadata every five ticks; share classification with click handling.
+            if(++scanTick%5==0 || corpses.isEmpty())corpses=level.entitiesForRendering().asSequence()
+                .filterIsInstance<ArmorStand>().take(4096).mapNotNull {stand->classify(stand)?.let {Corpse(stand,it)}}.take(64).toList()
             corpses.forEach {corpse->
-                val style=s.style(corpse.kind);val p=corpse.pos
-                WorldOverlay.box(lines,AABB(p.x-.4,p.y,p.z-.4,p.x+.4,p.y+1.8,p.z+.4),style.color,false)
-                labels.add(WorldOverlay.Label(p.add(0.0,2.0,0.0),"${corpse.kind.label} Corpse",style.color,false))
-                if(style.tracer && player.position().distanceToSqr(p)>s.tracerRadius*s.tracerRadius)
-                    lines.add(WorldOverlay.Segment(origin,p.add(0.0,.7,0.0),style.color,false))
-                if(s.coordinates && printed.add(corpse.id)) {
-                    val b=BlockPos.containing(p)
+                if(s.coordinates && corpse.stand.isAlive && printed.add(corpse.id)) {
+                    val b=BlockPos.containing(corpse.pos)
                     player.sendSystemMessage(Component.literal("[solyanka] ${corpse.kind.label} Corpse: x: ${b.x}, y: ${b.y}, z: ${b.z}"))
                 }
             }
@@ -108,6 +99,47 @@ object MiningHelpers {
             player.connection.sendCommand("pc ${party.remove()}");nextPartyAt=now+1500
         }
         WorldOverlay.publish(lines,text=labels,owner="mining-helpers")
+    }
+    private fun classify(stand:ArmorStand):CorpseKind? {
+        if(!stand.isAlive)return null
+        val data=stand.getItemBySlot(EquipmentSlot.HEAD).get(DataComponents.CUSTOM_DATA)?.copyTag() ?: return null
+        val nested=data.getCompoundOrEmpty("ExtraAttributes").getStringOr("id","")
+        return CorpseKind.fromHelmet(nested) ?: CorpseKind.fromHelmet(data.getStringOr("id",""))
+    }
+    /** Called by ordinary mouse input; observes the hit only and never consumes or creates an interaction. */
+    fun click(button:Int) {
+        val mc=Minecraft.getInstance()
+        if(button !in 0..1 || mc.gui.screen()!=null || !S.isEnabled(ModuleIds.MINESHAFT) || !S.currentGeneral().features.mineshaft.hideOnClick)return
+        if(!FeatureRuntime.context.area.contains("mineshaft",true) || !RngAnnounce.hypixel())return
+        val stand=(mc.hitResult as? EntityHitResult)?.entity as? ArmorStand ?: return
+        if(classify(stand)!=null && clicked.size<256)clicked.add(stand.uuid)
+    }
+    fun collect(context:net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext,
+        lines:MutableList<WorldOverlay.Segment>,labels:MutableList<WorldOverlay.Label>) {
+        val mc=Minecraft.getInstance();val level=mc.level ?: return;val player=mc.player ?: return
+        if(!RngAnnounce.hypixel() || !FeatureRuntime.context.skyblock)return
+        val camera=context.levelState().cameraRenderState
+        val forward=camera.orientation.transform(org.joml.Vector3f(0f,0f,-1f))
+        val origin=camera.pos.add(forward.x.toDouble()*.5,forward.y.toDouble()*.5,forward.z.toDouble()*.5)
+        val partial=mc.deltaTracker.getGameTimeDeltaPartialTick(true)
+        val playerPos=player.getPosition(partial)
+        if(S.isEnabled(ModuleIds.POWDER_CHEST) && FeatureRuntime.context.area.equals("Crystal Hollows",true)) {
+            val s=S.currentGeneral().features.powderChest
+            if(s.tracer)chests.keys.forEach {lines.add(WorldOverlay.Segment(origin,Vec3.atCenterOf(it),s.color,false,2f))}
+        }
+        if(!S.isEnabled(ModuleIds.MINESHAFT) || !FeatureRuntime.context.area.contains("mineshaft",true))return
+        val s=S.currentGeneral().features.mineshaft
+        corpses.forEach {corpse->
+            val stand=corpse.stand
+            if(!stand.isAlive || level.getEntity(stand.id)!==stand)return@forEach
+            val p=stand.getPosition(partial)
+            if(!CorpseVisibility.visible(s.hideOnClick && corpse.id in clicked,playerPos.distanceToSqr(p),s.tracerRadius))return@forEach
+            val style=s.style(corpse.kind)
+            WorldOverlay.box(lines,AABB(p.x-.4,p.y,p.z-.4,p.x+.4,p.y+1.8,p.z+.4),style.color,false)
+            labels.add(WorldOverlay.Label(p.add(0.0,2.0,0.0),"${corpse.kind.label} Corpse",style.color,false))
+            val target=p.add(0.0,.7,0.0)
+            if(style.tracer && origin.distanceToSqr(target)>1e-8)lines.add(WorldOverlay.Segment(origin,target,style.color,false,2f))
+        }
     }
     /** Explicit export, never overwrites an existing pack. The Waypoints editor owns subsequent edits. */
     fun exportCorpses():String {

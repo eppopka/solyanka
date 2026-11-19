@@ -39,6 +39,7 @@ object WorldOverlay {
   fun styled(color:Int,style:dev.solyanka.utility.WayStyle?,v:Vec3)=style?.colorAt(color,v.x,v.y,v.z,now) ?: color
   val values=channels.values.toList();val snapshot=values.flatMap {it.segments}.toMutableList();val camera=c.levelState().cameraRenderState.pos
   val filled=values.flatMap {it.fills}.toMutableList();val text=values.flatMap {it.labels}.toMutableList()
+  MiningHelpers.collect(c,snapshot,text)
   HuntingFeatures.collectBestiary(c,snapshot)
   HuntingFeatures.collectTiki(c,snapshot,filled,text)
   BlockSelection.collect(c,filled)

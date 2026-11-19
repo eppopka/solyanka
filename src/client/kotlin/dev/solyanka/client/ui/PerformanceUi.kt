@@ -22,7 +22,10 @@ object PerformanceUi {
     add(GuiKit.toggleRow(w,"Show FPS",s.showFps) {v->update {it.copy(showFps=v)}})
     add(GuiKit.toggleRow(w,"Show Ping",s.showPing) {v->update {it.copy(showPing=v)}})
     add(GuiKit.toggleRow(w,"Show TPS",s.showTps) {v->update {it.copy(showTps=v)}})
-    add(GuiKit.colorRow(w,"Text Color",s.hud.color) {v->update {it.copy(hud=it.hud.copy(color=v))}})
+    add(GuiKit.choiceRow(w,"Direction",listOf("Horizontal","Vertical"),if(s.direction=="vertical")1 else 0) {v->update {it.copy(direction=if(v==1)"vertical" else "horizontal")}})
+    add(GuiKit.colorRow(w,"Name Color",s.nameColor) {v->update {it.copy(nameColor=v)}})
+    add(GuiKit.colorRow(w,"Value Color",s.valueColor) {v->update {it.copy(valueColor=v)}})
+    add(GuiKit.toggleRow(w,"Metric status colors",s.metricColors,"Override value colors with performance thresholds.") {v->update {it.copy(metricColors=v)}})
     addAll(HudGlowUi.controls(ModuleIds.PERFORMANCE,model,panel,w))
    }
   })

@@ -36,7 +36,7 @@ object FeatureUi {
         route(ModuleIds.ITEM_AURA,ModuleIds.CS2_KNIFE) {id,host,model->FinalCosmeticsUi.open(id,host,model)}
         route(ModuleIds.BLOCKLIST,ModuleIds.MOVE_HOTBAR,ModuleIds.PIP,ModuleIds.PET,ModuleIds.SIMON,ModuleIds.BESTIARY,ModuleIds.INVISIBUG,ModuleIds.TIKI,ModuleIds.CHINA_HAT,ModuleIds.HALO) {id,host,model->HuntingUi.open(id,host,model)}
         route(ModuleIds.SPREAD_GUESSER) {_,host,model->spread(host,model)}
-        route(ModuleIds.HIDE_PLAYERS,ModuleIds.RNG_ANNOUNCE,ModuleIds.POWDER_CHEST,ModuleIds.MINESHAFT) {id,host,model->MiningHelpersUi.open(id,host,model)}
+        route(ModuleIds.HIDE_PLAYERS,ModuleIds.RNG_ANNOUNCE,ModuleIds.POWDER_CHEST,ModuleIds.MINESHAFT,ModuleIds.VANGUARD_ANNOUNCE) {id,host,model->MiningHelpersUi.open(id,host,model)}
         route(ModuleIds.SPOTIFY) {_,host,model->MusicUi.spotify(host,model)}
         route(ModuleIds.MUSIC) {_,host,model->MusicUi.open(host,model)}
         route(ModuleIds.CHAT_COMMANDS) {_,host,model->ChatCommandsUi.open(host,model)}

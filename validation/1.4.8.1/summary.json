@@ -1,0 +1,19 @@
+{
+  "version": "1.4.8.1",
+  "minecraft": "26.2",
+  "changed_files": 30,
+  "new_junit_tests": 13,
+  "kotlin_compilation": "not reached",
+  "junit_execution": "not run",
+  "live_game_testing": "not run",
+  "performance_benchmark": "not run",
+  "build_blocker": "UnknownHostException: services.gradle.org",
+  "jar_included": false,
+  "source_whitespace": "pass",
+  "translation_key_parity": "pass",
+  "catalog_cards": 65,
+  "exact_guild_regex_jvm_fixtures": 11,
+  "existing_regex_jvm_fixtures": 68,
+  "patch_round_trip_and_file_equality": "pass",
+  "complete_zip_crc_all_source_equality_executable_wrapper": "pass"
+}

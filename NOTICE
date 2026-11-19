@@ -281,3 +281,7 @@ Reviewed for item-gain sources, native Sacks hover format, and price-source beha
 The new solyanka Tracker/AFK/cache implementations are independent; these upstream
 source files are not bundled or claimed as fully ported. Specialized shard and
 activity-specific SkyHanni event integrations are not included.
+
+1.4.8.1: Performance label/value colors, TPS/FPS/Ping ordering and horizontal/vertical
+layout adapted from user-supplied Odin PerformanceHUD.kt (com.odtheking.odin),
+BSD-3-Clause; see licenses/Odin-BSD-3-Clause.txt. No Odin runtime dependency.
